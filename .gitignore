@@ -128,8 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-!.gitkeep
 
-out/
 demos_and_examples/out/
 cache/
