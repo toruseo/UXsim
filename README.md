@@ -9,7 +9,7 @@ UXsimは，以下のモデルを組み合わせてネットワークの動的交
 - Lagrange版Incremental Node Model
 - Dynamic User Optimum型経路選択モデル（慣性付き）
 
-なお，UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosX（[公開ページ](https://github.com/toruseo/UXsim/tree/ver-book)）を大幅に拡張したものです．
+なお，UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosXを大幅に拡張したものです．
 基本動作原理は同じですので，詳細は当該書籍を参照ください．
 
 ドキュメントは今後追加予定です．
