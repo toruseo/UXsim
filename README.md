@@ -64,7 +64,7 @@ Pythonのバージョン3を用います．
 大まかな構造と計算フローを以下に示します．
 
 ### クラス図
-<img src="https://github.com/toruseo/UXsim/blob/images/class_diagram.png" width="400">
+<img src="https://github.com/toruseo/UXsim/blob/images/class_diagram.png" width="500">
 
 ### シミュレータ全体のアクティビティ図
 <img src="https://github.com/toruseo/UXsim/blob/images/activity_diagram.png" width="600">

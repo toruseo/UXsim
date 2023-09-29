@@ -52,7 +52,7 @@ Vehicle trajectory diagram on a corridor of the above network:
 This simulator is purely Python and allows users to flexibly customize it. Below is an overview of the structure and calculation flow.
 
 ### Class Diagram
-<img src="https://github.com/toruseo/UXsim/blob/images/class_diagram.png" width="400">
+<img src="https://github.com/toruseo/UXsim/blob/images/class_diagram.png" width="500">
 
 ### Activity Diagram of the Entire Simulator
 <img src="https://github.com/toruseo/UXsim/blob/images/activity_diagram.png" width="600">
