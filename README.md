@@ -34,6 +34,18 @@ Pythonのバージョン3を用います．
 - SciPy
 - pandas
 
+## 計算例
+
+10km x 10kmのグリッドネットワーク内を2時間で約6万台が通行する様子．計算時間は通常のデスクトップPCで約40秒．
+リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）と一部車両の軌跡を可視化したもの：
+
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400">
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400">
+
+上記ネットワークのある回廊上の車両軌跡図：
+
+<img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
+
 ## 内部の構造と計算フロー
 
 本シミュレータは純Python製であり，使用者が柔軟にカスタムして使用できます．
