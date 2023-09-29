@@ -904,7 +904,11 @@ class Analyzer:
                     x1 = l.xss[v][i+1]
                     t0 = l.tss[v][i]
                     t1 = l.tss[v][i+1]
-                    v0 = (x1-x0)/(t1-t0)
+                    if t1-t0 != 0:
+                        v0 = (x1-x0)/(t1-t0)
+                    else:
+                        #todo: why?
+                        v0 = 0
 
                     tt = int(t0//dt)
                     xx = int(x0//dx)
