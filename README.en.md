@@ -6,7 +6,7 @@ This repository introduces UXsim, a free, open-source macroscopic and mesoscopic
 - Lagrangian Incremental Node Model
 - Dynamic User Optimum-type Route Choice Model (with inertia)
 
-Note that UXsim is a significant expansion of the traffic flow simulator UroborosX, which is included in the book "[Macro Traffic Flow Simulation: Mathematical Fundamental Theory and Implementation with Python](https://www.coronasha.co.jp/np/isbn/9784339052794/)" (Author: [Toru Seo](https://toruseo.jp/), Publisher: [Corona Publishing Co., Ltd.](https://www.coronasha.co.jp/)). The basic operating principles remain the same; for details, please refer to the book.
+Note that UXsim is a significant expansion of the traffic flow simulator UroborosX, which is included in the book "[Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation](https://www.coronasha.co.jp/np/isbn/9784339052794/)" (Author: [Toru Seo](https://toruseo.jp/), Publisher: [Corona Publishing Co., Ltd.](https://www.coronasha.co.jp/)). The basic operating principles remain the same; for details, please refer to the book.
 
 Documentation will be added in the future.
 
@@ -66,7 +66,7 @@ This code is released under the MIT License. You are free to use it as long as t
 
 When publishing results obtained from this code, please cite:
 
-- Toru Seo. Macro Traffic Flow Simulation: Mathematical Fundamental Theory and Implementation with Python. Corona Publishing Co., Ltd., 2023.
+- Toru Seo. Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation. Corona Publishing Co., Ltd., 2023.
 
 ## Related Links
 
