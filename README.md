@@ -1,5 +1,7 @@
 # マクロ交通流シミュレーション：Pythonによる実装（書籍バージョン）
 
+**このシミュレータUroborosXを大幅に拡張したバージョンアップ版UXsimを[このリポジトリのmain](https://github.com/toruseo/UXsim/tree/main)で公開しています．より高度なシミュレーションをしたい方はそちらにアクセスしてください．このリポジトリは過去の記録用です．**
+
 このリポジトリのこのバージョンは，書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータのコードをオープンソースとして公開するものです．
 以下のファイル等が含まれています．
 
@@ -28,10 +30,6 @@ Pythonのバージョン3を用います．
 - Pillow
 - tqdm
 - SciPy
-
-## バージョンアップ版
-
-このシミュレータUroborosXを大幅に拡張したバージョンアップ版UXsimを[このリポジトリのmain](https://github.com/toruseo/UXsim/tree/main)で公開しています．
 
 ## 使用条件・ライセンス
 
