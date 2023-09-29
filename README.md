@@ -1,7 +1,7 @@
 # UXsim: Python製のマクロ・メソ交通流シミュレータ
 
 このリポジトリでは，Python製のオープンソース・フリーなマクロ・メソ交通流シミュレータUXsimを公開しています．
-UXsimは，以下のモデルを組合せてネットワークの動的交通流を再現できるようにしたものです．
+UXsimは，以下のモデルを組み合わせてネットワークの動的交通流を再現できるようにしたものです．
 
 - Newellの単純追従モデル（Xモデル）
 - Lagrange版Incremental Node Model
@@ -34,9 +34,19 @@ Pythonのバージョン3を用います．
 - SciPy
 - pandas
 
-## 内部での計算フロー
+## 内部の構造と計算フロー
 
-TBA
+本シミュレータは純Python製であり，使用者が柔軟にカスタムして使用できます．
+大まかな構造と計算フローを以下に示します．
+
+### クラス図
+<img src="https://github.com/toruseo/UXsim/blob/images/class_diagram.png" width="400">
+
+### シミュレータ全体のアクティビティ図
+<img src="https://github.com/toruseo/UXsim/blob/images/activity_diagram.png" width="600">
+
+### ある車両一台のアクティビティ図
+<img src="https://github.com/toruseo/UXsim/blob/images/activity_diagram_veh.png" width="400">
 
 ## 使用条件・ライセンス
 
