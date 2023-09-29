@@ -31,7 +31,7 @@ Pythonのバージョン3を用います．
 
 ## バージョンアップ版
 
-このシミュレータUroborosXを大幅に拡張したバージョンアップ版をこのリポジトリで近日中に公開します．
+このシミュレータUroborosXを大幅に拡張したバージョンアップ版UXsimを[このリポジトリのmain](https://github.com/toruseo/UXsim/tree/main)で公開しています．
 
 ## 使用条件・ライセンス
 
