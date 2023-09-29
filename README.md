@@ -1,21 +1,23 @@
-# マクロ交通流シミュレーション：Pythonによる実装（書籍バージョン）
+# UXsim: Python製のマクロ・メソ交通流シミュレータ
 
-このリポジトリのこのバージョンは，書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータのコードをオープンソースとして公開するものです．
-以下のファイル等が含まれています．
+このリポジトリでは，Python製のオープンソース・フリーなマクロ・メソ交通流シミュレータUXsimを公開しています．
+UXsimは，以下のモデルを組合せてネットワークの動的交通流を再現できるようにしたものです．
 
-- `code01_ctm.py`: 単一リンクでのCell Transmission Model
-- `code02_vt.py`: 単一リンクでのVariational Theory
-- `code03_uroborosx.py`: ネットワークでの交通流シミュレータUroborosX（Newellの単純追従モデル（Xモデル）＋Lagrange型Incremental Node Model＋慣性Dynamic User Optimum）
-- `demo.ipynb`: 上記コードを実行した結果をJupyter Notebookにまとめたもの
-- ディレクトリ`out`: `code03_uroborosx.py`の出力を格納するためのもの
+- Newellの単純追従モデル（Xモデル）
+- Lagrange版Incremental Node Model
+- Dynamic User Optimum型経路選択モデル（慣性付き）
 
+なお，UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosXを大幅に拡張したものです．
+基本動作原理は同じですので，詳細はそちらを参照ください．
+
+ドキュメントは今後追加予定です．
 
 ## 使用法
 
-それぞれのコードをそのままPythonで実行してください．
-既に実行した結果例を`demo.ipynb`にまとめてあるので，適宜参照してください．
+ファイル`uxsim.py`とディレクトリ`utils`と同じフォルダに自分のPythonコードやJupyter Notebookを配置し，`from uxsim import *`すれば使用できます．
+詳細はディレクトリ`demos_and_examples`内の具体例を参照ください．
 
-シミュレータの詳細については，『マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装』の第5，6章を参照してください．
+モジュールとしての整備は今後対応予定です．
 
 ### 実行環境
 
@@ -28,10 +30,11 @@ Pythonのバージョン3を用います．
 - Pillow
 - tqdm
 - SciPy
+- pandas
 
-## バージョンアップ版
+## 内部での計算フロー
 
-このシミュレータUroborosXを大幅に拡張したバージョンアップ版をこのリポジトリで近日中に公開します．
+TBA
 
 ## 使用条件・ライセンス
 
@@ -50,4 +53,4 @@ Pythonのバージョン3を用います．
 - [瀬尾による関連シミュレータまとめサイト](https://toruseo.jp/uxsim/)
 - [コロナ社の当該書籍ページ](https://www.coronasha.co.jp/np/isbn/9784339052794/)
 - [東京工業大学 瀬尾研究室](http://seo.cv.ens.titech.ac.jp/)
-- [Webブラウザ上で動くインタラクティブ交通流シミュレータ](http://seo.cv.ens.titech.ac.jp/traffic-flow-demo/bottleneck_jp.html)：このシミュレータが用いている交通流モデルをインタラクティブに動かして，交通流とそのシミュレーションの基礎を学べます．
+- [Webブラウザ上で動くインタラクティブ交通流シミュレータ](http://seo.cv.ens.titech.ac.jp/traffic-flow-demo/bottleneck_jp.html)：このシミュレータが用いているリンク交通流モデルと同じものをインタラクティブに動かして，交通流とそのシミュレーションの基礎を学べます．
