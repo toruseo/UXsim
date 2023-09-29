@@ -7,14 +7,16 @@ UXsimは，以下のモデルを組合せてネットワークの動的交通流
 - Lagrange版Incremental Node Model
 - Dynamic User Optimum型経路選択モデル（慣性付き）
 
-なお，UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosXを大幅に拡張したものです．
-基本動作原理は同じですので，詳細はそちらを参照ください．
+なお，UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosX（[公開ページ](https://github.com/toruseo/UXsim/tree/ver-book)）を大幅に拡張したものです．
+基本動作原理は同じですので，詳細は当該書籍を参照ください．
 
 ドキュメントは今後追加予定です．
 
 ## 使用法
 
-ファイル`uxsim.py`とディレクトリ`utils`と同じフォルダに自分のPythonコードやJupyter Notebookを配置し，`from uxsim import *`すれば使用できます．
+[Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)に基本的な使用法と機能をまとめています．
+
+使用するには，ファイル`uxsim.py`とディレクトリ`utils`と同じフォルダに自分のPythonコードやJupyter Notebookを配置し，`from uxsim import *`してください．
 詳細はディレクトリ`demos_and_examples`内の具体例を参照ください．
 
 モジュールとしての整備は今後対応予定です．
