@@ -2,7 +2,7 @@
 
 This repository introduces UXsim, a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. UXsim calculates dynamic traffic flow in a network by integrating the following models:
 
-- Newell's Simplified Following Model (X Model)
+- Newell's simplified car-following model (X-Model)
 - Lagrangian Incremental Node Model
 - Dynamic User Optimum-type Route Choice Model (with inertia)
 
