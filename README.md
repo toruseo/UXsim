@@ -1,7 +1,7 @@
 # UXsim: Python製のマクロ・メソ交通流シミュレータ
 
 このリポジトリでは，Python製のオープンソース・フリーなマクロ・メソ交通流シミュレータUXsimを公開しています．
-UXsimは，以下のモデルを組み合わせてネットワークの動的交通流を再現できるようにしたものです．
+UXsimは，以下のモデルを組み合わせてネットワークの動的交通流を計算するものです．
 
 - Newellの単純追従モデル（Xモデル）
 - Lagrange版Incremental Node Model
@@ -11,6 +11,13 @@ UXsimは，以下のモデルを組み合わせてネットワークの動的交
 基本動作原理は同じですので，詳細は当該書籍を参照ください．
 
 ドキュメントは今後追加予定です．
+
+## 主な機能
+
+- ネットワーク構造と時間帯別需要が与えられているときに，動的なネットワーク交通流を計算
+- 信号交差点，流入制御，経路誘導，混雑課金などの交通マネジメントの組み込み
+- 計算結果の各種分析（トリップ完了数，総旅行時間，遅れ時間など）と，そのpandas.DataFrameやCSVへのエクスポート
+- 計算結果の可視化（時空間図，MFD，ネットワーク状況アニメーションなど）
 
 ## 使用法
 
@@ -33,6 +40,18 @@ Pythonのバージョン3を用います．
 - tqdm
 - SciPy
 - pandas
+
+## 計算例
+
+10km x 10kmのグリッドネットワーク内を2時間で約6万台が通行する様子．計算時間は通常のデスクトップPCで約40秒．
+リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）と一部車両の軌跡を可視化したもの：
+
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400">
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400">
+
+上記ネットワークのある回廊上の車両軌跡図：
+
+<img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
 
 ## 内部の構造と計算フロー
 
