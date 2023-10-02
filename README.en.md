@@ -70,6 +70,7 @@ This code is released under the MIT License. You are free to use it as long as t
 When publishing results obtained from this code, please cite:
 
 - Toru Seo. Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation. Corona Publishing Co., Ltd., 2023.
+- Toru Seo. UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview. arXiv preprint arXiv: 2309.17114, 2023
 
 ## Related Links
 

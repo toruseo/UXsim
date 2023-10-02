@@ -867,12 +867,14 @@ class Analyzer:
                 if len(l.xss[i]):
                     if l.xss[i][0] != 0:
                         x_remain = l.xss[i][0]
-                        l.xss[i].insert(0, 0)
-                        l.tss[i].insert(0, l.tss[i][0]-x_remain/l.u)
+                        if x_remain/l.u > s.W.DELTAT*0.01:
+                            l.xss[i].insert(0, 0)
+                            l.tss[i].insert(0, l.tss[i][0]-x_remain/l.u)
                     if l.length-l.u*s.W.DELTAT <= l.xss[i][-1] < l.length:
                         x_remain = l.length-l.xss[i][-1]
-                        l.xss[i].append(l.length)
-                        l.tss[i].append(l.tss[i][-1]+x_remain/l.u)
+                        if x_remain/l.u > s.W.DELTAT*0.01:
+                            l.xss[i].append(l.length)
+                            l.tss[i].append(l.tss[i][-1]+x_remain/l.u)
 
     def compute_edie_state(s):
         #Euler型交通状態計算．精緻版
@@ -907,7 +909,7 @@ class Analyzer:
                     if t1-t0 != 0:
                         v0 = (x1-x0)/(t1-t0)
                     else:
-                        #todo: why?
+                        #compute_accurate_traj()の外挿で極稀にt1=t0になったのでエラー回避（もう起きないはずだが念のため）
                         v0 = 0
 
                     tt = int(t0//dt)
