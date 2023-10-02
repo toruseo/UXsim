@@ -82,6 +82,7 @@ Pythonのバージョン3を用います．
 使用された成果を発表される際は，参考文献として
 
 - 瀬尾亨. マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装. コロナ社, 2023
+- Seo, T. UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview. arXiv preprint arXiv: 2309.17114, 2023
 
 を引用してください．
 
