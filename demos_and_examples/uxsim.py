@@ -240,14 +240,14 @@ class Link:
         s.capacity_out = capacity_out
         if capacity_out == None:
             s.capacity_out = s.capacity*2
-            #todo: capacity_outは微妙にバグがあるらしい．少なくとも未設定時にはバグが顕在化しないように2倍にしている
+            #todo_later: capacity_outは微妙にバグがあるらしい（多分離散化誤差）．少なくとも未設定時にはバグが顕在化しないように2倍にしている
         s.capacity_out_remain = s.capacity_out*s.W.DELTAT
         
         #流入容量
         s.capacity_in = capacity_in
         if capacity_in == None:
             s.capacity_in = s.capacity*2
-            #todo: capacity_inは微妙にバグがあるらしい．少なくとも未設定時にはバグが顕在化しないように2倍にしている
+            #todo_later: capacity_inは微妙にバグがあるらしい（多分離散化誤差）．少なくとも未設定時にはバグが顕在化しないように2倍にしている
         s.capacity_in_remain = s.capacity_in*s.W.DELTAT
         
         s.id = len(s.W.LINKS)
@@ -867,12 +867,14 @@ class Analyzer:
                 if len(l.xss[i]):
                     if l.xss[i][0] != 0:
                         x_remain = l.xss[i][0]
-                        l.xss[i].insert(0, 0)
-                        l.tss[i].insert(0, l.tss[i][0]-x_remain/l.u)
+                        if x_remain/l.u > s.W.DELTAT*0.01:
+                            l.xss[i].insert(0, 0)
+                            l.tss[i].insert(0, l.tss[i][0]-x_remain/l.u)
                     if l.length-l.u*s.W.DELTAT <= l.xss[i][-1] < l.length:
                         x_remain = l.length-l.xss[i][-1]
-                        l.xss[i].append(l.length)
-                        l.tss[i].append(l.tss[i][-1]+x_remain/l.u)
+                        if x_remain/l.u > s.W.DELTAT*0.01:
+                            l.xss[i].append(l.length)
+                            l.tss[i].append(l.tss[i][-1]+x_remain/l.u)
 
     def compute_edie_state(s):
         #Euler型交通状態計算．精緻版
@@ -907,7 +909,7 @@ class Analyzer:
                     if t1-t0 != 0:
                         v0 = (x1-x0)/(t1-t0)
                     else:
-                        #todo: why?
+                        #compute_accurate_traj()の外挿で極稀にt1=t0になったのでエラー回避（もう起きないはずだが念のため）
                         v0 = 0
 
                     tt = int(t0//dt)
@@ -1015,7 +1017,7 @@ class Analyzer:
             else:
                 plt.close("all")
     
-    #@catch_exceptions_and_warn()
+    @catch_exceptions_and_warn()
     def time_space_diagram_density(s, links=None, figsize=(12,4)):
         """Draws the time-space diagram of traffic density on specified links.
 
@@ -1327,7 +1329,7 @@ class Analyzer:
             speed_coef = 8
             for t in tqdm(range(0,s.W.TMAX,s.W.DELTAT*speed_coef), disable=(s.W.print_mode==0)):
                 if detailed:
-                    #todo: 今後はこちらもpillowにする
+                    #todo_later: 今後はこちらもpillowにする
                     s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 else:
                     s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
@@ -1613,7 +1615,7 @@ class Analyzer:
         s.mfd_to_pandas().to_csv(fname+"_mfd.csv", index=False)
         s.link_to_pandas().to_csv(fname+"_link.csv", index=False)
         s.link_traffic_state_to_pandas().to_csv(fname+"_link_traffic_state.csv", index=False)
-        s.log_vehicles_to_pandas().to_csv(fname+"_vehicles.csv", index=False)
+        s.vehicles_to_pandas().to_csv(fname+"_vehicles.csv", index=False)
 
 
 class World:
