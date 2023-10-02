@@ -49,7 +49,10 @@ Vehicle trajectory diagram on a corridor of the above network:
 
 ## Internal Structure and Calculation Flow
 
-This simulator is purely Python and allows users to flexibly customize it. Below is an overview of the structure and calculation flow.
+This simulator is purely Python and allows users to flexibly customize it. 
+Short technical note is available at [arXiv](https://arxiv.org/abs/2309.17114).
+For the details, please see the [book](https://www.coronasha.co.jp/np/isbn/9784339052794/).
+Below is an overview of the structure and calculation flow.
 
 ### Class Diagram
 <img src="https://github.com/toruseo/UXsim/blob/images/class_diagram.png" width="500">
