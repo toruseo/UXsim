@@ -19,7 +19,7 @@ Documentation will be added in the future.
 
 ## Usage
 
-The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb) summarizes the basic usage and features.
+The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
 
 To use, place your Python code or Jupyter Notebook in the same folder as the `uxsim.py` file and the `utils` directory and use `from uxsim import *`. For more details, refer to the examples in the `demos_and_examples` directory.
 
