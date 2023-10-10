@@ -3,29 +3,32 @@
 [(English readme is here)](https://github.com/toruseo/UXsim/blob/main/README.en.md)
 
 このリポジトリでは，Python製のオープンソース・フリーなマクロ・メソ交通流シミュレータUXsimを公開しています．
-UXsimは，以下のモデルを組み合わせてネットワークの動的交通流を計算するものです．
+これは，都市規模のような大局的な自動車交通を再現する交通シミュレーションであり，交通工学分野で標準的なモデルにより道路ネットワークの動的交通流を計算するものです．
 
-- Newellの単純追従モデル（Xモデル）
-- Lagrange版Incremental Node Model
-- Dynamic User Optimum型経路選択モデル（慣性付き）
+ドキュメントは今後追加予定です．
+まずは以下を確認ください．
+
+- 仕組みの概要：[arXivプレプリント](https://arxiv.org/abs/2309.17114)
+- 簡単な使用例：[Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)
 
 なお，UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosXを大幅に拡張したものです．
 基本動作原理は同じですので，詳細は当該書籍を参照ください．
 
-ドキュメントは今後追加予定です．
-
 ## 主な機能
 
 - ネットワーク構造と時間帯別OD需要が与えられているときに，動的なネットワーク交通流を計算
+- 具体的な交通モデル名
+	- Newellの単純追従モデル（Xモデル）
+	- Lagrange版Incremental Node Model
+	- Dynamic User Optimum型経路選択モデル（慣性付き）
 - 信号交差点，流入制御，経路誘導，混雑課金などの交通マネジメントの組み込み
 - 計算結果の各種分析（トリップ完了数，総旅行時間，遅れ時間など）と，そのpandas.DataFrameやCSVへのエクスポート
 - 計算結果の可視化（時空間図，MFD，ネットワーク状況アニメーションなど）
 
 ## 使用法
 
+使用するには，各自の作業用ディレクトリにファイル`uxsim.py`とディレクトリ`utils`を置き，そこに自分のPythonコードやJupyter Notebookを配置して`from uxsim import *`してください．
 [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)に基本的な使用法と機能をまとめています．
-
-使用するには，ファイル`uxsim.py`とディレクトリ`utils`と同じフォルダに自分のPythonコードやJupyter Notebookを配置し，`from uxsim import *`してください．
 詳細はディレクトリ`demos_and_examples`内の具体例を参照ください．
 
 モジュールとしての整備は今後対応予定です．
