@@ -41,7 +41,7 @@ class Node:
         signal : list of int, optional
             A list representing the signal at the node. Default is [0], representing no signal.
             If a signal is present, the list contains the green times for each group.
-            For example, `signal=[60, 10, 50, 5]` means that this signal has 4 phases, and green time for the 1st group is 60 s.
+            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.
         
         Attributes
         ----------
@@ -1434,7 +1434,38 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0):
-        #ネットワーク全体の交通状況．pillowを使った高速な可視化
+        """
+        Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.
+
+        Parameters
+        ----------
+        t : float, optional
+            The current time for which the traffic conditions are visualized.
+        detailed : int, optional
+            Determines the level of detail in the visualization. 
+            If set to 1, the link internals (cell) are displayed in detail. 
+            If set to 0, the visualization is simplified to link-level. Default is 1.
+        minwidth : float, optional
+            The minimum width of the link visualization. Default is 0.5.
+        maxwidth : float, optional
+            The maximum width of the link visualization. Default is 12.
+        left_handed : int, optional
+            If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.
+        tmp_anim : int, optional
+            If set to 1, the visualization will be saved as a temporary animation frame. Default is 0.
+        figsize : tuple of int, optional
+            The size of the figure to be plotted. Default is (6, 6).
+        network_font_size : int, optional
+            The font size for the network labels. Default is 4.
+        node_size : int, optional
+            The size of the nodes in the visualization. Default is 2.
+
+        Notes
+        -----
+        This method visualizes the entire transportation network and its current traffic conditions.
+        The visualization provides information on vehicle density, velocity, link names, node locations, and more.
+        The plots are saved to the directory `out<W.name>` with filenames depending on the `detailed` and `t` parameters.
+        """
 
         maxx = max([n.x for n in s.W.NODES])
         minx = min([n.x for n in s.W.NODES])
@@ -2075,23 +2106,8 @@ class World:
             The y-coordinate of the node (for visualization purposes).
         signal : list of int, optional
             A list representing the signal at the node. Default is [0], representing no signal.
-            If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, ...].
-        inlinks : dict
-            A dictionary holding the incoming links to the node.
-        outlinks : dict
-            A dictionary holding the outgoing links from the node.
-        incoming_vehicles : list
-            A list holding the vehicles that are incoming to the node.
-        generation_queue : deque
-            A queue holding the generated vehicles waiting to enter the network via this node.
-        signal_phase : int
-            The current phase of the signal.
-        signal_t : int
-            The current time of the signal.
-        id : int
-            The unique identifier of the node.
-        name : str
-            The name of the node.
+            If a signal is present, the list contains the green times for each group.
+            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.
         
         Returns
         -------
@@ -2112,30 +2128,27 @@ class World:
         Parameters
         ----------
         name : str
-            The name of the node.
-        x : float
-            The x-coordinate of the node (for visualization purposes).
-        y : float
-            The y-coordinate of the node (for visualization purposes).
-        signal : list of int, optional
-            A list representing the signal at the node. Default is [0], representing no signal.
-            If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, ...].
-        inlinks : dict
-            A dictionary holding the incoming links to the node.
-        outlinks : dict
-            A dictionary holding the outgoing links from the node.
-        incoming_vehicles : list
-            A list holding the vehicles that are incoming to the node.
-        generation_queue : deque
-            A queue holding the generated vehicles waiting to enter the network via this node.
-        signal_phase : int
-            The current phase of the signal.
-        signal_t : int
-            The current time of the signal.
-        id : int
-            The unique identifier of the node.
-        name : str
-            The name of the node.
+            The name of the link.
+        start_node : str | Node
+            The name or object of the start node of the link.
+        end_node : str | Node
+            The name or object of the end node of the link.
+        length : float
+            The length of the link.
+        free_flow_speed : float
+            The free flow speed on the link.
+        jam_density : float
+            The jam density on the link.
+        merge_priority : float, optional
+            The priority of the link when merging at the downstream node, default is 1.
+        signal_group : int, optional
+            The signal group to which the link belongs, default is 0.
+        capacity_out : float, optional
+            The capacity out of the link, default is calculated based on other parameters.
+        capacity_in : float, optional
+            The capacity into the link, default is calculated based on other parameters.
+        eular_dx : float, optional
+            The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
         
         Returns
         -------
@@ -2155,9 +2168,9 @@ class World:
         
         Parameters
         ----------
-        orig : str
+        orig : str | Node
             The origin node.
-        dest : str
+        dest : str | Node
             The destination node.
         departure_time : int
             The departure time of the vehicle.
@@ -2192,10 +2205,10 @@ class World:
 
         Parameters
         ----------
-        orig : str
-            The name of the origin node.
-        dest : str
-            The name of the destination node.
+        orig : str | Node
+            The name or object of the origin node.
+        dest : str | Node
+            The name or object of the destination node.
         t_start : float
             The start time for the demand in seconds.
         t_end : float
