@@ -52,13 +52,12 @@ Pythonのバージョン3を用います．
 ## 計算例
 
 10km x 10kmのグリッドネットワーク内を2時間で約6万台が通行する様子．計算時間は通常のデスクトップPCで約40秒．
-リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）：
 
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400">
-
-一部車両の軌跡：
-
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400">
+リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）と一部車両の軌跡：
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
+</p>
 
 上記ネットワークのある回廊上の車両軌跡図：
 
