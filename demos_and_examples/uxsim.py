@@ -1,3 +1,7 @@
+"""
+Macroscopic/mesoscopic traffic flow simulator in a network.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import random, copy, glob, os, csv, time
@@ -17,13 +21,17 @@ plt.rcParams["font.family"] = "monospace"
 
 # ノードクラス
 class Node:
+    """
+    Node in a network.
+    """
     def __init__(s, W, name, x, y, signal=[0]):
-        """Create a node
+        """
+        Create a node
         
         Parameters
         ----------
         W : object
-            The network to which the node belongs.
+            The world to which the node belongs.
         name : str
             The name of the node.
         x : float
@@ -32,7 +40,15 @@ class Node:
             The y-coordinate of the node (for visualization purposes).
         signal : list of int, optional
             A list representing the signal at the node. Default is [0], representing no signal.
-            If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, ...].
+            If a signal is present, the list contains the green times for each group.
+            For example, `signal=[60, 10, 50, 5]` means that this signal has 4 phases, and green time for the 1st group is 60 s.
+        
+        Attributes
+        ----------
+        signal_phase : int
+            The phase of current signal. Links with the same `signal_group` have a green signal.
+        signal_t : float
+            The elapsed time since the current signal phase started. When it is larger than `Link.signal[Link.signal_phase]`, the phase changes to the next one.
         """
         
         s.W = W
@@ -65,6 +81,9 @@ class Node:
         return f"<Node {s.name}>"
     
     def signal_control(s):
+        """
+        Updates the signal timings for a traffic signal node.
+        """
         if s.signal_t > s.signal[s.signal_phase]:
             s.signal_phase += 1
             s.signal_t = 0
@@ -73,7 +92,14 @@ class Node:
         s.signal_t += s.W.DELTAT
     
     def generate(s):
-        #出発待ち行列から出発
+        """
+        Departs vehicles from the waiting queue.
+
+        Notes
+        -----
+        If there are vehicles in the generation queue of the node, this method attempts to depart a vehicle to one of the outgoing links.
+        The choice of the outgoing link is based on the vehicle's route preference for each link. Once a vehicle is departed, it is removed from the generation queue, added to the list of vehicles on the chosen link, and its state is set to "run".
+        """
         if len(s.generation_queue) > 0:
             veh = s.generation_queue[0]
             outlinks = list(s.outlinks.values())
@@ -107,7 +133,17 @@ class Node:
                     outlink.capacity_in_remain -= s.W.DELTAN
     
     def transfer(s):
-        #リンク間遷移
+        """
+        Transfers vehicles between links at the node.
+
+        Notes
+        -----
+        This method handles the transfer of vehicles from one link to another at the node.
+        A vehicle is eligible for transfer if:
+        - The next link it intends to move to has space.
+        - The vehicle has the right signal phase to proceed.
+        - The current link has enough capacity to allow the vehicle to exit.
+        """
         for outlink in {veh.route_next_link for veh in s.incoming_vehicles if veh.route_next_link != None}:
             if (len(outlink.vehicles) == 0 or outlink.vehicles[-1].x > outlink.delta*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
                 #受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択
@@ -160,12 +196,19 @@ class Node:
         s.incoming_vehicles = []
     
     def update(s):
+        """
+        Make necessary updates when the timestep is incremented.
+        """
         s.signal_control()
 
 # リンククラス
 class Link:
+    """
+    Link in a network.
+    """
     def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None):
-        """Create a link
+        """
+        Create a link
         
         Parameters
         ----------
@@ -183,8 +226,8 @@ class Link:
             The free flow speed on the link.
         jam_density : float
             The jam density on the link.
-        merge_priority : int, optional
-            The priority of the link when merging, default is 1.
+        merge_priority : float, optional
+            The priority of the link when merging at the downstream node, default is 1.
         signal_group : int, optional
             The signal group to which the link belongs, default is 0.
         capacity_out : float, optional
@@ -194,10 +237,34 @@ class Link:
         eular_dx : float, optional
             The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
         
+        Attributes
+        ----------
+        speed : float
+            Average speed of traffic on the link.
+        density : float
+            Density of traffic on the link.
+        flow : float
+            Flow of traffic on the link.
+        num_vehicles : float
+            Number of vehicles on the link.
+        num_vehicles_queue : float
+            Number of slow vehicles (due to congestion) on the link.
+        free_flow_speed : float
+            Free flow speed of the link.
+        jam_density : float
+            Jam density of the link.
+        capacity_out : float
+            Capacity for outflow from the link.
+        capacity_in : float
+            Capacity for inflow to the link.
+        merge_priority : float
+            The priority of the link when merging at the downstream node.
+        
         Notes
         -----
         The `capacity_out` and `capacity_in` parameters are used to set the capacities, and if not provided, they are calculated based on other parameters.
         Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
+        Some of the traffic flow model parameters can be altered during simulation by changing `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority`.
         """
         
         s.W = W
@@ -278,7 +345,9 @@ class Link:
         return f"<Link {s.name}>"
     
     def init_after_tmax_fix(s):
-        #TMAXを決めた後の初期化
+        """
+        Initalization before simulation execution.
+        """
         
         #Euler型交通状態
         s.edie_dt = s.W.EULAR_DT
@@ -291,7 +360,9 @@ class Link:
         s.an = s.edie_dt*s.edie_dx
     
     def update(s):
-        #更新
+        """
+        Make necessary updates when the timestep is incremented.
+        """
         s.in_out_flow_constraint()
         
         s.set_traveltime_instant()
@@ -312,6 +383,9 @@ class Link:
         s._num_vehicles_queue = -1
     
     def in_out_flow_constraint(s):
+        """
+        Link capacity updates.
+        """
         #リンク流入出率を流出容量以下にするための処理
         if s.capacity_out_remain < s.W.DELTAN:
             s.capacity_out_remain += s.capacity_out*s.W.DELTAT
@@ -319,7 +393,9 @@ class Link:
             s.capacity_in_remain += s.capacity_in*s.W.DELTAT
     
     def set_traveltime_instant(s):
-        #瞬間旅行時間算出
+        """
+        Compute instantanious travel time.
+        """
         if s.speed > 0:
             s.traveltime_instant.append(s.length/s.speed)
         else:
@@ -390,13 +466,17 @@ class Link:
 
 # 車両クラス
 class Vehicle:
+    """
+    Vehicle or platoon in a network.
+    """
     def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0):
-        """Create a vehicle (more precisely, platoon)
+        """
+        Create a vehicle (more precisely, platoon)
         
         Parameters
         ----------
         W : object
-            The network to which the vehicle belongs.
+            The world to which the vehicle belongs.
         orig : str
             The origin node.
         dest : str
@@ -488,7 +568,18 @@ class Vehicle:
         return f"<Vehicle {s.name}: {s.state}, x={s.x}, link={s.link}>"
 
     def update(s):
-        #更新
+        """
+        Updates the vehicle's state and position.
+
+        Notes
+        -----
+        This method updates the state and position of the vehicle based on its current situation.
+        
+        - If the vehicle is at "home", it checks if the current time matches its departure time. If so, the vehicle's state is set to "wait" and it is added to the generation queue of its origin node.
+        - If the vehicle is in the "wait" state, it remains waiting at its departure node.
+        - If the vehicle is in the "run" state, it updates its speed and position. If the vehicle reaches the end of its current link, it either ends its trip if it has reached its destination, or requests a transfer to the next link.
+        - If the vehicle's state is "end" or "abort", no further actions are taken.
+        """
         s.record_log()
         
         if s.state == "home":
@@ -523,7 +614,9 @@ class Vehicle:
             pass
     
     def end_trip(s):
-        #トリップ終了処理
+        """
+        Procedure when the vehicle finishes its trip.
+        """
         s.state = "end"
         
         s.link.cum_departure[-1] += s.W.DELTAN
@@ -548,7 +641,9 @@ class Vehicle:
         s.record_log()
     
     def carfollow(s):
-        #リンク内走行
+        """
+        Drive withing a link.
+        """
         s.x_next = s.x + s.link.u*s.W.DELTAT
         if s.leader != None:
             x_cong = s.leader.x - s.link.delta*s.W.DELTAN
@@ -562,7 +657,24 @@ class Vehicle:
             s.x_next = s.link.length
     
     def route_pref_update(s, weight):
-        #経路選択のためのリンク選好を更新
+        """
+        Updates the vehicle's link preferences for route choice.
+
+        Parameters
+        ----------
+        weight : float
+            The weight for updating the link preferences based on the recent travel time. 
+            Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated.
+
+        Notes
+        -----
+        This method updates the link preferences used by the vehicle to select its route based on its current understanding of the system.
+        
+        - If the vehicle's route choice principle is "homogeneous_DUO", it will update its preferences based on a global, homogenous dynamic user optimization (DUO) model.
+        - If the route choice principle is "heterogeneous_DUO", it will update its preferences based on a heterogeneous DUO model, considering both its past preferences and the system's current state.
+        
+        The updated preferences guide the vehicle's decisions in subsequent route choices.
+        """
         if s.route_choice_principle == "homogeneous_DUO":
             s.route_pref = s.W.ROUTECHOICE.route_pref[s.dest.id]
         elif s.route_choice_principle == "heterogeneous_DUO":
@@ -581,7 +693,9 @@ class Vehicle:
                 s.route_pref[l] = (1-weight)*s.route_pref[l] + weight*route_pref_new[l]
     
     def route_next_link_choice(s):
-        #現在のリンクから次に移るリンクを選択
+        """
+        Select a next link from the current link.
+        """
         if s.dest != s.link.end_node:
             outlinks = list(s.link.end_node.outlinks.values())
             
@@ -601,7 +715,9 @@ class Vehicle:
                 s.route_next_link = None
     
     def record_log(s):
-        #走行履歴保存
+        """
+        Record travel logs.
+        """
         if s.state != "run":
             s.log_t.append(s.W.T*s.W.DELTAT)
             s.log_state.append(s.state)
@@ -629,9 +745,19 @@ class Vehicle:
 
 # 経路選択クラス
 class RouteChoice:
-    """class for computing shortest path for all vehicles"""
+    """
+    Class for computing shortest path for all vehicles.
+    """
     
     def __init__(s, W):
+        """
+        Create route choice computation object.
+        
+        Parameters
+        ----------
+        W : object
+            The world to which this belongs.
+        """
         s.W = W
         #リンク旅行時間行列
         s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)]) 
@@ -646,7 +772,16 @@ class RouteChoice:
         s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES}
     
     def route_search_all(s, infty=np.inf, noise=0):
-        #現時刻の最短経路を計算．scipy版
+        """
+        Compute the current shortest path based on instantanious travel time.
+        
+        Parameters
+        ----------
+        infty : float
+            value representing infinity.
+        noise : float
+            very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
+        """
         for link in s.W.LINKS:
             i = link.start_node.id
             j = link.end_node.id
@@ -663,7 +798,7 @@ class RouteChoice:
         s.next = -np.ones((n_vertices, n_vertices), dtype=int)
         for i in range(n_vertices):
             for j in range(n_vertices):
-                # iからjへの最短経路を逆にたどる．．．
+                # iからjへの最短経路を逆にたどる．．． -> todo: 起終点を逆にした最短経路探索にすればよい
                 if i != j:
                     prev = j
                     while s.pred[i, prev] != i and s.pred[i, prev] != -9999:
@@ -671,7 +806,16 @@ class RouteChoice:
                     s.next[i, j] = prev
     
     def route_search_all_old(s, infty=9999999999999999999, noise=0):
-        #現時刻の最短経路を計算．自家版．さすがに大規模ネットワークでは少し遅い
+        """
+        Compute the current shortest path based on instantanious travel time. Old version, slow for large networks.
+        
+        Parameters
+        ----------
+        infty : float
+            value representing infinity.
+        noise : float
+            very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
+        """
         for link in s.W.LINKS:
             i = link.start_node.id
             j = link.end_node.id
@@ -704,27 +848,10 @@ class RouteChoice:
         s.dist = dist
         s.next = next
     
-    def homogeneous_DUO_update_old(s):
-        #全員が同一の基準に従うDUOの場合，一括で計算する
-        for dest in s.W.NODES:
-            k = dest.id
-            route_pref_new = {l:0 for l in s.W.LINKS}
-            for l in s.W.LINKS:
-                i = l.start_node.id
-                j = l.end_node.id
-                if j == s.W.ROUTECHOICE.next[i,k]:
-                    route_pref_new[l] = 1
-            
-            weight = s.W.DUO_UPDATE_WEIGHT
-            if sum(list(s.route_pref[k].values())) == 0:
-                #最初にpreferenceが空なら確定的に初期化
-                weight = 1
-            for l in s.route_pref[k].keys():
-                s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight*route_pref_new[l]
-
-    
     def homogeneous_DUO_update(s):
-        #全員が同一の基準に従うDUOの場合，一括で計算する
+        """
+        Update link preference of all homogeneous travelers based on DUO principle.
+        """
         for dest in s.W.NODES:
             k = dest.id
             weight = s.W.DUO_UPDATE_WEIGHT
@@ -741,9 +868,19 @@ class RouteChoice:
 
 # 結果分析クラス
 class Analyzer:
-    """class for analyzing and visualizing a simulation result"""
+    """
+    Class for analyzing and visualizing a simulation result.
+    """
     
     def __init__(s, W):
+        """
+        Create result analysis object.
+        
+        Parameters
+        ----------
+        W : object
+            The world to which this belongs.
+        """
         s.W = W
         
         os.makedirs(f"out{s.W.name}", exist_ok=True)
@@ -763,7 +900,9 @@ class Analyzer:
         s.flag_od_analysis = 0
     
     def basic_analysis(s):
-        #基礎統計量の計算
+        """
+        Analyze basic stats.
+        """
         df = s.W.analyzer.od_to_pandas()
         
         s.trip_completed = np.sum(df["completed_trips"])
@@ -782,8 +921,9 @@ class Analyzer:
 
     
     def od_analysis(s):
-        #OD別の分析
-        #トリップ数，トリップ完了数，自由旅行時間，平均旅行時間，標準偏差
+        """
+        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std
+        """
         if s.flag_od_analysis:
             return 0
         else:
@@ -823,8 +963,9 @@ class Analyzer:
             s.od_tt_free[o,d] = dist[o.id, d.id]
     
     def link_analysis_coarse(s):
-        #リンクレベルの粗い分析
-        #交通量，取り残し車両数，自由旅行時間，平均旅行時間，標準偏差
+        """
+        Analyze link-level coarse stats: traffic volume, remaining vehicles, free-flow travel time, average travel time, its std.
+        """
         s.linkc_volume = ddict(lambda:0)
         s.linkc_tt_free = ddict(lambda:0)
         s.linkc_tt_ave = ddict(lambda:-1)
@@ -840,7 +981,9 @@ class Analyzer:
                 s.linkc_tt_std[l] = np.std([t for t in l.traveltime_actual if t>0])
     
     def compute_accurate_traj(s):
-        #リンク端部の車両軌跡を補ったより正確な軌跡を生成する．端部は自由流走行と仮定
+        """
+        Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories. It is assumed that vehicles are in free-flow travel at the end of the link. 
+        """
         if s.flag_trajectory_computed:
             return 0
         else:
@@ -877,7 +1020,9 @@ class Analyzer:
                             l.tss[i].append(l.tss[i][-1]+x_remain/l.u)
 
     def compute_edie_state(s):
-        #Euler型交通状態計算．精緻版
+        """
+        Compute Edie's traffic state for each link.
+        """
         if s.flag_edie_state_computed:
             return 0
         else:
@@ -960,7 +1105,9 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def print_simple_stats(s):
-        #簡単な結果表示
+        """
+        Prints basic statistics of simulation result.
+        """
         
         s.W.print("results:")
         s.W.print(f" average speed:\t {s.average_speed:.1f} m/s")
@@ -972,7 +1119,8 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def time_space_diagram_traj(s, links=None, figsize=(12,4)):
-        """Draws the time-space diagram of vehicle trajectories for vehicles on specified links.
+        """
+        Draws the time-space diagram of vehicle trajectories for vehicles on specified links.
 
         Parameters
         ----------
@@ -1019,7 +1167,8 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def time_space_diagram_density(s, links=None, figsize=(12,4)):
-        """Draws the time-space diagram of traffic density on specified links.
+        """
+        Draws the time-space diagram of traffic density on specified links.
 
         Parameters
         ----------
@@ -1070,7 +1219,8 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def time_space_diagram_traj_links(s, linkslist, figsize=(12,4)):
-        """Draws the time-space diagram of vehicle trajectories for vehicles on concective links.
+        """
+        Draws the time-space diagram of vehicle trajectories for vehicles on concective links.
 
         Parameters
         ----------
@@ -1124,7 +1274,22 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def cumulative_curves(s, links=None, figsize=(6,4)):
-        #累積図と旅行時間
+        """
+        Plots the cumulative curves and travel times for the provided links.
+
+        Parameters
+        ----------
+        links : list or object, optional
+            A list of links or a single link for which the cumulative curves and travel times are to be plotted.
+            If not provided, the cumulative curves and travel times for all the links in the network will be plotted.
+        figsize : tuple of int, optional
+            The size of the figure to be plotted. Default is (6, 4).
+
+        Notes
+        -----
+        This method plots the cumulative curves for vehicle arrivals and departures, as well as the instantaneous and actual travel times.
+        The plots are saved to the directory `out<W.name>` with the filename format `cumulative_curves_<link.name>.png`.
+        """
         
         #対象がlistであればOKで，単一な場合にはlistに変換する．未指定であれば全部にする．
         if links == None:
@@ -1168,8 +1333,38 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def network(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=4, node_size=2):
-        #ネットワーク全体の交通状況
-        #detailed=1の時，リンク内部を詳細に描画，0の時簡略化
+        """
+        Visualizes the entire transportation network and its current traffic conditions.
+
+        Parameters
+        ----------
+        t : float, optional
+            The current time for which the traffic conditions are visualized.
+        detailed : int, optional
+            Determines the level of detail in the visualization. 
+            If set to 1, the link internals (cell) are displayed in detail. 
+            If set to 0, the visualization is simplified to link-level. Default is 1.
+        minwidth : float, optional
+            The minimum width of the link visualization. Default is 0.5.
+        maxwidth : float, optional
+            The maximum width of the link visualization. Default is 12.
+        left_handed : int, optional
+            If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.
+        tmp_anim : int, optional
+            If set to 1, the visualization will be saved as a temporary animation frame. Default is 0.
+        figsize : tuple of int, optional
+            The size of the figure to be plotted. Default is (6, 6).
+        network_font_size : int, optional
+            The font size for the network labels. Default is 4.
+        node_size : int, optional
+            The size of the nodes in the visualization. Default is 2.
+
+        Notes
+        -----
+        This method visualizes the entire transportation network and its current traffic conditions.
+        The visualization provides information on vehicle density, velocity, link names, node locations, and more.
+        The plots are saved to the directory `out<W.name>` with filenames depending on the `detailed` and `t` parameters.
+        """
         s.compute_edie_state()
         
         plt.figure(figsize=figsize)
@@ -1307,7 +1502,9 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def show_simulation_progress(s):
-        #シミュレーション途中経過を表示する
+        """
+        Print simulation progress.
+        """
         
         vehs = [l.density*l.length for l in s.W.LINKS]
         sum_vehs = sum(vehs)
@@ -1322,7 +1519,40 @@ class Analyzer:
         
     @catch_exceptions_and_warn()
     def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20):
-        #ネットワーク全体の交通状況のアニメーション
+        """
+        Generates an animation of the entire transportation network and its traffic states over time.
+
+        Parameters
+        ----------
+        animation_speed_inverse : int, optional
+            The inverse of the animation speed. A higher value will result in a slower animation. Default is 10.
+        detailed : int, optional
+            Determines the level of detail in the animation. 
+            If set to 1, the link internals (cell) are displayed in detail. 
+            Under some conditions, the detailed mode will produce inappropriate visualization.
+            If set to 0, the visualization is simplified to link-level. Default is 0.
+        minwidth : float, optional
+            The minimum width of the link visualization in the animation. Default is 0.5.
+        maxwidth : float, optional
+            The maximum width of the link visualization in the animation. Default is 12.
+        left_handed : int, optional
+            If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.
+        figsize : tuple of int, optional
+            The size of the figures in the animation. Default is (6, 6).
+        node_size : int, optional
+            The size of the nodes in the animation. Default is 2.
+        network_font_size : int, optional
+            The font size for the network labels in the animation. Default is 20.
+
+        Notes
+        -----
+        This method generates an animation visualizing the entire transportation network and its traffic conditions over time.
+        The animation provides information on vehicle density, velocity, link names, node locations, and more.
+        The generated animation is saved to the directory `out<W.name>` with a filename based on the `detailed` parameter.
+        
+        Temporary images used to create the animation are removed after the animation is generated.
+        If the `save_mode` attribute of the network is set to True, the animation will be saved.
+        """
         if s.W.save_mode:
             s.W.print(" generating animation...")
             pics = []
@@ -1340,7 +1570,35 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def network_fancy(s, animation_speed_inverse=10, figsize=6, sample_ratio=0.3, interval=5, network_font_size=0, trace_length=3, speed_coef=2):
-        #ネットワーク全体の車両軌跡をいい感じにアニメーション
+        """
+        Generates a visually appealing animation of vehicles' trajectories across the entire transportation network over time.
+
+        Parameters
+        ----------
+        animation_speed_inverse : int, optional
+            The inverse of the animation speed. A higher value will result in a slower animation. Default is 10.
+        figsize : int or tuple of int, optional
+            The size of the figures in the animation. Default is 6.
+        sample_ratio : float, optional
+            The fraction of vehicles to be visualized. Default is 0.3.
+        interval : int, optional
+            The interval at which vehicle positions are sampled. Default is 5.
+        network_font_size : int, optional
+            The font size for the network labels in the animation. Default is 0.
+        trace_length : int, optional
+            The length of the vehicles' trajectory trails in the animation. Default is 3.
+        speed_coef : int, optional
+            A coefficient that adjusts the animation speed. Default is 2.
+
+        Notes
+        -----
+        This method generates a visually appealing animation that visualizes vehicles' trajectories across the transportation network over time.
+        The animation provides information on vehicle positions, speeds, link names, node locations, and more, with Bezier curves used for smooth transitions.
+        The generated animation is saved to the directory `out<W.name>` with a filename `anim_network_fancy.gif`.
+        
+        Temporary images used to create the animation are removed after the animation is generated.
+        """
+        
         s.W.print(" generating animation...")
         
         # ベジエ補間
@@ -1470,6 +1728,9 @@ class Analyzer:
             os.remove(f)
     
     def compute_mfd(s, links=None):
+        """
+        Compute network average flow and density for MFD.
+        """
         s.compute_edie_state()
         if links == None:
             links = s.W.LINKS
@@ -1482,8 +1743,31 @@ class Analyzer:
             s.W.Q_AREA[i] = dn/an
     
     @catch_exceptions_and_warn()
-    def macroscopic_fundamental_diagram(s, kappa=0.2, qmax=1, links=None, figsize=(4,4)):
-        #MFDの描画
+    def macroscopic_fundamental_diagram(s, kappa=0.2, qmax=1, links=None, fname="", figsize=(4,4)):
+        """
+        Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.
+
+        Parameters
+        ----------
+        kappa : float, optional
+            The maximum network average density for the x-axis of the MFD plot. Default is 0.2.
+        qmax : float, optional
+            The maximum network average flow for the y-axis of the MFD plot. Default is 1.
+        links : list or object, optional
+            A list of links or a single link for which the MFD is to be plotted.
+            If not provided, the MFD for all the links in the network will be plotted.
+        fname : str
+            File name for saving (postfix). Default is "".
+        figsize : tuple of int, optional
+            The size of the figure to be plotted. Default is (4, 4).
+
+        Notes
+        -----
+        This method plots the Macroscopic Fundamental Diagram (MFD) for the provided links.
+        The MFD provides a relationship between the network average density and the network average flow.
+        The plot is saved to the directory `out<W.name>` with the filename `mfd<fname>.png`.
+        """
+        
         if links == None:
             links = s.W.LINKS
         s.compute_mfd(links)
@@ -1498,7 +1782,7 @@ class Analyzer:
         plt.grid()        
         plt.tight_layout()
         if s.W.save_mode:
-            plt.savefig(f"out{s.W.name}/mfd.png")
+            plt.savefig(f"out{s.W.name}/mfd{fname}.png")
         if s.W.show_mode:
             plt.show()
         else:
@@ -1506,7 +1790,20 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def plot_vehicle_log(s, vehname):
-        #車両1台の走行リンクと速度をプロット
+        """
+        Plots the driving link and speed for a single vehicle.
+
+        Parameters
+        ----------
+        vehname : str
+            The name of the vehicle for which the driving link and speed are to be plotted.
+
+        Notes
+        -----
+        This method visualizes the speed profile and the links traversed by a specific vehicle over time.
+        The speed is plotted on the primary y-axis, and the links are plotted on the secondary y-axis.
+        The plot is saved to the directory `out<W.name>` with the filename `vehicle_<vehname>.png`.
+        """
         veh = s.W.VEHICLES[vehname]
 
         fig, ax1 = plt.subplots()
@@ -1531,12 +1828,25 @@ class Analyzer:
         else:
             plt.close("all")
     
-    def log_vehicles_to_pandas(s):
-        #車両走行ログをpandas.DataFrameに変換して返す
-        return s.vehicles_to_pandas()
     
     def vehicles_to_pandas(s):
-        #車両走行ログをpandas.DataFrameに変換して返す．名称変更
+        """
+        Converts the vehicle travel logs to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing the travel logs of vehicles, with the columns:
+            - 'name': the name of the vehicle (platoon).
+            - 'dn': the platoon size.
+            - 'orig': the origin node of the vehicle's trip.
+            - 'dest': the destination node of the vehicle's trip.
+            - 't': the timestep.
+            - 'link': the link the vehicle is on (or relevant status).
+            - 'x': the position of the vehicle on the link.
+            - 's': the spacing of the vehicle.
+            - 'v': the speed of the vehicle.
+        """
         if s.flag_pandas_convert == 0:
             s.flag_pandas_convert = 1
             
@@ -1555,15 +1865,34 @@ class Analyzer:
             s.df_vehicles = pd.DataFrame(out[1:], columns=out[0])
         return s.df_vehicles
     
+    def log_vehicles_to_pandas(s):
+        """
+        same to `vehicles_to_pandas`, just for backward compatibility
+        """
+        return s.vehicles_to_pandas()
+    
     def basic_to_pandas(s):
-        #基礎情報をdfに変換して返す
+        """
+        Converts the basic stats to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+        """
         out = [["total_trips", "completed_trips", "total_travel_time", "average_travel_time", "total_delay", "average_delay"], [s.trip_all, s.trip_completed, s.total_travel_time, s.average_travel_time, s.total_delay, s.average_delay]]
         
         s.df_basic = pd.DataFrame(out[1:], columns=out[0])
         return s.df_basic
     
     def od_to_pandas(s):
-        #OD別分析をdfに変換して返す
+        """
+        Converts the OD-specific analysis results to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+        """
+        
         s.od_analysis()
         
         out = [["orig", "dest", "total_trips", "completed_trips", "free_travel_time", "average_travel_time", "stddiv_travel_time"]]
@@ -1574,7 +1903,13 @@ class Analyzer:
         return s.df_od
         
     def mfd_to_pandas(s, links=None):
-        #エリア流率・密度をdfに変換して返す
+        """
+        Converts the MFD to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+        """
         s.compute_mfd(links)
         
         out = [["t", "network_k", "network_q"]]
@@ -1584,7 +1919,13 @@ class Analyzer:
         return s.df_mfd
     
     def link_to_pandas(s):
-        #リンク粗情報をdfに変換して返す
+        """
+        Converts the link-level analysis results to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+        """
         s.link_analysis_coarse()
         
         out = [["link", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time"]]
@@ -1594,7 +1935,13 @@ class Analyzer:
         return s.df_linkc
     
     def link_traffic_state_to_pandas(s):
-        #リンクの時空間交通状態をdfに変換して返す
+        """
+        Converts the traffic states in links to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+        """
         s.compute_edie_state()
         
         out = [["link", "t", "x", "delta_t", "delta_x", "q", "k", "v"]]
@@ -1607,7 +1954,9 @@ class Analyzer:
     
     @catch_exceptions_and_warn()
     def output_data(s, fname=None):
-        #車両走行ログをCSVとして保存する
+        """
+        Save all results to CSV files
+        """
         if fname == None:
             fname = f"out{s.W.name}/data"
         s.basic_to_pandas().to_csv(fname+"_basic.csv", index=False)
@@ -1619,10 +1968,13 @@ class Analyzer:
 
 
 class World:
-    """network simulation environment (i.e., world)"""
+    """
+    World (i.e., simulation environment). A World object is consistently referred to as `W` in this code. 
+    """
     
     def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", show_progress=1, show_progress_deltat=600, tmax=None):
-        """Create a world.
+        """
+        Create a World.
 
         Parameters
         ----------
@@ -1710,7 +2062,8 @@ class World:
         
     
     def addNode(W, *args, **kwargs):
-        """add a node to world
+        """
+        add a node to world
         
         Parameters
         ----------
@@ -1753,7 +2106,8 @@ class World:
         return Node(W, *args, **kwargs)
         
     def addLink(W, *args, **kwargs):
-        """add a link to world
+        """
+        add a link to world
         
         Parameters
         ----------
@@ -1796,7 +2150,8 @@ class World:
         return Link(W, *args, **kwargs)
         
     def addVehicle(W, *args, **kwargs):
-        """add a vehicle to world
+        """
+        add a vehicle to world
         
         Parameters
         ----------
@@ -1832,7 +2187,8 @@ class World:
         return Vehicle(W, *args, **kwargs)
     
     def adddemand(W, orig, dest, t_start, t_end, flow):
-        """Generate vehicles by specifying time-dependent origin-destination demand.
+        """
+        Generate vehicles by specifying time-dependent origin-destination demand.
 
         Parameters
         ----------
@@ -1858,8 +2214,18 @@ class World:
                 f -= W.DELTAN
                 
     def finalize_scenario(W, tmax=None):
-        
-        #シミュレーション時間の決定
+        """
+        Finalizes the settings and preparations for the simulation scenario execution.
+
+        Parameters
+        ----------
+        tmax : float, optional
+            The maximum simulation time. If not provided, it will be determined based on the departure times of the vehicles.
+
+        Notes
+        -----
+        This function automatically called by `exec_simulation()` if it has not been called manually.
+        """
         if W.TMAX == None:
             if tmax == None:
                 tmax = 0
@@ -1915,7 +2281,8 @@ class World:
         W.print("simulating...")
     
     def exec_simulation(W, until_t=None, duration_t=None):
-        """Execute the main loop of the simulation.
+        """
+        Execute the main loop of the simulation.
 
         Parameters
         ----------
@@ -2008,7 +2375,8 @@ class World:
         return 0 #まだ終わってない
     
     def check_simulation_ongoing(W):
-        """Check whether the simulation is has not reached its final time.
+        """
+        Check whether the simulation is has not reached its final time.
         
         Returns
         -------
@@ -2021,7 +2389,9 @@ class World:
         return W.T < W.TSIZE-1
     
     def simulation_terminated(W):
-        """postprocessing after simulation finished"""
+        """
+        Postprocessing after simulation finished
+        """
         W.print(" simulation finished")
         W.analyzer.basic_analysis()
     
@@ -2047,7 +2417,8 @@ class World:
         raise Exception(f"'{node}' is not Node")
     
     def get_link(W, link):
-        """Get a Link instance by name or object.
+        """
+        Get a Link instance by name or object.
 
         Parameters
         ----------
@@ -2079,7 +2450,8 @@ class World:
     #            f -= W.DELTAN
     
     def load_scenario_from_csv(W, fname_node, fname_link, fname_demand, tmax=None):
-        """Load a scenario from CSV files.
+        """
+        Load a scenario from CSV files.
 
         Parameters
         ----------
@@ -2100,7 +2472,8 @@ class World:
             W.TMAX = tmax
     
     def generate_Nodes_from_csv(W, fname):
-        """Generate nodes in the network from a CSV file.
+        """
+        Generate nodes in the network from a CSV file.
 
         Parameters
         ----------
@@ -2114,7 +2487,8 @@ class World:
                     W.addNode(r[0], float(r[1]), float(r[2]))
 
     def generate_Links_from_csv(W, fname):
-        """Generate links in the network from a CSV file.
+        """
+        Generate links in the network from a CSV file.
 
         Parameters
         ----------
@@ -2128,7 +2502,8 @@ class World:
                     W.addLink(r[0], r[1], r[2], length=float(r[3]), free_flow_speed=float(r[4]), jam_density=float(r[5]), merge_priority=float(r[6]))
                     
     def generate_demand_from_csv(W, fname):
-        """Generate demand in the network from a CSV file.
+        """
+        Generate demand in the network from a CSV file.
 
         Parameters
         ----------
@@ -2141,7 +2516,8 @@ class World:
                     W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]))
 
     def on_time(W, time):
-        """Check if the current time step is close to the specified time.
+        """
+        Check if the current time step is close to the specified time.
 
         Parameters
         ----------

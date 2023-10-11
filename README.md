@@ -5,25 +5,28 @@
 このリポジトリでは，Python製のオープンソース・フリーなマクロ・メソ交通流シミュレータUXsimを公開しています．
 これは，都市規模のような大局的な自動車交通を再現する交通シミュレーションであり，交通工学分野で標準的なモデルにより道路ネットワークの動的交通流を計算するものです．
 
-ドキュメントは今後追加予定です．
-まずは以下を確認ください．
+簡単な使用例を[Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)にまとめてあります．
 
-- 仕組みの概要：[arXivプレプリント](https://arxiv.org/abs/2309.17114)
-- 簡単な使用例：[Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)
-
-なお，UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosXを大幅に拡張したものです．
+UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosXを大幅に拡張したものです．
 基本動作原理は同じですので，詳細は当該書籍を参照ください．
 
 ## 主な機能
 
-- ネットワーク構造と時間帯別OD需要が与えられているときに，動的なネットワーク交通流を計算
-- 具体的な交通モデル名
+- ネットワーク構造と時間帯別OD需要が与えられているときに，動的なネットワーク交通流を計算（動的交通量配分）．具体的な交通モデルは以下の通り：
 	- Newellの単純追従モデル（Xモデル）
 	- Lagrange版Incremental Node Model
 	- Dynamic User Optimum型経路選択モデル（慣性付き）
 - 信号交差点，流入制御，経路誘導，混雑課金などの交通マネジメントの組み込み
 - 計算結果の各種分析（トリップ完了数，総旅行時間，遅れ時間など）と，そのpandas.DataFrameやCSVへのエクスポート
 - 計算結果の可視化（時空間図，MFD，ネットワーク状況アニメーションなど）
+
+## ファイル構成
+
+- `uxsim.py`：UXsim本体
+- `utils`ディレクトリ：UXsimに必要なファイル・汎用モジュールをまとめたもの
+- `dat`ディレクトリ：いくつかのシナリオファイル
+- `demos_and_examples`フォルダ：UXsimのチュートリアル・使用例集
+- `README.md`等その他：説明用ファイル群．シミュレーションには不要
 
 ## 使用法
 
@@ -49,13 +52,12 @@ Pythonのバージョン3を用います．
 ## 計算例
 
 10km x 10kmのグリッドネットワーク内を2時間で約6万台が通行する様子．計算時間は通常のデスクトップPCで約40秒．
-リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）：
 
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400">
-
-一部車両の軌跡：
-
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400">
+リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）と一部車両の軌跡：
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
+</p>
 
 上記ネットワークのある回廊上の車両軌跡図：
 
@@ -64,8 +66,12 @@ Pythonのバージョン3を用います．
 ## 内部の構造と計算フロー
 
 本シミュレータは純Python製であり，使用者が柔軟にカスタムして使用できます．
-概要を[arXivプレプリント](https://arxiv.org/abs/2309.17114)で説明しています．
-詳細は[書籍](https://www.coronasha.co.jp/np/isbn/9784339052794/)を参照してください．
+細部を以下の資料で説明しています．
+
+- 概要：[arXivプレプリント](https://arxiv.org/abs/2309.17114)
+- クラスや関数の詳細：[技術リファレンス](https://toruseo.jp/UXsim/docs/index.html)
+- 基づいている理論：[書籍](https://www.coronasha.co.jp/np/isbn/9784339052794/)
+
 大まかな構造と計算フローを以下に示します．
 
 ### クラス図
@@ -76,6 +82,7 @@ Pythonのバージョン3を用います．
 
 ### ある車両一台のアクティビティ図
 <img src="https://github.com/toruseo/UXsim/blob/images/activity_diagram_veh.png" width="400">
+
 
 ## 使用条件・ライセンス
 
