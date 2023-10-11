@@ -289,7 +289,29 @@ The generated animation is saved to the directory <cite>out&lt;W.name&gt;</cite>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Analyzer.network_pillow">
 <span class="sig-name descname"><span class="pre">network_pillow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_anim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.network_pillow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.network_pillow" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>float</em><em>, </em><em>optional</em>) – The current time for which the traffic conditions are visualized.</p></li>
+<li><p><strong>detailed</strong> (<em>int</em><em>, </em><em>optional</em>) – Determines the level of detail in the visualization.
+If set to 1, the link internals (cell) are displayed in detail.
+If set to 0, the visualization is simplified to link-level. Default is 1.</p></li>
+<li><p><strong>minwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum width of the link visualization. Default is 0.5.</p></li>
+<li><p><strong>maxwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum width of the link visualization. Default is 12.</p></li>
+<li><p><strong>left_handed</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.</p></li>
+<li><p><strong>tmp_anim</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the visualization will be saved as a temporary animation frame. Default is 0.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted. Default is (6, 6).</p></li>
+<li><p><strong>network_font_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The font size for the network labels. Default is 4.</p></li>
+<li><p><strong>node_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the nodes in the visualization. Default is 2.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method visualizes the entire transportation network and its current traffic conditions.
+The visualization provides information on vehicle density, velocity, link names, node locations, and more.
+The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with filenames depending on the <cite>detailed</cite> and <cite>t</cite> parameters.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Analyzer.od_analysis">
@@ -633,19 +655,17 @@ Should be in the range [0, 1], where 0 means the old preferences are fully retai
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the node.</p></li>
-<li><p><strong>x</strong> (<em>float</em>) – The x-coordinate of the node (for visualization purposes).</p></li>
-<li><p><strong>y</strong> (<em>float</em>) – The y-coordinate of the node (for visualization purposes).</p></li>
-<li><p><strong>signal</strong> (<em>list of int</em><em>, </em><em>optional</em>) – A list representing the signal at the node. Default is [0], representing no signal.
-If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, …].</p></li>
-<li><p><strong>inlinks</strong> (<em>dict</em>) – A dictionary holding the incoming links to the node.</p></li>
-<li><p><strong>outlinks</strong> (<em>dict</em>) – A dictionary holding the outgoing links from the node.</p></li>
-<li><p><strong>incoming_vehicles</strong> (<em>list</em>) – A list holding the vehicles that are incoming to the node.</p></li>
-<li><p><strong>generation_queue</strong> (<em>deque</em>) – A queue holding the generated vehicles waiting to enter the network via this node.</p></li>
-<li><p><strong>signal_phase</strong> (<em>int</em>) – The current phase of the signal.</p></li>
-<li><p><strong>signal_t</strong> (<em>int</em>) – The current time of the signal.</p></li>
-<li><p><strong>id</strong> (<em>int</em>) – The unique identifier of the node.</p></li>
-<li><p><strong>name</strong> – The name of the node.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the link.</p></li>
+<li><p><strong>start_node</strong> (<em>str</em><em> | </em><a class="reference internal" href="#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The name or object of the start node of the link.</p></li>
+<li><p><strong>end_node</strong> (<em>str</em><em> | </em><a class="reference internal" href="#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The name or object of the end node of the link.</p></li>
+<li><p><strong>length</strong> (<em>float</em>) – The length of the link.</p></li>
+<li><p><strong>free_flow_speed</strong> (<em>float</em>) – The free flow speed on the link.</p></li>
+<li><p><strong>jam_density</strong> (<em>float</em>) – The jam density on the link.</p></li>
+<li><p><strong>merge_priority</strong> (<em>float</em><em>, </em><em>optional</em>) – The priority of the link when merging at the downstream node, default is 1.</p></li>
+<li><p><strong>signal_group</strong> (<em>int</em><em>, </em><em>optional</em>) – The signal group to which the link belongs, default is 0.</p></li>
+<li><p><strong>capacity_out</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity out of the link, default is calculated based on other parameters.</p></li>
+<li><p><strong>capacity_in</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity into the link, default is calculated based on other parameters.</p></li>
+<li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -671,15 +691,8 @@ It passes all given arguments and keyword arguments to the Link class initializa
 <li><p><strong>x</strong> (<em>float</em>) – The x-coordinate of the node (for visualization purposes).</p></li>
 <li><p><strong>y</strong> (<em>float</em>) – The y-coordinate of the node (for visualization purposes).</p></li>
 <li><p><strong>signal</strong> (<em>list of int</em><em>, </em><em>optional</em>) – A list representing the signal at the node. Default is [0], representing no signal.
-If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, …].</p></li>
-<li><p><strong>inlinks</strong> (<em>dict</em>) – A dictionary holding the incoming links to the node.</p></li>
-<li><p><strong>outlinks</strong> (<em>dict</em>) – A dictionary holding the outgoing links from the node.</p></li>
-<li><p><strong>incoming_vehicles</strong> (<em>list</em>) – A list holding the vehicles that are incoming to the node.</p></li>
-<li><p><strong>generation_queue</strong> (<em>deque</em>) – A queue holding the generated vehicles waiting to enter the network via this node.</p></li>
-<li><p><strong>signal_phase</strong> (<em>int</em>) – The current phase of the signal.</p></li>
-<li><p><strong>signal_t</strong> (<em>int</em>) – The current time of the signal.</p></li>
-<li><p><strong>id</strong> (<em>int</em>) – The unique identifier of the node.</p></li>
-<li><p><strong>name</strong> – The name of the node.</p></li>
+If a signal is present, the list contains the green times for each group.
+For example, <a href="#id1"><span class="problematic" id="id2">`</span></a>signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -701,8 +714,8 @@ It passes all given arguments and keyword arguments to the Node class initializa
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>orig</strong> (<em>str</em>) – The origin node.</p></li>
-<li><p><strong>dest</strong> (<em>str</em>) – The destination node.</p></li>
+<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The origin node.</p></li>
+<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node.</p></li>
 <li><p><strong>departure_time</strong> (<em>int</em>) – The departure time of the vehicle.</p></li>
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the vehicle, default is the id of the vehicle.</p></li>
 <li><p><strong>route_pref</strong> (<em>dict</em><em>, </em><em>optional</em>) – The preference weights for links, default is 0 for all links.</p></li>
@@ -731,8 +744,8 @@ It passes all given arguments and keyword arguments to the Vehicle class initial
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>orig</strong> (<em>str</em>) – The name of the origin node.</p></li>
-<li><p><strong>dest</strong> (<em>str</em>) – The name of the destination node.</p></li>
+<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The name or object of the origin node.</p></li>
+<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The name or object of the destination node.</p></li>
 <li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
 <li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
 <li><p><strong>flow</strong> (<em>float</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>

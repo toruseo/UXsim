@@ -121,7 +121,7 @@
 <span class="sd">        signal : list of int, optional</span>
 <span class="sd">            A list representing the signal at the node. Default is [0], representing no signal.</span>
 <span class="sd">            If a signal is present, the list contains the green times for each group.</span>
-<span class="sd">            For example, `signal=[60, 10, 50, 5]` means that this signal has 4 phases, and green time for the 1st group is 60 s.</span>
+<span class="sd">            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</span>
 <span class="sd">        </span>
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
@@ -1514,7 +1514,38 @@
     
 <div class="viewcode-block" id="Analyzer.network_pillow"><a class="viewcode-back" href="../uxsim.html#uxsim.Analyzer.network_pillow">[docs]</a>    <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">network_pillow</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp_anim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">image_return</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="c1">#ネットワーク全体の交通状況．pillowを使った高速な可視化</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t : float, optional</span>
+<span class="sd">            The current time for which the traffic conditions are visualized.</span>
+<span class="sd">        detailed : int, optional</span>
+<span class="sd">            Determines the level of detail in the visualization. </span>
+<span class="sd">            If set to 1, the link internals (cell) are displayed in detail. </span>
+<span class="sd">            If set to 0, the visualization is simplified to link-level. Default is 1.</span>
+<span class="sd">        minwidth : float, optional</span>
+<span class="sd">            The minimum width of the link visualization. Default is 0.5.</span>
+<span class="sd">        maxwidth : float, optional</span>
+<span class="sd">            The maximum width of the link visualization. Default is 12.</span>
+<span class="sd">        left_handed : int, optional</span>
+<span class="sd">            If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.</span>
+<span class="sd">        tmp_anim : int, optional</span>
+<span class="sd">            If set to 1, the visualization will be saved as a temporary animation frame. Default is 0.</span>
+<span class="sd">        figsize : tuple of int, optional</span>
+<span class="sd">            The size of the figure to be plotted. Default is (6, 6).</span>
+<span class="sd">        network_font_size : int, optional</span>
+<span class="sd">            The font size for the network labels. Default is 4.</span>
+<span class="sd">        node_size : int, optional</span>
+<span class="sd">            The size of the nodes in the visualization. Default is 2.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method visualizes the entire transportation network and its current traffic conditions.</span>
+<span class="sd">        The visualization provides information on vehicle density, velocity, link names, node locations, and more.</span>
+<span class="sd">        The plots are saved to the directory `out&lt;W.name&gt;` with filenames depending on the `detailed` and `t` parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">maxx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">])</span>
         <span class="n">minx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">])</span>
@@ -2155,23 +2186,8 @@
 <span class="sd">            The y-coordinate of the node (for visualization purposes).</span>
 <span class="sd">        signal : list of int, optional</span>
 <span class="sd">            A list representing the signal at the node. Default is [0], representing no signal.</span>
-<span class="sd">            If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, ...].</span>
-<span class="sd">        inlinks : dict</span>
-<span class="sd">            A dictionary holding the incoming links to the node.</span>
-<span class="sd">        outlinks : dict</span>
-<span class="sd">            A dictionary holding the outgoing links from the node.</span>
-<span class="sd">        incoming_vehicles : list</span>
-<span class="sd">            A list holding the vehicles that are incoming to the node.</span>
-<span class="sd">        generation_queue : deque</span>
-<span class="sd">            A queue holding the generated vehicles waiting to enter the network via this node.</span>
-<span class="sd">        signal_phase : int</span>
-<span class="sd">            The current phase of the signal.</span>
-<span class="sd">        signal_t : int</span>
-<span class="sd">            The current time of the signal.</span>
-<span class="sd">        id : int</span>
-<span class="sd">            The unique identifier of the node.</span>
-<span class="sd">        name : str</span>
-<span class="sd">            The name of the node.</span>
+<span class="sd">            If a signal is present, the list contains the green times for each group.</span>
+<span class="sd">            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2192,30 +2208,27 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        name : str</span>
-<span class="sd">            The name of the node.</span>
-<span class="sd">        x : float</span>
-<span class="sd">            The x-coordinate of the node (for visualization purposes).</span>
-<span class="sd">        y : float</span>
-<span class="sd">            The y-coordinate of the node (for visualization purposes).</span>
-<span class="sd">        signal : list of int, optional</span>
-<span class="sd">            A list representing the signal at the node. Default is [0], representing no signal.</span>
-<span class="sd">            If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, ...].</span>
-<span class="sd">        inlinks : dict</span>
-<span class="sd">            A dictionary holding the incoming links to the node.</span>
-<span class="sd">        outlinks : dict</span>
-<span class="sd">            A dictionary holding the outgoing links from the node.</span>
-<span class="sd">        incoming_vehicles : list</span>
-<span class="sd">            A list holding the vehicles that are incoming to the node.</span>
-<span class="sd">        generation_queue : deque</span>
-<span class="sd">            A queue holding the generated vehicles waiting to enter the network via this node.</span>
-<span class="sd">        signal_phase : int</span>
-<span class="sd">            The current phase of the signal.</span>
-<span class="sd">        signal_t : int</span>
-<span class="sd">            The current time of the signal.</span>
-<span class="sd">        id : int</span>
-<span class="sd">            The unique identifier of the node.</span>
-<span class="sd">        name : str</span>
-<span class="sd">            The name of the node.</span>
+<span class="sd">            The name of the link.</span>
+<span class="sd">        start_node : str | Node</span>
+<span class="sd">            The name or object of the start node of the link.</span>
+<span class="sd">        end_node : str | Node</span>
+<span class="sd">            The name or object of the end node of the link.</span>
+<span class="sd">        length : float</span>
+<span class="sd">            The length of the link.</span>
+<span class="sd">        free_flow_speed : float</span>
+<span class="sd">            The free flow speed on the link.</span>
+<span class="sd">        jam_density : float</span>
+<span class="sd">            The jam density on the link.</span>
+<span class="sd">        merge_priority : float, optional</span>
+<span class="sd">            The priority of the link when merging at the downstream node, default is 1.</span>
+<span class="sd">        signal_group : int, optional</span>
+<span class="sd">            The signal group to which the link belongs, default is 0.</span>
+<span class="sd">        capacity_out : float, optional</span>
+<span class="sd">            The capacity out of the link, default is calculated based on other parameters.</span>
+<span class="sd">        capacity_in : float, optional</span>
+<span class="sd">            The capacity into the link, default is calculated based on other parameters.</span>
+<span class="sd">        eular_dx : float, optional</span>
+<span class="sd">            The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2235,9 +2248,9 @@
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        orig : str</span>
+<span class="sd">        orig : str | Node</span>
 <span class="sd">            The origin node.</span>
-<span class="sd">        dest : str</span>
+<span class="sd">        dest : str | Node</span>
 <span class="sd">            The destination node.</span>
 <span class="sd">        departure_time : int</span>
 <span class="sd">            The departure time of the vehicle.</span>
@@ -2272,10 +2285,10 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        orig : str</span>
-<span class="sd">            The name of the origin node.</span>
-<span class="sd">        dest : str</span>
-<span class="sd">            The name of the destination node.</span>
+<span class="sd">        orig : str | Node</span>
+<span class="sd">            The name or object of the origin node.</span>
+<span class="sd">        dest : str | Node</span>
+<span class="sd">            The name or object of the destination node.</span>
 <span class="sd">        t_start : float</span>
 <span class="sd">            The start time for the demand in seconds.</span>
 <span class="sd">        t_end : float</span>
