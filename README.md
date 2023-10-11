@@ -69,7 +69,7 @@ Pythonのバージョン3を用います．
 細部を以下の資料で説明しています．
 
 - 概要：[arXivプレプリント](https://arxiv.org/abs/2309.17114)
-- クラスや関数の詳細：[技術リファレンス](http://toruseo.jp/UXsim/docs/index.html)
+- クラスや関数の詳細：[技術リファレンス](https://toruseo.jp/UXsim/docs/index.html)
 - 基づいている理論：[書籍](https://www.coronasha.co.jp/np/isbn/9784339052794/)
 
 大まかな構造と計算フローを以下に示します．

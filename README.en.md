@@ -63,7 +63,7 @@ This simulator is purely Python and allows users to flexibly customize it.
 The details are explained by the following documents:
 
 - Overview: [arXiv preprint](https://arxiv.org/abs/2309.17114)
-- Specifications of classes and functions: [Technical reference](http://toruseo.jp/UXsim/docs/index.html)
+- Specifications of classes and functions: [Technical reference](https://toruseo.jp/UXsim/docs/index.html)
 - Fundamental theories: [Japanese textbook](https://www.coronasha.co.jp/np/isbn/9784339052794/)
 
 Below is an overview of the structure and calculation flow.
