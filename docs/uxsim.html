@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>uxsim module &mdash; UXsim v1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            UXsim
+          </a>
+              <div class="version">
+                v1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.html">uxsim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.World.html">uxsim.World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Analyzer.html">uxsim.Analyzer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Node.html">uxsim.Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Link.html">uxsim.Link</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Vehicle.html">uxsim.Vehicle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/utils.utils.html">utils.utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">UXsim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">uxsim module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/uxsim.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-uxsim">
+<span id="uxsim-module"></span><h1>uxsim module<a class="headerlink" href="#module-uxsim" title="Permalink to this heading"></a></h1>
+<p>Macroscopic/mesoscopic traffic flow simulator in a network.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="uxsim.Analyzer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for analyzing and visualizing a simulation result.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.basic_analysis">
+<span class="sig-name descname"><span class="pre">basic_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.basic_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.basic_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Analyze basic stats.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.basic_to_pandas">
+<span class="sig-name descname"><span class="pre">basic_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.basic_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.basic_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the basic stats to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.compute_accurate_traj">
+<span class="sig-name descname"><span class="pre">compute_accurate_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.compute_accurate_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.compute_accurate_traj" title="Permalink to this definition"></a></dt>
+<dd><p>Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories. It is assumed that vehicles are in free-flow travel at the end of the link.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.compute_edie_state">
+<span class="sig-name descname"><span class="pre">compute_edie_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.compute_edie_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.compute_edie_state" title="Permalink to this definition"></a></dt>
+<dd><p>Compute Edie’s traffic state for each link.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.compute_mfd">
+<span class="sig-name descname"><span class="pre">compute_mfd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.compute_mfd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.compute_mfd" title="Permalink to this definition"></a></dt>
+<dd><p>Compute network average flow and density for MFD.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.cumulative_curves">
+<span class="sig-name descname"><span class="pre">cumulative_curves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">4)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.cumulative_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.cumulative_curves" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the cumulative curves and travel times for the provided links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>links</strong> (<em>list</em><em> or </em><em>object</em><em>, </em><em>optional</em>) – A list of links or a single link for which the cumulative curves and travel times are to be plotted.
+If not provided, the cumulative curves and travel times for all the links in the network will be plotted.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted. Default is (6, 4).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method plots the cumulative curves for vehicle arrivals and departures, as well as the instantaneous and actual travel times.
+The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with the filename format <cite>cumulative_curves_&lt;link.name&gt;.png</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.link_analysis_coarse">
+<span class="sig-name descname"><span class="pre">link_analysis_coarse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.link_analysis_coarse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.link_analysis_coarse" title="Permalink to this definition"></a></dt>
+<dd><p>Analyze link-level coarse stats: traffic volume, remaining vehicles, free-flow travel time, average travel time, its std.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.link_to_pandas">
+<span class="sig-name descname"><span class="pre">link_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.link_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.link_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the link-level analysis results to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.link_traffic_state_to_pandas">
+<span class="sig-name descname"><span class="pre">link_traffic_state_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.link_traffic_state_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.link_traffic_state_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the traffic states in links to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.log_vehicles_to_pandas">
+<span class="sig-name descname"><span class="pre">log_vehicles_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.log_vehicles_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.log_vehicles_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>same to <cite>vehicles_to_pandas</cite>, just for backward compatibility</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.macroscopic_fundamental_diagram">
+<span class="sig-name descname"><span class="pre">macroscopic_fundamental_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(4,</span> <span class="pre">4)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.macroscopic_fundamental_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.macroscopic_fundamental_diagram" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kappa</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum network average density for the x-axis of the MFD plot. Default is 0.2.</p></li>
+<li><p><strong>qmax</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum network average flow for the y-axis of the MFD plot. Default is 1.</p></li>
+<li><p><strong>links</strong> (<em>list</em><em> or </em><em>object</em><em>, </em><em>optional</em>) – A list of links or a single link for which the MFD is to be plotted.
+If not provided, the MFD for all the links in the network will be plotted.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – File name for saving (postfix). Default is “”.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted. Default is (4, 4).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method plots the Macroscopic Fundamental Diagram (MFD) for the provided links.
+The MFD provides a relationship between the network average density and the network average flow.
+The plot is saved to the directory <cite>out&lt;W.name&gt;</cite> with the filename <cite>mfd&lt;fname&gt;.png</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.mfd_to_pandas">
+<span class="sig-name descname"><span class="pre">mfd_to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.mfd_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.mfd_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the MFD to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.network">
+<span class="sig-name descname"><span class="pre">network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_anim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.network" title="Permalink to this definition"></a></dt>
+<dd><p>Visualizes the entire transportation network and its current traffic conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>float</em><em>, </em><em>optional</em>) – The current time for which the traffic conditions are visualized.</p></li>
+<li><p><strong>detailed</strong> (<em>int</em><em>, </em><em>optional</em>) – Determines the level of detail in the visualization.
+If set to 1, the link internals (cell) are displayed in detail.
+If set to 0, the visualization is simplified to link-level. Default is 1.</p></li>
+<li><p><strong>minwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum width of the link visualization. Default is 0.5.</p></li>
+<li><p><strong>maxwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum width of the link visualization. Default is 12.</p></li>
+<li><p><strong>left_handed</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.</p></li>
+<li><p><strong>tmp_anim</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the visualization will be saved as a temporary animation frame. Default is 0.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted. Default is (6, 6).</p></li>
+<li><p><strong>network_font_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The font size for the network labels. Default is 4.</p></li>
+<li><p><strong>node_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the nodes in the visualization. Default is 2.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method visualizes the entire transportation network and its current traffic conditions.
+The visualization provides information on vehicle density, velocity, link names, node locations, and more.
+The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with filenames depending on the <cite>detailed</cite> and <cite>t</cite> parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.network_anim">
+<span class="sig-name descname"><span class="pre">network_anim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animation_speed_inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.network_anim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.network_anim" title="Permalink to this definition"></a></dt>
+<dd><p>Generates an animation of the entire transportation network and its traffic states over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>animation_speed_inverse</strong> (<em>int</em><em>, </em><em>optional</em>) – The inverse of the animation speed. A higher value will result in a slower animation. Default is 10.</p></li>
+<li><p><strong>detailed</strong> (<em>int</em><em>, </em><em>optional</em>) – Determines the level of detail in the animation.
+If set to 1, the link internals (cell) are displayed in detail.
+Under some conditions, the detailed mode will produce inappropriate visualization.
+If set to 0, the visualization is simplified to link-level. Default is 0.</p></li>
+<li><p><strong>minwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum width of the link visualization in the animation. Default is 0.5.</p></li>
+<li><p><strong>maxwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum width of the link visualization in the animation. Default is 12.</p></li>
+<li><p><strong>left_handed</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figures in the animation. Default is (6, 6).</p></li>
+<li><p><strong>node_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the nodes in the animation. Default is 2.</p></li>
+<li><p><strong>network_font_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The font size for the network labels in the animation. Default is 20.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method generates an animation visualizing the entire transportation network and its traffic conditions over time.
+The animation provides information on vehicle density, velocity, link names, node locations, and more.
+The generated animation is saved to the directory <cite>out&lt;W.name&gt;</cite> with a filename based on the <cite>detailed</cite> parameter.</p>
+<p>Temporary images used to create the animation are removed after the animation is generated.
+If the <cite>save_mode</cite> attribute of the network is set to True, the animation will be saved.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.network_fancy">
+<span class="sig-name descname"><span class="pre">network_fancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animation_speed_inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.network_fancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.network_fancy" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a visually appealing animation of vehicles’ trajectories across the entire transportation network over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>animation_speed_inverse</strong> (<em>int</em><em>, </em><em>optional</em>) – The inverse of the animation speed. A higher value will result in a slower animation. Default is 10.</p></li>
+<li><p><strong>figsize</strong> (<em>int</em><em> or </em><em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figures in the animation. Default is 6.</p></li>
+<li><p><strong>sample_ratio</strong> (<em>float</em><em>, </em><em>optional</em>) – The fraction of vehicles to be visualized. Default is 0.3.</p></li>
+<li><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval at which vehicle positions are sampled. Default is 5.</p></li>
+<li><p><strong>network_font_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The font size for the network labels in the animation. Default is 0.</p></li>
+<li><p><strong>trace_length</strong> (<em>int</em><em>, </em><em>optional</em>) – The length of the vehicles’ trajectory trails in the animation. Default is 3.</p></li>
+<li><p><strong>speed_coef</strong> (<em>int</em><em>, </em><em>optional</em>) – A coefficient that adjusts the animation speed. Default is 2.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method generates a visually appealing animation that visualizes vehicles’ trajectories across the transportation network over time.
+The animation provides information on vehicle positions, speeds, link names, node locations, and more, with Bezier curves used for smooth transitions.
+The generated animation is saved to the directory <cite>out&lt;W.name&gt;</cite> with a filename <cite>anim_network_fancy.gif</cite>.</p>
+<p>Temporary images used to create the animation are removed after the animation is generated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.network_pillow">
+<span class="sig-name descname"><span class="pre">network_pillow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_anim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.network_pillow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.network_pillow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.od_analysis">
+<span class="sig-name descname"><span class="pre">od_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.od_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.od_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.od_to_pandas">
+<span class="sig-name descname"><span class="pre">od_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.od_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.od_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the OD-specific analysis results to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.output_data">
+<span class="sig-name descname"><span class="pre">output_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.output_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.output_data" title="Permalink to this definition"></a></dt>
+<dd><p>Save all results to CSV files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.plot_vehicle_log">
+<span class="sig-name descname"><span class="pre">plot_vehicle_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.plot_vehicle_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.plot_vehicle_log" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the driving link and speed for a single vehicle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehname</strong> (<em>str</em>) – The name of the vehicle for which the driving link and speed are to be plotted.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method visualizes the speed profile and the links traversed by a specific vehicle over time.
+The speed is plotted on the primary y-axis, and the links are plotted on the secondary y-axis.
+The plot is saved to the directory <cite>out&lt;W.name&gt;</cite> with the filename <cite>vehicle_&lt;vehname&gt;.png</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.print_simple_stats">
+<span class="sig-name descname"><span class="pre">print_simple_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.print_simple_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.print_simple_stats" title="Permalink to this definition"></a></dt>
+<dd><p>Prints basic statistics of simulation result.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.show_simulation_progress">
+<span class="sig-name descname"><span class="pre">show_simulation_progress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.show_simulation_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.show_simulation_progress" title="Permalink to this definition"></a></dt>
+<dd><p>Print simulation progress.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.time_space_diagram_density">
+<span class="sig-name descname"><span class="pre">time_space_diagram_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.time_space_diagram_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.time_space_diagram_density" title="Permalink to this definition"></a></dt>
+<dd><p>Draws the time-space diagram of traffic density on specified links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>links</strong> (<em>list of link</em><em> or </em><em>link</em><em>, </em><em>optional</em>) – The names of the links for which the time-space diagram is to be plotted.
+If None, the diagram is plotted for all links in the network. Default is None.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted, default is (12,4).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.time_space_diagram_traj">
+<span class="sig-name descname"><span class="pre">time_space_diagram_traj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.time_space_diagram_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.time_space_diagram_traj" title="Permalink to this definition"></a></dt>
+<dd><p>Draws the time-space diagram of vehicle trajectories for vehicles on specified links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>links</strong> (<em>list of link</em><em> or </em><em>link</em><em>, </em><em>optional</em>) – The names of the links for which the time-space diagram is to be plotted.
+If None, the diagram is plotted for all links in the network. Default is None.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted, default is (12,4).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.time_space_diagram_traj_links">
+<span class="sig-name descname"><span class="pre">time_space_diagram_traj_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linkslist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.time_space_diagram_traj_links"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.time_space_diagram_traj_links" title="Permalink to this definition"></a></dt>
+<dd><p>Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linkslist</strong> (<em>list of link</em><em> or </em><em>list of list of link</em>) – The names of the concective links for which the time-space diagram is to be plotted.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted, default is (12,4).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Analyzer.vehicles_to_pandas">
+<span class="sig-name descname"><span class="pre">vehicles_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Analyzer.vehicles_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Analyzer.vehicles_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the vehicle travel logs to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing the travel logs of vehicles, with the columns:
+- ‘name’: the name of the vehicle (platoon).
+- ‘dn’: the platoon size.
+- ‘orig’: the origin node of the vehicle’s trip.
+- ‘dest’: the destination node of the vehicle’s trip.
+- ‘t’: the timestep.
+- ‘link’: the link the vehicle is on (or relevant status).
+- ‘x’: the position of the vehicle on the link.
+- ‘s’: the spacing of the vehicle.
+- ‘v’: the speed of the vehicle.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="uxsim.Link">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Link in a network.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="uxsim.Link.density">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">density</span></span><a class="headerlink" href="#uxsim.Link.density" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="uxsim.Link.flow">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flow</span></span><a class="headerlink" href="#uxsim.Link.flow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="uxsim.Link.free_flow_speed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">free_flow_speed</span></span><a class="headerlink" href="#uxsim.Link.free_flow_speed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.in_out_flow_constraint">
+<span class="sig-name descname"><span class="pre">in_out_flow_constraint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Link.in_out_flow_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.in_out_flow_constraint" title="Permalink to this definition"></a></dt>
+<dd><p>Link capacity updates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.init_after_tmax_fix">
+<span class="sig-name descname"><span class="pre">init_after_tmax_fix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Link.init_after_tmax_fix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.init_after_tmax_fix" title="Permalink to this definition"></a></dt>
+<dd><p>Initalization before simulation execution.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="uxsim.Link.jam_density">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">jam_density</span></span><a class="headerlink" href="#uxsim.Link.jam_density" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="uxsim.Link.num_vehicles">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_vehicles</span></span><a class="headerlink" href="#uxsim.Link.num_vehicles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="uxsim.Link.num_vehicles_queue">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_vehicles_queue</span></span><a class="headerlink" href="#uxsim.Link.num_vehicles_queue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.set_traveltime_instant">
+<span class="sig-name descname"><span class="pre">set_traveltime_instant</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Link.set_traveltime_instant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.set_traveltime_instant" title="Permalink to this definition"></a></dt>
+<dd><p>Compute instantanious travel time.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="uxsim.Link.speed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">speed</span></span><a class="headerlink" href="#uxsim.Link.speed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Link.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.update" title="Permalink to this definition"></a></dt>
+<dd><p>Make necessary updates when the timestep is incremented.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="uxsim.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Node in a network.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Node.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.generate" title="Permalink to this definition"></a></dt>
+<dd><p>Departs vehicles from the waiting queue.</p>
+<p class="rubric">Notes</p>
+<p>If there are vehicles in the generation queue of the node, this method attempts to depart a vehicle to one of the outgoing links.
+The choice of the outgoing link is based on the vehicle’s route preference for each link. Once a vehicle is departed, it is removed from the generation queue, added to the list of vehicles on the chosen link, and its state is set to “run”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.signal_control">
+<span class="sig-name descname"><span class="pre">signal_control</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Node.signal_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.signal_control" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the signal timings for a traffic signal node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.transfer">
+<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Node.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.transfer" title="Permalink to this definition"></a></dt>
+<dd><p>Transfers vehicles between links at the node.</p>
+<p class="rubric">Notes</p>
+<p>This method handles the transfer of vehicles from one link to another at the node.
+A vehicle is eligible for transfer if:
+- The next link it intends to move to has space.
+- The vehicle has the right signal phase to proceed.
+- The current link has enough capacity to allow the vehicle to exit.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Node.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.update" title="Permalink to this definition"></a></dt>
+<dd><p>Make necessary updates when the timestep is incremented.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="uxsim.RouteChoice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">RouteChoice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#RouteChoice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for computing shortest path for all vehicles.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.RouteChoice.homogeneous_DUO_update">
+<span class="sig-name descname"><span class="pre">homogeneous_DUO_update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#RouteChoice.homogeneous_DUO_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.homogeneous_DUO_update" title="Permalink to this definition"></a></dt>
+<dd><p>Update link preference of all homogeneous travelers based on DUO principle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.RouteChoice.route_search_all">
+<span class="sig-name descname"><span class="pre">route_search_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#RouteChoice.route_search_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.route_search_all" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the current shortest path based on instantanious travel time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>infty</strong> (<em>float</em>) – value representing infinity.</p></li>
+<li><p><strong>noise</strong> (<em>float</em>) – very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.RouteChoice.route_search_all_old">
+<span class="sig-name descname"><span class="pre">route_search_all_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9999999999999999999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#RouteChoice.route_search_all_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.route_search_all_old" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the current shortest path based on instantanious travel time. Old version, slow for large networks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>infty</strong> (<em>float</em>) – value representing infinity.</p></li>
+<li><p><strong>noise</strong> (<em>float</em>) – very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="uxsim.Vehicle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Vehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_pref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_avoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_abort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time_is_time_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Vehicle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Vehicle or platoon in a network.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Vehicle.carfollow">
+<span class="sig-name descname"><span class="pre">carfollow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Vehicle.carfollow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.carfollow" title="Permalink to this definition"></a></dt>
+<dd><p>Drive withing a link.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Vehicle.end_trip">
+<span class="sig-name descname"><span class="pre">end_trip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Vehicle.end_trip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.end_trip" title="Permalink to this definition"></a></dt>
+<dd><p>Procedure when the vehicle finishes its trip.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Vehicle.record_log">
+<span class="sig-name descname"><span class="pre">record_log</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Vehicle.record_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.record_log" title="Permalink to this definition"></a></dt>
+<dd><p>Record travel logs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Vehicle.route_next_link_choice">
+<span class="sig-name descname"><span class="pre">route_next_link_choice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Vehicle.route_next_link_choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.route_next_link_choice" title="Permalink to this definition"></a></dt>
+<dd><p>Select a next link from the current link.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Vehicle.route_pref_update">
+<span class="sig-name descname"><span class="pre">route_pref_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Vehicle.route_pref_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.route_pref_update" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the vehicle’s link preferences for route choice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>weight</strong> (<em>float</em>) – The weight for updating the link preferences based on the recent travel time.
+Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method updates the link preferences used by the vehicle to select its route based on its current understanding of the system.</p>
+<ul class="simple">
+<li><p>If the vehicle’s route choice principle is “homogeneous_DUO”, it will update its preferences based on a global, homogenous dynamic user optimization (DUO) model.</p></li>
+<li><p>If the route choice principle is “heterogeneous_DUO”, it will update its preferences based on a heterogeneous DUO model, considering both its past preferences and the system’s current state.</p></li>
+</ul>
+<p>The updated preferences guide the vehicle’s decisions in subsequent route choices.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Vehicle.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#Vehicle.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.update" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the vehicle’s state and position.</p>
+<p class="rubric">Notes</p>
+<p>This method updates the state and position of the vehicle based on its current situation.</p>
+<ul class="simple">
+<li><p>If the vehicle is at “home”, it checks if the current time matches its departure time. If so, the vehicle’s state is set to “wait” and it is added to the generation queue of its origin node.</p></li>
+<li><p>If the vehicle is in the “wait” state, it remains waiting at its departure node.</p></li>
+<li><p>If the vehicle is in the “run” state, it updates its speed and position. If the vehicle reaches the end of its current link, it either ends its trip if it has reached its destination, or requests a transfer to the next link.</p></li>
+<li><p>If the vehicle’s state is “end” or “abort”, no further actions are taken.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="uxsim.World">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'homogeneous_DUO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_deltat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>World (i.e., simulation environment). A World object is consistently referred to as <cite>W</cite> in this code.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.addLink">
+<span class="sig-name descname"><span class="pre">addLink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.addLink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.addLink" title="Permalink to this definition"></a></dt>
+<dd><p>add a link to world</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the node.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – The x-coordinate of the node (for visualization purposes).</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – The y-coordinate of the node (for visualization purposes).</p></li>
+<li><p><strong>signal</strong> (<em>list of int</em><em>, </em><em>optional</em>) – A list representing the signal at the node. Default is [0], representing no signal.
+If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, …].</p></li>
+<li><p><strong>inlinks</strong> (<em>dict</em>) – A dictionary holding the incoming links to the node.</p></li>
+<li><p><strong>outlinks</strong> (<em>dict</em>) – A dictionary holding the outgoing links from the node.</p></li>
+<li><p><strong>incoming_vehicles</strong> (<em>list</em>) – A list holding the vehicles that are incoming to the node.</p></li>
+<li><p><strong>generation_queue</strong> (<em>deque</em>) – A queue holding the generated vehicles waiting to enter the network via this node.</p></li>
+<li><p><strong>signal_phase</strong> (<em>int</em>) – The current phase of the signal.</p></li>
+<li><p><strong>signal_t</strong> (<em>int</em>) – The current time of the signal.</p></li>
+<li><p><strong>id</strong> (<em>int</em>) – The unique identifier of the node.</p></li>
+<li><p><strong>name</strong> – The name of the node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the added Link object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function acts as a wrapper for creating a Link object and adding it to the network.
+It passes all given arguments and keyword arguments to the Link class initialization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.addNode">
+<span class="sig-name descname"><span class="pre">addNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.addNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.addNode" title="Permalink to this definition"></a></dt>
+<dd><p>add a node to world</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the node.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – The x-coordinate of the node (for visualization purposes).</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – The y-coordinate of the node (for visualization purposes).</p></li>
+<li><p><strong>signal</strong> (<em>list of int</em><em>, </em><em>optional</em>) – A list representing the signal at the node. Default is [0], representing no signal.
+If a signal is present, the list contains the green times for each group, e.g., [green_time_group0, green_time_group1, …].</p></li>
+<li><p><strong>inlinks</strong> (<em>dict</em>) – A dictionary holding the incoming links to the node.</p></li>
+<li><p><strong>outlinks</strong> (<em>dict</em>) – A dictionary holding the outgoing links from the node.</p></li>
+<li><p><strong>incoming_vehicles</strong> (<em>list</em>) – A list holding the vehicles that are incoming to the node.</p></li>
+<li><p><strong>generation_queue</strong> (<em>deque</em>) – A queue holding the generated vehicles waiting to enter the network via this node.</p></li>
+<li><p><strong>signal_phase</strong> (<em>int</em>) – The current phase of the signal.</p></li>
+<li><p><strong>signal_t</strong> (<em>int</em>) – The current time of the signal.</p></li>
+<li><p><strong>id</strong> (<em>int</em>) – The unique identifier of the node.</p></li>
+<li><p><strong>name</strong> – The name of the node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the added Node object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function acts as a wrapper for creating a Node object and adding it to the network.
+It passes all given arguments and keyword arguments to the Node class initialization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.addVehicle">
+<span class="sig-name descname"><span class="pre">addVehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.addVehicle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.addVehicle" title="Permalink to this definition"></a></dt>
+<dd><p>add a vehicle to world</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>orig</strong> (<em>str</em>) – The origin node.</p></li>
+<li><p><strong>dest</strong> (<em>str</em>) – The destination node.</p></li>
+<li><p><strong>departure_time</strong> (<em>int</em>) – The departure time of the vehicle.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the vehicle, default is the id of the vehicle.</p></li>
+<li><p><strong>route_pref</strong> (<em>dict</em><em>, </em><em>optional</em>) – The preference weights for links, default is 0 for all links.</p></li>
+<li><p><strong>route_choice_principle</strong> (<em>str</em><em>, </em><em>optional</em>) – The route choice principle of the vehicle, default is the network’s route choice principle.</p></li>
+<li><p><strong>links_prefer</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The names of the links the vehicle prefers, default is empty list.</p></li>
+<li><p><strong>links_avoid</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The names of the links the vehicle avoids, default is empty list.</p></li>
+<li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the added Vehicle object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function acts as a wrapper for creating a Vehicle object and adding it to the network.
+It passes all given arguments and keyword arguments to the Vehicle class initialization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.adddemand">
+<span class="sig-name descname"><span class="pre">adddemand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.adddemand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.adddemand" title="Permalink to this definition"></a></dt>
+<dd><p>Generate vehicles by specifying time-dependent origin-destination demand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>orig</strong> (<em>str</em>) – The name of the origin node.</p></li>
+<li><p><strong>dest</strong> (<em>str</em>) – The name of the destination node.</p></li>
+<li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
+<li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
+<li><p><strong>flow</strong> (<em>float</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.check_simulation_ongoing">
+<span class="sig-name descname"><span class="pre">check_simulation_ongoing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.check_simulation_ongoing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.check_simulation_ongoing" title="Permalink to this definition"></a></dt>
+<dd><p>Check whether the simulation is has not reached its final time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns 1 if the simulation is ongoing and has not reached its final time.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.exec_simulation">
+<span class="sig-name descname"><span class="pre">exec_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">until_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.exec_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.exec_simulation" title="Permalink to this definition"></a></dt>
+<dd><p>Execute the main loop of the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>until_t</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The time until the simulation is to be executed in seconds. If both <cite>until_t</cite> and <cite>duration_t</cite> are None, the simulation is executed until the end. Default is None.</p></li>
+<li><p><strong>duration_t</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The duration for which the simulation is to be executed in seconds. If both <cite>until_t</cite> and <cite>duration_t</cite> are None, the simulation is executed until the end. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns 1 if the simulation is finished, 0 otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function executes the main simulation loop that update links, nodes, and vehicles for each time step.
+It also performs route search and updates the route preference for vehicles at specified intervals.
+The simulation is executed until the end time is reached or until the maximum simulation time is exceeded.
+The nodes, links, and vehicles must be defined before calling this function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.finalize_scenario">
+<span class="sig-name descname"><span class="pre">finalize_scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.finalize_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.finalize_scenario" title="Permalink to this definition"></a></dt>
+<dd><p>Finalizes the settings and preparations for the simulation scenario execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tmax</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum simulation time. If not provided, it will be determined based on the departure times of the vehicles.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function automatically called by <cite>exec_simulation()</cite> if it has not been called manually.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.generate_Links_from_csv">
+<span class="sig-name descname"><span class="pre">generate_Links_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.generate_Links_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.generate_Links_from_csv" title="Permalink to this definition"></a></dt>
+<dd><p>Generate links in the network from a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – The file name of the CSV file containing link data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.generate_Nodes_from_csv">
+<span class="sig-name descname"><span class="pre">generate_Nodes_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.generate_Nodes_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.generate_Nodes_from_csv" title="Permalink to this definition"></a></dt>
+<dd><p>Generate nodes in the network from a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – The file name of the CSV file containing node data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.generate_demand_from_csv">
+<span class="sig-name descname"><span class="pre">generate_demand_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.generate_demand_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.generate_demand_from_csv" title="Permalink to this definition"></a></dt>
+<dd><p>Generate demand in the network from a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – The file name of the CSV file containing demand data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.get_link">
+<span class="sig-name descname"><span class="pre">get_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.get_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.get_link" title="Permalink to this definition"></a></dt>
+<dd><p>Get a Link instance by name or object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link</strong> (<em>str</em><em> or </em><em>Link object</em>) – The name of the link or the Link object itself.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The found Link object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Link object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.get_node">
+<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.get_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.get_node" title="Permalink to this definition"></a></dt>
+<dd><p>Get a Node instance by name or object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>str</em><em> or </em><em>Node object</em>) – The name of the node or the Node object itself.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The found Node object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Node object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.load_scenario_from_csv">
+<span class="sig-name descname"><span class="pre">load_scenario_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname_link</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname_demand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.load_scenario_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.load_scenario_from_csv" title="Permalink to this definition"></a></dt>
+<dd><p>Load a scenario from CSV files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname_node</strong> (<em>str</em>) – The file name of the CSV file containing node data.</p></li>
+<li><p><strong>fname_link</strong> (<em>str</em>) – The file name of the CSV file containing link data.</p></li>
+<li><p><strong>fname_demand</strong> (<em>str</em>) – The file name of the CSV file containing demand data.</p></li>
+<li><p><strong>tmax</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The maximum simulation time in seconds, default is None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.on_time">
+<span class="sig-name descname"><span class="pre">on_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.on_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.on_time" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the current time step is close to the specified time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>float</em>) – The specified time in seconds.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns True if the current time step is close to the specified time, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.World.simulation_terminated">
+<span class="sig-name descname"><span class="pre">simulation_terminated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim.html#World.simulation_terminated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.simulation_terminated" title="Permalink to this definition"></a></dt>
+<dd><p>Postprocessing after simulation finished</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, ToruSeo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+.. UXsim documentation master file, created by
+   sphinx-quickstart on Wed Oct 11 14:27:43 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+UXsim's technical reference
+===========================
+
+UXsim is an open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
+
+This webpage is a technical reference of UXsim codes, and may be too detailed.
+For basic explanation, please see the following pages and materials first:
+
+* `Github repo <https://github.com/toruseo/UXsim>`_
+* `README <https://github.com/toruseo/UXsim/blob/main/README.en.md>`_
+* `Tutorial based on Jupyter Notebook <https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb>`_
+* `arXiv preprint <https://arxiv.org/pdf/2309.17114.pdf>`_
+
+For the summary of classes, please click the left-side panel.
+
+Please note that this page is automatically generated from docstring of `uxsim.py`, and some of the docstrings are automatically written by ChatGPT. 
+Thus, they are not completely perfect.
+
+
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
+   
+   uxsim
+   uxsim.World
+   uxsim.Analyzer
+   uxsim.Node
+   uxsim.Link
+   uxsim.Vehicle
+   uxsim.RouteChoice
+   utils.utils
+
+
+Index
+=====
+
+* :ref:`genindex`
+
+Author
+======
+
+* `Toru Seo <https://toruseo.jp/index_en.html>`_
