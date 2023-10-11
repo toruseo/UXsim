@@ -1,21 +1,30 @@
 # UXsim: An open source macroscopic and mesoscopic traffic simulator in Python
 
-This repository introduces UXsim, a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. UXsim calculates dynamic traffic flow in a network by integrating the following models:
+This repository introduces UXsim, a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
+It is suitable for simulating large-scale (e.g., city-scale) vehicular transportation.
+It computes dynamic traffic flow in a network by using traffic flow models commonly utilized by transportation research.
 
-- Newell's simplified car-following model (X-Model)
-- Lagrangian Incremental Node Model
-- Dynamic User Optimum-type Route Choice Model (with inertia)
+Simple example is summarized in [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb).
 
 Note that UXsim is a significant expansion of the traffic flow simulator UroborosX, which is included in the book "[Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation](https://www.coronasha.co.jp/np/isbn/9784339052794/)" (Author: [Toru Seo](https://toruseo.jp/), Publisher: [Corona Publishing Co., Ltd.](https://www.coronasha.co.jp/)). The basic operating principles remain the same; for details, please refer to the book.
 
-Documentation will be added in the future.
-
 ## Main Features
 
-- Dynamic network traffic simulation with a given network and time-dependent OD demand.
+- Dynamic network traffic simulation with a given network and time-dependent OD demand (i.e., dynamic traffic assignment). Specifically, the following models are used jointly:
+	- Newell's simplified car-following model (X-Model)
+	- Lagrangian Incremental Node Model
+	- Dynamic User Optimum-type Route Choice Model (with inertia)
 - Implementation of traffic management schemes (e.g., traffic signals, inflow control, route guidance, congestion pricing).
 - Basic analysis of simulation results (e.g., trip completion rate, total travel time, delay), and their export to pandas.DataFrame and CSV files.
 - Visualization of simulation results (e.g., time-space diagram, MFD, network traffic animation).
+
+## Contents
+
+- `uxsim.py`: UXsim main code
+- directory `utils`: Necessary files and modules for UXsim
+- directory `dat`: Scenario files
+- directory `demos_and_examples`: Tutorials and examples of UXsim
+- `README.md` and others: Files for explanations etc. Not necessary for simulation
 
 ## Usage
 
@@ -23,7 +32,7 @@ The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and
 
 To use, place your Python code or Jupyter Notebook in the same folder as the `uxsim.py` file and the `utils` directory and use `from uxsim import *`. For more details, refer to the examples in the `demos_and_examples` directory.
 
-Module maintenance will be addressed in the future.
+Formal deployment as a Python module will be addressed in the future.
 
 ### Execution Environment
 
@@ -50,8 +59,12 @@ Vehicle trajectory diagram on a corridor of the above network:
 ## Internal Structure and Calculation Flow
 
 This simulator is purely Python and allows users to flexibly customize it. 
-Short technical note is available at [arXiv](https://arxiv.org/abs/2309.17114).
-For the details, please see the [book](https://www.coronasha.co.jp/np/isbn/9784339052794/).
+The details are explained by the following documents:
+
+- Overview: [arXiv preprint](https://arxiv.org/abs/2309.17114)
+- Specifications of classes and functions: [Technical reference](http://toruseo.jp/UXsim/docs/index.html)
+- Fundamental theories: [Japanese textbook](https://www.coronasha.co.jp/np/isbn/9784339052794/)
+
 Below is an overview of the structure and calculation flow.
 
 ### Class Diagram
