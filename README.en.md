@@ -48,9 +48,10 @@ Uses Python version 3. Additionally, please install the following modules in adv
 ## Calculation Example
 
 Approximately 60,000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time is about 40 seconds on a standard desktop PC. Visualization of link traffic conditions (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
-
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400">
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400">
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
+</p>
 
 Vehicle trajectory diagram on a corridor of the above network:
 
