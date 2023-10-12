@@ -1,0 +1,26 @@
+﻿uxsim.Node
+==========
+
+.. currentmodule:: uxsim
+
+.. autoclass:: Node
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Node.__init__
+      ~Node.generate
+      ~Node.signal_control
+      ~Node.transfer
+      ~Node.update
+   
+   
+
+   
+   
+   

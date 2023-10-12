@@ -1,0 +1,37 @@
+﻿uxsim.World
+===========
+
+.. currentmodule:: uxsim
+
+.. autoclass:: World
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~World.__init__
+      ~World.addLink
+      ~World.addNode
+      ~World.addVehicle
+      ~World.adddemand
+      ~World.check_simulation_ongoing
+      ~World.exec_simulation
+      ~World.finalize_scenario
+      ~World.generate_Links_from_csv
+      ~World.generate_Nodes_from_csv
+      ~World.generate_demand_from_csv
+      ~World.get_link
+      ~World.get_node
+      ~World.load_scenario_from_csv
+      ~World.on_time
+      ~World.simulation_terminated
+   
+   
+
+   
+   
+   
