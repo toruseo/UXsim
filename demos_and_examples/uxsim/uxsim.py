@@ -11,7 +11,9 @@ from PIL.Image import Resampling, Transpose
 from tqdm.auto import tqdm
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
-from utils.utils  import *
+from .utils  import *
+
+import pkg_resources
 
 from scipy.sparse.csgraph import floyd_warshall
 
@@ -1492,7 +1494,8 @@ class Analyzer:
 
         img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
         draw = ImageDraw.Draw(img)
-        font = ImageFont.truetype("utils/Inconsolata.otf", int(network_font_size))
+        font_fname = pkg_resources.resource_filename('uxsim', 'utils/Inconsolata.otf')
+        font = ImageFont.truetype(font_fname, int(network_font_size))
 
         def flip(y):
             return img.size[1]-y
@@ -1519,7 +1522,8 @@ class Analyzer:
                 draw.text(((n.x)*coef-minx, flip((n.y)*coef-miny)), n.name, font=font, fill="green", anchor="mm")
                 draw.text(((n.x)*coef-minx, flip((n.y)*coef-miny)), n.name, font=font, fill="green", anchor="mm")
 
-        font = ImageFont.truetype("utils/Inconsolata.otf", int(30))       
+        font_fname = pkg_resources.resource_filename('uxsim', 'utils/Inconsolata.otf')
+        font = ImageFont.truetype(font_fname, int(30))       
         draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
 
         img = img.resize((int((maxx-minx)/scale), int((maxy-miny)/scale)), resample=Resampling.LANCZOS)    
@@ -1722,7 +1726,8 @@ class Analyzer:
         for t in tqdm(range(int(s.W.TMAX*0), int(s.W.TMAX*1), s.W.DELTAT*speed_coef)):
             img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
             draw = ImageDraw.Draw(img)
-            font = ImageFont.truetype("utils/Inconsolata.otf", int(network_font_size))
+            font_fname = pkg_resources.resource_filename('uxsim', 'utils/Inconsolata.otf')
+            font = ImageFont.truetype(font_fname, int(network_font_size))
 
             def flip(y):
                 return img.size[1]-y
@@ -1746,7 +1751,8 @@ class Analyzer:
                 draw.ellipse((xs[-1]-size, flip(ys[-1])-size, xs[-1]+size, flip(ys[-1])+size), fill=(int(trace["c"][0]*255), int(trace["c"][1]*255), int(trace["c"][2]*255)))
                 #draw.line([(x1, flip(y1)), (xmid1, flip(ymid1)), (xmid2, flip(ymid2)), (x2, flip(y2))]
 
-            font = ImageFont.truetype("utils/Inconsolata.otf", int(30))       
+            font_fname = pkg_resources.resource_filename('uxsim', 'utils/Inconsolata.otf')
+            font = ImageFont.truetype(font_fname, int(30))       
             draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
 
             img = img.resize((int((maxx-minx)/scale), int((maxy-miny)/scale)), resample=Resampling.LANCZOS)
