@@ -1,3 +1,3 @@
-orig,dest,start_t,end_t,q,
-W_in,S_in,0,4800,0.5,
-E_in,N_in,1200,4800,0.5,
+orig,dest,start_t,end_t,flow_rate,volume
+W_in,S_in,0,4800,-1,2400
+E_in,N_in,1200,4800,-1,1800

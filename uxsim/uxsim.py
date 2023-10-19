@@ -470,7 +470,7 @@ class Vehicle:
     """
     Vehicle or platoon in a network.
     """
-    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0):
+    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None):
         """
         Create a vehicle (more precisely, platoon)
         
@@ -496,6 +496,8 @@ class Vehicle:
             The names of the links the vehicle avoids, default is empty list.
         trip_abort : int, optional
             Whether to abort the trip if a dead end is reached, default is 1.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         """
         
         s.W = W
@@ -557,6 +559,8 @@ class Vehicle:
         s.log_v = [] #現在速度
         s.color = (random.random(), random.random(), random.random())
         
+        s.attribute = attribute
+        
         s.id = len(s.W.VEHICLES)
         if name != None:
             s.name = name
@@ -564,6 +568,7 @@ class Vehicle:
             s.name = str(s.id)
         s.W.VEHICLES[s.name] = s
         s.W.VEHICLES_LIVING[s.name] = s
+        
     
     def __repr__(s):
         return f"<Vehicle {s.name}: {s.state}, x={s.x}, link={s.link}>"
@@ -1549,7 +1554,7 @@ class Analyzer:
         else:
             avev = 0
         
-        print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s | {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
+        print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
         
     @catch_exceptions_and_warn()
     def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20):
@@ -2190,6 +2195,8 @@ class World:
             The names of the links the vehicle avoids, default is empty list.
         trip_abort : int, optional
             Whether to abort the trip if a dead end is reached, default is 1.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         
         Returns
         -------
@@ -2203,7 +2210,7 @@ class World:
         """
         return Vehicle(W, *args, **kwargs)
     
-    def adddemand(W, orig, dest, t_start, t_end, flow=0, volume=0):
+    def adddemand(W, orig, dest, t_start, t_end, flow=-1, volume=-1, attribute=None):
         """
         Generate vehicles by specifying time-dependent origin-destination demand.
 
@@ -2221,6 +2228,8 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         """
         if volume > 0:
             flow = volume/(t_end-t_start)
@@ -2229,7 +2238,7 @@ class World:
         for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
             f += flow*W.DELTAT
             while f >= W.DELTAN:
-                W.addVehicle(orig, dest, t, departure_time_is_time_step=1)
+                W.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute)
                 f -= W.DELTAN
     
     def finalize_scenario(W, tmax=None):
@@ -2354,7 +2363,7 @@ class World:
         #メインループ
         for W.T in range(start_ts, end_ts):
             if W.T == 0:
-                W.print("      time| # of vehicles| ave speed | computation time", flush=True)
+                W.print("      time| # of vehicles| ave speed| computation time", flush=True)
                 W.analyzer.show_simulation_progress()
             
             for link in W.LINKS:
@@ -2521,7 +2530,10 @@ class World:
         with open(fname) as f:
             for r in csv.reader(f):
                 if r[2] != "start_t":
-                    W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]))
+                    try: 
+                        W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]), float(r[5]))
+                    except:
+                        W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]))
 
     def on_time(W, time):
         """

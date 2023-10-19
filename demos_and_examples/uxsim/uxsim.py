@@ -1549,7 +1549,7 @@ class Analyzer:
         else:
             avev = 0
         
-        print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s | {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
+        print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
         
     @catch_exceptions_and_warn()
     def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20):
@@ -2203,7 +2203,7 @@ class World:
         """
         return Vehicle(W, *args, **kwargs)
     
-    def adddemand(W, orig, dest, t_start, t_end, flow):
+    def adddemand(W, orig, dest, t_start, t_end, flow=-1, volume=-1):
         """
         Generate vehicles by specifying time-dependent origin-destination demand.
 
@@ -2217,19 +2217,21 @@ class World:
             The start time for the demand in seconds.
         t_end : float
             The end time for the demand in seconds.
-        flow : float
+        flow : float, optional
             The flow rate from the origin to the destination in vehicles per second.
+        volume: float, optional
+            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
         """
-        #時間帯OD需要の生成関数
-        #時刻t_start (s)からt_end (s)までorigからdestに
-        #向かう流率flow (veh/s)の需要を生成
+        if volume > 0:
+            flow = volume/(t_end-t_start)
+        
         f = 0
         for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
             f += flow*W.DELTAT
-            if f >= W.DELTAN:
+            while f >= W.DELTAN:
                 W.addVehicle(orig, dest, t, departure_time_is_time_step=1)
                 f -= W.DELTAN
-                
+    
     def finalize_scenario(W, tmax=None):
         """
         Finalizes the settings and preparations for the simulation scenario execution.
@@ -2350,10 +2352,9 @@ class World:
             raise Exception("exec_simulation error: Simulation duration is negative. Check until_t or duration_t")
         
         #メインループ
-        print(hash(random.getstate()))
         for W.T in range(start_ts, end_ts):
             if W.T == 0:
-                W.print("      time| # of vehicles| ave speed | computation time", flush=True)
+                W.print("      time| # of vehicles| ave speed| computation time", flush=True)
                 W.analyzer.show_simulation_progress()
             
             for link in W.LINKS:
@@ -2456,17 +2457,6 @@ class World:
                     return l
         raise Exception(f"'{link}' is not Link")
     
-    #def generate_demand(W, orig, dest, t_start, t_end, flow):
-    #    #時間帯OD需要の生成関数
-    #    #時刻t_start (s)からt_end (s)までorigからdestに
-    #    #向かう流率flow (veh/s)の需要を生成
-    #    f = 0
-    #    for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
-    #        f += flow*W.DELTAT
-    #        if f >= W.DELTAN:
-    #            Vehicle(W, orig, dest, t)
-    #            f -= W.DELTAN
-    
     def load_scenario_from_csv(W, fname_node, fname_link, fname_demand, tmax=None):
         """
         Load a scenario from CSV files.
@@ -2531,7 +2521,10 @@ class World:
         with open(fname) as f:
             for r in csv.reader(f):
                 if r[2] != "start_t":
-                    W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]))
+                    try: 
+                        W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]), float(r[5]))
+                    except:
+                        W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]))
 
     def on_time(W, time):
         """
