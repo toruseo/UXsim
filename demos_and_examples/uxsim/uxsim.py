@@ -4,7 +4,7 @@ Macroscopic/mesoscopic traffic flow simulator in a network.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import random, copy, glob, os, csv, time
+import random, glob, os, csv, time
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from PIL.Image import Resampling, Transpose
@@ -12,7 +12,6 @@ from tqdm.auto import tqdm
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
 from .utils  import *
-
 import pkg_resources
 
 from scipy.sparse.csgraph import floyd_warshall
@@ -1649,7 +1648,6 @@ class Analyzer:
         for veh in s.W.VEHICLES.values():
             if random.random() > sample_ratio:
                 continue
-
             ts = []
             xs = []
             ys = []
@@ -1676,7 +1674,7 @@ class Analyzer:
 
             # 点列
             points = np.array([xs, ys]).T
-
+            
             # x, y 座標を取得
             x = points[:, 0]
             y = points[:, 1]
@@ -2352,6 +2350,7 @@ class World:
             raise Exception("exec_simulation error: Simulation duration is negative. Check until_t or duration_t")
         
         #メインループ
+        print(hash(random.getstate()))
         for W.T in range(start_ts, end_ts):
             if W.T == 0:
                 W.print("      time| # of vehicles| ave speed | computation time", flush=True)
@@ -2370,8 +2369,8 @@ class World:
             for veh in W.VEHICLES_RUNNING.values():
                 veh.carfollow()
             
-            for veh in copy.copy(W.VEHICLES_LIVING).values():
-                veh.update()
+            for name in list(W.VEHICLES_LIVING.keys()):
+                W.VEHICLES_LIVING[name].update()
             
             if W.T % W.DELTAT_ROUTE == 0:
                 W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)

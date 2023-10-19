@@ -48,7 +48,7 @@ if __name__ == "__main__":
         W.analyzer.network(t, detailed=1, network_font_size=0)
     W.analyzer.network_anim(animation_speed_inverse=15, detailed=0, network_font_size=0)
     W.analyzer.network_anim(detailed=1, network_font_size=0, figsize=(12,12))
-    W.analyzer.network_fancy(animation_speed_inverse=15, sample_ratio=0.3, interval=5, trace_length=5)
+    W.analyzer.network_fancy(animation_speed_inverse=15, sample_ratio=1.0, interval=3, trace_length=5)
     
     # 結果をpandas.DataFrameに変換して分析しやすいようにする
     print(W.analyzer.basic_to_pandas()) #基礎統計

@@ -4,7 +4,7 @@ Macroscopic/mesoscopic traffic flow simulator in a network.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import random, copy, glob, os, csv, time
+import random, glob, os, csv, time
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from PIL.Image import Resampling, Transpose
@@ -12,7 +12,6 @@ from tqdm.auto import tqdm
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
 from .utils  import *
-
 import pkg_resources
 
 from scipy.sparse.csgraph import floyd_warshall
@@ -1649,7 +1648,6 @@ class Analyzer:
         for veh in s.W.VEHICLES.values():
             if random.random() > sample_ratio:
                 continue
-
             ts = []
             xs = []
             ys = []
@@ -1676,7 +1674,7 @@ class Analyzer:
 
             # 点列
             points = np.array([xs, ys]).T
-
+            
             # x, y 座標を取得
             x = points[:, 0]
             y = points[:, 1]
@@ -2205,7 +2203,7 @@ class World:
         """
         return Vehicle(W, *args, **kwargs)
     
-    def adddemand(W, orig, dest, t_start, t_end, flow):
+    def adddemand(W, orig, dest, t_start, t_end, flow=0, volume=0):
         """
         Generate vehicles by specifying time-dependent origin-destination demand.
 
@@ -2219,19 +2217,21 @@ class World:
             The start time for the demand in seconds.
         t_end : float
             The end time for the demand in seconds.
-        flow : float
+        flow : float, optional
             The flow rate from the origin to the destination in vehicles per second.
+        volume: float, optional
+            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
         """
-        #時間帯OD需要の生成関数
-        #時刻t_start (s)からt_end (s)までorigからdestに
-        #向かう流率flow (veh/s)の需要を生成
+        if volume > 0:
+            flow = volume/(t_end-t_start)
+        
         f = 0
         for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
             f += flow*W.DELTAT
-            if f >= W.DELTAN:
+            while f >= W.DELTAN:
                 W.addVehicle(orig, dest, t, departure_time_is_time_step=1)
                 f -= W.DELTAN
-                
+    
     def finalize_scenario(W, tmax=None):
         """
         Finalizes the settings and preparations for the simulation scenario execution.
@@ -2370,8 +2370,8 @@ class World:
             for veh in W.VEHICLES_RUNNING.values():
                 veh.carfollow()
             
-            for veh in copy.copy(W.VEHICLES_LIVING).values():
-                veh.update()
+            for name in list(W.VEHICLES_LIVING.keys()):
+                W.VEHICLES_LIVING[name].update()
             
             if W.T % W.DELTAT_ROUTE == 0:
                 W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
@@ -2456,17 +2456,6 @@ class World:
                 if l.name == link:
                     return l
         raise Exception(f"'{link}' is not Link")
-    
-    #def generate_demand(W, orig, dest, t_start, t_end, flow):
-    #    #時間帯OD需要の生成関数
-    #    #時刻t_start (s)からt_end (s)までorigからdestに
-    #    #向かう流率flow (veh/s)の需要を生成
-    #    f = 0
-    #    for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
-    #        f += flow*W.DELTAT
-    #        if f >= W.DELTAN:
-    #            Vehicle(W, orig, dest, t)
-    #            f -= W.DELTAN
     
     def load_scenario_from_csv(W, fname_node, fname_link, fname_demand, tmax=None):
         """
