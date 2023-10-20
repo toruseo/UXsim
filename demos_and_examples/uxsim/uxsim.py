@@ -1960,6 +1960,8 @@ class Analyzer:
         -------
         pd.DataFrame
         """
+        if links == None:
+            links = s.W.LINKS
         s.compute_mfd(links)
         links = [s.W.get_link(link) for link in links]
         links = frozenset(links)
