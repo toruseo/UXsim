@@ -13,17 +13,6 @@
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Analyzer
-      Link
-      Node
-      RouteChoice
-      Vehicle
-      World
-   
    
 
    

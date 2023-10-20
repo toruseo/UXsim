@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UXsim’s technical reference &mdash; UXsim v1.0 documentation</title>
+  <title>UXsim technical documentation &mdash; UXsim v1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="uxsim" href="_autosummary/uxsim.html" />
+    <link rel="next" title="Getting started" href="getting_started.html" />
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
 <script>
@@ -55,17 +55,10 @@ gtag('config', 'UA-111714220-1');
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.html">uxsim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.World.html">uxsim.World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Node.html">uxsim.Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Vehicle.html">uxsim.Vehicle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/utils.utils.html">utils.utils</a></li>
-</ul>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/demo_notebook_01en.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tech_ref.html">Technical reference</a></li>
 </ul>
 
         </div>
@@ -82,7 +75,7 @@ gtag('config', 'UA-111714220-1');
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">UXsim’s technical reference</li>
+      <li class="breadcrumb-item active">UXsim technical documentation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,71 +85,50 @@ gtag('config', 'UA-111714220-1');
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="uxsim-s-technical-reference">
-<h1>UXsim’s technical reference<a class="headerlink" href="#uxsim-s-technical-reference" title="Permalink to this heading"></a></h1>
+  <section id="uxsim-technical-documentation">
+<h1>UXsim technical documentation<a class="headerlink" href="#uxsim-technical-documentation" title="Permalink to this heading"></a></h1>
 <section id="about">
 <h2>About<a class="headerlink" href="#about" title="Permalink to this heading"></a></h2>
-<p>UXsim is an open-source macroscopic and mesoscopic network traffic flow simulator developed in Python.</p>
-<p>This webpage is a technical reference of UXsim codes, and may be too detailed for basic usage.
-For basic explanation, please see the following pages and materials first:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/toruseo/UXsim">Github repo</a></p></li>
-<li><p><a class="reference external" href="https://github.com/toruseo/UXsim/blob/main/README.en.md">README</a></p></li>
-<li><p><a class="reference external" href="https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb">Tutorial based on Jupyter Notebook on Github</a> (or <a class="reference internal" href="notebooks/demo_notebook_01en.html"><span class="doc">Tutorial</span></a> in this document)</p></li>
-<li><p><a class="reference external" href="https://arxiv.org/pdf/2309.17114.pdf">arXiv preprint</a></p></li>
-</ul>
-<p>Please note that this document is automatically generated from docstring of <cite>uxsim.py</cite>, and some of the docstrings are automatically written by ChatGPT.
-Thus, they are not completely perfect.
-This was prepared with the intention of “better than nothing.”</p>
+<p>UXsim is an open-source macroscopic and mesoscopic network traffic flow simulator developed in Python.
+This webpage is a technical documentation of UXsim codes.
+Please visit <a class="reference external" href="https://github.com/toruseo/UXsim">Github repo</a> first.</p>
 </section>
-<section id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading"></a></h2>
-<p>See below for the technical details on classes and functions.</p>
+</section>
+<section id="contents">
+<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.html">uxsim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.World.html">uxsim.World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Node.html">uxsim.Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Vehicle.html">uxsim.Vehicle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/utils.utils.html">utils.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#test-scenario">Test scenario</a></li>
 </ul>
-</div>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-</ul>
-</section>
-<section id="tutorial">
-<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading"></a></h2>
-<p>FYI, the tutorial based on Jupyter Notebook is embedded to this document as well.</p>
-<div class="toctree-wrapper compound">
-<ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/demo_notebook_01en.html">Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Simple-Scenario-Example">Simple Scenario Example</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Scenario-Definition">Scenario Definition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Simulation-Execution">Simulation Execution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Results">Results</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Visualization-of-Results">Visualization of Results</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Link-level">Link-level</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Area/Network-level">Area/Network-level</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Vehicle-level">Vehicle-level</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Simple-Scenario-Example">Simple Scenario Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_01en.html#Sioux-Falls-Network">Sioux Falls Network</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation mechanism</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mechanism.html#models">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mechanism.html#key-inputs">Key inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mechanism.html#structure">Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mechanism.html#computation-flow">Computation flow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tech_ref.html">Technical reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tech_ref.html#modules">Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_ref.html#classes">Classes</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
-</section>
-<section id="author">
-<h1>Author<a class="headerlink" href="#author" title="Permalink to this heading"></a></h1>
+<section id="links">
+<h1>Links<a class="headerlink" href="#links" title="Permalink to this heading"></a></h1>
 <ul class="simple">
-<li><p><a class="reference external" href="https://toruseo.jp/index_en.html">Toru Seo</a></p></li>
+<li><p><a class="reference external" href="https://github.com/toruseo/UXsim">Github repo of UXsim</a></p></li>
+<li><p><a class="reference external" href="https://arxiv.org/pdf/2309.17114.pdf">arXiv preprint on UXsim</a></p></li>
+<li><p><a class="reference external" href="https://toruseo.jp/index_en.html">Author (Toru Seo)</a></p></li>
 </ul>
 </section>
 
@@ -164,13 +136,13 @@ This was prepared with the intention of “better than nothing.”</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="_autosummary/uxsim.html" class="btn btn-neutral float-right" title="uxsim" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Toru Seo.</p>
+    <p>&#169; Copyright 2023 Toru Seo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

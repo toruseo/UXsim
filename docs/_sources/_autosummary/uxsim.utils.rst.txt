@@ -1,0 +1,30 @@
+﻿uxsim.utils
+===========
+
+.. automodule:: uxsim.utils
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      catch_exceptions_and_warn
+      lange
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

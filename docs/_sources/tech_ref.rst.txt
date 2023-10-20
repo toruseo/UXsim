@@ -1,0 +1,34 @@
+
+Technical reference
+===================
+
+Please note that this document is automatically generated from docstring, and some of the docstrings are automatically written by ChatGPT. 
+Thus, they are not completely perfect.
+This was prepared with the intention of "better than nothing."
+
+Modules
+-------
+
+.. autosummary::
+   :toctree: _autosummary
+   :nosignatures:
+
+   uxsim.uxsim
+   uxsim.utils
+   
+Classes
+-------
+
+.. autosummary::
+   :toctree: _autosummary
+   :nosignatures:
+
+   uxsim.World
+   uxsim.Node
+   uxsim.Link
+   uxsim.Vehicle
+   uxsim.RouteChoice
+   uxsim.Analyzer
+   
+
+* :ref:`genindex`

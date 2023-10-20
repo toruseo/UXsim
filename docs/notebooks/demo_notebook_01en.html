@@ -23,7 +23,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="utils.utils" href="../_autosummary/utils.utils.html" />
+    <link rel="next" title="Simulation mechanism" href="../mechanism.html" />
+    <link rel="prev" title="Getting started" href="../getting_started.html" />
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
 <script>
@@ -57,17 +58,8 @@ gtag('config', 'UA-111714220-1');
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/uxsim.html">uxsim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/uxsim.World.html">uxsim.World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/uxsim.Vehicle.html">uxsim.Vehicle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/utils.utils.html">utils.utils</a></li>
-</ul>
-<ul class="current">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Simple-Scenario-Example">Simple Scenario Example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Scenario-Definition">Scenario Definition</a></li>
@@ -84,6 +76,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="#Sioux-Falls-Network">Sioux Falls Network</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tech_ref.html">Technical reference</a></li>
 </ul>
 
         </div>
@@ -209,12 +203,12 @@ simulation setting:
  number of platoons:     140
  number of links:        3
  number of nodes:        4
- setup time:             0.12 s
+ setup time:             0.13 s
 simulating...
-      time| # of vehicles| ave speed | computation time
-       0 s|        0 vehs|   0.0 m/s |     0.00 s
-     600 s|      100 vehs|  17.5 m/s |     0.03 s
-    1195 s|       25 vehs|  20.0 m/s |     0.06 s
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|      100 vehs|  17.5 m/s|     0.03 s
+    1195 s|       25 vehs|  20.0 m/s|     0.05 s
  simulation finished
 </pre></div></div>
 </div>
@@ -423,60 +417,6 @@ results:
       <td>0</td>
       <td>0.006944</td>
       <td>0.138889</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>120</td>
-      <td>0.013333</td>
-      <td>0.266667</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>240</td>
-      <td>0.013333</td>
-      <td>0.266667</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>360</td>
-      <td>0.013333</td>
-      <td>0.266667</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>480</td>
-      <td>0.020434</td>
-      <td>0.402778</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>600</td>
-      <td>0.034965</td>
-      <td>0.593056</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>720</td>
-      <td>0.042795</td>
-      <td>0.581250</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>840</td>
-      <td>0.050833</td>
-      <td>0.571875</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>960</td>
-      <td>0.051615</td>
-      <td>0.453472</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>1080</td>
-      <td>0.023455</td>
-      <td>0.318056</td>
     </tr>
   </tbody>
 </table>
@@ -912,7 +852,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9327110583774d51899359c4d2a4910d", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a84420472a994afa9c8069d177e7d668", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -947,7 +887,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ae300fee279a458eacab685220bfe38c", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d8106bd1fe3e4d56987a58e5c0b5e0f3", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1142,9 +1082,9 @@ results:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
-<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;outsimple_demo/anim_network0.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -1168,7 +1108,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "003eb050b0414d2cb3aff25a89baf614", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f32f565236034020832a891d1a023ba8", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1182,7 +1122,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1f5ebefe7d1c46b4955744695ff13821", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b0e090a90d854fa4925976d65b5f63ee", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1196,7 +1136,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "15e49d571fd54ea48616b5658fdf64ff", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1dc7ad2692024564adcaf0246c213824", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1245,7 +1185,7 @@ results:
 <h2>Sioux Falls Network<a class="headerlink" href="#Sioux-Falls-Network" title="Permalink to this heading"></a></h2>
 <p>An example with Sioux Falls network, a famous scenario for benchmarking in transportation research</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation main</span>
@@ -1267,7 +1207,7 @@ results:
 <span class="c1"># Results analysis</span>
 <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
 
-<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1287,29 +1227,29 @@ simulation setting:
  number of platoons:     6938
  number of links:        76
  number of nodes:        24
- setup time:             0.38 s
+ setup time:             1.48 s
 simulating...
-      time| # of vehicles| ave speed | computation time
-       0 s|        0 vehs|   0.0 m/s |     0.00 s
-     600 s|     2460 vehs|   7.3 m/s |     1.27 s
-    1200 s|     5655 vehs|   6.9 m/s |     2.83 s
-    1800 s|     8450 vehs|   6.6 m/s |     4.59 s
-    2400 s|     9935 vehs|   6.2 m/s |     6.58 s
-    3000 s|    10435 vehs|   5.5 m/s |     8.31 s
-    3600 s|    12550 vehs|   5.2 m/s |    10.00 s
-    4200 s|    13350 vehs|   5.0 m/s |    11.78 s
-    4800 s|    13880 vehs|   4.9 m/s |    13.40 s
-    5400 s|    10445 vehs|   5.5 m/s |    14.96 s
-    6000 s|     6745 vehs|   5.8 m/s |    15.87 s
-    6600 s|     3550 vehs|   6.3 m/s |    16.41 s
-    7195 s|     1375 vehs|   6.9 m/s |    16.69 s
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|     2460 vehs|   7.3 m/s|     1.21 s
+    1200 s|     5655 vehs|   6.9 m/s|     2.74 s
+    1800 s|     8455 vehs|   6.6 m/s|     4.53 s
+    2400 s|     9980 vehs|   6.1 m/s|     6.22 s
+    3000 s|    10425 vehs|   5.6 m/s|     7.90 s
+    3600 s|    12580 vehs|   5.2 m/s|     9.54 s
+    4200 s|    13225 vehs|   5.0 m/s|    11.12 s
+    4800 s|    13710 vehs|   5.0 m/s|    12.58 s
+    5400 s|    10470 vehs|   5.3 m/s|    14.16 s
+    6000 s|     6975 vehs|   5.7 m/s|    15.31 s
+    6600 s|     3835 vehs|   6.4 m/s|    15.94 s
+    7195 s|     1485 vehs|   7.1 m/s|    16.23 s
  simulation finished
 results:
  average speed:  5.7 m/s
- number of completed trips:      33315 / 34690
- average travel time of trips:   1738.7 s
- average delay of trips:         367.2 s
- delay ratio:                    0.211
+ number of completed trips:      33205 / 34690
+ average travel time of trips:   1742.8 s
+ average delay of trips:         371.8 s
+ delay ratio:                    0.213
  generating animation...
 </pre></div></div>
 </div>
@@ -1317,10 +1257,10 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "974f51b67a2e41f696982253fba621bc", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9ea8dfc633fe4cf4a440529d01e1c9c7", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;outsimple_demo/anim_network0.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -1350,13 +1290,14 @@ results:
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../_autosummary/utils.utils.html" class="btn btn-neutral float-left" title="utils.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../getting_started.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mechanism.html" class="btn btn-neutral float-right" title="Simulation mechanism" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Toru Seo.</p>
+    <p>&#169; Copyright 2023 Toru Seo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

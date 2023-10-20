@@ -1,7 +1,0 @@
-uxtest
-======
-
-.. toctree::
-   :maxdepth: 4
-
-   uxsim

@@ -56,17 +56,22 @@ gtag('config', 'UA-111714220-1');
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="uxsim.html">uxsim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">uxsim.Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.utils.html">utils.utils</a></li>
-</ul>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/demo_notebook_01en.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#modules">Modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes">Classes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -83,6 +88,7 @@ gtag('config', 'UA-111714220-1');
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tech_ref.html">Technical reference</a></li>
       <li class="breadcrumb-item active">uxsim.Node</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/_autosummary/uxsim.Node.rst.txt" rel="nofollow"> View page source</a>
@@ -97,11 +103,11 @@ gtag('config', 'UA-111714220-1');
 <h1>uxsim.Node<a class="headerlink" href="#uxsim-node" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.Node">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node" title="Permalink to this definition"></a></dt>
 <dd><p>Node in a network.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Node.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim.html#Node.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Create a node</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -143,19 +149,19 @@ For example, <a href="#id1"><span class="problematic" id="id2">`</span></a>signa
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/uxsim.Node.html#uxsim.Node.__init__" title="uxsim.Node.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, name, x, y[, signal])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Node.__init__" title="uxsim.Node.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, name, x, y[, signal])</p></td>
 <td><p>Create a node</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Node.generate" title="uxsim.Node.generate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.generate" title="uxsim.uxsim.Node.generate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code></a>()</p></td>
 <td><p>Departs vehicles from the waiting queue.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Node.signal_control" title="uxsim.Node.signal_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signal_control</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.signal_control" title="uxsim.uxsim.Node.signal_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signal_control</span></code></a>()</p></td>
 <td><p>Updates the signal timings for a traffic signal node.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Node.transfer" title="uxsim.Node.transfer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.transfer" title="uxsim.uxsim.Node.transfer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer</span></code></a>()</p></td>
 <td><p>Transfers vehicles between links at the node.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Node.update" title="uxsim.Node.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.update" title="uxsim.uxsim.Node.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
 <td><p>Make necessary updates when the timestep is incremented.</p></td>
 </tr>
 </tbody>
@@ -175,7 +181,7 @@ For example, <a href="#id1"><span class="problematic" id="id2">`</span></a>signa
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Toru Seo.</p>
+    <p>&#169; Copyright 2023 Toru Seo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

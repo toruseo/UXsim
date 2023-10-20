@@ -20,8 +20,6 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="uxsim.World" href="uxsim.World.html" />
-    <link rel="prev" title="UXsim’s technical reference" href="../index.html" />
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
 <script>
@@ -55,18 +53,11 @@ gtag('config', 'UA-111714220-1');
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">uxsim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.utils.html">utils.utils</a></li>
-</ul>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/demo_notebook_01en.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tech_ref.html">Technical reference</a></li>
 </ul>
 
         </div>
@@ -95,44 +86,17 @@ gtag('config', 'UA-111714220-1');
              
   <section id="module-uxsim">
 <span id="uxsim"></span><h1>uxsim<a class="headerlink" href="#module-uxsim" title="Permalink to this heading"></a></h1>
-<p>Macroscopic/mesoscopic traffic flow simulator in a network.</p>
-<p class="rubric">Classes</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Analyzer" title="uxsim.Analyzer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Analyzer</span></code></a>(W)</p></td>
-<td><p>Class for analyzing and visualizing a simulation result.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Link" title="uxsim.Link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Link</span></code></a>(W, name, start_node, end_node, length, ...)</p></td>
-<td><p>Link in a network.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Node" title="uxsim.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(W, name, x, y[, signal])</p></td>
-<td><p>Node in a network.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.RouteChoice" title="uxsim.RouteChoice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RouteChoice</span></code></a>(W)</p></td>
-<td><p>Class for computing shortest path for all vehicles.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Vehicle" title="uxsim.Vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vehicle</span></code></a>(W, orig, dest, departure_time[, ...])</p></td>
-<td><p>Vehicle or platoon in a network.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World" title="uxsim.World"><code class="xref py py-obj docutils literal notranslate"><span class="pre">World</span></code></a>([name, deltan, reaction_time, ...])</p></td>
-<td><p>World (i.e., simulation environment).</p></td>
-</tr>
-</tbody>
-</table>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="UXsim’s technical reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="uxsim.World.html" class="btn btn-neutral float-right" title="uxsim.World" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Toru Seo.</p>
+    <p>&#169; Copyright 2023 Toru Seo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

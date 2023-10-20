@@ -3,57 +3,31 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-UXsim's technical reference
-===========================
+UXsim technical documentation
+=============================
 
 About
 -----
 
 UXsim is an open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
+This webpage is a technical documentation of UXsim codes.
+Please visit `Github repo <https://github.com/toruseo/UXsim>`_ first. 
 
-This webpage is a technical reference of UXsim codes, and may be too detailed for basic usage.
-For basic explanation, please see the following pages and materials first:
-
-* `Github repo <https://github.com/toruseo/UXsim>`_
-* `README <https://github.com/toruseo/UXsim/blob/main/README.en.md>`_
-* `Tutorial based on Jupyter Notebook on Github <https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb>`_ (or :doc:`notebooks/demo_notebook_01en` in this document)
-* `arXiv preprint <https://arxiv.org/pdf/2309.17114.pdf>`_
-
-Please note that this document is automatically generated from docstring of `uxsim.py`, and some of the docstrings are automatically written by ChatGPT. 
-Thus, they are not completely perfect.
-This was prepared with the intention of "better than nothing."
-
-
-Reference
----------
-
-See below for the technical details on classes and functions.
+Contents
+========
 
 .. toctree::
-   
-   _autosummary/uxsim
-   _autosummary/uxsim.World
-   _autosummary/uxsim.Node
-   _autosummary/uxsim.Link
-   _autosummary/uxsim.Vehicle
-   _autosummary/uxsim.RouteChoice
-   _autosummary/uxsim.Analyzer
-   _autosummary/utils.utils
-
-* :ref:`genindex`
-
-Tutorial
---------
-
-FYI, the tutorial based on Jupyter Notebook is embedded to this document as well.
-
-.. toctree::
+   :maxdepth: 2
    :glob:
 
+   getting_started
    ../notebooks/*
+   mechanism
+   tech_ref
 
+Links
+=====
 
-Author
-======
-
-* `Toru Seo <https://toruseo.jp/index_en.html>`_
+* `Github repo of UXsim <https://github.com/toruseo/UXsim>`_
+* `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_
+* `Author (Toru Seo) <https://toruseo.jp/index_en.html>`_

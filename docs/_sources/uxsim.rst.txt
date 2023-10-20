@@ -1,7 +1,5 @@
-uxsim module
-============
+uxsim
+=====
 
-.. automodule:: uxsim
+.. automodule:: uxsim.uxsim
    :members:
-   :undoc-members:
-   :show-inheritance:

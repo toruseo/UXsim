@@ -56,17 +56,22 @@ gtag('config', 'UA-111714220-1');
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="uxsim.html">uxsim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">uxsim.Vehicle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.utils.html">utils.utils</a></li>
-</ul>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/demo_notebook_01en.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#modules">Modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes">Classes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.Vehicle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -83,6 +88,7 @@ gtag('config', 'UA-111714220-1');
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tech_ref.html">Technical reference</a></li>
       <li class="breadcrumb-item active">uxsim.Vehicle</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/_autosummary/uxsim.Vehicle.rst.txt" rel="nofollow"> View page source</a>
@@ -97,11 +103,11 @@ gtag('config', 'UA-111714220-1');
 <h1>uxsim.Vehicle<a class="headerlink" href="#uxsim-vehicle" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.Vehicle">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Vehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_pref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_avoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_abort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time_is_time_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim.html#Vehicle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Vehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_pref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_avoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_abort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time_is_time_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle" title="Permalink to this definition"></a></dt>
 <dd><p>Vehicle or platoon in a network.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Vehicle.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_pref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_avoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_abort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time_is_time_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim.html#Vehicle.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_pref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_avoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_abort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time_is_time_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Create a vehicle (more precisely, platoon)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -116,6 +122,7 @@ gtag('config', 'UA-111714220-1');
 <li><p><strong>links_prefer</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The names of the links the vehicle prefers, default is empty list.</p></li>
 <li><p><strong>links_avoid</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The names of the links the vehicle avoids, default is empty list.</p></li>
 <li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
+<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
 </ul>
 </dd>
 </dl>
@@ -124,25 +131,25 @@ gtag('config', 'UA-111714220-1');
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/uxsim.Vehicle.html#uxsim.Vehicle.__init__" title="uxsim.Vehicle.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, orig, dest, departure_time[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.__init__" title="uxsim.Vehicle.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, orig, dest, departure_time[, ...])</p></td>
 <td><p>Create a vehicle (more precisely, platoon)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Vehicle.carfollow" title="uxsim.Vehicle.carfollow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">carfollow</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.carfollow" title="uxsim.uxsim.Vehicle.carfollow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">carfollow</span></code></a>()</p></td>
 <td><p>Drive withing a link.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Vehicle.end_trip" title="uxsim.Vehicle.end_trip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end_trip</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.end_trip" title="uxsim.uxsim.Vehicle.end_trip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end_trip</span></code></a>()</p></td>
 <td><p>Procedure when the vehicle finishes its trip.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Vehicle.record_log" title="uxsim.Vehicle.record_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">record_log</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.record_log" title="uxsim.uxsim.Vehicle.record_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">record_log</span></code></a>()</p></td>
 <td><p>Record travel logs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Vehicle.route_next_link_choice" title="uxsim.Vehicle.route_next_link_choice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_next_link_choice</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.route_next_link_choice" title="uxsim.uxsim.Vehicle.route_next_link_choice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_next_link_choice</span></code></a>()</p></td>
 <td><p>Select a next link from the current link.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Vehicle.route_pref_update" title="uxsim.Vehicle.route_pref_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_pref_update</span></code></a>(weight)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.route_pref_update" title="uxsim.uxsim.Vehicle.route_pref_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_pref_update</span></code></a>(weight)</p></td>
 <td><p>Updates the vehicle's link preferences for route choice.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.Vehicle.update" title="uxsim.Vehicle.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.update" title="uxsim.uxsim.Vehicle.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
 <td><p>Updates the vehicle's state and position.</p></td>
 </tr>
 </tbody>
@@ -162,7 +169,7 @@ gtag('config', 'UA-111714220-1');
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Toru Seo.</p>
+    <p>&#169; Copyright 2023 Toru Seo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

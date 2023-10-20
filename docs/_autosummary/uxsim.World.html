@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="uxsim.Node" href="uxsim.Node.html" />
-    <link rel="prev" title="uxsim" href="uxsim.html" />
+    <link rel="prev" title="uxsim.utils" href="uxsim.utils.html" />
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
 <script>
@@ -56,17 +56,22 @@ gtag('config', 'UA-111714220-1');
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="uxsim.html">uxsim</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">uxsim.World</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l1"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.utils.html">utils.utils</a></li>
-</ul>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/demo_notebook_01en.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#modules">Modules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes">Classes</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.World</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -83,6 +88,7 @@ gtag('config', 'UA-111714220-1');
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tech_ref.html">Technical reference</a></li>
       <li class="breadcrumb-item active">uxsim.World</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/_autosummary/uxsim.World.rst.txt" rel="nofollow"> View page source</a>
@@ -97,11 +103,11 @@ gtag('config', 'UA-111714220-1');
 <h1>uxsim.World<a class="headerlink" href="#uxsim-world" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.World">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'homogeneous_DUO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_deltat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim.html#World"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'homogeneous_DUO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_deltat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World" title="Permalink to this definition"></a></dt>
 <dd><p>World (i.e., simulation environment). A World object is consistently referred to as <cite>W</cite> in this code.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.World.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'homogeneous_DUO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_deltat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim.html#World.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'homogeneous_DUO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_deltat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Create a World.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -131,52 +137,52 @@ gtag('config', 'UA-111714220-1');
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/uxsim.World.html#uxsim.World.__init__" title="uxsim.World.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([name, deltan, reaction_time, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.__init__" title="uxsim.World.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([name, deltan, reaction_time, ...])</p></td>
 <td><p>Create a World.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.addLink" title="uxsim.World.addLink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addLink</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.addLink" title="uxsim.uxsim.World.addLink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addLink</span></code></a>(*args, **kwargs)</p></td>
 <td><p>add a link to world</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.addNode" title="uxsim.World.addNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addNode</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.addNode" title="uxsim.uxsim.World.addNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addNode</span></code></a>(*args, **kwargs)</p></td>
 <td><p>add a node to world</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.addVehicle" title="uxsim.World.addVehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addVehicle</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.addVehicle" title="uxsim.uxsim.World.addVehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addVehicle</span></code></a>(*args, **kwargs)</p></td>
 <td><p>add a vehicle to world</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.adddemand" title="uxsim.World.adddemand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adddemand</span></code></a>(orig, dest, t_start, t_end, flow)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.adddemand" title="uxsim.uxsim.World.adddemand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adddemand</span></code></a>(orig, dest, t_start, t_end[, ...])</p></td>
 <td><p>Generate vehicles by specifying time-dependent origin-destination demand.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.check_simulation_ongoing" title="uxsim.World.check_simulation_ongoing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_simulation_ongoing</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.check_simulation_ongoing" title="uxsim.uxsim.World.check_simulation_ongoing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_simulation_ongoing</span></code></a>()</p></td>
 <td><p>Check whether the simulation is has not reached its final time.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.exec_simulation" title="uxsim.World.exec_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exec_simulation</span></code></a>([until_t, duration_t])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.exec_simulation" title="uxsim.uxsim.World.exec_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exec_simulation</span></code></a>([until_t, duration_t])</p></td>
 <td><p>Execute the main loop of the simulation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.finalize_scenario" title="uxsim.World.finalize_scenario"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize_scenario</span></code></a>([tmax])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.finalize_scenario" title="uxsim.uxsim.World.finalize_scenario"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize_scenario</span></code></a>([tmax])</p></td>
 <td><p>Finalizes the settings and preparations for the simulation scenario execution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.generate_Links_from_csv" title="uxsim.World.generate_Links_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_Links_from_csv</span></code></a>(fname)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.generate_Links_from_csv" title="uxsim.uxsim.World.generate_Links_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_Links_from_csv</span></code></a>(fname)</p></td>
 <td><p>Generate links in the network from a CSV file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.generate_Nodes_from_csv" title="uxsim.World.generate_Nodes_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_Nodes_from_csv</span></code></a>(fname)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.generate_Nodes_from_csv" title="uxsim.uxsim.World.generate_Nodes_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_Nodes_from_csv</span></code></a>(fname)</p></td>
 <td><p>Generate nodes in the network from a CSV file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.generate_demand_from_csv" title="uxsim.World.generate_demand_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_demand_from_csv</span></code></a>(fname)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.generate_demand_from_csv" title="uxsim.uxsim.World.generate_demand_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_demand_from_csv</span></code></a>(fname)</p></td>
 <td><p>Generate demand in the network from a CSV file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.get_link" title="uxsim.World.get_link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_link</span></code></a>(link)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.get_link" title="uxsim.uxsim.World.get_link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_link</span></code></a>(link)</p></td>
 <td><p>Get a Link instance by name or object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.get_node" title="uxsim.World.get_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node</span></code></a>(node)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.get_node" title="uxsim.uxsim.World.get_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node</span></code></a>(node)</p></td>
 <td><p>Get a Node instance by name or object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.load_scenario_from_csv" title="uxsim.World.load_scenario_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_scenario_from_csv</span></code></a>(fname_node, ...[, tmax])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.load_scenario_from_csv" title="uxsim.uxsim.World.load_scenario_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_scenario_from_csv</span></code></a>(fname_node, ...[, tmax])</p></td>
 <td><p>Load a scenario from CSV files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.on_time" title="uxsim.World.on_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_time</span></code></a>(time)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.on_time" title="uxsim.uxsim.World.on_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_time</span></code></a>(time)</p></td>
 <td><p>Check if the current time step is close to the specified time.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.World.simulation_terminated" title="uxsim.World.simulation_terminated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulation_terminated</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.simulation_terminated" title="uxsim.uxsim.World.simulation_terminated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulation_terminated</span></code></a>()</p></td>
 <td><p>Postprocessing after simulation finished</p></td>
 </tr>
 </tbody>
@@ -189,14 +195,14 @@ gtag('config', 'UA-111714220-1');
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="uxsim.html" class="btn btn-neutral float-left" title="uxsim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uxsim.utils.html" class="btn btn-neutral float-left" title="uxsim.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="uxsim.Node.html" class="btn btn-neutral float-right" title="uxsim.Node" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Toru Seo.</p>
+    <p>&#169; Copyright 2023 Toru Seo.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

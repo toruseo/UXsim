@@ -1,0 +1,46 @@
+
+Simulation mechanism
+====================
+
+Models
+------
+
+UXsim computes network traffic flow dynamics by combining following models:
+
+* The mesoscopic version of `Newell's simplified car-following model <https://doi.org/10.1016/S0191-2615(00)00044-8>`_ (aka. `X-model <https://doi.org/10.1016/j.trb.2013.02.008>`_) for link and vehicle dynamics.
+* The `mesoscopic version of the incremental node model <https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/>`_ for inter-link transfer at nodes.
+* `Dynamic user optimum <https://doi.org/10.1016/S0191-2615(00)00005-9>`_ (aka. reactive assignment) with stochasticity and delay for route choice of travelers.
+
+For the details, please refer to the original articles or, `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_, or `Japanese textbook on traffic simulation <https://www.coronasha.co.jp/np/isbn/9784339052794/>`_.
+
+Key inputs
+----------
+
+UXsim's key inputs (i.e., simulation scenario parameters) are as follows:
+
+* Reaction time of vehicles (`reaction_time` argument of `World`). This value determines the simulation time step width. This is a global parameter.
+* Platoon size for mesoscopic simulation (`deltan` of `World`). This value determines the simulation time step width. This is a global parameter.
+* Route choice model parameters: shortest path update interval (`duo_update_time` of `World`) and weight value (`duo_update_weight` of `World`).
+* Lists of nodes and links. They define the network structure.
+* Parameters of each link. For example, length, free flow speed (`free_flow_speed`), jam density (`jam_density`), merging priority parameter (`merge_priority`), and traffic signal setting (`signal_group`).
+* Parameters of each node. For example, position (`x` and `y`) and traffic signal setting (`signal`).
+* Demand. For example, origin, destination, and departure time of each vehicle are specified.
+
+Structure
+---------
+
+Class diagram of UXsim
+
+.. image:: img/class_diagram.png
+
+Computation flow
+----------------
+
+Activity diagram of UXsim
+
+.. image:: img/activity_diagram.png
+
+
+Activity diagram of a specific vehicle in UXsim
+
+.. image:: img/activity_diagram_veh.png
