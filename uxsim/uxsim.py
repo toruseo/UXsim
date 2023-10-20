@@ -1774,16 +1774,17 @@ class Analyzer:
         s.compute_edie_state()
         if links == None:
             links = s.W.LINKS
+        links = frozenset(links)
         
-        for i in range(len(s.W.Q_AREA)):
+        for i in range(len(s.W.Q_AREA[links])):
             tn = sum([l.tn_mat[i,:].sum() for l in s.W.LINKS if l in links])
             dn = sum([l.dn_mat[i,:].sum() for l in s.W.LINKS if l in links])
             an = sum([l.length*s.W.EULAR_DT for l in s.W.LINKS if l in links])
-            s.W.K_AREA[i] = tn/an
-            s.W.Q_AREA[i] = dn/an
+            s.W.K_AREA[links][i] = tn/an
+            s.W.Q_AREA[links][i] = dn/an
     
     @catch_exceptions_and_warn()
-    def macroscopic_fundamental_diagram(s, kappa=0.2, qmax=1, links=None, fname="", figsize=(4,4)):
+    def macroscopic_fundamental_diagram(s, kappa=0.2, qmax=1, figtitle="", links=None, fname="", figsize=(4,4)):
         """
         Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.
 
@@ -1810,11 +1811,12 @@ class Analyzer:
         
         if links == None:
             links = s.W.LINKS
+        links = frozenset(links)
         s.compute_mfd(links)
         
         plt.figure(figsize=figsize)
-        plt.title(f"# of links: {len(links)}")
-        plt.plot(s.W.K_AREA, s.W.Q_AREA, "ko-")
+        plt.title(f"{figtitle} (# of links: {len(links)})")
+        plt.plot(s.W.K_AREA[links], s.W.Q_AREA[links], "ko-")
         plt.xlabel("network average density (veh/m)")
         plt.ylabel("network average flow (veh/s)")
         plt.xlim([0, kappa])
@@ -1951,10 +1953,11 @@ class Analyzer:
         pd.DataFrame
         """
         s.compute_mfd(links)
+        links = frozenset(links)
         
         out = [["t", "network_k", "network_q"]]
         for i in lange(s.W.K_AREA):
-            out.append([i*s.W.EULAR_DT, s.W.K_AREA[i], s.W.Q_AREA[i]])
+            out.append([i*s.W.EULAR_DT, s.W.K_AREA[links][i], s.W.Q_AREA[links][i]])
         s.df_mfd = pd.DataFrame(out[1:], columns=out[0])
         return s.df_mfd
     
@@ -2268,8 +2271,8 @@ class World:
         W.TIME = 0 #s
         
         W.TSIZE = int(W.TMAX/W.DELTAT)
-        W.Q_AREA = np.zeros(int(W.TMAX/W.EULAR_DT))
-        W.K_AREA = np.zeros(int(W.TMAX/W.EULAR_DT))
+        W.Q_AREA = ddict(lambda: np.zeros(int(W.TMAX/W.EULAR_DT)))
+        W.K_AREA = ddict(lambda: np.zeros(int(W.TMAX/W.EULAR_DT)))
         for l in W.LINKS:
             l.init_after_tmax_fix()
         
