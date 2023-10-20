@@ -5,7 +5,7 @@
 This repository introduces *UXsim*, a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
 It is suitable for simulating large-scale (e.g., city-scale) vehicular transportation.
 It computes dynamic traffic flow in a network by using traffic flow models commonly utilized by transportation research.
-UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features.
+UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features; but of course users are free to use UXsim for any purpose.
 
 Simple example is summarized in [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb).
 
@@ -45,7 +45,7 @@ from uxsim import *
 ```
 
 The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
-For the further details, please see [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
+For the further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
 
 ## Simulation Example
 
