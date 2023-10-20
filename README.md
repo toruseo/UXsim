@@ -1,105 +1,84 @@
-# UXsim: Python製のマクロ・メソ交通流シミュレータ
+# UXsim: Network traffic flow simulator in pure Python
 
-[(English readme is here)](https://github.com/toruseo/UXsim/blob/main/README.en.md)
+[(日本語の説明書はこちら)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
 
-このリポジトリでは，Python製のオープンソース・フリーなマクロ・メソ交通流シミュレータUXsimを公開しています．
-これは，都市規模のような大局的な自動車交通を再現する交通シミュレーションであり，交通工学分野で標準的なモデルにより道路ネットワークの動的交通流を計算するものです．
+This repository introduces *UXsim*, a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
+It is suitable for simulating large-scale (e.g., city-scale) vehicular transportation.
+It computes dynamic traffic flow in a network by using traffic flow models commonly utilized by transportation research.
+UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features; but of course users are free to use UXsim for any purpose.
 
-簡単な使用例を[Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)にまとめてあります．
+Simple example is summarized in [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb).
 
-UXsimは書籍『[マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/)』（著者：[瀬尾亨](https://toruseo.jp/)，出版社：[コロナ社](https://www.coronasha.co.jp/)）に含まれる交通流シミュレータUroborosXを大幅に拡張したものです．
-基本動作原理は同じですので，詳細は当該書籍を参照ください．
 
-## 主な機能
+## Main Features
 
-- ネットワーク構造と時間帯別OD需要が与えられているときに，動的なネットワーク交通流を計算（動的交通量配分）．具体的な交通モデルは以下の通り：
-	- Newellの単純追従モデル（Xモデル）
-	- Lagrange版Incremental Node Model
-	- Dynamic User Optimum型経路選択モデル（慣性付き）
-- 信号交差点，流入制御，経路誘導，混雑課金などの交通マネジメントの組み込み
-- 計算結果の各種分析（トリップ完了数，総旅行時間，遅れ時間など）と，そのpandas.DataFrameやCSVへのエクスポート
-- 計算結果の可視化（時空間図，MFD，ネットワーク状況アニメーションなど）
+- Dynamic network traffic simulation with a given network and time-dependent OD demand (i.e., dynamic traffic assignment). Specifically, the following models are used jointly:
+	- Newell's simplified car-following model (X-Model)
+	- Lagrangian Incremental Node Model
+	- Dynamic User Optimum-type Route Choice Model (with inertia)
+- Implementation of traffic management schemes (e.g., traffic signals, inflow control, route guidance, congestion pricing).
+- Basic analysis of simulation results (e.g., trip completion rate, total travel time, delay), and their export to pandas.DataFrame and CSV files.
+- Visualization of simulation results (e.g., time-space diagram, MFD, network traffic animation).
+- Can be flexibly customized by users thanks to pure Python implementation.
 
-## ファイル構成
+## Main files
 
-- `uxsim.py`：UXsim本体
-- `utils`ディレクトリ：UXsimに必要なファイル・汎用モジュールをまとめたもの
-- `dat`ディレクトリ：いくつかのシナリオファイル
-- `demos_and_examples`フォルダ：UXsimのチュートリアル・使用例集
-- `README.md`等その他：説明用ファイル群．シミュレーションには不要
+- `uxsim` directory: UXsim main package
+	- `uxsim/uxsim.py`: UXsim main code
+	- `uxsim/utils.py`: UXsim utilities code
+ 	- `uxsim/utils` directory:  UXsim utilities files
+- `demos_and_examples` directory: Tutorials and examples of UXsim
+- `dat` directory: Sample scenario files
 
-## 使用法
+## Usage
 
-使用するには，各自の作業用ディレクトリにファイル`uxsim.py`とディレクトリ`utils`を置き，そこに自分のPythonコードやJupyter Notebookを配置して`from uxsim import *`してください．
-[Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)に基本的な使用法と機能をまとめています．
-詳細はディレクトリ`demos_and_examples`内の具体例を参照ください．
+First, install UXsim package using pip:
+```
+pip install uxsim
+```
+or download the `uxsim` directory from this Github repo and place it to your local directory. 
+The former is required if you want to customize UXsim’s internal logic.
 
-モジュールとしての整備は今後対応予定です．
+Then import the module using:
+```python
+from uxsim import *
+```
 
-### 実行環境
+The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
+For the further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
 
-Pythonのバージョン3を用います．
-また，以下のモジュールが必要です．
-事前にインストールしてください．
+## Simulation Example
 
-- NumPy
-- Matplotlib
-- Pillow
-- tqdm
-- SciPy
-- pandas
-
-## 計算例
-
-10km x 10kmのグリッドネットワーク内を2時間で約6万台が通行する様子．計算時間は通常のデスクトップPCで約40秒．
-
-リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）と一部車両の軌跡：
+Approximately 60,000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC. Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
 <p float="left">
 <img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
 <img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
 </p>
 
-上記ネットワークのある回廊上の車両軌跡図：
+Vehicle trajectory diagram on a corridor of the above network:
 
 <img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
 
-## 内部の構造と計算フロー
+## Detailed documents
 
-本シミュレータは純Python製であり，使用者が柔軟にカスタムして使用できます．
-細部を以下の資料で説明しています．
+- [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html)
+- [arXiv preprint on overview](https://arxiv.org/abs/2309.17114)
+- [Japanese textbook on fundamental theory](https://www.coronasha.co.jp/np/isbn/9784339052794/)
 
-- 概要：[arXivプレプリント](https://arxiv.org/abs/2309.17114)
-- クラスや関数の詳細：[技術リファレンス](https://toruseo.jp/UXsim/docs/index.html)
-- 基づいている理論：[書籍](https://www.coronasha.co.jp/np/isbn/9784339052794/)
+## Terms of Use & License
 
-大まかな構造と計算フローを以下に示します．
+This code is released under the MIT License. You are free to use it as long as the source is acknowledged.
 
-### クラス図
-<img src="https://github.com/toruseo/UXsim/blob/images/class_diagram.png" width="500">
+When publishing results obtained from this code, please cite:
 
-### シミュレータ全体のアクティビティ図
-<img src="https://github.com/toruseo/UXsim/blob/images/activity_diagram.png" width="600">
+- Toru Seo. Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation. Corona Publishing Co., Ltd., 2023.
+- Toru Seo. UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview. arXiv preprint arXiv: 2309.17114, 2023
 
-### ある車両一台のアクティビティ図
-<img src="https://github.com/toruseo/UXsim/blob/images/activity_diagram_veh.png" width="400">
+## Related Links
 
-
-## 使用条件・ライセンス
-
-本コードはMIT Licenseのもとで公開しています．
-出典を明記すれば自由に使用できます．
-
-使用された成果を発表される際は，参考文献として
-
-- 瀬尾亨. マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装. コロナ社, 2023
-- Seo, T. UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview. arXiv preprint arXiv: 2309.17114, 2023
-
-を引用してください．
-
-## 関連リンク
-
-- [瀬尾亨（作者）](https://toruseo.jp/)
-- [瀬尾による関連シミュレータまとめサイト](https://toruseo.jp/uxsim/)
-- [コロナ社の当該書籍ページ](https://www.coronasha.co.jp/np/isbn/9784339052794/)
-- [東京工業大学 瀬尾研究室](http://seo.cv.ens.titech.ac.jp/)
-- [Webブラウザ上で動くインタラクティブ交通流シミュレータ](http://seo.cv.ens.titech.ac.jp/traffic-flow-demo/bottleneck_jp.html)：このシミュレータが用いているリンク交通流モデルと同じものをインタラクティブに動かして，交通流とそのシミュレーションの基礎を学べます．
+- [Toru Seo (Author)](https://toruseo.jp/)
+- [Collection of related simulators by Seo](https://toruseo.jp/uxsim/)
+- Japanese book "[Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation](https://www.coronasha.co.jp/np/isbn/9784339052794/)" (Author: [Toru Seo](https://toruseo.jp/), Publisher: [Corona Publishing Co., Ltd.](https://www.coronasha.co.jp/))
+	- UXsim is a significant expansion of the traffic flow simulator *UroborosX* described in this book.
+- [Tokyo Institute of Technology Seo Laboratory](http://seo.cv.ens.titech.ac.jp/)
+- [Interactive Traffic Flow Simulator that Runs on a Web Browser](http://seo.cv.ens.titech.ac.jp/traffic-flow-demo/bottleneck_jp.html): Operate the same link traffic flow model used in this simulator interactively, and learn the basics of traffic flow and its simulation.
