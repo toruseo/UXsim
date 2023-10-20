@@ -43,7 +43,7 @@ from uxsim import *
 ```
 
 [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)に基本的な使用法と機能をまとめています．
-さらなる詳細は`demos_and_examples`ディレクトリ内の使用例や，[UXsim技術資料](https://toruseo.jp/UXsim/docs/index.html)を確認してください．
+さらなる詳細は`demos_and_examples`ディレクトリ内の[使用例](https://github.com/toruseo/UXsim/tree/main/demos_and_examples)や，[UXsim技術資料](https://toruseo.jp/UXsim/docs/index.html)を確認してください．
 
 ## 計算例
 
