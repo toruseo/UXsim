@@ -207,7 +207,7 @@ class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None):
         """
         Create a link
         
@@ -237,6 +237,8 @@ class Link:
             The capacity into the link, default is calculated based on other parameters.
         eular_dx : float, optional
             The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         
         Attributes
         ----------
@@ -323,6 +325,8 @@ class Link:
         s.W.LINKS.append(s)
         s.start_node.outlinks[s.name] = s
         s.end_node.inlinks[s.name] = s
+        
+        s.attribute = attribute
         
         #リアルタイムリンク状態（外部から参照する用）
         s._speed = -1 #リンク全体の平均速度
@@ -1557,7 +1561,7 @@ class Analyzer:
         print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
         
     @catch_exceptions_and_warn()
-    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20):
+    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=8):
         """
         Generates an animation of the entire transportation network and its traffic states over time.
 
@@ -1582,6 +1586,8 @@ class Analyzer:
             The size of the nodes in the animation. Default is 2.
         network_font_size : int, optional
             The font size for the network labels in the animation. Default is 20.
+        timestep_skip : int, optional
+            How many timesteps are skipped per frame. Large value means coarse and lightweight animation. Default is 8.
 
         Notes
         -----
@@ -1595,15 +1601,14 @@ class Analyzer:
         if s.W.save_mode:
             s.W.print(" generating animation...")
             pics = []
-            speed_coef = 8
-            for t in tqdm(range(0,s.W.TMAX,s.W.DELTAT*speed_coef), disable=(s.W.print_mode==0)):
+            for t in tqdm(range(0,s.W.TMAX,s.W.DELTAT*timestep_skip), disable=(s.W.print_mode==0)):
                 if detailed:
                     #todo_later: 今後はこちらもpillowにする
                     s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 else:
                     s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
-            pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*speed_coef, loop=0)
+            pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
             for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
                 os.remove(f)
     
@@ -1774,7 +1779,9 @@ class Analyzer:
         s.compute_edie_state()
         if links == None:
             links = s.W.LINKS
+        links = [s.W.get_link(link) for link in links]
         links = frozenset(links)
+        
         
         for i in range(len(s.W.Q_AREA[links])):
             tn = sum([l.tn_mat[i,:].sum() for l in s.W.LINKS if l in links])
@@ -1811,6 +1818,7 @@ class Analyzer:
         
         if links == None:
             links = s.W.LINKS
+        links = [s.W.get_link(link) for link in links]
         links = frozenset(links)
         s.compute_mfd(links)
         
@@ -1953,6 +1961,7 @@ class Analyzer:
         pd.DataFrame
         """
         s.compute_mfd(links)
+        links = [s.W.get_link(link) for link in links]
         links = frozenset(links)
         
         out = [["t", "network_k", "network_q"]]
@@ -2161,6 +2170,8 @@ class World:
             The capacity into the link, default is calculated based on other parameters.
         eular_dx : float, optional
             The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         
         Returns
         -------
@@ -2440,12 +2451,17 @@ class World:
             The found Node object.
         """
         if type(node) is Node:
-            return node
+            if node in W.NODES:
+                return node
+            else:
+                for n in W.NODES:
+                    if n.name == node.name:
+                        return n
         elif type(node) is str:
             for n in W.NODES:
                 if n.name == node:
                     return n
-        raise Exception(f"'{node}' is not Node")
+        raise Exception(f"'{node}' is not Node in this World")
     
     def get_link(W, link):
         """
@@ -2462,12 +2478,17 @@ class World:
             The found Link object.
         """
         if type(link) is Link:
-            return link
+            if link in W.LINKS:
+                return link
+            else:
+                for l in W.LINKS:
+                    if l.name == link.name:
+                        return l
         elif type(link) is str:
             for l in W.LINKS:
                 if l.name == link:
                     return l
-        raise Exception(f"'{link}' is not Link")
+        raise Exception(f"'{link}' is not Link in this World")
     
     def load_scenario_from_csv(W, fname_node, fname_link, fname_demand, tmax=None):
         """

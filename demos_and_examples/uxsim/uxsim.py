@@ -207,7 +207,7 @@ class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None):
         """
         Create a link
         
@@ -237,6 +237,8 @@ class Link:
             The capacity into the link, default is calculated based on other parameters.
         eular_dx : float, optional
             The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         
         Attributes
         ----------
@@ -323,6 +325,8 @@ class Link:
         s.W.LINKS.append(s)
         s.start_node.outlinks[s.name] = s
         s.end_node.inlinks[s.name] = s
+        
+        s.attribute = attribute
         
         #リアルタイムリンク状態（外部から参照する用）
         s._speed = -1 #リンク全体の平均速度
@@ -470,7 +474,7 @@ class Vehicle:
     """
     Vehicle or platoon in a network.
     """
-    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0):
+    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None):
         """
         Create a vehicle (more precisely, platoon)
         
@@ -496,6 +500,8 @@ class Vehicle:
             The names of the links the vehicle avoids, default is empty list.
         trip_abort : int, optional
             Whether to abort the trip if a dead end is reached, default is 1.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         """
         
         s.W = W
@@ -557,6 +563,8 @@ class Vehicle:
         s.log_v = [] #現在速度
         s.color = (random.random(), random.random(), random.random())
         
+        s.attribute = attribute
+        
         s.id = len(s.W.VEHICLES)
         if name != None:
             s.name = name
@@ -564,6 +572,7 @@ class Vehicle:
             s.name = str(s.id)
         s.W.VEHICLES[s.name] = s
         s.W.VEHICLES_LIVING[s.name] = s
+        
     
     def __repr__(s):
         return f"<Vehicle {s.name}: {s.state}, x={s.x}, link={s.link}>"
@@ -1552,7 +1561,7 @@ class Analyzer:
         print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
         
     @catch_exceptions_and_warn()
-    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20):
+    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=8):
         """
         Generates an animation of the entire transportation network and its traffic states over time.
 
@@ -1577,6 +1586,8 @@ class Analyzer:
             The size of the nodes in the animation. Default is 2.
         network_font_size : int, optional
             The font size for the network labels in the animation. Default is 20.
+        timestep_skip : int, optional
+            How many timesteps are skipped per frame. Large value means coarse and lightweight animation. Default is 8.
 
         Notes
         -----
@@ -1590,15 +1601,14 @@ class Analyzer:
         if s.W.save_mode:
             s.W.print(" generating animation...")
             pics = []
-            speed_coef = 8
-            for t in tqdm(range(0,s.W.TMAX,s.W.DELTAT*speed_coef), disable=(s.W.print_mode==0)):
+            for t in tqdm(range(0,s.W.TMAX,s.W.DELTAT*timestep_skip), disable=(s.W.print_mode==0)):
                 if detailed:
                     #todo_later: 今後はこちらもpillowにする
                     s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 else:
                     s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
-            pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*speed_coef, loop=0)
+            pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
             for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
                 os.remove(f)
     
@@ -1769,16 +1779,19 @@ class Analyzer:
         s.compute_edie_state()
         if links == None:
             links = s.W.LINKS
+        links = [s.W.get_link(link) for link in links]
+        links = frozenset(links)
         
-        for i in range(len(s.W.Q_AREA)):
+        
+        for i in range(len(s.W.Q_AREA[links])):
             tn = sum([l.tn_mat[i,:].sum() for l in s.W.LINKS if l in links])
             dn = sum([l.dn_mat[i,:].sum() for l in s.W.LINKS if l in links])
             an = sum([l.length*s.W.EULAR_DT for l in s.W.LINKS if l in links])
-            s.W.K_AREA[i] = tn/an
-            s.W.Q_AREA[i] = dn/an
+            s.W.K_AREA[links][i] = tn/an
+            s.W.Q_AREA[links][i] = dn/an
     
     @catch_exceptions_and_warn()
-    def macroscopic_fundamental_diagram(s, kappa=0.2, qmax=1, links=None, fname="", figsize=(4,4)):
+    def macroscopic_fundamental_diagram(s, kappa=0.2, qmax=1, figtitle="", links=None, fname="", figsize=(4,4)):
         """
         Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.
 
@@ -1805,11 +1818,13 @@ class Analyzer:
         
         if links == None:
             links = s.W.LINKS
+        links = [s.W.get_link(link) for link in links]
+        links = frozenset(links)
         s.compute_mfd(links)
         
         plt.figure(figsize=figsize)
-        plt.title(f"# of links: {len(links)}")
-        plt.plot(s.W.K_AREA, s.W.Q_AREA, "ko-")
+        plt.title(f"{figtitle} (# of links: {len(links)})")
+        plt.plot(s.W.K_AREA[links], s.W.Q_AREA[links], "ko-")
         plt.xlabel("network average density (veh/m)")
         plt.ylabel("network average flow (veh/s)")
         plt.xlim([0, kappa])
@@ -1946,10 +1961,12 @@ class Analyzer:
         pd.DataFrame
         """
         s.compute_mfd(links)
+        links = [s.W.get_link(link) for link in links]
+        links = frozenset(links)
         
         out = [["t", "network_k", "network_q"]]
         for i in lange(s.W.K_AREA):
-            out.append([i*s.W.EULAR_DT, s.W.K_AREA[i], s.W.Q_AREA[i]])
+            out.append([i*s.W.EULAR_DT, s.W.K_AREA[links][i], s.W.Q_AREA[links][i]])
         s.df_mfd = pd.DataFrame(out[1:], columns=out[0])
         return s.df_mfd
     
@@ -2153,6 +2170,8 @@ class World:
             The capacity into the link, default is calculated based on other parameters.
         eular_dx : float, optional
             The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         
         Returns
         -------
@@ -2190,6 +2209,8 @@ class World:
             The names of the links the vehicle avoids, default is empty list.
         trip_abort : int, optional
             Whether to abort the trip if a dead end is reached, default is 1.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         
         Returns
         -------
@@ -2203,7 +2224,7 @@ class World:
         """
         return Vehicle(W, *args, **kwargs)
     
-    def adddemand(W, orig, dest, t_start, t_end, flow=-1, volume=-1):
+    def adddemand(W, orig, dest, t_start, t_end, flow=-1, volume=-1, attribute=None):
         """
         Generate vehicles by specifying time-dependent origin-destination demand.
 
@@ -2221,6 +2242,8 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
         """
         if volume > 0:
             flow = volume/(t_end-t_start)
@@ -2229,7 +2252,7 @@ class World:
         for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
             f += flow*W.DELTAT
             while f >= W.DELTAN:
-                W.addVehicle(orig, dest, t, departure_time_is_time_step=1)
+                W.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute)
                 f -= W.DELTAN
     
     def finalize_scenario(W, tmax=None):
@@ -2259,8 +2282,8 @@ class World:
         W.TIME = 0 #s
         
         W.TSIZE = int(W.TMAX/W.DELTAT)
-        W.Q_AREA = np.zeros(int(W.TMAX/W.EULAR_DT))
-        W.K_AREA = np.zeros(int(W.TMAX/W.EULAR_DT))
+        W.Q_AREA = ddict(lambda: np.zeros(int(W.TMAX/W.EULAR_DT)))
+        W.K_AREA = ddict(lambda: np.zeros(int(W.TMAX/W.EULAR_DT)))
         for l in W.LINKS:
             l.init_after_tmax_fix()
         
@@ -2428,12 +2451,17 @@ class World:
             The found Node object.
         """
         if type(node) is Node:
-            return node
+            if node in W.NODES:
+                return node
+            else:
+                for n in W.NODES:
+                    if n.name == node.name:
+                        return n
         elif type(node) is str:
             for n in W.NODES:
                 if n.name == node:
                     return n
-        raise Exception(f"'{node}' is not Node")
+        raise Exception(f"'{node}' is not Node in this World")
     
     def get_link(W, link):
         """
@@ -2450,12 +2478,17 @@ class World:
             The found Link object.
         """
         if type(link) is Link:
-            return link
+            if link in W.LINKS:
+                return link
+            else:
+                for l in W.LINKS:
+                    if l.name == link.name:
+                        return l
         elif type(link) is str:
             for l in W.LINKS:
                 if l.name == link:
                     return l
-        raise Exception(f"'{link}' is not Link")
+        raise Exception(f"'{link}' is not Link in this World")
     
     def load_scenario_from_csv(W, fname_node, fname_link, fname_demand, tmax=None):
         """
