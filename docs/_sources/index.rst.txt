@@ -18,10 +18,9 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-   :glob:
 
    getting_started
-   ../notebooks/*
+   tutorial
    mechanism
    tech_ref
 

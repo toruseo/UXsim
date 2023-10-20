@@ -85,4 +85,4 @@ It will output simple statistics of the simulation results as follows (the detai
 	 average delay of trips:         42.7 s
 	 delay ratio:                    0.299
 
-For further details, please see :doc:`notebooks/demo_notebook_01en` and `demos_and_examples <https://github.com/toruseo/UXsim/tree/main/demos_and_examples>`_ in Github repo.
+For further usage, please see :doc:`tutorial`.

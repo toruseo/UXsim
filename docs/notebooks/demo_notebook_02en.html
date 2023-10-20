@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced example &mdash; UXsim v1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulation mechanism" href="../mechanism.html" />
+    <link rel="prev" title="Step-by-step tutorial" href="demo_notebook_01en.html" />
+ 
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            UXsim
+          </a>
+              <div class="version">
+                v1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_01en.html">Step-by-step tutorial</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Advanced example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#No-toll-scenario">No-toll scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#With-toll-scenario">With-toll scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Dataframe-analysis">Dataframe analysis</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tech_ref.html">Technical reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UXsim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorial.html">Tutorial</a></li>
+      <li class="breadcrumb-item active">Advanced example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/demo_notebook_02en.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+<section id="Advanced-example">
+<h1>Advanced example<a class="headerlink" href="#Advanced-example" title="Permalink to this heading"></a></h1>
+<p>This is an advanced example of UXsim with automated network generation and traffic management. First, import and setup the simulation world.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation definition</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mi">6000</span><span class="p">,</span>
+    <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we are going to define fairly large-scale simulation scenario by code. This is a grid-shaped arterial road network with diagonal highway. The traffic demand is set to travel from one end of the network to the other. We are going to test how highway toll can improve the traffic situation. Note that we specified user-defined <code class="docutils literal notranslate"><span class="pre">attribute</span></code> of Link to distinguish arterial and highway links.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scenario definition</span>
+<span class="c1">#automated network generation</span>
+<span class="c1">#generate nodes to create (imax, imax) grid network</span>
+<span class="n">imax</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">jmax</span> <span class="o">=</span> <span class="n">imax</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
+        <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+
+<span class="c1">#grid-shaped arterial roads</span>
+<span class="n">links</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">jj</span> <span class="o">=</span> <span class="n">j</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                         <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;arterial&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+            <span class="n">jj</span> <span class="o">=</span> <span class="n">j</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                         <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;arterial&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">jmax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">jj</span> <span class="o">=</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                         <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;arterial&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">jj</span> <span class="o">=</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                         <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;arterial&quot;</span><span class="p">)</span>
+<span class="c1">#diagonal highway</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">jj</span> <span class="o">=</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+                                     <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;highway&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">jj</span> <span class="o">=</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+                                     <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;highway&quot;</span><span class="p">)</span>
+
+<span class="c1">#traffic demand from edge to edge in grid network</span>
+<span class="n">demand_flow</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">demand_duration</span> <span class="o">=</span> <span class="mi">3600</span>
+<span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">)]:</span>
+    <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">)]:</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">n2</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">demand_duration</span><span class="p">,</span> <span class="n">demand_flow</span><span class="p">)</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">demand_duration</span><span class="p">,</span> <span class="n">demand_flow</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">)]:</span>
+    <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">jmax</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">)]:</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">n2</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">demand_duration</span><span class="p">,</span> <span class="n">demand_flow</span><span class="p">)</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">demand_duration</span><span class="p">,</span> <span class="n">demand_flow</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In order to compare no-toll and with-toll scenarios, we copy the scenario for later re-use.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#copy scenario for re-use (copy.deepcopy does not work for some reason)</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="n">W_orig</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">W</span><span class="p">))</span>
+<br/></pre></div>
+</div>
+</div>
+<section id="No-toll-scenario">
+<h2>No-toll scenario<a class="headerlink" href="#No-toll-scenario" title="Permalink to this heading"></a></h2>
+<p>Execute the no-toll scenario and show the results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_notoll&quot;</span>
+
+<span class="c1"># Simulation execution</span>
+<span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+
+<span class="c1"># Result visualization</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">(</span><span class="n">figtitle</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">(</span><span class="n">figtitle</span><span class="o">=</span><span class="s2">&quot;arterial&quot;</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="p">[</span><span class="n">link</span> <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span> <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">attribute</span> <span class="o">==</span> <span class="s2">&quot;arterial&quot;</span><span class="p">])</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">(</span><span class="n">figtitle</span><span class="o">=</span><span class="s2">&quot;highway&quot;</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="p">[</span><span class="n">link</span> <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span> <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">attribute</span> <span class="o">==</span> <span class="s2">&quot;highway&quot;</span><span class="p">])</span>
+<span class="c1">#trajectories on highway</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">([</span><span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">([</span><span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out_notoll/anim_network0.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+simulation setting:
+ scenario name: _notoll
+ simulation duration:    6000 s
+ number of vehicles:     50820 veh
+ total road length:      468284.27124746144 m
+ time discret. width:    5 s
+ platoon size:           5 veh
+ number of timesteps:    1200
+ number of platoons:     10164
+ number of links:        460
+ number of nodes:        121
+ setup time:             1.52 s
+simulating...
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|     7155 vehs|  11.3 m/s|     2.23 s
+    1200 s|    13080 vehs|  10.4 m/s|     5.41 s
+    1800 s|    16025 vehs|   9.6 m/s|     9.08 s
+    2400 s|    19150 vehs|   9.4 m/s|    12.79 s
+    3000 s|    19880 vehs|   8.6 m/s|    16.55 s
+    3600 s|    22265 vehs|   8.3 m/s|    20.10 s
+    4200 s|    13560 vehs|  10.5 m/s|    22.97 s
+    4800 s|     3610 vehs|  14.8 m/s|    24.51 s
+    5400 s|       45 vehs|  16.7 m/s|    24.96 s
+    5995 s|        0 vehs|   0.0 m/s|    25.08 s
+ simulation finished
+results:
+ average speed:  10.5 m/s
+ number of completed trips:      50820 / 50820
+ average travel time of trips:   1386.5 s
+ average delay of trips:         634.1 s
+ delay ratio:                    0.457
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_9_1.png" src="../_images/notebooks_demo_notebook_02en_9_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_9_2.png" src="../_images/notebooks_demo_notebook_02en_9_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_9_3.png" src="../_images/notebooks_demo_notebook_02en_9_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ drawing trajectories in consecutive links...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_9_5.png" src="../_images/notebooks_demo_notebook_02en_9_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ drawing trajectories in consecutive links...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_9_7.png" src="../_images/notebooks_demo_notebook_02en_9_7.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ generating animation...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5e501ba00a164b279e82cfb2d9d71f97", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_9_10.png" src="../_images/notebooks_demo_notebook_02en_9_10.png" />
+</div>
+</div>
+<p>According to “delay ratio” value, this is a quite congested state in overall. We can also confirm that highway links are significantly congested according to time-space diagrams and network animation. This was due to the fact that many travelers were concentrated on the highways, causing huge traffic jams.</p>
+</section>
+<section id="With-toll-scenario">
+<h2>With-toll scenario<a class="headerlink" href="#With-toll-scenario" title="Permalink to this heading"></a></h2>
+<p>Now let’s see how highway toll can resolve this issue. We load the defined scenario to new World <code class="docutils literal notranslate"><span class="pre">W2</span></code>. Highway toll can be implemented by setting <code class="docutils literal notranslate"><span class="pre">route_choice_penalty</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Link</span></code> object. The value of it works as penalty for traveler’s route choice as virtually additional travel time (in second). 70 seconds of <code class="docutils literal notranslate"><span class="pre">route_choice_penalty</span></code> roughtly corresponds to 0.5 USD assuming the standard value of time; for example, a traveler who uses 4 highway links (or 5.7km highway road) needs
+to pay 2 USD.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W2</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">W_orig</span><span class="p">))</span>
+<span class="n">W2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_withtoll&quot;</span>
+
+<span class="c1">#fixed toll for highway (toll corresponds to route_choice_penalty seconds of travel time per link)</span>
+<span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">W2</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">attribute</span> <span class="o">==</span> <span class="s2">&quot;highway&quot;</span><span class="p">:</span>
+        <span class="n">link</span><span class="o">.</span><span class="n">route_choice_penalty</span> <span class="o">=</span> <span class="mi">70</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation execution</span>
+<span class="n">W2</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+
+<span class="c1"># Result visualization</span>
+<span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
+<span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">(</span><span class="n">figtitle</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+<span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">(</span><span class="n">figtitle</span><span class="o">=</span><span class="s2">&quot;arterial&quot;</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="p">[</span><span class="n">link</span> <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">W2</span><span class="o">.</span><span class="n">LINKS</span> <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">attribute</span> <span class="o">==</span> <span class="s2">&quot;arterial&quot;</span><span class="p">])</span>
+<span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">(</span><span class="n">figtitle</span><span class="o">=</span><span class="s2">&quot;highway&quot;</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="p">[</span><span class="n">link</span> <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">W2</span><span class="o">.</span><span class="n">LINKS</span> <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">attribute</span> <span class="o">==</span> <span class="s2">&quot;highway&quot;</span><span class="p">])</span>
+<span class="c1">#trajectories on highway</span>
+<span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">([</span><span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">([</span><span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+
+<span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out_withtoll/anim_network0.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+simulation setting:
+ scenario name: _withtoll
+ simulation duration:    6000 s
+ number of vehicles:     50820 veh
+ total road length:      468284.27124746144 m
+ time discret. width:    5 s
+ platoon size:           5 veh
+ number of timesteps:    1200
+ number of platoons:     10164
+ number of links:        460
+ number of nodes:        121
+ setup time:             61.09 s
+simulating...
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|     7170 vehs|  11.4 m/s|     2.27 s
+    1200 s|    13025 vehs|  11.1 m/s|     5.76 s
+    1800 s|    15135 vehs|  11.3 m/s|     9.30 s
+    2400 s|    16935 vehs|  11.3 m/s|    12.76 s
+    3000 s|    16025 vehs|  11.7 m/s|    16.12 s
+    3600 s|    16500 vehs|  12.3 m/s|    18.90 s
+    4200 s|     6785 vehs|  14.0 m/s|    20.93 s
+    4800 s|      220 vehs|  15.0 m/s|    21.64 s
+    5400 s|        0 vehs|   0.0 m/s|    21.87 s
+    5995 s|        0 vehs|   0.0 m/s|    21.99 s
+ simulation finished
+results:
+ average speed:  12.4 m/s
+ number of completed trips:      50820 / 50820
+ average travel time of trips:   1114.7 s
+ average delay of trips:         362.3 s
+ delay ratio:                    0.325
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_13_1.png" src="../_images/notebooks_demo_notebook_02en_13_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_13_2.png" src="../_images/notebooks_demo_notebook_02en_13_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_13_3.png" src="../_images/notebooks_demo_notebook_02en_13_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ drawing trajectories in consecutive links...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_13_5.png" src="../_images/notebooks_demo_notebook_02en_13_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ drawing trajectories in consecutive links...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_13_7.png" src="../_images/notebooks_demo_notebook_02en_13_7.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ generating animation...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "64f7ddf6c1864fcf8618f65914e4478c", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_02en_13_10.png" src="../_images/notebooks_demo_notebook_02en_13_10.png" />
+</div>
+</div>
+<p>You can see that the “delay ratio” is significantly reduced. Other visualization results also indicated that traffic situations were improved. This was due to the fact that inefficient usage of highway was reduced by toll.</p>
+</section>
+<section id="Dataframe-analysis">
+<h2>Dataframe analysis<a class="headerlink" href="#Dataframe-analysis" title="Permalink to this heading"></a></h2>
+<p>More quantitative analysis can be easily done by using pandas.Dataframe output. Here we compare some statistics between no-toll and with-toll scenarios.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Results comparison</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
+<span class="n">all_ave_tt</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">all_ave_delay</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_delay&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">()</span>
+<span class="n">highway_user</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span>
+                <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">attribute</span><span class="o">==</span><span class="s2">&quot;highway&quot;</span><span class="p">])]</span>
+                <span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="n">highway_ave_tt</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span>
+                  <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">attribute</span><span class="o">==</span><span class="s2">&quot;highway&quot;</span><span class="p">])]</span>
+                  <span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">]</span>
+                  <span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
+<span class="n">all_ave_tt2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">all_ave_delay2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_delay&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">W2</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">()</span>
+<span class="n">highway_user2</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span>
+                 <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">attribute</span><span class="o">==</span><span class="s2">&quot;highway&quot;</span><span class="p">])]</span>
+                 <span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">]</span>
+                 <span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="n">highway_ave_tt2</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span>
+                   <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">attribute</span><span class="o">==</span><span class="s2">&quot;highway&quot;</span><span class="p">])]</span>
+                   <span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">]</span>
+                   <span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;no toll case</span>
+<span class="s2">- average travel time: </span><span class="si">{</span><span class="n">all_ave_tt</span><span class="si">}</span>
+<span class="s2">- average delay: </span><span class="si">{</span><span class="n">all_ave_delay</span><span class="si">}</span>
+<span class="s2">- # of highway link users: </span><span class="si">{</span><span class="n">highway_user</span><span class="si">}</span>
+<span class="s2">- average highway link travel time: </span><span class="si">{</span><span class="n">highway_ave_tt</span><span class="si">}</span>
+<span class="s2">toll case</span>
+<span class="s2">- average travel time: </span><span class="si">{</span><span class="n">all_ave_tt2</span><span class="si">}</span>
+<span class="s2">- average delay: </span><span class="si">{</span><span class="n">all_ave_delay2</span><span class="si">}</span>
+<span class="s2">- # of highway link users: </span><span class="si">{</span><span class="n">highway_user2</span><span class="si">}</span>
+<span class="s2">- average highway link travel time: </span><span class="si">{</span><span class="n">highway_ave_tt2</span><span class="si">}</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+no toll case
+- average travel time: 1386.4536599763871
+- average delay: 634.0770804386239
+- # of highway link users: 44930
+- average highway link travel time: 116.6421949249966
+toll case
+- average travel time: 1114.715171192444
+- average delay: 362.33859165468067
+- # of highway link users: 38495
+- average highway link travel time: 80.60047029513257
+
+</pre></div></div>
+</div>
+<p>You can see that the number of highway users were decreased, and the overall traffic efficiency was improved.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="demo_notebook_01en.html" class="btn btn-neutral float-left" title="Step-by-step tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mechanism.html" class="btn btn-neutral float-right" title="Simulation mechanism" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Toru Seo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
