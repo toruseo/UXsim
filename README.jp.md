@@ -2,11 +2,15 @@
 
 [(English readme is here)](https://github.com/toruseo/UXsim/blob/main/README.md)
 
-このリポジトリでは，Python製のオープンソース・フリーなマクロ・メソ交通流シミュレータ*UXsim*を公開しています．
+*UXsim*はython製のオープンソース・フリーなマクロ・メソ交通流シミュレータです．
 これは，都市規模のような大局的な自動車交通とその渋滞を再現する交通シミュレーションであり，交通工学分野で標準的なモデルにより道路ネットワークの動的交通流を計算するものです．
 UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に適することを意図していますが，それ以外の目的にも自由に使用可能です．
 
-簡単な使用例を[Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)にまとめてあります．
+- [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)
+- [技術資料](https://toruseo.jp/UXsim/docs/index.html)
+- [arXivプレプリント](https://arxiv.org/abs/2309.17114)
+- [交通流理論・シミュレーションの専門書](https://www.coronasha.co.jp/np/isbn/9784339052794/)
+
 
 ## 主な機能・特徴
 
@@ -58,13 +62,6 @@ from uxsim import *
 上記ネットワークのある回廊上の車両軌跡図：
 
 <img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
-
-## 詳細資料
-
-- [UXsim技術資料](https://toruseo.jp/UXsim/docs/index.html)
-- [arXivプレプリントでの概要](https://arxiv.org/abs/2309.17114)
-- [交通流理論・シミュレーションの書籍](https://www.coronasha.co.jp/np/isbn/9784339052794/)
-
 
 ## 使用条件・ライセンス
 
