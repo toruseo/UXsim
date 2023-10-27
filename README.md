@@ -1,6 +1,6 @@
 # UXsim: Network traffic flow simulator in pure Python
 
-[(日本語の説明書はこちら)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
+[(日本語の説明書はこちら/Japanese readme is here)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
 
 This repository introduces *UXsim*, a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
 It is suitable for simulating large-scale (e.g., city-scale) vehicular transportation.
@@ -8,7 +8,6 @@ It computes dynamic traffic flow in a network by using traffic flow models commo
 UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features; but of course users are free to use UXsim for any purpose.
 
 Simple example is summarized in [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb).
-
 
 ## Main Features
 
@@ -49,14 +48,15 @@ For the further details, please see [demos_and_examples](https://github.com/toru
 
 ## Simulation Example
 
-Approximately 60,000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC. Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
+Belows are simulation result where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC. 
+
+Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
 <p float="left">
 <img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
 <img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
 </p>
 
 Vehicle trajectory diagram on a corridor of the above network:
-
 <img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
 
 ## Detailed documents
@@ -67,9 +67,9 @@ Vehicle trajectory diagram on a corridor of the above network:
 
 ## Terms of Use & License
 
-This code is released under the MIT License. You are free to use it as long as the source is acknowledged.
+UXsim is released under the MIT License. You are free to use it as long as the source is acknowledged.
 
-When publishing results obtained from this code, please cite:
+When publishing works based on from UXsim, please cite:
 
 - Toru Seo. Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation. Corona Publishing Co., Ltd., 2023.
 - Toru Seo. UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview. arXiv preprint arXiv: 2309.17114, 2023
@@ -77,8 +77,7 @@ When publishing results obtained from this code, please cite:
 ## Related Links
 
 - [Toru Seo (Author)](https://toruseo.jp/)
-- [Collection of related simulators by Seo](https://toruseo.jp/uxsim/)
-- Japanese book "[Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation](https://www.coronasha.co.jp/np/isbn/9784339052794/)" (Author: [Toru Seo](https://toruseo.jp/), Publisher: [Corona Publishing Co., Ltd.](https://www.coronasha.co.jp/))
-	- UXsim is a significant expansion of the traffic flow simulator *UroborosX* described in this book.
-- [Tokyo Institute of Technology Seo Laboratory](http://seo.cv.ens.titech.ac.jp/)
-- [Interactive Traffic Flow Simulator that Runs on a Web Browser](http://seo.cv.ens.titech.ac.jp/traffic-flow-demo/bottleneck_jp.html): Operate the same link traffic flow model used in this simulator interactively, and learn the basics of traffic flow and its simulation.
+- [Collection of related simulators by Seo](https://toruseo.jp/uxsim/index_en.html)
+- Japanese book "[Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation](https://www.coronasha.co.jp/np/isbn/9784339052794/)" (Author: [Toru Seo](https://toruseo.jp/), Publisher: [Corona Publishing Co., Ltd.](https://www.coronasha.co.jp/)): UXsim is a significant expansion of the traffic flow simulator *UroborosX* described in this book.
+- [Seo Laboratory, Tokyo Institute of Technology](http://seo.cv.ens.titech.ac.jp/)
+- [Interactive Traffic Flow Simulator that Runs on a Web Browser](http://seo.cv.ens.titech.ac.jp/traffic-flow-demo/bottleneck.html): Play with the same link traffic flow model used in this simulator interactively, and learn the basics of traffic flow and its simulation.

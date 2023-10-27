@@ -373,7 +373,7 @@ class Link:
         s.set_traveltime_instant()
         s.cum_arrival.append(0)
         s.cum_departure.append(0)
-        s.traveltime_actual.append(0)
+        s.traveltime_actual.append(s.length/s.u)
         if len(s.cum_arrival) > 1:
             s.cum_arrival[-1] = s.cum_arrival[-2]
             s.cum_departure[-1] = s.cum_departure[-2]
@@ -406,6 +406,90 @@ class Link:
         else:
             s.traveltime_instant.append(s.length/(s.u/100))
 
+    def arrival_count(s, t):
+        """
+        Get cumulative vehicle count of arrival to this link on time t
+        
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+        
+        Returns
+        -------
+        float
+            The cumulative arrival vehicle count.
+        """
+        tt = t//s.W.DELTAT
+        if tt >= len(s.cum_arrival):
+            return s.cum_arrival[-1]
+        if tt < 0:
+            return s.cum_arrival[0]
+        return s.cum_arrival[tt]
+    
+    def departure_count(s, t):
+        """
+        Get cumulative vehicle count of departure from this link on time t
+        
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+        
+        Returns
+        -------
+        float
+            The cumulative departure vehicle count.
+        """
+        tt = t//s.W.DELTAT
+        if tt >= len(s.cum_departure):
+            return s.cum_departure[-1]
+        if tt < 0:
+            return s.cum_departure[0]
+        return s.cum_departure[tt]
+    
+    def instant_travel_time(s, t):
+        """
+        Get instantanious travel time of this link on time t
+        
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+        
+        Returns
+        -------
+        float
+            The instantanious travel time.
+        """
+        tt = t//s.W.DELTAT
+        if tt >= len(s.traveltime_instant):
+            return s.traveltime_instant[-1]
+        if tt < 0:
+            return s.traveltime_instant[0]
+        return s.traveltime_instant[tt]
+    
+    def actual_travel_time(s, t):
+        """
+        Get actual travel time of vehicle who departs this link on time t
+        
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+        
+        Returns
+        -------
+        float
+            The actual travel time.
+        """
+        tt = t//s.W.DELTAT
+        if tt >= len(s.traveltime_actual):
+            return s.traveltime_actual[-1]
+        if tt < 0:
+            return s.traveltime_actual[0]
+        return s.traveltime_actual[tt]
+    
     #getter/setter
     @property
     def speed(s):
@@ -439,7 +523,7 @@ class Link:
         if s._num_vehicles_queue == -1:
             s._num_vehicles_queue = sum([veh.v < s.u for veh in s.vehicles])*s.W.DELTAN
         return s._num_vehicles_queue
-
+        
     @property
     def free_flow_speed(s):
         return s.u
