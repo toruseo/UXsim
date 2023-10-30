@@ -74,6 +74,8 @@ class Node:
         s.signal_phase = 0
         s.signal_t = 0
         
+        s.signal_log = []
+        
         s.id = len(s.W.NODES)
         s.name = name
         s.W.NODES.append(s)
@@ -91,6 +93,8 @@ class Node:
             if s.signal_phase >= len(s.signal):
                 s.signal_phase = 0
         s.signal_t += s.W.DELTAT
+        
+        s.signal_log.append(s.signal_phase)
     
     def generate(s):
         """
@@ -150,7 +154,7 @@ class Node:
                 #受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択
                 vehs = [
                     veh for veh in s.incoming_vehicles 
-                    if veh.route_next_link == outlink and veh.link.signal_group == s.signal_phase and veh.link.capacity_out_remain >= s.W.DELTAN
+                    if veh.route_next_link == outlink and (veh.link.signal_group == s.signal_phase or len(s.signal)<=1) and veh.link.capacity_out_remain >= s.W.DELTAN
                 ]
                 if len(vehs) == 0:
                     continue
@@ -1198,11 +1202,15 @@ class Analyzer:
             l.v_mat = np.nan_to_num(l.v_mat, nan=l.u)
     
     @catch_exceptions_and_warn()
-    def print_simple_stats(s):
+    def print_simple_stats(s, force_print=False):
         """
         Prints basic statistics of simulation result.
-        """
         
+        Parameters
+        ----------
+        force_print : bool, optional
+            print the stats regardless of the value of `print_mode`
+        """
         s.W.print("results:")
         s.W.print(f" average speed:\t {s.average_speed:.1f} m/s")
         s.W.print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
@@ -1210,9 +1218,18 @@ class Analyzer:
             s.W.print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
             s.W.print(f" average delay of trips:\t {s.average_delay:.1f} s")
             s.W.print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
+            
+        if force_print == 1 and s.W.print_mode == 0:
+            print("results:")
+            print(f" average speed:\t {s.average_speed:.1f} m/s")
+            print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
+            if s.trip_completed > 0:
+                print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
+                print(f" average delay of trips:\t {s.average_delay:.1f} s")
+                print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
     
     @catch_exceptions_and_warn()
-    def time_space_diagram_traj(s, links=None, figsize=(12,4)):
+    def time_space_diagram_traj(s, links=None, figsize=(12,4), plot_signal=True):
         """
         Draws the time-space diagram of vehicle trajectories for vehicles on specified links.
 
@@ -1223,6 +1240,8 @@ class Analyzer:
             If None, the diagram is plotted for all links in the network. Default is None.
         figsize : tuple of int, optional
             The size of the figure to be plotted, default is (12,4).
+        plot_signal : bool, optional
+            Plot the downstream signal red light.
         """
         
         #リンク車両軌跡の時空間図
@@ -1246,6 +1265,9 @@ class Analyzer:
             plt.title(l)
             for i in range(len(l.xss)):
                 plt.plot(l.tss[i], l.xss[i], c=l.cs[i], lw=0.5)
+            if plot_signal:
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
             plt.xlim([0, s.W.TMAX])
@@ -1260,7 +1282,7 @@ class Analyzer:
                 plt.close("all")
     
     @catch_exceptions_and_warn()
-    def time_space_diagram_density(s, links=None, figsize=(12,4)):
+    def time_space_diagram_density(s, links=None, figsize=(12,4), plot_signal=True):
         """
         Draws the time-space diagram of traffic density on specified links.
 
@@ -1271,6 +1293,8 @@ class Analyzer:
             If None, the diagram is plotted for all links in the network. Default is None.
         figsize : tuple of int, optional
             The size of the figure to be plotted, default is (12,4).
+        plot_signal : bool, optional
+            Plot the downstream signal red light.
         """
         
         #リンク密度の時空間図
@@ -1297,6 +1321,9 @@ class Analyzer:
             plt.imshow(l.k_mat.T, origin="lower", aspect="auto", 
                 extent=(0, int(s.W.TMAX/l.edie_dt)*l.edie_dt, 0, int(l.length/l.edie_dx)*l.edie_dx), 
                 interpolation="none", vmin=0, vmax=1/l.delta, cmap="inferno")
+            if plot_signal:
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.colorbar().set_label("density (veh/m)")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
@@ -1312,7 +1339,7 @@ class Analyzer:
                 plt.close("all")
     
     @catch_exceptions_and_warn()
-    def time_space_diagram_traj_links(s, linkslist, figsize=(12,4)):
+    def time_space_diagram_traj_links(s, linkslist, figsize=(12,4), plot_signal=True):
         """
         Draws the time-space diagram of vehicle trajectories for vehicles on concective links.
 
@@ -1322,6 +1349,8 @@ class Analyzer:
             The names of the concective links for which the time-space diagram is to be plotted. 
         figsize : tuple of int, optional
             The size of the figure to be plotted, default is (12,4).
+        plot_signal : bool, optional
+            Plot the signal red light.
         """
         #複数リンクの連続した車両軌跡の時空間図
         s.W.print(" drawing trajectories in consecutive links...")
@@ -1348,6 +1377,9 @@ class Analyzer:
                 l = s.W.get_link(ll)
                 for i in range(len(l.xss)):
                     plt.plot(l.tss[i], np.array(l.xss[i])+linkdict[l], c=l.cs[i], lw=0.5)
+                if plot_signal:
+                    signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                    plt.plot(signal_log, [l.length+linkdict[l] for i in lange(signal_log)], "r.")
             for l in linkdict.keys():
                 plt.plot([0, s.W.TMAX], [linkdict[l], linkdict[l]], "k--", lw=0.7)
                 plt.plot([0, s.W.TMAX], [linkdict[l]+l.length, linkdict[l]+l.length], "k--", lw=0.7)
@@ -1632,17 +1664,17 @@ class Analyzer:
         """
         Print simulation progress.
         """
-        
-        vehs = [l.density*l.length for l in s.W.LINKS]
-        sum_vehs = sum(vehs)
-        
-        vs = [l.density*l.length*l.speed for l in s.W.LINKS]
-        if sum_vehs > 0:
-            avev = sum(vs)/sum_vehs
-        else:
-            avev = 0
-        
-        print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
+        if s.W.print_mode:
+            vehs = [l.density*l.length for l in s.W.LINKS]
+            sum_vehs = sum(vehs)
+            
+            vs = [l.density*l.length*l.speed for l in s.W.LINKS]
+            if sum_vehs > 0:
+                avev = sum(vs)/sum_vehs
+            else:
+                avev = 0
+            
+            print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
         
     @catch_exceptions_and_warn()
     def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=8):
@@ -1680,21 +1712,19 @@ class Analyzer:
         The generated animation is saved to the directory `out<W.name>` with a filename based on the `detailed` parameter.
         
         Temporary images used to create the animation are removed after the animation is generated.
-        If the `save_mode` attribute of the network is set to True, the animation will be saved.
         """
-        if s.W.save_mode:
-            s.W.print(" generating animation...")
-            pics = []
-            for t in tqdm(range(0,s.W.TMAX,s.W.DELTAT*timestep_skip), disable=(s.W.print_mode==0)):
-                if detailed:
-                    #todo_later: 今後はこちらもpillowにする
-                    s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
-                else:
-                    s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
-                pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
-            pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
-            for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
-                os.remove(f)
+        s.W.print(" generating animation...")
+        pics = []
+        for t in tqdm(range(0,s.W.TMAX,s.W.DELTAT*timestep_skip), disable=(s.W.print_mode==0)):
+            if detailed:
+                #todo_later: 今後はこちらもpillowにする
+                s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+            else:
+                s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+            pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
+        pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
+        for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
+            os.remove(f)
     
     @catch_exceptions_and_warn()
     def network_fancy(s, animation_speed_inverse=10, figsize=6, sample_ratio=0.3, interval=5, network_font_size=0, trace_length=3, speed_coef=2):

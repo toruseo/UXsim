@@ -74,6 +74,8 @@ class Node:
         s.signal_phase = 0
         s.signal_t = 0
         
+        s.signal_log = []
+        
         s.id = len(s.W.NODES)
         s.name = name
         s.W.NODES.append(s)
@@ -91,6 +93,8 @@ class Node:
             if s.signal_phase >= len(s.signal):
                 s.signal_phase = 0
         s.signal_t += s.W.DELTAT
+        
+        s.signal_log.append(s.signal_phase)
     
     def generate(s):
         """
@@ -1212,7 +1216,7 @@ class Analyzer:
             s.W.print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
     
     @catch_exceptions_and_warn()
-    def time_space_diagram_traj(s, links=None, figsize=(12,4)):
+    def time_space_diagram_traj(s, links=None, figsize=(12,4), plot_signal=True):
         """
         Draws the time-space diagram of vehicle trajectories for vehicles on specified links.
 
@@ -1223,6 +1227,8 @@ class Analyzer:
             If None, the diagram is plotted for all links in the network. Default is None.
         figsize : tuple of int, optional
             The size of the figure to be plotted, default is (12,4).
+        plot_signal : bool, optional
+            Plot the downstream signal red light.
         """
         
         #リンク車両軌跡の時空間図
@@ -1246,6 +1252,9 @@ class Analyzer:
             plt.title(l)
             for i in range(len(l.xss)):
                 plt.plot(l.tss[i], l.xss[i], c=l.cs[i], lw=0.5)
+            if plot_signal:
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if l.end_node.signal_log[i] != l.signal_group]
+                plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
             plt.xlim([0, s.W.TMAX])
@@ -1260,7 +1269,7 @@ class Analyzer:
                 plt.close("all")
     
     @catch_exceptions_and_warn()
-    def time_space_diagram_density(s, links=None, figsize=(12,4)):
+    def time_space_diagram_density(s, links=None, figsize=(12,4), plot_signal=True):
         """
         Draws the time-space diagram of traffic density on specified links.
 
@@ -1271,6 +1280,8 @@ class Analyzer:
             If None, the diagram is plotted for all links in the network. Default is None.
         figsize : tuple of int, optional
             The size of the figure to be plotted, default is (12,4).
+        plot_signal : bool, optional
+            Plot the downstream signal red light.
         """
         
         #リンク密度の時空間図
@@ -1297,6 +1308,9 @@ class Analyzer:
             plt.imshow(l.k_mat.T, origin="lower", aspect="auto", 
                 extent=(0, int(s.W.TMAX/l.edie_dt)*l.edie_dt, 0, int(l.length/l.edie_dx)*l.edie_dx), 
                 interpolation="none", vmin=0, vmax=1/l.delta, cmap="inferno")
+            if plot_signal:
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if l.end_node.signal_log[i] != l.signal_group]
+                plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.colorbar().set_label("density (veh/m)")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
@@ -1312,7 +1326,7 @@ class Analyzer:
                 plt.close("all")
     
     @catch_exceptions_and_warn()
-    def time_space_diagram_traj_links(s, linkslist, figsize=(12,4)):
+    def time_space_diagram_traj_links(s, linkslist, figsize=(12,4), plot_signal=True):
         """
         Draws the time-space diagram of vehicle trajectories for vehicles on concective links.
 
@@ -1322,6 +1336,8 @@ class Analyzer:
             The names of the concective links for which the time-space diagram is to be plotted. 
         figsize : tuple of int, optional
             The size of the figure to be plotted, default is (12,4).
+        plot_signal : bool, optional
+            Plot the signal red light.
         """
         #複数リンクの連続した車両軌跡の時空間図
         s.W.print(" drawing trajectories in consecutive links...")
@@ -1348,6 +1364,9 @@ class Analyzer:
                 l = s.W.get_link(ll)
                 for i in range(len(l.xss)):
                     plt.plot(l.tss[i], np.array(l.xss[i])+linkdict[l], c=l.cs[i], lw=0.5)
+                if plot_signal:
+                    signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if l.end_node.signal_log[i] != l.signal_group]
+                    plt.plot(signal_log, [l.length+linkdict[l] for i in lange(signal_log)], "r.")
             for l in linkdict.keys():
                 plt.plot([0, s.W.TMAX], [linkdict[l], linkdict[l]], "k--", lw=0.7)
                 plt.plot([0, s.W.TMAX], [linkdict[l]+l.length, linkdict[l]+l.length], "k--", lw=0.7)
