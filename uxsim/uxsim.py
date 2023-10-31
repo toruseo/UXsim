@@ -1512,8 +1512,12 @@ class Analyzer:
                 c = ["k" for i in range(xsize)]
                 lw = [1 for i in range(xsize)]
                 for i in range(xsize):
-                    k = l.k_mat[int(t/l.edie_dt), i+1]
-                    v = l.v_mat[int(t/l.edie_dt), i+1]
+                    try:
+                        k = l.k_mat[int(t/l.edie_dt), i+1]
+                        v = l.v_mat[int(t/l.edie_dt), i+1]
+                    except:
+                        warnings.warn(f"invalid time {t} is specified for network visualization", UserWarning)
+                        return -1
                     lw[i] = k*l.delta*(maxwidth-minwidth)+minwidth
                     c[i] = plt.colormaps["viridis"](v/l.u)
                 xmid = [((xsize-i)*x1+(i+1)*x2)/(xsize+1)+vx for i in range(xsize)]
@@ -1677,7 +1681,7 @@ class Analyzer:
             print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
         
     @catch_exceptions_and_warn()
-    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=8):
+    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24):
         """
         Generates an animation of the entire transportation network and its traffic states over time.
 
@@ -1715,13 +1719,14 @@ class Analyzer:
         """
         s.W.print(" generating animation...")
         pics = []
-        for t in tqdm(range(0,s.W.TMAX,s.W.DELTAT*timestep_skip), disable=(s.W.print_mode==0)):
-            if detailed:
-                #todo_later: 今後はこちらもpillowにする
-                s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
-            else:
-                s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
-            pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
+        for t in tqdm(range(0, s.W.TMAX, s.W.DELTAT*timestep_skip), disable=(s.W.print_mode==0)):
+            if int(t/s.W.LINKS[0].edie_dt) < s.W.LINKS[0].k_mat.shape[0]:
+                if detailed:
+                    #todo_later: 今後はこちらもpillowにする
+                    s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+                else:
+                    s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+                pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
         pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
         for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
             os.remove(f)
