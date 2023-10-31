@@ -250,11 +250,23 @@ Some of the traffic flow model parameters can be altered during simulation by ch
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.__init__" title="uxsim.Link.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, name, start_node, end_node, ...)</p></td>
 <td><p>Create a link</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.in_out_flow_constraint" title="uxsim.uxsim.Link.in_out_flow_constraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_out_flow_constraint</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.actual_travel_time" title="uxsim.uxsim.Link.actual_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">actual_travel_time</span></code></a>(t)</p></td>
+<td><p>Get actual travel time of vehicle who departs this link on time t</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.arrival_count" title="uxsim.uxsim.Link.arrival_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arrival_count</span></code></a>(t)</p></td>
+<td><p>Get cumulative vehicle count of arrival to this link on time t</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.departure_count" title="uxsim.uxsim.Link.departure_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">departure_count</span></code></a>(t)</p></td>
+<td><p>Get cumulative vehicle count of departure from this link on time t</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.in_out_flow_constraint" title="uxsim.uxsim.Link.in_out_flow_constraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_out_flow_constraint</span></code></a>()</p></td>
 <td><p>Link capacity updates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.init_after_tmax_fix" title="uxsim.uxsim.Link.init_after_tmax_fix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_after_tmax_fix</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.init_after_tmax_fix" title="uxsim.uxsim.Link.init_after_tmax_fix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_after_tmax_fix</span></code></a>()</p></td>
 <td><p>Initalization before simulation execution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.instant_travel_time" title="uxsim.uxsim.Link.instant_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">instant_travel_time</span></code></a>(t)</p></td>
+<td><p>Get instantanious travel time of this link on time t</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.set_traveltime_instant" title="uxsim.uxsim.Link.set_traveltime_instant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_traveltime_instant</span></code></a>()</p></td>
 <td><p>Compute instantanious travel time.</p></td>

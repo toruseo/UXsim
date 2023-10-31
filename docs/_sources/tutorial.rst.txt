@@ -11,4 +11,5 @@ Tutorial
    
    ../notebooks/demo_notebook_01en.ipynb
    ../notebooks/demo_notebook_02en.ipynb
+   ../notebooks/demo_notebook_03en_pytorch.ipynb
    

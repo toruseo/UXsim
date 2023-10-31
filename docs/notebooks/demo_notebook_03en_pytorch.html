@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal control by PyTorch (DQN) &mdash; UXsim v1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulation mechanism" href="../mechanism.html" />
+    <link rel="prev" title="Advanced example" href="demo_notebook_02en.html" />
+ 
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            UXsim
+          </a>
+              <div class="version">
+                v1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_01en.html">Step-by-step tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_02en.html">Advanced example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Signal control by PyTorch (DQN)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Without-control">Without control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Deep-reinforcement-learning-by-PyTorch">Deep reinforcement learning by PyTorch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Environment-of-gymnasium">Environment of gymnasium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#DQN">DQN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Execution-of-DRL">Execution of DRL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Computation-time">Computation time</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tech_ref.html">Technical reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UXsim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorial.html">Tutorial</a></li>
+      <li class="breadcrumb-item active">Signal control by PyTorch (DQN)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/demo_notebook_03en_pytorch.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+<section id="Signal-control-by-PyTorch-(DQN)">
+<h1>Signal control by PyTorch (DQN)<a class="headerlink" href="#Signal-control-by-PyTorch-(DQN)" title="Permalink to this heading"></a></h1>
+<p>In this notebook, we present coordinated traffic signal control by deep reinforcement learning by directly integrating UXsim with PyTorch.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+</pre></div>
+</div>
+</div>
+<section id="Without-control">
+<h2>Without control<a class="headerlink" href="#Without-control" title="Permalink to this heading"></a></h2>
+<p>First, lets simulate arterial network with 4 intersections. The shape of the network is as follows.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    N1  N2
+    |   |
+W1--I1--I2--E1
+    |   |
+W2--I3--I4--E2
+    |   |
+    S1  S2
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># world definition</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span>
+    <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+    <span class="n">duo_update_time</span><span class="o">=</span><span class="mi">600</span>
+<span class="p">)</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+<span class="c1"># network definition</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    N1  N2</span>
+<span class="sd">    |   |</span>
+<span class="sd">W1--I1--I2--E1</span>
+<span class="sd">    |   |</span>
+<span class="sd">W2--I3--I4--E2</span>
+<span class="sd">    |   |</span>
+<span class="sd">    S1  S2</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">I1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;I1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span>
+<span class="n">I2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;I2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span>
+<span class="n">I3</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;I3&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span>
+<span class="n">I4</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;I4&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span>
+<span class="n">W1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;W1&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">W2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;W2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">E1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;E1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">E2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;E2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">N1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;N1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">N2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">S1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;S1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">S2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;S2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1">#E &lt;-&gt; W direction: signal group 0</span>
+<span class="k">for</span> <span class="n">n1</span><span class="p">,</span><span class="n">n2</span> <span class="ow">in</span> <span class="p">[[</span><span class="n">W1</span><span class="p">,</span> <span class="n">I1</span><span class="p">],</span> <span class="p">[</span><span class="n">I1</span><span class="p">,</span> <span class="n">I2</span><span class="p">],</span> <span class="p">[</span><span class="n">I2</span><span class="p">,</span> <span class="n">E1</span><span class="p">],</span> <span class="p">[</span><span class="n">W2</span><span class="p">,</span> <span class="n">I3</span><span class="p">],</span> <span class="p">[</span><span class="n">I3</span><span class="p">,</span> <span class="n">I4</span><span class="p">],</span> <span class="p">[</span><span class="n">I4</span><span class="p">,</span> <span class="n">E2</span><span class="p">]]:</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1">#N &lt;-&gt; S direction: signal group 1</span>
+<span class="k">for</span> <span class="n">n1</span><span class="p">,</span><span class="n">n2</span> <span class="ow">in</span> <span class="p">[[</span><span class="n">N1</span><span class="p">,</span> <span class="n">I1</span><span class="p">],</span> <span class="p">[</span><span class="n">I1</span><span class="p">,</span> <span class="n">I3</span><span class="p">],</span> <span class="p">[</span><span class="n">I3</span><span class="p">,</span> <span class="n">S1</span><span class="p">],</span> <span class="p">[</span><span class="n">N2</span><span class="p">,</span> <span class="n">I2</span><span class="p">],</span> <span class="p">[</span><span class="n">I2</span><span class="p">,</span> <span class="n">I4</span><span class="p">],</span> <span class="p">[</span><span class="n">I4</span><span class="p">,</span> <span class="n">S2</span><span class="p">]]:</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># random demand definition</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">demand</span> <span class="o">=</span> <span class="mf">0.22</span>
+<span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">([</span><span class="n">W1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">E1</span><span class="p">,</span> <span class="n">E2</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">N2</span><span class="p">,</span> <span class="n">S1</span><span class="p">,</span> <span class="n">S2</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="o">+</span><span class="n">dt</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">demand</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>Each signal has 2 phases: greenlight for E-W direction and that for N-S. The demand is randomly given, and its mean is evenly distribuded from each boundary node to every others. Because of this even distribution, each green split (duration) is set as the same: 60 seconds.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># simulation</span>
+<span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+
+<span class="c1"># resutls</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">()</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">([[</span><span class="s2">&quot;W1I1&quot;</span><span class="p">,</span> <span class="s2">&quot;I1I2&quot;</span><span class="p">,</span> <span class="s2">&quot;I2E1&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;N1I1&quot;</span><span class="p">,</span> <span class="s2">&quot;I1I3&quot;</span><span class="p">,</span> <span class="s2">&quot;I3S1&quot;</span><span class="p">]])</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+simulation setting:
+ scenario name:
+ simulation duration:    3600 s
+ number of vehicles:     8340 veh
+ total road length:      12000 m
+ time discret. width:    5 s
+ platoon size:           5 veh
+ number of timesteps:    720
+ number of platoons:     1668
+ number of links:        24
+ number of nodes:        12
+ setup time:             0.04 s
+simulating...
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|      575 vehs|   5.3 m/s|     0.28 s
+    1200 s|      755 vehs|   3.7 m/s|     0.58 s
+    1800 s|     1050 vehs|   1.7 m/s|     0.85 s
+    2400 s|     1275 vehs|   1.8 m/s|     1.10 s
+    3000 s|     1280 vehs|   1.7 m/s|     1.36 s
+    3595 s|     1315 vehs|   1.6 m/s|     1.59 s
+ simulation finished
+results:
+ average speed:  2.8 m/s
+ number of completed trips:      5260 / 8340
+ average travel time of trips:   566.6 s
+ average delay of trips:         411.8 s
+ delay ratio:                    0.727
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_6_1.png" src="../_images/notebooks_demo_notebook_03en_pytorch_6_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ drawing trajectories in consecutive links...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_6_3.png" src="../_images/notebooks_demo_notebook_03en_pytorch_6_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_6_4.png" src="../_images/notebooks_demo_notebook_03en_pytorch_6_4.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ generating animation...
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "104a3dcb1de443818882ed4fad7cf080", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out/anim_network1.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_7_0.png" src="../_images/notebooks_demo_notebook_03en_pytorch_7_0.png" />
+</div>
+</div>
+<p>Unfortunately, the given demand is slightly larger than the capacity of this network with this signal configuration. As a result, traffic congestion occurs and grows into a gridlock.</p>
+</section>
+<section id="Deep-reinforcement-learning-by-PyTorch">
+<h2>Deep reinforcement learning by PyTorch<a class="headerlink" href="#Deep-reinforcement-learning-by-PyTorch" title="Permalink to this heading"></a></h2>
+<p>Now we introduce smarter, reactive signal contol by machine learning. We assume that the traffic controller can observe the number of waiting vehicles in each link and determine which direction should be green as each intersection.</p>
+<p>We use the <a class="reference external" href="https://pytorch.org/">PyTorch</a> library, one of the most common deep learning frameworks. Because UXsim is written in pure Python, it is easy to integrate with PyTroch. To do so, we simply modify the <a class="reference external" href="https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html">tutorial code of deep reinforcement learning (DRL) by PyTorch</a>. Note that you may need to modify the code slightly depending on your computational environment.</p>
+<p>In this tutorial, we assume that you know the basics of DRL. For the details about DRL and PyTorch, please see the tutorial by PyTorch first.</p>
+<p>(Note that this traffic signal control problem with this scale could be solved by much simpler approaches. This example is just a demonstration of how we can integrate UXsim and PyTorch.)</p>
+<p>First, import the necessary modules.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;KMP_DUPLICATE_LIB_OK&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
+
+<span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+<span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Environment-of-gymnasium">
+<h2>Environment of gymnasium<a class="headerlink" href="#Environment-of-gymnasium" title="Permalink to this heading"></a></h2>
+<p>We define the DRL environment based on <code class="docutils literal notranslate"><span class="pre">gymnasium</span></code> framework. The required functions are: <code class="docutils literal notranslate"><span class="pre">reset()</span></code>: initialization, <code class="docutils literal notranslate"><span class="pre">step()</span></code>: move the time forward. This can be easily defined by integrating UXsim. <code class="docutils literal notranslate"><span class="pre">reset()</span></code> corresponds to simulation scenario definition such as <code class="docutils literal notranslate"><span class="pre">World()</span></code> and <code class="docutils literal notranslate"><span class="pre">W.addNode()</span></code>, and <code class="docutils literal notranslate"><span class="pre">step()</span></code> corresponds to <code class="docutils literal notranslate"><span class="pre">W.exec_simulation()</span></code>.</p>
+<p>We also need to define definition of action, state, and reward, which are the fundamental element of Markov decision process of DRL. <code class="docutils literal notranslate"><span class="pre">step()</span></code> corresponds to transition of Markov decision process.</p>
+<p>They are defined as follows.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TrafficSim</span><span class="p">(</span><span class="n">gym</span><span class="o">.</span><span class="n">Env</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        traffic scenario: 4 signalized intersections as shown below:</span>
+<span class="sd">                N1  N2</span>
+<span class="sd">                |   |</span>
+<span class="sd">            W1--I1--I2--E1</span>
+<span class="sd">                |   |</span>
+<span class="sd">            W2--I3--I4--E2</span>
+<span class="sd">                |   |</span>
+<span class="sd">                S1  S2</span>
+<span class="sd">        Traffic demand is generated from each boundary node to all other boundary nodes.</span>
+<span class="sd">        action: to determine which direction should have greenlight for every 10 seconds for each intersection. 16 actions.</span>
+<span class="sd">            action 1: greenlight for I1: direction 0, I2: 0, I3: 0, I4: 0, where direction 0 is E&lt;-&gt;W, 1 is N&lt;-&gt;S.</span>
+<span class="sd">            action 2: greenlight for I1: 1, I2: 0, I3: 0, I4: 0</span>
+<span class="sd">            action 3: greenlight for I1: 0, I2: 1, I3: 0, I4: 0</span>
+<span class="sd">            action 4: greenlight for I1: 1, I2: 1, I3: 0, I4: 0</span>
+<span class="sd">            action 5: ...</span>
+<span class="sd">        state: number of waiting vehicles at each incoming link. 16 dimension.</span>
+<span class="sd">        reward: negative of difference of total waiting vehicles</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#action</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_action</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">Discrete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_action</span><span class="p">)</span>
+
+        <span class="c1">#state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_state</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="mi">4</span>
+        <span class="n">low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_state</span><span class="p">)])</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">100</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_state</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        reset the env</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#whether demand is always random or not</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">tmax</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span>
+            <span class="n">print_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">random_seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">duo_update_time</span><span class="o">=</span><span class="mi">600</span>
+        <span class="p">)</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="c1">#network definition</span>
+        <span class="n">I1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;I1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span>
+        <span class="n">I2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;I2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span>
+        <span class="n">I3</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;I3&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span>
+        <span class="n">I4</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;I4&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span>
+        <span class="n">W1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;W1&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">W2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;W2&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">E1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;E1&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">E2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;E2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">N1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;N1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">N2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;N2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">S1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;S1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">S2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;S2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1">#E &lt;-&gt; W direction: signal group 0</span>
+        <span class="k">for</span> <span class="n">n1</span><span class="p">,</span><span class="n">n2</span> <span class="ow">in</span> <span class="p">[[</span><span class="n">W1</span><span class="p">,</span> <span class="n">I1</span><span class="p">],</span> <span class="p">[</span><span class="n">I1</span><span class="p">,</span> <span class="n">I2</span><span class="p">],</span> <span class="p">[</span><span class="n">I2</span><span class="p">,</span> <span class="n">E1</span><span class="p">],</span> <span class="p">[</span><span class="n">W2</span><span class="p">,</span> <span class="n">I3</span><span class="p">],</span> <span class="p">[</span><span class="n">I3</span><span class="p">,</span> <span class="n">I4</span><span class="p">],</span> <span class="p">[</span><span class="n">I4</span><span class="p">,</span> <span class="n">E2</span><span class="p">]]:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1">#N &lt;-&gt; S direction: signal group 1</span>
+        <span class="k">for</span> <span class="n">n1</span><span class="p">,</span><span class="n">n2</span> <span class="ow">in</span> <span class="p">[[</span><span class="n">N1</span><span class="p">,</span> <span class="n">I1</span><span class="p">],</span> <span class="p">[</span><span class="n">I1</span><span class="p">,</span> <span class="n">I3</span><span class="p">],</span> <span class="p">[</span><span class="n">I3</span><span class="p">,</span> <span class="n">S1</span><span class="p">],</span> <span class="p">[</span><span class="n">N2</span><span class="p">,</span> <span class="n">I2</span><span class="p">],</span> <span class="p">[</span><span class="n">I2</span><span class="p">,</span> <span class="n">I4</span><span class="p">],</span> <span class="p">[</span><span class="n">I4</span><span class="p">,</span> <span class="n">S2</span><span class="p">]]:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># random demand definition</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">demand</span> <span class="o">=</span> <span class="mf">0.22</span>
+        <span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">([</span><span class="n">W1</span><span class="p">,</span> <span class="n">W2</span><span class="p">,</span> <span class="n">E1</span><span class="p">,</span> <span class="n">E2</span><span class="p">,</span> <span class="n">N1</span><span class="p">,</span> <span class="n">N2</span><span class="p">,</span> <span class="n">S1</span><span class="p">,</span> <span class="n">S2</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+                <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="o">+</span><span class="n">dt</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">demand</span><span class="p">))</span>
+
+        <span class="c1"># store UXsim object for later re-use</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I1</span> <span class="o">=</span> <span class="n">I1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I2</span> <span class="o">=</span> <span class="n">I2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I3</span> <span class="o">=</span> <span class="n">I3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I4</span> <span class="o">=</span> <span class="n">I4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">INLINKS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">I1</span><span class="o">.</span><span class="n">inlinks</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">I2</span><span class="o">.</span><span class="n">inlinks</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">I3</span><span class="o">.</span><span class="n">inlinks</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">I4</span><span class="o">.</span><span class="n">inlinks</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="c1">#initial observation</span>
+        <span class="n">observation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_state</span><span class="p">)])</span>
+
+        <span class="c1">#log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_state</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_reward</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">return</span> <span class="n">observation</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">comp_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute the current state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vehicles_per_links</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">INLINKS</span><span class="p">:</span>
+            <span class="n">vehicles_per_links</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">num_vehicles_queue</span> <span class="c1">#l.num_vehicles_queue: the number of vehicles in queue in link l</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">vehicles_per_links</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">comp_n_veh_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_state</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        proceed env by 1 step = `operation_timestep_width` seconds</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">operation_timestep_width</span> <span class="o">=</span> <span class="mi">10</span>
+
+        <span class="n">n_queue_veh_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_n_veh_queue</span><span class="p">()</span>
+
+        <span class="c1">#change signal by action</span>
+        <span class="c1">#decode action</span>
+        <span class="n">binstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">action_index</span><span class="si">:</span><span class="s2">04b</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">,</span> <span class="n">i3</span><span class="p">,</span> <span class="n">i4</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">binstr</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">binstr</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">binstr</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">binstr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I1</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="n">i1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I1</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I2</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="n">i2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I2</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I3</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="n">i3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I3</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I4</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="n">i4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">I4</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1">#traffic dynamics. execute simulation for `operation_timestep_width` seconds</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">check_simulation_ongoing</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">(</span><span class="n">duration_t</span><span class="o">=</span><span class="n">operation_timestep_width</span><span class="p">)</span>
+
+        <span class="c1">#observe state</span>
+        <span class="n">observation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_state</span><span class="p">())</span>
+
+        <span class="c1">#compute reward</span>
+        <span class="n">n_queue_veh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_n_veh_queue</span><span class="p">()</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">n_queue_veh</span><span class="o">-</span><span class="n">n_queue_veh_old</span><span class="p">)</span>
+
+        <span class="c1">#check termination</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">check_simulation_ongoing</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1">#log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_reward</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="p">{},</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="DQN">
+<h2>DQN<a class="headerlink" href="#DQN" title="Permalink to this heading"></a></h2>
+<p>Then, define the deep Q network (DQN). This is almost identical to the PyTorch tutorial code. Note that the DRL environment <code class="docutils literal notranslate"><span class="pre">env</span></code> is defined using UXsim-based <code class="docutils literal notranslate"><span class="pre">TrafficSim()</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">TrafficSim</span><span class="p">()</span>
+
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+<span class="n">Transition</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Transition&#39;</span><span class="p">,</span>
+                        <span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">,</span> <span class="s1">&#39;next_state&#39;</span><span class="p">,</span> <span class="s1">&#39;reward&#39;</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">ReplayMemory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capacity</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([],</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">capacity</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save a transition&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">DQN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_observations</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DQN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">n_neurals</span> <span class="o">=</span> <span class="mi">64</span>
+        <span class="n">n_layers</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">n_observations</span><span class="p">,</span> <span class="n">n_neurals</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_layers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">n_neurals</span><span class="p">,</span> <span class="n">n_neurals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_last</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">n_neurals</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">)</span>
+
+    <span class="c1"># Called with either one element to determine next action, or a batch during optimization. Returns tensor([[left0exp,right0exp]...]).</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_last</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">steps_done</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+    <span class="n">eps_threshold</span> <span class="o">=</span> <span class="n">EPS_END</span> <span class="o">+</span> <span class="p">(</span><span class="n">EPS_START</span> <span class="o">-</span> <span class="n">EPS_END</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">steps_done</span> <span class="o">/</span> <span class="n">EPS_DECAY</span><span class="p">)</span>
+    <span class="n">steps_done</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">sample</span> <span class="o">&gt;</span> <span class="n">eps_threshold</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="c1"># t.max(1) will return the largest column value of each row. second column on max result is index of where max element was found, so we pick action with the larger expected reward.</span>
+            <span class="k">return</span> <span class="n">policy_net</span><span class="p">(</span><span class="n">state</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()]],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">optimize_model</span><span class="p">():</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">memory</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">BATCH_SIZE</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">transitions</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
+    <span class="c1"># Transpose the batch (see https://stackoverflow.com/a/19343/3343043 for detailed explanation). This converts batch-array of Transitions to Transition of batch-arrays.</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="n">Transition</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">transitions</span><span class="p">))</span>
+
+    <span class="c1"># Compute a mask of non-final states and concatenate the batch elements (a final state would&#39;ve been the one after which simulation ended)</span>
+    <span class="n">non_final_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                                          <span class="n">batch</span><span class="o">.</span><span class="n">next_state</span><span class="p">)),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+    <span class="n">non_final_next_states</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">next_state</span>
+                                                <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+    <span class="n">state_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+    <span class="n">action_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+    <span class="n">reward_batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">reward</span><span class="p">)</span>
+
+    <span class="c1"># Compute Q(s_t, a) - the model computes Q(s_t), then we select the columns of actions taken. These are the actions which would&#39;ve been taken for each batch state according to policy_net</span>
+    <span class="n">state_action_values</span> <span class="o">=</span> <span class="n">policy_net</span><span class="p">(</span><span class="n">state_batch</span><span class="p">)</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">action_batch</span><span class="p">)</span>
+
+    <span class="c1"># Compute V(s_{t+1}) for all next states.</span>
+    <span class="c1"># Expected values of actions for non_final_next_states are computed based on the &quot;older&quot; target_net; selecting their best reward with max(1)[0].</span>
+    <span class="c1"># This is merged based on the mask, such that we&#39;ll have either the expected state value or 0 in case the state was final.</span>
+    <span class="n">next_state_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">next_state_values</span><span class="p">[</span><span class="n">non_final_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_net</span><span class="p">(</span><span class="n">non_final_next_states</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># Compute the expected Q values</span>
+    <span class="n">expected_state_action_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">next_state_values</span> <span class="o">*</span> <span class="n">GAMMA</span><span class="p">)</span> <span class="o">+</span> <span class="n">reward_batch</span>
+
+    <span class="c1"># Compute Huber loss</span>
+    <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">SmoothL1Loss</span><span class="p">()</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">state_action_values</span><span class="p">,</span> <span class="n">expected_state_action_values</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># Optimize the model</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="c1"># In-place gradient clipping</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_value_</span><span class="p">(</span><span class="n">policy_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+<span class="c1"># (hyper)parameters</span>
+
+<span class="c1"># the number of transitions sampled from the replay buffer</span>
+<span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="c1"># the discount factor as mentioned in the previous section</span>
+<span class="n">GAMMA</span> <span class="o">=</span> <span class="mf">0.99</span>
+<span class="c1"># the starting value of epsilon</span>
+<span class="n">EPS_START</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="c1"># the final value of epsilon</span>
+<span class="n">EPS_END</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="c1"># the rate of exponential decay of epsilon, higher means a slower decay</span>
+<span class="n">EPS_DECAY</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="c1"># the update rate of the target network</span>
+<span class="n">TAU</span> <span class="o">=</span> <span class="mf">0.005</span>
+<span class="c1"># the learning rate of the ``AdamW`` optimizer</span>
+<span class="n">LR</span> <span class="o">=</span> <span class="mf">1e-4</span>
+
+<span class="c1"># Get number of actions from gym action space</span>
+<span class="n">n_actions</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">n</span>
+<span class="c1"># Get the number of state observations</span>
+<span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">n_observations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+<span class="n">policy_net</span> <span class="o">=</span> <span class="n">DQN</span><span class="p">(</span><span class="n">n_observations</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">target_net</span> <span class="o">=</span> <span class="n">DQN</span><span class="p">(</span><span class="n">n_observations</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">target_net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">policy_net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">(</span><span class="n">policy_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">LR</span><span class="p">,</span> <span class="n">amsgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">memory</span> <span class="o">=</span> <span class="n">ReplayMemory</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+
+<span class="n">steps_done</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Execution-of-DRL">
+<h2>Execution of DRL<a class="headerlink" href="#Execution-of-DRL" title="Permalink to this heading"></a></h2>
+<p>The controller is trained for 200 episodes. For every 50 episodes, the traffic situation is visualized in order to check the training process. Furthermore, the average delay of each episode is printed.</p>
+<p>To be fair, the learning process is little bit unstable, so you may need to run it several times to get good results. I executed this code 5 times and obtained 4 successful results. Improving this code to ensure good results is left as an exercise for the reader :)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_episodes</span> <span class="o">=</span> <span class="mi">200</span>
+
+<span class="n">log_states</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">log_epi_average_delay</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">best_average_delay</span> <span class="o">=</span> <span class="mi">9999999999999999999999999</span>
+<span class="n">best_W</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">best_i_episode</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="k">for</span> <span class="n">i_episode</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_episodes</span><span class="p">):</span>
+    <span class="c1"># Initialize the environment and get it&#39;s state</span>
+    <span class="n">state</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">log_states</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">observation</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">reward</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
+
+        <span class="k">if</span> <span class="n">terminated</span><span class="p">:</span>
+            <span class="n">next_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">next_state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">observation</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">log_states</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+        <span class="c1"># Store the transition in memory</span>
+        <span class="n">memory</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+
+        <span class="c1"># Move to the next state</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">next_state</span>
+
+        <span class="c1"># Perform one step of the optimization (on the policy network)</span>
+        <span class="n">optimize_model</span><span class="p">()</span>
+
+        <span class="c1"># Soft update of the target network&#39;s weights</span>
+        <span class="c1"># θ′ ← τ θ + (1 −τ )θ′</span>
+        <span class="n">target_net_state_dict</span> <span class="o">=</span> <span class="n">target_net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="n">policy_net_state_dict</span> <span class="o">=</span> <span class="n">policy_net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">policy_net_state_dict</span><span class="p">:</span>
+            <span class="n">target_net_state_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">policy_net_state_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">*</span><span class="n">TAU</span> <span class="o">+</span> <span class="n">target_net_state_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">TAU</span><span class="p">)</span>
+        <span class="n">target_net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">target_net_state_dict</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+            <span class="n">log_epi_average_delay</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_delay</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i_episode</span><span class="si">}</span><span class="s2">:[</span><span class="si">{</span><span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_delay</span><span class="w"> </span><span class="si">:</span><span class="s2"> .3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_delay</span> <span class="o">&lt;</span> <span class="n">best_average_delay</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;current best episode!&quot;</span><span class="p">)</span>
+                <span class="n">best_average_delay</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_delay</span>
+                <span class="n">best_W</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="p">)</span>
+                <span class="n">best_i_episode</span> <span class="o">=</span> <span class="n">i_episode</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">i_episode</span><span class="o">%</span><span class="k">50</span> == 0 or i_episode == num_episodes-1:
+        <span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">()</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">([[</span><span class="s2">&quot;W1I1&quot;</span><span class="p">,</span> <span class="s2">&quot;I1I2&quot;</span><span class="p">,</span> <span class="s2">&quot;I2E1&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;N1I1&quot;</span><span class="p">,</span> <span class="s2">&quot;I1I3&quot;</span><span class="p">,</span> <span class="s2">&quot;I3S1&quot;</span><span class="p">]],</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="o">/</span><span class="mi">4</span><span class="p">))):</span>
+            <span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_epi_average_delay</span><span class="p">,</span> <span class="s2">&quot;r.&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;episode&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;average delay (s)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0:[ 229.416] current best episode!
+results:
+ average speed:  1.5 m/s
+ number of completed trips:      2655 / 8295
+ average travel time of trips:   382.4 s
+ average delay of trips:         229.4 s
+ delay ratio:                    0.600
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_1.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_2.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_3.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_4.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_4.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_5.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_6.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_6.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_7.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_7.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_8.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_8.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1:[ 321.192] 2:[ 399.226] 3:[ 463.762] 4:[ 226.371] current best episode!
+5:[ 640.917] 6:[ 270.411] 7:[ 380.945] 8:[ 441.619] 9:[ 310.518] 10:[ 230.343] 11:[ 138.573] current best episode!
+12:[ 433.913] 13:[ 484.298] 14:[ 312.555] 15:[ 507.279] 16:[ 558.807] 17:[ 698.159] 18:[ 239.119] 19:[ 344.510] 20:[ 245.878] 21:[ 434.828] 22:[ 468.006] 23:[ 448.729] 24:[ 635.804] 25:[ 168.455] 26:[ 285.844] 27:[ 277.039] 28:[ 377.585] 29:[ 315.700] 30:[ 489.282] 31:[ 433.727] 32:[ 580.195] 33:[ 652.192] 34:[ 393.517] 35:[ 653.937] 36:[ 556.771] 37:[ 423.003] 38:[ 590.526] 39:[ 165.611] 40:[ 653.259] 41:[ 294.972] 42:[ 490.056] 43:[ 366.773] 44:[ 374.215] 45:[ 186.350] 46:[ 335.516] 47:[ 224.415] 48:[ 135.710] current best episode!
+49:[ 92.183] current best episode!
+50:[ 114.192] results:
+ average speed:  5.4 m/s
+ number of completed trips:      7360 / 8170
+ average travel time of trips:   269.6 s
+ average delay of trips:         114.2 s
+ delay ratio:                    0.424
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_10.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_10.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_11.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_11.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_12.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_12.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_13.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_13.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_14.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_14.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_15.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_15.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_16.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_16.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_17.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_17.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+51:[ 277.590] 52:[ 150.782] 53:[ 257.613] 54:[ 212.612] 55:[ 224.935] 56:[ 184.830] 57:[ 95.358] 58:[ 193.474] 59:[ 203.167] 60:[ 231.416] 61:[ 186.775] 62:[ 293.097] 63:[ 131.720] 64:[ 179.769] 65:[ 118.895] 66:[ 73.335] current best episode!
+67:[ 150.619] 68:[ 342.907] 69:[ 158.699] 70:[ 103.484] 71:[ 210.011] 72:[ 125.916] 73:[ 203.395] 74:[ 96.551] 75:[ 246.045] 76:[ 40.757] current best episode!
+77:[ 73.004] 78:[ 262.548] 79:[ 230.567] 80:[ 177.785] 81:[ 91.219] 82:[ 55.958] 83:[ 201.098] 84:[ 161.981] 85:[ 385.279] 86:[ 227.656] 87:[ 174.673] 88:[ 179.118] 89:[ 52.619] 90:[ 43.493] 91:[ 52.392] 92:[ 678.107] 93:[ 39.798] current best episode!
+94:[ 67.321] 95:[ 76.715] 96:[ 40.072] 97:[ 68.669] 98:[ 30.684] current best episode!
+99:[ 43.683] 100:[ 40.313] results:
+ average speed:  7.9 m/s
+ number of completed trips:      8215 / 8215
+ average travel time of trips:   197.2 s
+ average delay of trips:         40.3 s
+ delay ratio:                    0.204
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_19.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_19.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_20.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_20.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_21.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_21.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_22.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_22.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_23.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_23.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_24.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_24.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_25.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_25.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_26.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_26.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+101:[ 31.944] 102:[ 114.854] 103:[ 230.778] 104:[ 49.817] 105:[ 108.831] 106:[ 98.038] 107:[ 224.581] 108:[ 38.929] 109:[ 72.501] 110:[ 50.460] 111:[ 34.152] 112:[ 158.399] 113:[ 246.851] 114:[ 30.243] current best episode!
+115:[ 51.990] 116:[ 34.302] 117:[ 32.245] 118:[ 76.308] 119:[ 34.732] 120:[ 40.349] 121:[ 69.287] 122:[ 224.076] 123:[ 31.667] 124:[ 37.446] 125:[ 36.586] 126:[ 51.987] 127:[ 39.085] 128:[ 50.034] 129:[ 104.717] 130:[ 61.916] 131:[ 42.989] 132:[ 43.175] 133:[ 40.565] 134:[ 67.522] 135:[ 171.573] 136:[ 30.075] current best episode!
+137:[ 84.652] 138:[ 30.473] 139:[ 139.333] 140:[ 67.611] 141:[ 33.988] 142:[ 29.802] current best episode!
+143:[ 84.100] 144:[ 41.850] 145:[ 112.923] 146:[ 83.836] 147:[ 74.280] 148:[ 33.826] 149:[ 28.851] current best episode!
+150:[ 439.418] results:
+ average speed:  2.5 m/s
+ number of completed trips:      5240 / 8405
+ average travel time of trips:   594.8 s
+ average delay of trips:         439.4 s
+ delay ratio:                    0.739
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_28.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_28.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_29.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_29.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_30.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_30.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_31.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_31.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_32.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_32.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_33.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_33.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_34.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_34.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_35.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_35.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+151:[ 48.778] 152:[ 50.863] 153:[ 30.607] 154:[ 26.533] current best episode!
+155:[ 48.608] 156:[ 76.405] 157:[ 45.105] 158:[ 176.707] 159:[ 44.435] 160:[ 29.295] 161:[ 44.260] 162:[ 47.457] 163:[ 34.911] 164:[ 56.499] 165:[ 322.188] 166:[ 27.576] 167:[ 34.163] 168:[ 32.765] 169:[ 30.755] 170:[ 26.297] current best episode!
+171:[ 237.137] 172:[ 45.472] 173:[ 46.648] 174:[ 37.633] 175:[ 33.835] 176:[ 241.668] 177:[ 27.626] 178:[ 35.069] 179:[ 117.701] 180:[ 247.570] 181:[ 36.962] 182:[ 51.435] 183:[ 49.493] 184:[ 41.615] 185:[ 30.162] 186:[ 34.552] 187:[ 53.522] 188:[ 36.198] 189:[ 69.100] 190:[ 41.172] 191:[ 143.601] 192:[ 29.430] 193:[ 66.802] 194:[ 29.787] 195:[ 40.746] 196:[ 80.865] 197:[ 37.015] 198:[ 25.655] current best episode!
+199:[ 62.897] results:
+ average speed:  7.2 m/s
+ number of completed trips:      8145 / 8145
+ average travel time of trips:   220.4 s
+ average delay of trips:         62.9 s
+ delay ratio:                    0.285
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_37.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_37.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_38.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_38.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_39.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_39.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_40.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_40.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_41.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_41.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_42.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_42.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_43.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_43.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_15_44.png" src="../_images/notebooks_demo_notebook_03en_pytorch_15_44.png" />
+</div>
+</div>
+<p>According to the relation between episode and average delay, it is clear that the controller is successfully trained. The average delay under good traffic signal control is about 30 seconds. You can confirm the efficiency of the controller by checking the time-space diagrams and MFD of 199th episode with “without control” case that was shown in the beginning of this notebook.</p>
+<p>Let’s see the results of the best episode.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BEST EPISODE: </span><span class="si">{</span><span class="n">best_i_episode</span><span class="si">}</span><span class="s2">, with average delay </span><span class="si">{</span><span class="n">best_average_delay</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">best_W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">best_W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">()</span>
+<span class="n">best_W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">([[</span><span class="s2">&quot;W1I1&quot;</span><span class="p">,</span> <span class="s2">&quot;I1I2&quot;</span><span class="p">,</span> <span class="s2">&quot;I2E1&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;N1I1&quot;</span><span class="p">,</span> <span class="s2">&quot;I1I3&quot;</span><span class="p">,</span> <span class="s2">&quot;I3S1&quot;</span><span class="p">]],</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">best_W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="o">/</span><span class="mi">4</span><span class="p">))):</span>
+    <span class="n">best_W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">best_W</span><span class="o">.</span><span class="n">save_mode</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;start anim&quot;</span><span class="p">)</span>
+<span class="n">best_W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;end anim&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+BEST EPISODE: 198, with average delay 25.655307994757536
+results:
+ average speed:  8.5 m/s
+ number of completed trips:      7630 / 7630
+ average travel time of trips:   182.5 s
+ average delay of trips:         25.7 s
+ delay ratio:                    0.141
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_17_1.png" src="../_images/notebooks_demo_notebook_03en_pytorch_17_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_17_2.png" src="../_images/notebooks_demo_notebook_03en_pytorch_17_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_17_3.png" src="../_images/notebooks_demo_notebook_03en_pytorch_17_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_17_4.png" src="../_images/notebooks_demo_notebook_03en_pytorch_17_4.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_17_5.png" src="../_images/notebooks_demo_notebook_03en_pytorch_17_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_17_6.png" src="../_images/notebooks_demo_notebook_03en_pytorch_17_6.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_17_7.png" src="../_images/notebooks_demo_notebook_03en_pytorch_17_7.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+start anim
+end anim
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out/anim_network1.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_03en_pytorch_18_0.png" src="../_images/notebooks_demo_notebook_03en_pytorch_18_0.png" />
+</div>
+</div>
+<p>By comparing to the animation of without control scenario, we can see that this controller works very well.</p>
+</section>
+<section id="Computation-time">
+<h2>Computation time<a class="headerlink" href="#Computation-time" title="Permalink to this heading"></a></h2>
+<p>The computation time for the training is measured as follows. <code class="docutils literal notranslate"><span class="pre">../p06_corrdinated_signal_DQN_novisual.py</span></code> in the following cell is basically identical to the above code, but without visualization. The computation environment was not very good: Windows 10 Pro, Intel Core i7-9800 (3.8GHz*16 CPUs), NVIDIA GeForce RTX 2060 with CUDA 12.1, 32GB RAM. According to the result, the computation time was about 13 min.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="o">%</span><span class="n">run</span> <span class="o">../</span><span class="n">p06_corrdinated_signal_DQN_novisual</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0:[ 115.092] current best episode!
+results:
+ average speed:  5.7 m/s
+ number of completed trips:      8145 / 8285
+ average travel time of trips:   272.1 s
+ average delay of trips:         115.1 s
+ delay ratio:                    0.423
+1:[ 352.845] 2:[ 250.794] 3:[ 186.335] 4:[ 370.334] 5:[ 508.109] 6:[ 706.412] 7:[ 912.967] 8:[ 348.500] 9:[ 509.087] 10:[ 390.742] 11:[ 276.900] 12:[ 509.192] 13:[ 229.282] 14:[ 489.112] 15:[ 832.331] 16:[ 303.941] 17:[ 162.846] 18:[ 345.606] 19:[ 275.368] 20:[ 336.850] 21:[ 161.022] 22:[ 571.344] 23:[ 664.135] 24:[ 268.285] 25:[ 333.105] 26:[ 209.497] 27:[ 586.245] 28:[ 191.548] 29:[ 497.588] 30:[ 281.568] 31:[ 235.737] 32:[ 116.722] 33:[ 292.343] 34:[ 82.404] current best episode!
+35:[ 478.742] 36:[ 323.343] 37:[ 311.965] 38:[ 76.219] current best episode!
+39:[ 246.135] 40:[ 483.019] 41:[ 196.218] 42:[ 238.521] 43:[ 246.603] 44:[ 108.926] 45:[ 91.515] 46:[ 399.735] 47:[ 206.325] 48:[ 40.443] current best episode!
+49:[ 387.010] 50:[ 140.943] results:
+ average speed:  5.1 m/s
+ number of completed trips:      8005 / 8410
+ average travel time of trips:   298.4 s
+ average delay of trips:         140.9 s
+ delay ratio:                    0.472
+51:[ 304.275] 52:[ 227.185] 53:[ 163.887] 54:[ 92.257] 55:[ 63.011] 56:[ 67.575] 57:[ 234.068] 58:[ 114.712] 59:[ 353.232] 60:[ 51.297] 61:[ 43.559] 62:[ 42.514] 63:[ 78.654] 64:[ 87.071] 65:[ 51.777] 66:[ 54.328] 67:[ 48.153] 68:[ 40.447] 69:[ 471.936] 70:[ 403.492] 71:[ 442.321] 72:[ 65.603] 73:[ 33.889] current best episode!
+74:[ 46.738] 75:[ 258.127] 76:[ 285.765] 77:[ 38.230] 78:[ 48.036] 79:[ 204.950] 80:[ 39.497] 81:[ 527.289] 82:[ 360.144] 83:[ 34.529] 84:[ 33.621] current best episode!
+85:[ 270.351] 86:[ 362.302] 87:[ 38.952] 88:[ 32.671] current best episode!
+89:[ 32.564] current best episode!
+90:[ 43.443] 91:[ 46.726] 92:[ 76.989] 93:[ 94.157] 94:[ 51.200] 95:[ 207.239] 96:[ 25.298] current best episode!
+97:[ 395.292] 98:[ 202.345] 99:[ 74.507] 100:[ 42.603] results:
+ average speed:  7.9 m/s
+ number of completed trips:      7925 / 7925
+ average travel time of trips:   198.8 s
+ average delay of trips:         42.6 s
+ delay ratio:                    0.214
+101:[ 218.921] 102:[ 41.423] 103:[ 68.062] 104:[ 317.452] 105:[ 29.849] 106:[ 30.159] 107:[ 42.061] 108:[ 283.843] 109:[ 32.312] 110:[ 41.830] 111:[ 85.217] 112:[ 45.033] 113:[ 81.859] 114:[ 40.483] 115:[ 43.731] 116:[ 39.493] 117:[ 275.258] 118:[ 81.502] 119:[ 35.570] 120:[ 32.268] 121:[ 29.870] 122:[ 436.849] 123:[ 30.493] 124:[ 98.057] 125:[ 157.773] 126:[ 27.274] 127:[ 121.230] 128:[ 47.376] 129:[ 42.966] 130:[ 44.557] 131:[ 68.663] 132:[ 45.695] 133:[ 36.563] 134:[ 58.239] 135:[ 41.476] 136:[ 31.327] 137:[ 40.531] 138:[ 53.722] 139:[ 36.896] 140:[ 62.731] 141:[ 430.636] 142:[ 57.684] 143:[ 97.603] 144:[ 31.844] 145:[ 227.644] 146:[ 70.488] 147:[ 67.276] 148:[ 31.361] 149:[ 501.371] 150:[ 45.136] results:
+ average speed:  7.7 m/s
+ number of completed trips:      8270 / 8270
+ average travel time of trips:   202.3 s
+ average delay of trips:         45.1 s
+ delay ratio:                    0.223
+151:[ 39.135] 152:[ 711.663] 153:[ 39.082] 154:[ 41.802] 155:[ 40.135] 156:[ 323.422] 157:[ 32.770] 158:[ 72.775] 159:[ 60.883] 160:[ 87.032] 161:[ 201.164] 162:[ 266.662] 163:[ 132.926] 164:[ 62.887] 165:[ 30.856] 166:[ 74.635] 167:[ 43.924] 168:[ 42.214] 169:[ 52.909] 170:[ 39.425] 171:[ 34.702] 172:[ 153.315] 173:[ 59.571] 174:[ 32.550] 175:[ 30.408] 176:[ 264.411] 177:[ 37.607] 178:[ 87.463] 179:[ 30.629] 180:[ 55.710] 181:[ 42.852] 182:[ 39.393] 183:[ 38.181] 184:[ 42.906] 185:[ 420.739] 186:[ 37.580] 187:[ 33.711] 188:[ 62.630] 189:[ 32.736] 190:[ 284.532] 191:[ 37.963] 192:[ 41.558] 193:[ 38.125] 194:[ 316.769] 195:[ 36.058] 196:[ 228.368] 197:[ 33.955] 198:[ 51.382] 199:[ 146.361] results:
+ average speed:  5.5 m/s
+ number of completed trips:      8355 / 8390
+ average travel time of trips:   302.4 s
+ average delay of trips:         146.4 s
+ delay ratio:                    0.484
+BEST EPISODE: 96, with average delay 25.297695262483995
+results:
+ average speed:  8.5 m/s
+ number of completed trips:      7810 / 7810
+ average travel time of trips:   182.9 s
+ average delay of trips:         25.3 s
+ delay ratio:                    0.138
+Wall time: 12min 54s
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 640x480 with 0 Axes&gt;
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="demo_notebook_02en.html" class="btn btn-neutral float-left" title="Advanced example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mechanism.html" class="btn btn-neutral float-right" title="Simulation mechanism" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Toru Seo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

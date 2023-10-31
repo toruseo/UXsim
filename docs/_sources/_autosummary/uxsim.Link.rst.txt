@@ -14,8 +14,12 @@
    .. autosummary::
    
       ~Link.__init__
+      ~Link.actual_travel_time
+      ~Link.arrival_count
+      ~Link.departure_count
       ~Link.in_out_flow_constraint
       ~Link.init_after_tmax_fix
+      ~Link.instant_travel_time
       ~Link.set_traveltime_instant
       ~Link.update
    
