@@ -21,6 +21,7 @@ UXsim would be especially useful for scientific and educational purposes because
 - Basic analysis of simulation results (e.g., trip completion rate, total travel time, delay), and their export to pandas.DataFrame and CSV files.
 - Visualization of simulation results (e.g., time-space diagram, MFD, network traffic animation).
 - Can be flexibly customized by users thanks to pure Python implementation.
+	- Can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control.
 
 ## Main files
 
@@ -50,6 +51,8 @@ For the further details, please see [demos_and_examples](https://github.com/toru
 
 ## Simulation Example
 
+### Large-scale scenario
+
 Belows are simulation result where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC. 
 
 Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
@@ -60,6 +63,9 @@ Visualization of link traffic states (thicker lines mean more vehicles, darker c
 
 Vehicle trajectory diagram on a corridor of the above network:
 <img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
+
+### Deep reinforcement learning traffic signal control using PyTorch
+
 
 ## Terms of Use & License
 
