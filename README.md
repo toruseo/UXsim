@@ -67,7 +67,7 @@ Vehicle trajectory diagram on a corridor of the above network:
 ### Deep reinforcement learning signal control using PyTorch
 
 Traffic signal controller is trained by deep reinforcement learning (DRL) of [PyTorch](https://pytorch.org/).
-The left is no control scenario with fixed signal timing; the traffic demand exceeds the network capacity with naive signal setting.
+The left is no control scenario with fixed signal timing; the traffic demand exceeds the network capacity with naive signal setting, and a gridlock occurs.
 The right is with DRL control scenario, where traffic signal can be changed by observing queue length; although the demand level is the same, traffic is smoothly flowing.
 [Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb) is available.
 
