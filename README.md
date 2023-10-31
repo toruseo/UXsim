@@ -64,7 +64,17 @@ Visualization of link traffic states (thicker lines mean more vehicles, darker c
 Vehicle trajectory diagram on a corridor of the above network:
 <img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
 
-### Deep reinforcement learning traffic signal control using PyTorch
+### Deep reinforcement learning signal control using PyTorch
+
+Traffic signal controller is trained by deep reinforcement learning (DRL) of [PyTorch](https://pytorch.org/).
+The left is no control scenario with fixed signal timing; the traffic demand exceeds the network capacity with naive signal setting.
+The right is with DRL control scenario, where traffic signal can be changed by observing queue length; although the demand level is the same, traffic is smoothly flowing.
+[Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb) is available.
+
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_nocontrol.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
+</p>
 
 
 ## Terms of Use & License
