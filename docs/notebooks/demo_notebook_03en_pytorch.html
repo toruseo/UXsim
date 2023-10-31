@@ -126,7 +126,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 <section id="Without-control">
 <h2>Without control<a class="headerlink" href="#Without-control" title="Permalink to this heading"></a></h2>
-<p>First, lets simulate arterial network with 4 intersections. The shape of the network is as follows.</p>
+<p>First, let’s simulate arterial network with 4 intersections. The shape of the network is as follows.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    N1  N2
     |   |
 W1--I1--I2--E1
@@ -1184,7 +1184,8 @@ end anim
 </section>
 <section id="Computation-time">
 <h2>Computation time<a class="headerlink" href="#Computation-time" title="Permalink to this heading"></a></h2>
-<p>The computation time for the training is measured as follows. <code class="docutils literal notranslate"><span class="pre">../p06_corrdinated_signal_DQN_novisual.py</span></code> in the following cell is basically identical to the above code, but without visualization. The computation environment was not very good: Windows 10 Pro, Intel Core i7-9800 (3.8GHz*16 CPUs), NVIDIA GeForce RTX 2060 with CUDA 12.1, 32GB RAM. According to the result, the computation time was about 13 min.</p>
+<p>The computation time for the training is measured as follows. <code class="docutils literal notranslate"><span class="pre">../p06_corrdinated_signal_DQN_novisual.py</span></code> in the following cell is basically identical to the above code, but without visualization. The computation environment was not very good: Windows 10 Pro, Intel Core i7-9800 (3.8GHz*16 CPUs), NVIDIA GeForce RTX 2060 with CUDA 12.1, 32GB RAM.</p>
+<p>According to the result, the total training time was about 13 min. The computation time of UXsim itself for 1 simulation in 1 episode was 1-2 seconds (see the first example). Therefore, the most of the computation burden is from training and computation of neural nets. This suggests that UXsim is useful as a simulation environment for DRL.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
