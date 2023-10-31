@@ -39,19 +39,9 @@ CLASSIFIERS = [
     'Topic :: Scientific/Engineering',
 ]
 
-long_description = """# UXsim: traffic flow simulator
 
-UXsim is a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. It is suitable for simulating large-scale (e.g., city-scale) vehicular transportation. It computes dynamic traffic flow in a network by using traffic flow models commonly utilized by transportation research. This simulator is written by pure Python and allows users to flexibly customize it.
-
-- Github repo: https://github.com/toruseo/UXsim
-- Technical reference: https://toruseo.jp/UXsim/docs/index.html
-- arXiv preprint: https://arxiv.org/abs/2309.17114
-- Fundamental theories (Japanese textbook): https://www.coronasha.co.jp/np/isbn/9784339052794/
-
-MIT License
-
-Copyright (c) 2023 Toru Seo
-"""
+with open('README.md', 'r', encoding='utf-8') as fp:
+    long_description = fp.read()
 
 setup(name=NAME,
       author=AUTHOR,
