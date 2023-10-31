@@ -2,11 +2,15 @@
 
 [(English readme is here)](https://github.com/toruseo/UXsim/blob/main/README.md)
 
-このリポジトリでは，Python製のオープンソース・フリーなマクロ・メソ交通流シミュレータ*UXsim*を公開しています．
+*UXsim*はPython製のオープンソース・フリーなマクロ・メソ交通流シミュレータです．
 これは，都市規模のような大局的な自動車交通とその渋滞を再現する交通シミュレーションであり，交通工学分野で標準的なモデルにより道路ネットワークの動的交通流を計算するものです．
 UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に適することを意図していますが，それ以外の目的にも自由に使用可能です．
 
-簡単な使用例を[Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)にまとめてあります．
+- [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)
+- [技術資料](https://toruseo.jp/UXsim/docs/index.html)
+- [arXivプレプリント](https://arxiv.org/abs/2309.17114)
+- [交通流理論・シミュレーションの専門書](https://www.coronasha.co.jp/np/isbn/9784339052794/)
+
 
 ## 主な機能・特徴
 
@@ -18,6 +22,7 @@ UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に
 - 計算結果の各種分析（トリップ完了数，総旅行時間，遅れ時間など）と，そのpandas.DataFrameやCSVへのエクスポート
 - 計算結果の可視化（時空間図，MFD，ネットワーク状況アニメーションなど）
 - 純Pythonであることを活かした高度なカスタマイズ性
+	- Python製の他のフレームワークとも直接連携可能．例：PyTorchを用いた深層強化学習による交通制御
 
 ## 主なファイル構成
 
@@ -47,6 +52,8 @@ from uxsim import *
 
 ## 計算例
 
+### 大規模ネットワーク
+
 10km x 10kmのグリッドネットワーク内を2時間で約6万台が通行する様子．計算時間は通常のデスクトップPCで約30秒．
 
 リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）と一部車両の軌跡：
@@ -59,12 +66,17 @@ from uxsim import *
 
 <img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
 
-## 詳細資料
+### 深層強化学習（AI）による信号制御
 
-- [UXsim技術資料](https://toruseo.jp/UXsim/docs/index.html)
-- [arXivプレプリントでの概要](https://arxiv.org/abs/2309.17114)
-- [交通流理論・シミュレーションの書籍](https://www.coronasha.co.jp/np/isbn/9784339052794/)
+信号制御を[PyTorch](https://pytorch.org/)の深層強化学習によって効率化する例です．
+下の左図は単純な固定時間の信号の場合で，交通需要がネットワーク容量を上回りグリッドロックが生じています．
+右図は深層強化学習を適用した場合で，需要レベルが同じであるのに関わらず効率的な交通が実現しています．
+このコードは[Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb)にもまとめてあります.
 
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_nocontrol.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
+</p>
 
 ## 使用条件・ライセンス
 
