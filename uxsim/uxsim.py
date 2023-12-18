@@ -651,6 +651,8 @@ class Vehicle:
         s.log_v = [] #現在速度
         s.color = (random.random(), random.random(), random.random())
         
+        s.log_t_link = [[s.departure_time, "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
+        
         s.attribute = attribute
         
         s.id = len(s.W.VEHICLES)
@@ -798,6 +800,8 @@ class Vehicle:
             outlinks = list(s.link.end_node.outlinks.values())
             
             if len(outlinks):
+                
+                #好むリンク・避けるリンクがあれば優先する
                 if set(outlinks) & set(s.links_prefer):
                     outlinks = list(set(outlinks) & set(s.links_prefer))
                 if set(outlinks) & set(s.links_avoid):
@@ -828,6 +832,9 @@ class Vehicle:
                 s.W.analyzer.average_speed_count += 1
                 s.W.analyzer.average_speed += 0
         else:
+            if len(s.log_link) == 0 or s.log_link[-1] != s.link:
+                s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
+            
             s.log_t.append(s.W.T*s.W.DELTAT)
             s.log_state.append(s.state)
             s.log_link.append(s.link)

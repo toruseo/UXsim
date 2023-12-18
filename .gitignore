@@ -132,6 +132,6 @@ out/
 demos_and_examples/out/
 cache/
 _private_files/*
-dev.ipynb
+dev*.ipynb
 compare.ps1
 p*_*.py
