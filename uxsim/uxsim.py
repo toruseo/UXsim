@@ -164,7 +164,7 @@ class Node:
                 #累積台数関連更新
                 inlink.cum_departure[-1] += s.W.DELTAN
                 outlink.cum_arrival[-1] += s.W.DELTAN
-                inlink.traveltime_actual[-1] = s.W.T*s.W.DELTAT - veh.link_arrival_time
+                inlink.traveltime_actual[int(veh.link_arrival_time/s.W.DELTAT):] = s.W.T*s.W.DELTAT - veh.link_arrival_time #自分の流入時刻より後の実旅行時間も今の実旅行時間で仮決め．後に流出した車両が上書きする前提
                 ### debug
                 if veh.name == "200":
                     print(inlink, len(inlink.traveltime_actual), inlink.traveltime_actual[-1], s.W.T*s.W.DELTAT, veh.link_arrival_time)
@@ -371,6 +371,9 @@ class Link:
         s.tn_mat = np.zeros(s.k_mat.shape)
         s.dn_mat = np.zeros(s.k_mat.shape)
         s.an = s.edie_dt*s.edie_dx
+        
+        #累積
+        s.traveltime_actual = np.array([s.length/s.u for t in range(s.W.TSIZE)])
     
     def update(s):
         """
@@ -381,12 +384,9 @@ class Link:
         s.set_traveltime_instant()
         s.cum_arrival.append(0)
         s.cum_departure.append(0)
-        s.traveltime_actual.append(s.length/s.u)
         if len(s.cum_arrival) > 1:
             s.cum_arrival[-1] = s.cum_arrival[-2]
             s.cum_departure[-1] = s.cum_departure[-2]
-            if len(s.vehicles):
-                s.traveltime_actual[-1] = s.traveltime_actual[-2]
         
         #リアルタイム状態リセット
         s._speed = -1
@@ -479,7 +479,7 @@ class Link:
     
     def actual_travel_time(s, t):
         """
-        Get actual travel time of vehicle who departs this link on time t
+        Get actual travel time of vehicle who departs this link on time t. Note that small error may occur due to fractional processing.
         
         Parameters
         ----------
@@ -725,7 +725,7 @@ class Vehicle:
         s.state = "end"
         
         s.link.cum_departure[-1] += s.W.DELTAN
-        s.link.traveltime_actual[-1] = (s.W.T+1)*s.W.DELTAT - s.link_arrival_time  #端部の挙動改善
+        s.link.traveltime_actual[int(s.link_arrival_time/s.W.DELTAT):] = (s.W.T+1)*s.W.DELTAT - s.link_arrival_time  #端部の挙動改善 todo: 精査
         
         if s.follower != None:
             s.follower.leader = None
