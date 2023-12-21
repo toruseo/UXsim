@@ -165,10 +165,7 @@ class Node:
                 inlink.cum_departure[-1] += s.W.DELTAN
                 outlink.cum_arrival[-1] += s.W.DELTAN
                 inlink.traveltime_actual[int(veh.link_arrival_time/s.W.DELTAT):] = s.W.T*s.W.DELTAT - veh.link_arrival_time #自分の流入時刻より後の実旅行時間も今の実旅行時間で仮決め．後に流出した車両が上書きする前提
-                ### debug
-                if veh.name == "200":
-                    print(inlink, len(inlink.traveltime_actual), inlink.traveltime_actual[-1], s.W.T*s.W.DELTAT, veh.link_arrival_time)
-                ### debug
+
                 veh.link_arrival_time = s.W.T*s.W.DELTAT
                 
                 inlink.capacity_out_remain -= s.W.DELTAN
@@ -479,7 +476,7 @@ class Link:
     
     def actual_travel_time(s, t):
         """
-        Get actual travel time of vehicle who departs this link on time t. Note that small error may occur due to fractional processing.
+        Get actual travel time of vehicle who enters this link on time t. Note that small error may occur due to fractional processing.
         
         Parameters
         ----------
