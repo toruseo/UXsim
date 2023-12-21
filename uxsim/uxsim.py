@@ -164,7 +164,11 @@ class Node:
                 #累積台数関連更新
                 inlink.cum_departure[-1] += s.W.DELTAN
                 outlink.cum_arrival[-1] += s.W.DELTAN
-                inlink.traveltime_actual[-1] = s.W.T*s.W.DELTAT - veh.link_arrival_time
+                inlink.traveltime_actual[int(veh.link_arrival_time/s.W.DELTAT):] = s.W.T*s.W.DELTAT - veh.link_arrival_time #自分の流入時刻より後の実旅行時間も今の実旅行時間で仮決め．後に流出した車両が上書きする前提
+                ### debug
+                if veh.name == "200":
+                    print(inlink, len(inlink.traveltime_actual), inlink.traveltime_actual[-1], s.W.T*s.W.DELTAT, veh.link_arrival_time)
+                ### debug
                 veh.link_arrival_time = s.W.T*s.W.DELTAT
                 
                 inlink.capacity_out_remain -= s.W.DELTAN
@@ -367,6 +371,9 @@ class Link:
         s.tn_mat = np.zeros(s.k_mat.shape)
         s.dn_mat = np.zeros(s.k_mat.shape)
         s.an = s.edie_dt*s.edie_dx
+        
+        #累積
+        s.traveltime_actual = np.array([s.length/s.u for t in range(s.W.TSIZE)])
     
     def update(s):
         """
@@ -377,12 +384,9 @@ class Link:
         s.set_traveltime_instant()
         s.cum_arrival.append(0)
         s.cum_departure.append(0)
-        s.traveltime_actual.append(s.length/s.u)
         if len(s.cum_arrival) > 1:
             s.cum_arrival[-1] = s.cum_arrival[-2]
             s.cum_departure[-1] = s.cum_departure[-2]
-            if len(s.vehicles):
-                s.traveltime_actual[-1] = s.traveltime_actual[-2]
         
         #リアルタイム状態リセット
         s._speed = -1
@@ -475,7 +479,7 @@ class Link:
     
     def actual_travel_time(s, t):
         """
-        Get actual travel time of vehicle who departs this link on time t
+        Get actual travel time of vehicle who departs this link on time t. Note that small error may occur due to fractional processing.
         
         Parameters
         ----------
@@ -487,7 +491,7 @@ class Link:
         float
             The actual travel time.
         """
-        tt = t//s.W.DELTAT
+        tt = int(t//s.W.DELTAT)
         if tt >= len(s.traveltime_actual):
             return s.traveltime_actual[-1]
         if tt < 0:
@@ -651,6 +655,9 @@ class Vehicle:
         s.log_v = [] #現在速度
         s.color = (random.random(), random.random(), random.random())
         
+        s.log_t_link = [[s.departure_time, "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
+        #todo: s.departure_timeがタイムステップ表記の事がある
+        
         s.attribute = attribute
         
         s.id = len(s.W.VEHICLES)
@@ -718,7 +725,7 @@ class Vehicle:
         s.state = "end"
         
         s.link.cum_departure[-1] += s.W.DELTAN
-        s.link.traveltime_actual[-1] = (s.W.T+1)*s.W.DELTAT - s.link_arrival_time  #端部の挙動改善
+        s.link.traveltime_actual[int(s.link_arrival_time/s.W.DELTAT):] = (s.W.T+1)*s.W.DELTAT - s.link_arrival_time  #端部の挙動改善 todo: 精査
         
         if s.follower != None:
             s.follower.leader = None
@@ -798,6 +805,8 @@ class Vehicle:
             outlinks = list(s.link.end_node.outlinks.values())
             
             if len(outlinks):
+                
+                #好むリンク・避けるリンクがあれば優先する
                 if set(outlinks) & set(s.links_prefer):
                     outlinks = list(set(outlinks) & set(s.links_prefer))
                 if set(outlinks) & set(s.links_avoid):
@@ -812,11 +821,30 @@ class Vehicle:
             else:
                 s.route_next_link = None
     
+    def traveled_route(s):
+        """
+        Returns the route this vehicle traveled.
+        """
+        link_old = -1
+        t = -1
+        route = []
+        ts = []
+        for i, link in enumerate(s.log_link):
+            if link_old != link:
+                route.append(link)
+                ts.append(s.log_t[i])
+                link_old = link
+        
+        return Route(s.W, route[:-1]), ts
+    
     def record_log(s):
         """
         Record travel logs.
         """
         if s.state != "run":
+            if s.state == "end" and s.log_t_link[-1][1] != "end":
+                s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
+            
             s.log_t.append(s.W.T*s.W.DELTAT)
             s.log_state.append(s.state)
             s.log_link.append(-1)
@@ -828,6 +856,9 @@ class Vehicle:
                 s.W.analyzer.average_speed_count += 1
                 s.W.analyzer.average_speed += 0
         else:
+            if len(s.log_link) == 0 or s.log_link[-1] != s.link:
+                s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
+            
             s.log_t.append(s.W.T*s.W.DELTAT)
             s.log_state.append(s.state)
             s.log_link.append(s.link)
@@ -1227,6 +1258,9 @@ class Analyzer:
                 print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
                 print(f" average delay of trips:\t {s.average_delay:.1f} s")
                 print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
+    
+    def comp_route_travel_time(s, t, route):
+        pass
     
     @catch_exceptions_and_warn()
     def time_space_diagram_traj(s, links=None, figsize=(12,4), plot_signal=True):
@@ -2125,6 +2159,21 @@ class Analyzer:
         s.df_link_traffic_state = pd.DataFrame(out[1:], columns=out[0])
         return s.df_link_traffic_state
     
+    def link_cumulative_to_pandas(s):
+        """
+        Converts the cumulative counts etc. in links to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+        """
+        out = [["link", "t", "arrival_count", "departure_count", "actual_travel_time", "instantanious_travel_time"]]
+        for link in s.W.LINKS:
+            for i in range(s.W.TSIZE):
+                out.append([link.name, i*s.W.DELTAT, link.cum_arrival[i], link.cum_departure[i], link.traveltime_actual[i], link.traveltime_instant[i]])
+        s.df_link_cumulative = pd.DataFrame(out[1:], columns=out[0])
+        return s.df_link_cumulative
+        
     @catch_exceptions_and_warn()
     def output_data(s, fname=None):
         """
@@ -2139,6 +2188,85 @@ class Analyzer:
         s.link_traffic_state_to_pandas().to_csv(fname+"_link_traffic_state.csv", index=False)
         s.vehicles_to_pandas().to_csv(fname+"_vehicles.csv", index=False)
 
+# 経路クラス
+class Route:
+    """
+    Class for a route that store concective links.
+    """
+    def __init__(s, W, links, name="", trust_input=False):
+        """
+        Define a route.
+        
+        Attributes
+        ----------
+        links : list
+            List of links. The contents are Link objects.
+        links_name : list
+            List of name of links. The contents are str.
+        trust_input : bool
+            True if you trust the `links` in order to reduce the computation cost by omitting verification.
+        """
+        s.W = W
+        s.name = name
+        s.links = []
+        if trust_input == False:
+            #入力データを検査する場合
+            for i in range(0, len(links)-1):
+                l1 = W.get_link(links[i])
+                l2 = W.get_link(links[i+1])
+                if l2 in l1.end_node.outlinks.values():
+                    s.links.append(l1)
+                else:
+                    raise Exception(f"route is not defined by concective links: {links}, {l1}")
+                    #todo: interpolation based on shotest path
+            s.links.append(l2)
+        else:
+            #検査せずそのまま使用（計算コスト削減）
+            s.links = links
+        s.links_name = [l.name for l in s.links]
+    
+    def __repr__(s):
+        return f"<Route {s.name}: {s.links}>"
+    
+    def __eq__(self, other):
+        """
+        Override `==` operator. If the links of two route are the same, then the routes are the same.
+        """
+        if isinstance(other, Route):
+            return self.links == other.links
+        return NotImplemented
+        
+    def actual_travel_time(s, t, return_details=False):
+        """
+        Actual travel time for a (hypothetical) vehicle who start traveling this route on time t.
+        
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+        return_details : bool
+            True if you want travel time per link.
+        
+        Returns
+        -------
+        float
+            The actual travel time.
+        list (if `return_details` is True)
+            List of travel time per link.
+        """
+        tt = 0
+        tts = []
+        
+        for l in s.links:
+            link_tt = l.actual_travel_time(t)
+            tt += link_tt
+            t += link_tt
+            tts.append(link_tt)
+        
+        if return_details:
+            return tt, tts
+        else:
+            return tt
 
 class World:
     """
