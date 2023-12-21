@@ -2159,6 +2159,21 @@ class Analyzer:
         s.df_link_traffic_state = pd.DataFrame(out[1:], columns=out[0])
         return s.df_link_traffic_state
     
+    def link_cumulative_to_pandas(s):
+        """
+        Converts the cumulative counts etc. in links to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+        """
+        out = [["link", "t", "arrival_count", "departure_count", "actual_travel_time", "instantanious_travel_time"]]
+        for link in s.W.LINKS:
+            for i in range(s.W.TSIZE):
+                out.append([link.name, i*s.W.DELTAT, link.cum_arrival[i], link.cum_departure[i], link.traveltime_actual[i], link.traveltime_instant[i]])
+        s.df_link_cumulative = pd.DataFrame(out[1:], columns=out[0])
+        return s.df_link_cumulative
+        
     @catch_exceptions_and_warn()
     def output_data(s, fname=None):
         """
