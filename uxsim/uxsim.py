@@ -425,7 +425,7 @@ class Link:
         float
             The cumulative arrival vehicle count.
         """
-        tt = t//s.W.DELTAT
+        tt = int(t//s.W.DELTAT)
         if tt >= len(s.cum_arrival):
             return s.cum_arrival[-1]
         if tt < 0:
@@ -446,7 +446,7 @@ class Link:
         float
             The cumulative departure vehicle count.
         """
-        tt = t//s.W.DELTAT
+        tt = int(t//s.W.DELTAT)
         if tt >= len(s.cum_departure):
             return s.cum_departure[-1]
         if tt < 0:
@@ -467,7 +467,7 @@ class Link:
         float
             The instantanious travel time.
         """
-        tt = t//s.W.DELTAT
+        tt = int(t//s.W.DELTAT)
         if tt >= len(s.traveltime_instant):
             return s.traveltime_instant[-1]
         if tt < 0:
@@ -2823,3 +2823,41 @@ class World:
             return True
         else:
             return False
+
+    
+    #@catch_exceptions_and_warn()
+    def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6):
+        """
+        Visualizes the entire transportation network shape.
+        """
+        plt.figure(figsize=figsize)
+        plt.subplot(111, aspect="equal")
+        for n in W.NODES:
+            plt.plot(n.x, n.y, "o", c="gray", ms=node_size, zorder=10)
+            if network_font_size > 0:
+                plt.text(n.x, n.y, n.name, c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
+        for l in W.LINKS:
+            x1, y1 = l.start_node.x, l.start_node.y
+            x2, y2 = l.end_node.x, l.end_node.y
+            vx, vy = (y1-y2)*0.05, (x2-x1)*0.05
+            if not left_handed:
+                vx, vy = -vx, -vy
+            #簡略モード
+            xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
+            xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
+            plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "gray", lw=width, zorder=6, solid_capstyle="butt")
+            if network_font_size > 0:
+                plt.text(xmid1, ymid1, l.name, c="b", zorder=20, fontsize=network_font_size)
+        maxx = max([n.x for n in W.NODES])
+        minx = min([n.x for n in W.NODES])
+        maxy = max([n.y for n in W.NODES])
+        miny = min([n.y for n in W.NODES])
+        buffx, buffy = (maxx-minx)/10, (maxy-miny)/10
+        if buffx == 0:
+            buffx = buffy
+        if buffy == 0:
+            buffy = buffx
+        plt.xlim([minx-buffx, maxx+buffx])
+        plt.ylim([miny-buffy, maxy+buffy])
+        plt.tight_layout()
+        plt.show()
