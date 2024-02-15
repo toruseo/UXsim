@@ -47,7 +47,7 @@ class Node:
         Attributes
         ----------
         signal_phase : int
-            The phase of current signal. Links with the same `signal_group` have a green signal.
+            The phase of current signal. Links with the same `signal_group` (or signal_phase in signal_group) have a green signal.
         signal_t : float
             The elapsed time since the current signal phase started. When it is larger than `Link.signal[Link.signal_phase]`, the phase changes to the next one.
         """
@@ -154,7 +154,9 @@ class Node:
                 #受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択
                 vehs = [
                     veh for veh in s.incoming_vehicles 
-                    if veh.route_next_link == outlink and (veh.link.signal_group == s.signal_phase or len(s.signal)<=1) and veh.link.capacity_out_remain >= s.W.DELTAN
+                    if veh.route_next_link == outlink and
+                      (s.signal_phase in veh.link.signal_group or len(s.signal)<=1) and 
+                      veh.link.capacity_out_remain >= s.W.DELTAN
                 ]
                 if len(vehs) == 0:
                     continue
@@ -234,7 +236,7 @@ class Link:
             The jam density on the link.
         merge_priority : float, optional
             The priority of the link when merging at the downstream node, default is 1.
-        signal_group : int, optional
+        signal_group : int or list, optional
             The signal group to which the link belongs, default is 0.
         capacity_out : float, optional
             The capacity out of the link, default is calculated based on other parameters.
@@ -310,6 +312,8 @@ class Link:
         
         #信号関係
         s.signal_group = signal_group
+        if type(s.signal_group) == int:
+            s.signal_group = [s.signal_group]
         
         #流出容量
         s.capacity_out = capacity_out
@@ -1297,7 +1301,7 @@ class Analyzer:
             for i in range(len(l.xss)):
                 plt.plot(l.tss[i], l.xss[i], c=l.cs[i], lw=0.5)
             if plot_signal:
-                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
                 plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
@@ -1353,7 +1357,7 @@ class Analyzer:
                 extent=(0, int(s.W.TMAX/l.edie_dt)*l.edie_dt, 0, int(l.length/l.edie_dx)*l.edie_dx), 
                 interpolation="none", vmin=0, vmax=1/l.delta, cmap="inferno")
             if plot_signal:
-                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in  l.signal_group and len(l.end_node.signal)>1)]
                 plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.colorbar().set_label("density (veh/m)")
             plt.xlabel("time (s)")
@@ -1409,7 +1413,7 @@ class Analyzer:
                 for i in range(len(l.xss)):
                     plt.plot(l.tss[i], np.array(l.xss[i])+linkdict[l], c=l.cs[i], lw=0.5)
                 if plot_signal:
-                    signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                    signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
                     plt.plot(signal_log, [l.length+linkdict[l] for i in lange(signal_log)], "r.")
             for l in linkdict.keys():
                 plt.plot([0, s.W.TMAX], [linkdict[l], linkdict[l]], "k--", lw=0.7)
@@ -2408,7 +2412,7 @@ class World:
             The jam density on the link.
         merge_priority : float, optional
             The priority of the link when merging at the downstream node, default is 1.
-        signal_group : int, optional
+        signal_group : int or list, optional
             The signal group to which the link belongs, default is 0.
         capacity_out : float, optional
             The capacity out of the link, default is calculated based on other parameters.
