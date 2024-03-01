@@ -47,7 +47,7 @@ class Node:
         Attributes
         ----------
         signal_phase : int
-            The phase of current signal. Links with the same `signal_group` (or signal_phase in signal_group) have a green signal.
+            The phase of current signal. Links that have the same `signal_group` have a green signal.
         signal_t : float
             The elapsed time since the current signal phase started. When it is larger than `Link.signal[Link.signal_phase]`, the phase changes to the next one.
         """
@@ -237,7 +237,7 @@ class Link:
         merge_priority : float, optional
             The priority of the link when merging at the downstream node, default is 1.
         signal_group : int or list, optional
-            The signal group to which the link belongs, default is 0.
+            The signal group to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0.  the If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.
         capacity_out : float, optional
             The capacity out of the link, default is calculated based on other parameters.
         capacity_in : float, optional
@@ -1357,7 +1357,7 @@ class Analyzer:
                 extent=(0, int(s.W.TMAX/l.edie_dt)*l.edie_dt, 0, int(l.length/l.edie_dx)*l.edie_dx), 
                 interpolation="none", vmin=0, vmax=1/l.delta, cmap="inferno")
             if plot_signal:
-                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in  l.signal_group and len(l.end_node.signal)>1)]
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
                 plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.colorbar().set_label("density (veh/m)")
             plt.xlabel("time (s)")

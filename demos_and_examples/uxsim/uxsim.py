@@ -47,7 +47,7 @@ class Node:
         Attributes
         ----------
         signal_phase : int
-            The phase of current signal. Links with the same `signal_group` have a green signal.
+            The phase of current signal. Links that have the same `signal_group` have a green signal.
         signal_t : float
             The elapsed time since the current signal phase started. When it is larger than `Link.signal[Link.signal_phase]`, the phase changes to the next one.
         """
@@ -154,7 +154,9 @@ class Node:
                 #受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択
                 vehs = [
                     veh for veh in s.incoming_vehicles 
-                    if veh.route_next_link == outlink and (veh.link.signal_group == s.signal_phase or len(s.signal)<=1) and veh.link.capacity_out_remain >= s.W.DELTAN
+                    if veh.route_next_link == outlink and
+                      (s.signal_phase in veh.link.signal_group or len(s.signal)<=1) and 
+                      veh.link.capacity_out_remain >= s.W.DELTAN
                 ]
                 if len(vehs) == 0:
                     continue
@@ -234,8 +236,8 @@ class Link:
             The jam density on the link.
         merge_priority : float, optional
             The priority of the link when merging at the downstream node, default is 1.
-        signal_group : int, optional
-            The signal group to which the link belongs, default is 0.
+        signal_group : int or list, optional
+            The signal group to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0.  the If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.
         capacity_out : float, optional
             The capacity out of the link, default is calculated based on other parameters.
         capacity_in : float, optional
@@ -310,6 +312,8 @@ class Link:
         
         #信号関係
         s.signal_group = signal_group
+        if type(s.signal_group) == int:
+            s.signal_group = [s.signal_group]
         
         #流出容量
         s.capacity_out = capacity_out
@@ -425,7 +429,7 @@ class Link:
         float
             The cumulative arrival vehicle count.
         """
-        tt = t//s.W.DELTAT
+        tt = int(t//s.W.DELTAT)
         if tt >= len(s.cum_arrival):
             return s.cum_arrival[-1]
         if tt < 0:
@@ -446,7 +450,7 @@ class Link:
         float
             The cumulative departure vehicle count.
         """
-        tt = t//s.W.DELTAT
+        tt = int(t//s.W.DELTAT)
         if tt >= len(s.cum_departure):
             return s.cum_departure[-1]
         if tt < 0:
@@ -467,7 +471,7 @@ class Link:
         float
             The instantanious travel time.
         """
-        tt = t//s.W.DELTAT
+        tt = int(t//s.W.DELTAT)
         if tt >= len(s.traveltime_instant):
             return s.traveltime_instant[-1]
         if tt < 0:
@@ -1297,7 +1301,7 @@ class Analyzer:
             for i in range(len(l.xss)):
                 plt.plot(l.tss[i], l.xss[i], c=l.cs[i], lw=0.5)
             if plot_signal:
-                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
                 plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
@@ -1353,7 +1357,7 @@ class Analyzer:
                 extent=(0, int(s.W.TMAX/l.edie_dt)*l.edie_dt, 0, int(l.length/l.edie_dx)*l.edie_dx), 
                 interpolation="none", vmin=0, vmax=1/l.delta, cmap="inferno")
             if plot_signal:
-                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
                 plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.colorbar().set_label("density (veh/m)")
             plt.xlabel("time (s)")
@@ -1409,7 +1413,7 @@ class Analyzer:
                 for i in range(len(l.xss)):
                     plt.plot(l.tss[i], np.array(l.xss[i])+linkdict[l], c=l.cs[i], lw=0.5)
                 if plot_signal:
-                    signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] != l.signal_group and len(l.end_node.signal)>1)]
+                    signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
                     plt.plot(signal_log, [l.length+linkdict[l] for i in lange(signal_log)], "r.")
             for l in linkdict.keys():
                 plt.plot([0, s.W.TMAX], [linkdict[l], linkdict[l]], "k--", lw=0.7)
@@ -2408,7 +2412,7 @@ class World:
             The jam density on the link.
         merge_priority : float, optional
             The priority of the link when merging at the downstream node, default is 1.
-        signal_group : int, optional
+        signal_group : int or list, optional
             The signal group to which the link belongs, default is 0.
         capacity_out : float, optional
             The capacity out of the link, default is calculated based on other parameters.
@@ -2823,3 +2827,41 @@ class World:
             return True
         else:
             return False
+
+    
+    #@catch_exceptions_and_warn()
+    def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6):
+        """
+        Visualizes the entire transportation network shape.
+        """
+        plt.figure(figsize=figsize)
+        plt.subplot(111, aspect="equal")
+        for n in W.NODES:
+            plt.plot(n.x, n.y, "o", c="gray", ms=node_size, zorder=10)
+            if network_font_size > 0:
+                plt.text(n.x, n.y, n.name, c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
+        for l in W.LINKS:
+            x1, y1 = l.start_node.x, l.start_node.y
+            x2, y2 = l.end_node.x, l.end_node.y
+            vx, vy = (y1-y2)*0.05, (x2-x1)*0.05
+            if not left_handed:
+                vx, vy = -vx, -vy
+            #簡略モード
+            xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
+            xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
+            plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "gray", lw=width, zorder=6, solid_capstyle="butt")
+            if network_font_size > 0:
+                plt.text(xmid1, ymid1, l.name, c="b", zorder=20, fontsize=network_font_size)
+        maxx = max([n.x for n in W.NODES])
+        minx = min([n.x for n in W.NODES])
+        maxy = max([n.y for n in W.NODES])
+        miny = min([n.y for n in W.NODES])
+        buffx, buffy = (maxx-minx)/10, (maxy-miny)/10
+        if buffx == 0:
+            buffx = buffy
+        if buffy == 0:
+            buffy = buffx
+        plt.xlim([minx-buffx, maxx+buffx])
+        plt.ylim([miny-buffy, maxy+buffy])
+        plt.tight_layout()
+        plt.show()
