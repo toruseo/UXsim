@@ -1,0 +1,10 @@
+ci:
+    autoupdate_schedule: 'weekly'
+    autofix_prs: true
+
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: check-toml
+    -   id: check-yaml
