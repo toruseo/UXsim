@@ -38,8 +38,18 @@ First, install UXsim package using pip:
 ```
 pip install uxsim
 ```
-or download the `uxsim` directory from this Github repo and place it to your local directory. 
-The former is required if you want to customize UXsim’s internal logic.
+
+You can also use `pip` to install the GitHub version:
+
+```
+pip install -U -e git+https://github.com/toruseo/uxsim@main#egg=uxsim
+```
+
+Or any other (development) branch on this repo or your own fork:
+
+```
+pip install -U -e git+https://github.com/YOUR_FORK/uxsim@YOUR_BRANCH#egg=uxsim
+```
 
 Then import the module using:
 ```python
