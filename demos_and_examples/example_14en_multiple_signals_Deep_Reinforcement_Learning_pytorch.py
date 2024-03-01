@@ -47,19 +47,19 @@ class TrafficSim(gym.Env):
         state: number of waiting vehicles at each incoming link. 16 dimension.
         reward: negative of difference of total waiting vehicles
         """
-        
+
         #action
         self.n_action = 2**4
-        self.action_space = gym.spaces.Discrete(self.n_action) 
-        
+        self.action_space = gym.spaces.Discrete(self.n_action)
+
         #state
         self.n_state = 4*4
         low = np.array([0 for i in range(self.n_state)])
         high = np.array([100 for i in range(self.n_state)])
         self.observation_space = gym.spaces.Box(low=low, high=high)
-        
+
         self.reset()
-    
+
     def reset(self):
         """
         reset the env
@@ -103,7 +103,7 @@ class TrafficSim(gym.Env):
         for n1, n2 in itertools.permutations([W1, W2, E1, E2, N1, N2, S1, S2], 2):
             for t in range(0, 3600, dt):
                 W.adddemand(n1, n2, t, t+dt, random.uniform(0, demand))
-        
+
         # store UXsim object for later re-use
         self.W = W
         self.I1 = I1
@@ -111,16 +111,16 @@ class TrafficSim(gym.Env):
         self.I3 = I3
         self.I4 = I4
         self.INLINKS = list(self.I1.inlinks.values()) + list(self.I2.inlinks.values()) + list(self.I3.inlinks.values()) + list(self.I4.inlinks.values())
-        
+
         #initial observation
         observation = np.array([0 for i in range(self.n_state)])
-        
+
         #log
         self.log_state = []
         self.log_reward = []
-        
+
         return observation, None
-    
+
     def comp_state(self):
         """
         compute the current state
@@ -129,18 +129,18 @@ class TrafficSim(gym.Env):
         for l in self.INLINKS:
             vehicles_per_links[l] = l.num_vehicles_queue #l.num_vehicles_queue: the number of vehicles in queue in link l
         return list(vehicles_per_links.values())
-    
+
     def comp_n_veh_queue(self):
         return sum(self.comp_state())
-    
+
     def step(self, action_index):
         """
         proceed env by 1 step = `operation_timestep_width` seconds
         """
         operation_timestep_width = 10
-        
+
         n_queue_veh_old = self.comp_n_veh_queue()
-        
+
         #change signal by action
         #decode action
         binstr = f"{action_index:04b}"
@@ -153,27 +153,27 @@ class TrafficSim(gym.Env):
         self.I3.signal_t = 0
         self.I4.signal_phase = i4
         self.I4.signal_t = 0
-        
+
         #traffic dynamics. execute simulation for `operation_timestep_width` seconds
         if self.W.check_simulation_ongoing():
             self.W.exec_simulation(duration_t=operation_timestep_width)
-        
+
         #observe state
         observation = np.array(self.comp_state())
-        
+
         #compute reward
         n_queue_veh = self.comp_n_veh_queue()
         reward = -(n_queue_veh-n_queue_veh_old)
-        
+
         #check termination
         done = False
         if self.W.check_simulation_ongoing() == False:
             done = True
-        
+
         #log
         self.log_state.append(observation)
         self.log_reward.append(reward)
-        
+
         return observation, reward, done, {}, None
 
 
@@ -325,10 +325,10 @@ for i_episode in range(num_episodes):
             next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
 
         log_states[-1].append(state)
-        
+
         # Store the transition in memory
         memory.push(state, action, next_state, reward)
-        
+
         # Move to the next state
         state = next_state
 
@@ -352,14 +352,14 @@ for i_episode in range(num_episodes):
                 best_W = copy.deepcopy(env.W)
                 best_i_episode = i_episode
             break
-    
+
     if i_episode%20 == 0 or i_episode == num_episodes-1:
         env.W.analyzer.print_simple_stats(force_print=True)
         env.W.analyzer.macroscopic_fundamental_diagram()
         env.W.analyzer.time_space_diagram_traj_links([["W1I1", "I1I2", "I2E1"], ["N1I1", "I1I3", "I3S1"]], figsize=(12,3))
         for t in list(range(0,env.W.TMAX,int(env.W.TMAX/4))):
             env.W.analyzer.network(t, detailed=1, network_font_size=0, figsize=(3,3))
-        
+
         plt.figure(figsize=(4,3))
         plt.plot(log_epi_average_delay, "r.")
         plt.xlabel("episode")

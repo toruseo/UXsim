@@ -13,3 +13,4 @@ repos:
     hooks:
     -   id: check-toml
     -   id: check-yaml
+    -   id: trailing-whitespace
