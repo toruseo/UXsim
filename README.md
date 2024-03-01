@@ -4,7 +4,7 @@
 
 [(日本語の説明書はこちら/Japanese readme is here)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
 
-*UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
+*UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python.
 It is suitable for simulating large-scale (e.g., city-scale) vehicular transportation.
 It computes dynamic traffic flow in a network by using traffic flow models commonly utilized by transportation research.
 UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features; but of course users are free to use UXsim for any purpose.
@@ -40,7 +40,7 @@ First, install UXsim package using pip:
 ```
 pip install uxsim
 ```
-or download the `uxsim` directory from this Github repo and place it to your local directory. 
+or download the `uxsim` directory from this Github repo and place it to your local directory.
 The former is required if you want to customize UXsim’s internal logic.
 
 Then import the module using:
@@ -55,7 +55,7 @@ For the further details, please see [demos_and_examples](https://github.com/toru
 
 ### Large-scale scenario
 
-Belows are simulation result where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC. 
+Belows are simulation result where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC.
 
 Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
 <p float="left">

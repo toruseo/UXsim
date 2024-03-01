@@ -12,7 +12,7 @@ if __name__ == "__main__":
         print_mode=1, save_mode=1, show_mode=0,    # Various options. print_mode determines whether to print information. Usually set to 1, but recommended 0 when running multiple simulations automatically. save_mode determines if visualization results are saved. show_mode determines if visualization results are displayed. It's good to set show_mode=1 on Jupyter Notebook, otherwise recommended 0.
         random_seed=0    # Set the random seed. Specify if you want repeatable experiments. If not, set to None. On Jupyter Notebook, randomness might not always be consistent (requires a fix).
     )
-    
+
     # Define the scenario
     # Merge network: Example of hard-coded definition
     W.addNode("orig1", 0, 0) # Create a node. Parameters: node name, visualization x-coordinate, visualization y-coordinate
@@ -24,15 +24,15 @@ if __name__ == "__main__":
     link3 = W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2) # W.addLink also returns the created link instance
     W.adddemand("orig1", "dest", 0, 1000, 0.4) # Create OD traffic demand. Parameters: origin node, destination node, start time, end time, demand flow rate
     W.adddemand("orig2", "dest", 500, 1000, 0.6)
-    
+
     # Execute the simulation
     # Run the simulation to the end
     W.exec_simulation()
-    
+
     # Run the simulation for a specific time (if you want to intervene during simulation)
     # while W.check_simulation_ongoing():
     #    W.exec_simulation(duration_t=100) # Run the simulation in 100-second chunks
-    
+
     # Visualization of results: Some methods are very slow. Not necessary for the simulation functionality, so can be omitted.
     W.analyzer.print_simple_stats()
     W.analyzer.time_space_diagram_density()
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     W.analyzer.network_anim(animation_speed_inverse=15, detailed=0, network_font_size=0)
     W.analyzer.network_anim(detailed=1, network_font_size=0, figsize=(12,12))
     W.analyzer.network_fancy(animation_speed_inverse=15, sample_ratio=0.3, interval=5, trace_length=5)
-    
+
     # Convert results to pandas.DataFrame for easier analysis
     print(W.analyzer.basic_to_pandas()) # Basic statistics
     print(W.analyzer.od_to_pandas())    # Information by OD
@@ -56,6 +56,6 @@ if __name__ == "__main__":
     print(W.analyzer.link_to_pandas())  # Information per link
     print(W.analyzer.link_traffic_state_to_pandas())    # Traffic state inside the link
     print(W.analyzer.vehicles_to_pandas())  # Information per vehicle
-    
+
     # Save the results to CSV
     W.analyzer.output_data()

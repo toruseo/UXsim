@@ -29,22 +29,22 @@ for i in range(imax):
         if i != imax-1:
             ii = i+1
             jj = j
-            links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000, 
+            links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000,
                                          free_flow_speed=15, jam_density=0.2, attribute="arterial")
         if i != 0:
             ii = i-1
             jj = j
-            links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000, 
+            links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000,
                                          free_flow_speed=15, jam_density=0.2, attribute="arterial")
         if j != jmax-1:
             ii = i
             jj = j+1
-            links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000, 
+            links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000,
                                          free_flow_speed=15, jam_density=0.2, attribute="arterial")
         if j != 0:
             ii = i
             jj = j-1
-            links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000, 
+            links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000,
                                          free_flow_speed=15, jam_density=0.2, attribute="arterial")
 #diagonal highway
 for i in range(imax):
@@ -52,14 +52,14 @@ for i in range(imax):
     if i != imax-1:
         ii = i+1
         jj = j+1
-        links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000*np.sqrt(2), 
+        links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000*np.sqrt(2),
                                      free_flow_speed=30, jam_density=0.2, attribute="highway")
     if i != 0:
         ii = i-1
         jj = j-1
-        links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000*np.sqrt(2), 
+        links[i,j,ii,jj] = W.addLink(f"l{(i,j,ii,jj)}", nodes[i,j], nodes[ii,jj], length=1000*np.sqrt(2),
                                      free_flow_speed=30, jam_density=0.2, attribute="highway")
-        
+
 #traffic demand from edge to edge in grid network
 demand_flow = 0.03
 demand_duration = 3600
@@ -129,7 +129,7 @@ W2.analyzer.network_anim(animation_speed_inverse=5, timestep_skip=200, detailed=
 ####################################################################################################################
 ####################################################################################################################
 
-# Results comparison 
+# Results comparison
 
 print("#"*80)
 print("#### results comparison")

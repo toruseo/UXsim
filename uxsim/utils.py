@@ -54,7 +54,7 @@ def catch_exceptions_and_warn(warning_msg=""):
 def lange(l):
     """
     Super lazy function for abbreviating range(len(l))
-    
+
     Parameters
     ----
     l : list
@@ -64,7 +64,7 @@ def lange(l):
 def printtry(*args, **kwargs):
     """
     Print messages safely, evaluating any callable arguments and catching exceptions. Mainly written by GPT-4
-    
+
     Parameters
     ----------
     *args : any
