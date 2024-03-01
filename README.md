@@ -25,7 +25,7 @@ UXsim would be especially useful for scientific and educational purposes because
 - Can be flexibly customized by users thanks to pure Python implementation.
 	- Can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control.
 
-## Main files
+## Main Files
 
 - `uxsim` directory: UXsim main package
 	- `uxsim/uxsim.py`: UXsim main code
@@ -51,7 +51,7 @@ from uxsim import *
 The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
 For the further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
 
-## Simulation Example
+## Simulation Examples
 
 ### Large-scale scenario
 
@@ -78,6 +78,14 @@ The right is with DRL control scenario, where traffic signal can be changed by o
 <img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
 </p>
 
+
+## Future Plans
+
+- day-to-day dynamics
+- taxi and shared mobility (i.e., vehicles travel through a network by passing through specific nodes that are dynamically updated)
+- network import from OSMnx
+- basemap for visualization
+- modern packaging
 
 ## Terms of Use & License
 
