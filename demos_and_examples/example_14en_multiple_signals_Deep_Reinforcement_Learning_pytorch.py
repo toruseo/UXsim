@@ -185,7 +185,7 @@ env = TrafficSim()
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
 
-class ReplayMemory(object):
+class ReplayMemory:
     def __init__(self, capacity):
         self.memory = deque([], maxlen=capacity)
 
@@ -201,7 +201,7 @@ class ReplayMemory(object):
 
 class DQN(nn.Module):
     def __init__(self, n_observations, n_actions):
-        super(DQN, self).__init__()
+        super().__init__()
         n_neurals = 64
         n_layers = 3
         self.layers = nn.ModuleList()
