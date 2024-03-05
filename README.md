@@ -1,7 +1,7 @@
 # UXsim: Network traffic flow simulator in pure Python
 
 [![PyPi](https://img.shields.io/pypi/v/uxsim.svg)](https://pypi.python.org/pypi/uxsim)
-
+[![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
 [(日本語の説明書はこちら/Japanese readme is here)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
 
 *UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python.
@@ -34,12 +34,20 @@ UXsim would be especially useful for scientific and educational purposes because
 - `demos_and_examples` directory: Tutorials and examples of UXsim
 - `dat` directory: Sample scenario files
 
-## Usage
+## Install
 
-First, install UXsim package using pip:
+### Using pip
+
+The simplest way is using pip to install from PyPI.
+
 ```
 pip install uxsim
 ```
+
+<details>
+<summary>Alternative methods (click to see)</summary>
+	
+### Using pip with custom configuration
 
 You can also use `pip` to install the GitHub version:
 
@@ -53,10 +61,74 @@ Or any other (development) branch on this repo or your own fork:
 pip install -U -e git+https://github.com/YOUR_FORK/uxsim@YOUR_BRANCH#egg=uxsim
 ```
 
-Then import the module using:
+	
+### Manual install
+
+Download the `uxsim` directory from this Github repo or [the latest release](https://github.com/toruseo/UXsim/releases/latest/download/uxsim.zip) and place it to your local directory as follows:
+```
+your_project_directory/
+├── uxsim/ # The uxsim directory
+│ ├── utils/ # Utility files of UXsim
+│ ├── uxsim.py # The main code of UXsim. You can customize this as you wish
+│ ├── utils.py # Utility funcsions of UXsim
+│ └── ...
+├── your_simulation_code01.py # Your code 1
+├── your_simulation_code02.py # Your code 2
+├── ...
+```
+In this way, you can flexibly customize UXsim by your own.
+
+</details>
+
+## Usage
+
+Import the module using:
 ```python
 from uxsim import *
 ```
+and then define your simulation scenario.
+
+<details>
+<summary>A simplest example (click to see)</summary>
+	
+```python
+from uxsim import *
+import pandas as pd
+
+if __name__ == "__main__":
+
+    # Define the main simulation
+    # Units are standardized to seconds (s) and meters (m)
+    W = World(
+        name="",    # Scenario name. Can be blank. Used as the folder name for saving results.
+        deltan=5,   # Simulation aggregation unit delta n. Defines how many vehicles are grouped together (i.e., platoon size) for computation. Computation cost is generally inversely proportional to deltan^2.
+        tmax=1200,  # Total simulation time (s)
+        print_mode=1, save_mode=1, show_mode=0,    # Various options. print_mode determines whether to print information. Usually set to 1, but recommended 0 when running multiple simulations automatically. save_mode determines if visualization results are saved. show_mode determines if visualization results are displayed. It's good to set show_mode=1 on Jupyter Notebook, otherwise recommended 0.
+        random_seed=0    # Set the random seed. Specify if you want repeatable experiments. If not, set to None. On Jupyter Notebook, randomness might not always be consistent (requires a fix).
+    )
+
+    # Define the scenario
+    # Merge network: Example of hard-coded definition
+    W.addNode("orig1", 0, 0) # Create a node. Parameters: node name, visualization x-coordinate, visualization y-coordinate
+    node_orig2 = W.addNode("orig2", 0, 2) # W.addNode returns the created node instance, so it can be assigned to a variable
+    W.addNode("merge", 1, 1)
+    W.addNode("dest", 2, 1)
+    W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=0.5) # Create a link. Parameters: link name, start node, end node, length, free_flow_speed, jam_density, merge_priority during merging
+    W.addLink("link2", node_orig2, "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=2) # Nodes can be specified using the variable name instead of the string name
+    link3 = W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2) # W.addLink also returns the created link instance
+    W.adddemand("orig1", "dest", 0, 1000, 0.4) # Create OD traffic demand. Parameters: origin node, destination node, start time, end time, demand flow rate
+    W.adddemand("orig2", "dest", 500, 1000, 0.6)
+
+    # Execute the simulation
+    # Run the simulation to the end
+    W.exec_simulation()
+
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
+```
+
+This code will simulate traffic flow in a Y-shaped network.
+</details>
 
 The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
 For the further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
