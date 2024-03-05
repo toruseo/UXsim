@@ -3,7 +3,7 @@
 # License: MIT License
 
 from setuptools import setup
-import uxsim
+#import uxsim
 
 DESCRIPTION = "UXsim: traffic flow simulator"
 NAME = 'uxsim'
