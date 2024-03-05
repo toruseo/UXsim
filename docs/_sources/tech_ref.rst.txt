@@ -26,6 +26,7 @@ Classes
    uxsim.World
    uxsim.Node
    uxsim.Link
+   uxsim.Route
    uxsim.Vehicle
    uxsim.RouteChoice
    uxsim.Analyzer

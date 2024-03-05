@@ -64,6 +64,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l3"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Route.html">uxsim.Route</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.Analyzer</a></li>
@@ -127,20 +128,26 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.basic_to_pandas" title="uxsim.uxsim.Analyzer.basic_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the basic stats to a pandas DataFrame.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.compute_accurate_traj" title="uxsim.uxsim.Analyzer.compute_accurate_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_accurate_traj</span></code></a>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">comp_route_travel_time</span></code>(t, route)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.compute_accurate_traj" title="uxsim.uxsim.Analyzer.compute_accurate_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_accurate_traj</span></code></a>()</p></td>
 <td><p>Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.compute_edie_state" title="uxsim.uxsim.Analyzer.compute_edie_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_edie_state</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.compute_edie_state" title="uxsim.uxsim.Analyzer.compute_edie_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_edie_state</span></code></a>()</p></td>
 <td><p>Compute Edie's traffic state for each link.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.compute_mfd" title="uxsim.uxsim.Analyzer.compute_mfd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_mfd</span></code></a>([links])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.compute_mfd" title="uxsim.uxsim.Analyzer.compute_mfd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_mfd</span></code></a>([links])</p></td>
 <td><p>Compute network average flow and density for MFD.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.cumulative_curves" title="uxsim.uxsim.Analyzer.cumulative_curves"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_curves</span></code></a>([links, figsize])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.cumulative_curves" title="uxsim.uxsim.Analyzer.cumulative_curves"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_curves</span></code></a>([links, figsize])</p></td>
 <td><p>Plots the cumulative curves and travel times for the provided links.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.link_analysis_coarse" title="uxsim.uxsim.Analyzer.link_analysis_coarse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_analysis_coarse</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.link_analysis_coarse" title="uxsim.uxsim.Analyzer.link_analysis_coarse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_analysis_coarse</span></code></a>()</p></td>
 <td><p>Analyze link-level coarse stats: traffic volume, remaining vehicles, free-flow travel time, average travel time, its std.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.link_cumulative_to_pandas" title="uxsim.uxsim.Analyzer.link_cumulative_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_cumulative_to_pandas</span></code></a>()</p></td>
+<td><p>Converts the cumulative counts etc.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Analyzer.link_to_pandas" title="uxsim.uxsim.Analyzer.link_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the link-level analysis results to a pandas DataFrame.</p></td>

@@ -28,6 +28,7 @@
       ~World.get_node
       ~World.load_scenario_from_csv
       ~World.on_time
+      ~World.show_network
       ~World.simulation_terminated
    
    

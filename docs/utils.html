@@ -123,6 +123,25 @@ gtag('config', 'UA-111714220-1');
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.utils.printtry">
+<span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">printtry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/utils.html#printtry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.printtry" title="Permalink to this definition"></a></dt>
+<dd><p>Print messages safely, evaluating any callable arguments and catching exceptions. Mainly written by GPT-4</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<em>any</em>) – The contents to print wrapped by lambda. E.g., lambda: (x, y, z)</p></li>
+<li><p><strong>**kwargs</strong> (<em>any</em>) – Arbitrary keyword arguments. These are passed directly to the built-in print function.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">printtry</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span><span class="n">mylist</span><span class="p">[</span><span class="mi">100</span><span class="p">],</span> <span class="n">mylist</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">mylist</span><span class="p">[</span><span class="mi">10000</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">printtry</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span><span class="n">mylist</span><span class="p">[</span><span class="mi">100</span><span class="p">],</span> <span class="n">mylist</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">mylist</span><span class="p">[</span><span class="mi">10000</span><span class="p">]),</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 
 

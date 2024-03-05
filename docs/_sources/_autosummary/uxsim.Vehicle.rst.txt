@@ -19,6 +19,7 @@
       ~Vehicle.record_log
       ~Vehicle.route_next_link_choice
       ~Vehicle.route_pref_update
+      ~Vehicle.traveled_route
       ~Vehicle.update
    
    

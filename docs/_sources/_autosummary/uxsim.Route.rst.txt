@@ -1,0 +1,23 @@
+﻿uxsim.Route
+===========
+
+.. currentmodule:: uxsim
+
+.. autoclass:: Route
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Route.__init__
+      ~Route.actual_travel_time
+   
+   
+
+   
+   
+   

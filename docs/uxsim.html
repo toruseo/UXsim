@@ -151,6 +151,17 @@ The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with the fil
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.Analyzer.link_cumulative_to_pandas">
+<span class="sig-name descname"><span class="pre">link_cumulative_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Analyzer.link_cumulative_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Analyzer.link_cumulative_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the cumulative counts etc. in links to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.Analyzer.link_to_pandas">
 <span class="sig-name descname"><span class="pre">link_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Analyzer.link_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Analyzer.link_to_pandas" title="Permalink to this definition"></a></dt>
 <dd><p>Converts the link-level analysis results to a pandas DataFrame.</p>
@@ -452,7 +463,7 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.Link.actual_travel_time">
 <span class="sig-name descname"><span class="pre">actual_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Link.actual_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Link.actual_travel_time" title="Permalink to this definition"></a></dt>
-<dd><p>Get actual travel time of vehicle who departs this link on time t</p>
+<dd><p>Get actual travel time of vehicle who enters this link on time t. Note that small error may occur due to fractional processing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p>
@@ -583,6 +594,33 @@ A vehicle is eligible for transfer if:
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="uxsim.uxsim.Route">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.uxsim.</span></span><span class="sig-name descname"><span class="pre">Route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Route" title="Permalink to this definition"></a></dt>
+<dd><p>Class for a route that store concective links.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.Route.actual_travel_time">
+<span class="sig-name descname"><span class="pre">actual_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Route.actual_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Route.actual_travel_time" title="Permalink to this definition"></a></dt>
+<dd><p>Actual travel time for a (hypothetical) vehicle who start traveling this route on time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p></li>
+<li><p><strong>return_details</strong> (<em>bool</em>) – True if you want travel time per link.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>float</em> – The actual travel time.</p></li>
+<li><p>list (if <cite>return_details</cite> is True) – List of travel time per link.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="uxsim.uxsim.RouteChoice">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.uxsim.</span></span><span class="sig-name descname"><span class="pre">RouteChoice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#RouteChoice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.RouteChoice" title="Permalink to this definition"></a></dt>
 <dd><p>Class for computing shortest path for all vehicles.</p>
@@ -670,6 +708,12 @@ Should be in the range [0, 1], where 0 means the old preferences are fully retai
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.Vehicle.traveled_route">
+<span class="sig-name descname"><span class="pre">traveled_route</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Vehicle.traveled_route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Vehicle.traveled_route" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the route this vehicle traveled.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.Vehicle.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Vehicle.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Vehicle.update" title="Permalink to this definition"></a></dt>
 <dd><p>Updates the vehicle’s state and position.</p>
@@ -703,7 +747,7 @@ Should be in the range [0, 1], where 0 means the old preferences are fully retai
 <li><p><strong>free_flow_speed</strong> (<em>float</em>) – The free flow speed on the link.</p></li>
 <li><p><strong>jam_density</strong> (<em>float</em>) – The jam density on the link.</p></li>
 <li><p><strong>merge_priority</strong> (<em>float</em><em>, </em><em>optional</em>) – The priority of the link when merging at the downstream node, default is 1.</p></li>
-<li><p><strong>signal_group</strong> (<em>int</em><em>, </em><em>optional</em>) – The signal group to which the link belongs, default is 0.</p></li>
+<li><p><strong>signal_group</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The signal group to which the link belongs, default is 0.</p></li>
 <li><p><strong>capacity_out</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity out of the link, default is calculated based on other parameters.</p></li>
 <li><p><strong>capacity_in</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity into the link, default is calculated based on other parameters.</p></li>
 <li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</p></li>
@@ -949,6 +993,12 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.show_network">
+<span class="sig-name descname"><span class="pre">show_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#World.show_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.show_network" title="Permalink to this definition"></a></dt>
+<dd><p>Visualizes the entire transportation network shape.</p>
 </dd></dl>
 
 <dl class="py method">
