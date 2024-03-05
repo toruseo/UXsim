@@ -153,9 +153,9 @@ class Node:
             if (len(outlink.vehicles) == 0 or outlink.vehicles[-1].x > outlink.delta*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
                 #受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択
                 vehs = [
-                    veh for veh in s.incoming_vehicles 
+                    veh for veh in s.incoming_vehicles
                     if veh.route_next_link == outlink and
-                      (s.signal_phase in veh.link.signal_group or len(s.signal)<=1) and 
+                      (s.signal_phase in veh.link.signal_group or len(s.signal)<=1) and
                       veh.link.capacity_out_remain >= s.W.DELTAN
                 ]
                 if len(vehs) == 0:
@@ -1492,6 +1492,13 @@ class Analyzer:
             else:
                 plt.close("all")
 
+    def import_contextily(s):
+        try:
+            import contextily as ctx
+            return ctx
+        except ImportError:
+            raise ImportError("contextily must be installed to use the basemap feature.")
+
     @catch_exceptions_and_warn()
     def network(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=4, node_size=2):
         """
@@ -1598,7 +1605,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0):
+    def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, basemap=None, image_return=0):
         """
         Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.
 
@@ -1624,6 +1631,9 @@ class Analyzer:
             The font size for the network labels. Default is 4.
         node_size : int, optional
             The size of the nodes in the visualization. Default is 2.
+        basemap : Contextily provider object, optional
+            The basemap provider to be used for the visualization. Default is None.
+            See https://contextily.readthedocs.io/en/latest/providers_deepdive.html
 
         Notes
         -----
@@ -1689,6 +1699,16 @@ class Analyzer:
         font = ImageFont.truetype(font_fname, int(30))
         draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
 
+        # Add a basemap with contextily
+        if basemap is not None:
+            ctx = s.import_contextily()
+            # Adjust bounds to the format expected by contextily (west, south, east, north)
+            bounds_ctx = [minx, miny, maxx, maxy]
+            # Fetch the basemap
+            basemap_img, basemap_extent = ctx.bounds2img(*bounds_ctx, zoom='auto', source=basemap)
+            # Overlay the network visualization on the basemap
+            img = Image.alpha_composite(Image.fromarray(basemap_img), img)
+
         img = img.resize((int((maxx-minx)/scale), int((maxy-miny)/scale)), resample=Resampling.LANCZOS)
         if image_return:
             return img
@@ -1716,7 +1736,7 @@ class Analyzer:
             print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
 
     @catch_exceptions_and_warn()
-    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24):
+    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24, basemap=None):
         """
         Generates an animation of the entire transportation network and its traffic states over time.
 
@@ -1743,6 +1763,9 @@ class Analyzer:
             The font size for the network labels in the animation. Default is 20.
         timestep_skip : int, optional
             How many timesteps are skipped per frame. Large value means coarse and lightweight animation. Default is 8.
+        basemap : Contextily provider object, optional
+            The basemap provider to be used for the visualization. Default is None.
+            See https://contextily.readthedocs.io/en/latest/providers_deepdive.html
 
         Notes
         -----
@@ -1760,7 +1783,7 @@ class Analyzer:
                     #todo_later: 今後はこちらもpillowにする
                     s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 else:
-                    s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+                    s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size, basemap=basemap)
                 pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
         pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
         for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
@@ -2828,7 +2851,7 @@ class World:
         else:
             return False
 
-    
+
     #@catch_exceptions_and_warn()
     def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6):
         """
