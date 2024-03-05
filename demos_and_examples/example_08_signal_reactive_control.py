@@ -34,12 +34,12 @@ if __name__ == "__main__":
         #方向別車両台数を調べる
         vehicles_per_links = {}
         for l in node_signal.inlinks.values():
-            vehicles_per_links[l.signal_group] = l.num_vehicles #l.num_vehicles: リンクlの車両台数
+            vehicles_per_links[tuple(l.signal_group)] = l.num_vehicles #l.num_vehicles: リンクlの車両台数
         max_vehicles_group = max(vehicles_per_links, key=vehicles_per_links.get) #車両台数が最大の方向を返す
         print(vehicles_per_links)
 
         #車両台数が最大の方向を青にする
-        node_signal.signal_phase = max_vehicles_group
+        node_signal.signal_phase = max_vehicles_group[0]
         node_signal.signal_t = 0
 
 

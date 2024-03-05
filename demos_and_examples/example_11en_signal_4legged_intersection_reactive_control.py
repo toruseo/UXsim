@@ -42,13 +42,13 @@ while W.check_simulation_ongoing():
     W.exec_simulation(duration_t=30)
 
     #count number of vehicles per direction
-    vehicles_per_links = {l.signal_group: 0 for l in II.inlinks.values()}
+    vehicles_per_links = {tuple(l.signal_group): 0 for l in II.inlinks.values()}
     for l in II.inlinks.values():
-        vehicles_per_links[l.signal_group] += l.num_vehicles_queue #l.num_vehicles_queue: the number of vehicles in queue in link l
+        vehicles_per_links[tuple(l.signal_group)] += l.num_vehicles_queue #l.num_vehicles_queue: the number of vehicles in queue in link l
     max_vehicles_group = max(vehicles_per_links, key=vehicles_per_links.get) #determine the direction with maximum number of vehicles
 
     #green light for the direction
-    II.signal_phase = max_vehicles_group
+    II.signal_phase = max_vehicles_group[0]
     II.signal_t = 0
 
 # resutls

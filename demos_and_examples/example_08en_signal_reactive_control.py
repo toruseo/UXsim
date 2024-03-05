@@ -34,12 +34,12 @@ if __name__ == "__main__":
         # Investigate the number of vehicles per direction
         vehicles_per_links = {}
         for l in node_signal.inlinks.values():
-            vehicles_per_links[l.signal_group] = l.num_vehicles # l.num_vehicles: Number of vehicles on link 'l'
+            vehicles_per_links[tuple(l.signal_group)] = l.num_vehicles # l.num_vehicles: Number of vehicles on link 'l'
         max_vehicles_group = max(vehicles_per_links, key=vehicles_per_links.get) # Returns the direction with the maximum number of vehicles
         print(vehicles_per_links)
 
         # Set the signal to green for the direction with the maximum number of vehicles
-        node_signal.signal_phase = max_vehicles_group
+        node_signal.signal_phase = max_vehicles_group[0]
         node_signal.signal_t = 0
 
 
