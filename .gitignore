@@ -135,6 +135,7 @@ _private_files/*
 dev*.ipynb
 compare.ps1
 p*_*.py
+*.code-workspace
 
 # Pycharm
 .idea/
