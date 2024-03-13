@@ -25,7 +25,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W, name, x, y, signal=[0]):
+    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None):
         """
         Create a node
 
@@ -43,6 +43,10 @@ class Node:
             A list representing the signal at the node. Default is [0], representing no signal.
             If a signal is present, the list contains the green times for each group.
             For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.
+        signal_offset : float, optional
+            The offset of the signal. Default is 0.
+        flow_capacity : float, optional
+            The maximum flow capacity of the node. Default is None, meaning infinite capacity.
 
         Attributes
         ----------
@@ -73,8 +77,30 @@ class Node:
         s.signal = signal
         s.signal_phase = 0
         s.signal_t = 0
+        s.signal_offset = signal_offset
+        offset = s.signal_offset
+        if s.signal != [0]:
+            i = 0
+            while 1:
+                if offset < s.signal[i]:
+                    s.signal_phase = i
+                    s.signal_t = offset
+                    break
+                offset -= s.signal[i]
+
+                i += 1
+                if i >= len(s.signal):
+                    i = 0
 
         s.signal_log = []
+
+        #流量制限
+        if flow_capacity != None:
+            s.flow_capacity = flow_capacity
+            s.flow_capacity_remain = flow_capacity*s.W.DELTAT
+        else:
+            s.flow_capacity = None
+            s.flow_capacity_remain = 99999999999
 
         s.id = len(s.W.NODES)
         s.name = name
@@ -95,6 +121,13 @@ class Node:
         s.signal_t += s.W.DELTAT
 
         s.signal_log.append(s.signal_phase)
+
+    def flow_capacity_update(s):
+        """
+        flow capacity updates.
+        """
+        if s.flow_capacity != None and s.flow_capacity_remain < s.W.DELTAN:
+            s.flow_capacity_remain += s.flow_capacity*s.W.DELTAT
 
     def generate(s):
         """
@@ -148,9 +181,10 @@ class Node:
         - The next link it intends to move to has space.
         - The vehicle has the right signal phase to proceed.
         - The current link has enough capacity to allow the vehicle to exit.
+        - The node capacity is not exceeded.
         """
         for outlink in {veh.route_next_link for veh in s.incoming_vehicles if veh.route_next_link != None}:
-            if (len(outlink.vehicles) == 0 or outlink.vehicles[-1].x > outlink.delta*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
+            if (len(outlink.vehicles) == 0 or outlink.vehicles[-1].x > outlink.delta*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN and s.flow_capacity_remain >= s.W.DELTAN:
                 #受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択
                 vehs = [
                     veh for veh in s.incoming_vehicles 
@@ -172,6 +206,8 @@ class Node:
 
                 inlink.capacity_out_remain -= s.W.DELTAN
                 outlink.capacity_in_remain -= s.W.DELTAN
+                if s.flow_capacity != None:
+                    s.flow_capacity_remain -= s.W.DELTAN
 
                 #リンク間遷移実行
                 inlink.vehicles.popleft()
@@ -208,6 +244,7 @@ class Node:
         Make necessary updates when the timestep is incremented.
         """
         s.signal_control()
+        s.flow_capacity_update()
 
 # リンククラス
 class Link:
@@ -275,6 +312,7 @@ class Link:
         The `capacity_out` and `capacity_in` parameters are used to set the capacities, and if not provided, they are calculated based on other parameters.
         Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
         Some of the traffic flow model parameters can be altered during simulation by changing `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority`.
+        
         """
 
         s.W = W
@@ -640,8 +678,8 @@ class Vehicle:
             s.route_pref = {l:0 for l in s.W.LINKS}
 
         #好むリンクと避けるリンク（近視眼的）
-        s.links_prefer = [get_link(l) for l in links_prefer]
-        s.links_avoid = [get_link(l) for l in links_avoid]
+        s.links_prefer = [s.W.get_link(l) for l in links_prefer]
+        s.links_avoid = [s.W.get_link(l) for l in links_avoid]
 
         #行き止まりに行ってしまったときにトリップを止める
         s.trip_abort = trip_abort
@@ -1900,7 +1938,7 @@ class Analyzer:
                 draw.line([(x1, flip(y1)), (x2, flip(y2))], fill=(200,200,200), width=int(1), joint="curve")
 
                 if network_font_size > 0:
-                    draw.text((xmid1, flip(ymid1)), l.name, font=font, fill="blue", anchor="mm")
+                    draw.text(((x1+x2)/2, flip((y1+y2)/2)), l.name, font=font, fill="blue", anchor="mm")
 
             traces = draw_dict[t]
             for trace in traces:
@@ -2828,7 +2866,6 @@ class World:
         else:
             return False
 
-    
     #@catch_exceptions_and_warn()
     def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6):
         """

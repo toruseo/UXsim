@@ -16,6 +16,7 @@ UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に
 
 ## 主な機能・特徴
 
+- 標準的なネットワーク交通流モデルの，単純かつ容易に使えるPython実装
 - ネットワーク構造と時間帯別OD需要が与えられているときに，動的なネットワーク交通流を計算（動的交通量配分）．具体的な交通モデルは以下の通り：
 	- Newellの単純追従モデル（Xモデル）
 	- Lagrange版Incremental Node Model
@@ -73,8 +74,8 @@ your_project_directory/
 │ ├── uxsim.py # UXsimのメインコード。必要に応じてカスタマイズ可能
 │ ├── utils.py # UXsimのユーティリティ関数
 │ └── ...
-├── your_simulation_code01.py # あなたのコード1
-├── your_simulation_code02.py # あなたのコード2
+├── your_simulation_code.py # 自作コード
+├── your_simulation_notebook.ipynb # 自作Jupyterノートブック
 ├── ...
 ```
 この方法で、UXsimを自分の好みに合わせて柔軟にカスタマイズできます。
@@ -96,44 +97,71 @@ Y字型の合流ネットワークのシミュレーションシナリオは以�
 	
 ```python
 from uxsim import *
-import pandas as pd
 
+# シミュレーション本体の定義
+# 単位は全て秒とメートル
+W = World(
+    name="",    # シナリオ名
+    deltan=5,   # 車両集計単位
+    tmax=1200,  # シミュレーション時間
+    print_mode=1, save_mode=0, show_mode=0,    # オプション
+    random_seed=0    # ランダムシード
+)
 
-if __name__ == "__main__":
+# Define the scenario
+W.addNode("orig1", 0, 0) # ノードの作成
+W.addNode("orig2", 0, 2)
+W.addNode("merge", 1, 1)
+W.addNode("dest", 2, 1)
+W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=0.5) # リンクの作成
+W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=2)
+W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+W.adddemand("orig1", "dest", 0, 1000, 0.4) # 交通需要の作成
+W.adddemand("orig2", "dest", 500, 1000, 0.6)
 
-    # シミュレーション本体の定義
-    #単位系は全てsとmで統一
-    W = World(
-        name="",    #シナリオ名称．空白でも可．結果保存のフォルダ名に使われる
-        deltan=5,   #シミュレーション集計単位Δn．何台の車両をまとめて計算するか．計算コストは基本的にdeltan^2に逆比例する
-        tmax=1200,  #総シミュレーション時間（s）
-        print_mode=1, save_mode=1, show_mode=0,    #各種オプション．print_modeは各種情報をprintするかどうか．普段は1とし，自動で多数のシミュレーションを回すときは0を推奨．save_modeは可視化結果等を保存するかどうか．show_mode可視化結果を表示するかどうか．Jupyter Notebook上ではshow_mode=1が良いが，それ以外は0を推奨．
-        random_seed=0    #乱数シードの設定．再現性のある実験をしたいときは指定，そうでないときはNone．Jupyter Notebook上では乱数が固定されない場合有り（要修正）
-    )
+# シミュレーション実行
+W.exec_simulation()
 
-    # シナリオ定義
-    #合流ネットワーク：ベタ打ち定義の例
-    W.addNode("orig1", 0, 0) #ノードの作成．ノード名，可視化x座標，可視化y座標
-    node_orig2 = W.addNode("orig2", 0, 2) #W.addNodeは作成したノードインスタンスを返すので，変数に代入しても良い
-    W.addNode("merge", 1, 1)
-    W.addNode("dest", 2, 1)
-    W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=0.5) #リンクの作成．リンク名，起点ノード，終点ノード，length=長さ, free_flow_speed=自由流速度, jam_density=渋滞密度, merge_priority=合流時優先率
-    W.addLink("link2", node_orig2, "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=2) #ノードは名称ではなく変数で指定しても良い
-    link3 = W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2) #リンク作成もインスタンスを返す．
-    W.adddemand("orig1", "dest", 0, 1000, 0.4) #OD交通需要の作成．出発地ノード，目的地ノード，開始時刻，終了時刻，需要率
-    W.adddemand("orig2", "dest", 500, 1000, 0.6)
+# 結果表示
+W.analyzer.print_simple_stats()
 
-    # シミュレーション実行
-    #最後までシミュを回す
-    W.exec_simulation()
-
-    #特定時間だけシミュを回す（途中で介入したいとき用）
-    #while W.check_simulation_ongoing():
-    #    W.exec_simulation(duration_t=100) #100秒づつシミュレーションを回す
-
-    # 結果の概要を表示
-    W.analyzer.print_simple_stats()
+# ネットワーク交通状態のスナップショット可視化
+W.analyzer.network(0, detailed=1, network_font_size=0)
+W.analyzer.network(500, detailed=1, network_font_size=0)
+W.analyzer.network(1000, detailed=1, network_font_size=0)
 ```
+
+結果として以下のような文字列をターミナルに出力し，`out`ディレクトリにその下のような画像を出力します：
+```
+simulation setting:
+ scenario name:
+ simulation duration:    1200 s
+ number of vehicles:     700 veh
+ total road length:      3000 m
+ time discret. width:    5 s
+ platoon size:           5 veh
+ number of timesteps:    240
+ number of platoons:     140
+ number of links:        3
+ number of nodes:        4
+ setup time:             0.00 s
+simulating...
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|      100 vehs|  17.5 m/s|     0.03 s
+    1195 s|       25 vehs|  20.0 m/s|     0.05 s
+ simulation finished
+results:
+ average speed:  13.8 m/s
+ number of completed trips:      675 / 700
+ average travel time of trips:   142.7 s
+ average delay of trips:         42.7 s
+ delay ratio:                    0.299
+```
+
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/simple_example_network1_1000.png" width="400"/>
+</p>
 
 </details>
  
@@ -179,6 +207,10 @@ if __name__ == "__main__":
 - Seo, T. UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview. arXiv preprint arXiv: 2309.17114, 2023
 
 を引用してください．
+
+## 謝辞
+
+UXsimは交通流理論に関する様々な学術的成果に基づいています．この分野を進展させてきた交通研究者に感謝いたします．
 
 ## 関連リンク
 

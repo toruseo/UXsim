@@ -12,7 +12,7 @@ AUTHOR_EMAIL = 'seo.t.aa@m.titech.ac.jp'
 URL = 'https://github.com/toruseo/UXsim'
 LICENSE = 'MIT License'
 DOWNLOAD_URL = 'https://github.com/toruseo/UXsim'
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 PYTHON_REQUIRES = ">=3.9"
 
 INSTALL_REQUIRES = [

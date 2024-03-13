@@ -312,6 +312,7 @@ class Link:
         The `capacity_out` and `capacity_in` parameters are used to set the capacities, and if not provided, they are calculated based on other parameters.
         Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
         Some of the traffic flow model parameters can be altered during simulation by changing `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority`.
+        
         """
 
         s.W = W
