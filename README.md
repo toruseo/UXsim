@@ -72,10 +72,10 @@ your_project_directory/
 │ ├── utils/ # Utility files of UXsim
 │ ├── uxsim.py # The main code of UXsim. You can customize this as you wish
 │ ├── utils.py # Utility funcsions of UXsim
-│ └── ...
-├── your_simulation_code.py # Your code
-├── your_simulation_notebook.ipynb # Your Jupyter notebook
-├── ...
+│ └── ... # Other files in uxsim
+├── your_simulation_code.py # Your code if nessesary
+├── your_simulation_notebook.ipynb # Your Jupyter notebook if nessesary
+├── ... # Other files if nessesary
 ```
 In this way, you can flexibly customize UXsim by your own.
 
@@ -194,9 +194,15 @@ The right is with DRL control scenario, where traffic signal can be changed by o
 
 ## Future Plans
 
+- multi-lane link
+	- Note: The current model assumes that all links are 1 lane, and the reaction time of all drivers are the same. This means that all links have more or less the same capacity.  It is not possible to model  multi-lane links that have 2 or 3 times the capacity of 1-lane links. This is a theoretical limitation.
+ 	- Workarounds for the current model:
+		- Create multiple links between same node pair; each link corresponds to each lane between the nodes. This is a reasonable solution. However, the analysis becomes tedious.
+		- Reduce `capacity_out` parameter of `Link`. In this way, we can place a bottleneck to the end of a link, so that capacities of links can vary significantly. However, it only reduce the capacity. Also, the jam propagation speed becomes too fast or slow.
 - day-to-day dynamics
 - taxi and shared mobility (i.e., vehicles travel through a network by passing through specific nodes that are dynamically updated)
 - network import from OSMnx
+	- Done, but still experimental.
 - basemap for visualization
 - modern packaging
 
@@ -211,7 +217,7 @@ When publishing works based on from UXsim, please cite:
 
 ## Acknowledgments
 
-UXsim is based on various works in traffic flow theory. We would like to acknowledge the contributions of the transportation research community in advancing the this field.
+UXsim is based on various works in traffic flow theory. We would like to acknowledge the contributions of the research community in advancing this field.
 
 ## Related Links
 
