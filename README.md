@@ -202,6 +202,7 @@ The right is with DRL control scenario, where traffic signal can be changed by o
 - day-to-day dynamics
 - taxi and shared mobility (i.e., vehicles travel through a network by passing through specific nodes that are dynamically updated)
 - network import from OSMnx
+	- Done, but still experimental.
 - basemap for visualization
 - modern packaging
 
