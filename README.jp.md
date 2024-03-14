@@ -73,10 +73,10 @@ your_project_directory/
 │ ├── utils/ # UXsimのユーティリティファイル
 │ ├── uxsim.py # UXsimのメインコード。必要に応じてカスタマイズ可能
 │ ├── utils.py # UXsimのユーティリティ関数
-│ └── ...
-├── your_simulation_code.py # 自作コード
-├── your_simulation_notebook.ipynb # 自作Jupyterノートブック
-├── ...
+│ └── ... # その他元からあったファイル
+├── your_simulation_code.py # 自作コード（必要なら）
+├── your_simulation_notebook.ipynb # 自作Jupyterノートブック（必要なら）
+├── ... # 必要に応じて他のファイルも置ける
 ```
 この方法で、UXsimを自分の好みに合わせて柔軟にカスタマイズできます。
 
@@ -210,7 +210,7 @@ results:
 
 ## 謝辞
 
-UXsimは交通流理論に関する様々な学術的成果に基づいています．この分野を進展させてきた交通研究者に感謝いたします．
+UXsimは交通流理論に関する様々な学術的成果に基づいています．この分野を進展させてきた皆様に感謝いたします．
 
 ## 関連リンク
 
