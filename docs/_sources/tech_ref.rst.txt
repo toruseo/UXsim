@@ -26,10 +26,11 @@ Classes
    uxsim.World
    uxsim.Node
    uxsim.Link
-   uxsim.Route
    uxsim.Vehicle
    uxsim.RouteChoice
+   uxsim.Route
    uxsim.Analyzer
+   uxsim.OSMImporter
    
 
 * :ref:`genindex`

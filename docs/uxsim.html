@@ -55,7 +55,7 @@ gtag('config', 'UA-111714220-1');
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial and Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tech_ref.html">Technical reference</a></li>
 </ul>
@@ -556,8 +556,14 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.uxsim.Node">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.uxsim.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Node" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.uxsim.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_capacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Node" title="Permalink to this definition"></a></dt>
 <dd><p>Node in a network.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.Node.flow_capacity_update">
+<span class="sig-name descname"><span class="pre">flow_capacity_update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Node.flow_capacity_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Node.flow_capacity_update" title="Permalink to this definition"></a></dt>
+<dd><p>flow capacity updates.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.Node.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Node.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Node.generate" title="Permalink to this definition"></a></dt>
@@ -582,13 +588,94 @@ The choice of the outgoing link is based on the vehicle’s route preference for
 A vehicle is eligible for transfer if:
 - The next link it intends to move to has space.
 - The vehicle has the right signal phase to proceed.
-- The current link has enough capacity to allow the vehicle to exit.</p>
+- The current link has enough capacity to allow the vehicle to exit.
+- The node capacity is not exceeded.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.Node.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#Node.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Node.update" title="Permalink to this definition"></a></dt>
 <dd><p>Make necessary updates when the timestep is incremented.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="uxsim.uxsim.OSMImporter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.uxsim.</span></span><span class="sig-name descname"><span class="pre">OSMImporter</span></span><a class="reference internal" href="_modules/uxsim/uxsim.html#OSMImporter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.OSMImporter" title="Permalink to this definition"></a></dt>
+<dd><p>OpenStreetMap importer using OSMnx.
+Work in progress. Import from OSM is experimental and may not work as expected. It is functional but produces inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.OSMImporter.import_osm_data">
+<span class="sig-name descname"><span class="pre">import_osm_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">south</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">east</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">west</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'[&quot;highway&quot;~&quot;trunk|primary&quot;]'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_number_of_lanes_mortorway</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_number_of_lanes_trunk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_number_of_lanes_primary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_number_of_lanes_secondary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_number_of_lanes_residential</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_number_of_lanes_tertiary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_number_of_lanes_others</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_maxspeed_mortorway</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_maxspeed_trunk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_maxspeed_primary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_maxspeed_secondary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_maxspeed_residential</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_maxspeed_tertiary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_maxspeed_others</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#OSMImporter.import_osm_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.OSMImporter.import_osm_data" title="Permalink to this definition"></a></dt>
+<dd><p>Import road network data from OpenStreetMap using OSMnx.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>north</strong> (<em>float</em>) – The latitudes and longitudes of the area to be imported.</p></li>
+<li><p><strong>south</strong> (<em>float</em>) – The latitudes and longitudes of the area to be imported.</p></li>
+<li><p><strong>east</strong> (<em>float</em>) – The latitudes and longitudes of the area to be imported.</p></li>
+<li><p><strong>west</strong> (<em>float</em>) – The latitudes and longitudes of the area to be imported.</p></li>
+<li><p><strong>custom_filter</strong> (<em>str</em>) – The filter to be used for importing the data.
+The default is ‘[“highway”~”trunk|primary”]’, which means that only trunk and primary roads (usually correspond to major arterial roads) are imported.</p></li>
+<li><p><strong>default_number_of_lanes_*</strong> (<em>int</em>) – The default number of lanes for * {road_type}.</p></li>
+<li><p><strong>default_maxspeed_*</strong> (<em>float</em>) – The default maximum speed for * {road_type}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>links</strong> (<em>list</em>) – A list of links, where each element is a list of [name, from, to, lanes, maxspeed].</p></li>
+<li><p><strong>nodes</strong> (<em>dict</em>) – A dictionary of nodes, where the key is the node ID and the value is a list of [node_id, x, y].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.OSMImporter.osm_network_postprocessing">
+<span class="sig-name descname"><span class="pre">osm_network_postprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_merge_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_merge_iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_bidirectional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#OSMImporter.osm_network_postprocessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.OSMImporter.osm_network_postprocessing" title="Permalink to this definition"></a></dt>
+<dd><p>Postprocess the network to make it suitable for simulation. First, it aggregates the network by merging nodes that are closer than the threshold. Second, if <cite>enforce_bidirectional</cite> is True, it adds reverse links for each link to eliminate deadend nodes as much as possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>list</em>) – A list of nodes, where each element is a list of [node_id, x, y].</p></li>
+<li><p><strong>links</strong> (<em>list</em>) – A list of links, where each element is a list of [name, from, to, lanes, maxspeed].</p></li>
+<li><p><strong>node_merge_threshold</strong> (<em>float</em>) – If two nodes are connected by a link that is shorter than this threshold, the nodes are merged and the link is removed.</p></li>
+<li><p><strong>node_merge_iteration</strong> (<em>int</em>) – The number of iterations for the node merge.</p></li>
+<li><p><strong>enforce_bidirectional</strong> (<em>bool</em>) – True if you want to enforce bidirectional links. It will automatically add a reverse link for each link. This will eliminate deadend nodes as much as possible, but the original network topology is not preserved rigorously.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>nodes</strong> (<em>list</em>) – A list of nodes, where each element is a list of [node_id, x, y].</p></li>
+<li><p><strong>links</strong> (<em>list</em>) – A list of links, where each element is a list of [name, from, to, lanes, maxspeed].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.OSMImporter.osm_network_to_World">
+<span class="sig-name descname"><span class="pre">osm_network_to_World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_jam_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coef_degree_to_meter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">111000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#OSMImporter.osm_network_to_World"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.OSMImporter.osm_network_to_World" title="Permalink to this definition"></a></dt>
+<dd><p>Load the imported network to the World object of UXsim.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>list</em>) – A list of nodes, where each element is a list of [node_id, x, y].</p></li>
+<li><p><strong>links</strong> (<em>list</em>) – A list of links, where each element is a list of [name, from, to, lanes, maxspeed, length].</p></li>
+<li><p><strong>default_jam_density</strong> (<em>float</em>) – The default jam density for the links.</p></li>
+<li><p><strong>coef_degree_to_meter</strong> (<em>float</em>) – The coefficient to convert lon/lat degree to meter. Default is 111000.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.OSMImporter.osm_network_visualize">
+<span class="sig-name descname"><span class="pre">osm_network_visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">12)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_link_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#OSMImporter.osm_network_visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.OSMImporter.osm_network_visualize" title="Permalink to this definition"></a></dt>
+<dd><p>Visualize the imported network. Mainly for test purpose.</p>
 </dd></dl>
 
 </dd></dl>
@@ -844,6 +931,50 @@ It passes all given arguments and keyword arguments to the Vehicle class initial
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.adddemand_area2area">
+<span class="sig-name descname"><span class="pre">adddemand_area2area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radious_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radious_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#World.adddemand_area2area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.adddemand_area2area" title="Permalink to this definition"></a></dt>
+<dd><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_orig</strong> (<em>float</em>) – The x-coordinate of the center of the origin area.</p></li>
+<li><p><strong>y_orig</strong> (<em>float</em>) – The y-coordinate of the center of the origin area.</p></li>
+<li><p><strong>radious_orig</strong> (<em>float</em>) – The radious of the origin area. Note that too large radious may generate too sparse demand that is rounded to zero.</p></li>
+<li><p><strong>x_dest</strong> (<em>float</em>) – The x-coordinate of the center of the destination area.</p></li>
+<li><p><strong>y_dest</strong> (<em>float</em>) – The y-coordinate of the center of the destination area.</p></li>
+<li><p><strong>radious_dest</strong> (<em>float</em>) – The radious of the destination area.</p></li>
+<li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
+<li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
+<li><p><strong>flow</strong> (<em>float</em><em>, </em><em>optional</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>
+<li><p><strong>volume</strong> (<em>float</em><em>, </em><em>optional</em>) – The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</p></li>
+<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.adddemand_point2point">
+<span class="sig-name descname"><span class="pre">adddemand_point2point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#World.adddemand_point2point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.adddemand_point2point" title="Permalink to this definition"></a></dt>
+<dd><p>Generate vehicles by specifying time-dependent origin-destination demand using coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_orig</strong> (<em>float</em>) – The x-coordinate of the origin.</p></li>
+<li><p><strong>y_orig</strong> (<em>float</em>) – The y-coordinate of the origin.</p></li>
+<li><p><strong>x_dest</strong> (<em>float</em>) – The x-coordinate of the destination.</p></li>
+<li><p><strong>y_dest</strong> (<em>float</em>) – The y-coordinate of the destination.</p></li>
+<li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
+<li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
+<li><p><strong>flow</strong> (<em>float</em><em>, </em><em>optional</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>
+<li><p><strong>volume</strong> (<em>float</em><em>, </em><em>optional</em>) – The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</p></li>
+<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.World.check_simulation_ongoing">
 <span class="sig-name descname"><span class="pre">check_simulation_ongoing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#World.check_simulation_ongoing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.check_simulation_ongoing" title="Permalink to this definition"></a></dt>
 <dd><p>Check whether the simulation is has not reached its final time.</p>
@@ -946,6 +1077,26 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.get_nearest_node">
+<span class="sig-name descname"><span class="pre">get_nearest_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#World.get_nearest_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.get_nearest_node" title="Permalink to this definition"></a></dt>
+<dd><p>Get the nearest node to the given coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – The x-coordinate.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – The y-coordinate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The nearest Node object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.World.get_node">
 <span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#World.get_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.get_node" title="Permalink to this definition"></a></dt>
 <dd><p>Get a Node instance by name or object.</p>
@@ -958,6 +1109,26 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Node object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.get_nodes_in_area">
+<span class="sig-name descname"><span class="pre">get_nodes_in_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/uxsim.html#World.get_nodes_in_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.get_nodes_in_area" title="Permalink to this definition"></a></dt>
+<dd><p>Get the nodes in the area defined by the center coordinates and radius.
+:param x: The x-coordinate of the center.
+:type x: float
+:param y: The y-coordinate of the center.
+:type y: float
+:param r: The radius of the area.
+:type r: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of Node objects in the area.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>

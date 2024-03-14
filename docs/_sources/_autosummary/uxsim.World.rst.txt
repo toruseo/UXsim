@@ -18,6 +18,8 @@
       ~World.addNode
       ~World.addVehicle
       ~World.adddemand
+      ~World.adddemand_area2area
+      ~World.adddemand_point2point
       ~World.check_simulation_ongoing
       ~World.exec_simulation
       ~World.finalize_scenario
@@ -25,7 +27,9 @@
       ~World.generate_Nodes_from_csv
       ~World.generate_demand_from_csv
       ~World.get_link
+      ~World.get_nearest_node
       ~World.get_node
+      ~World.get_nodes_in_area
       ~World.load_scenario_from_csv
       ~World.on_time
       ~World.show_network

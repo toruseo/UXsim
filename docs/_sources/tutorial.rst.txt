@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Tutorial
-========
+Tutorial and Examples
+=====================
 
 Here we show several examples of simulations and applications of UXsim.
 The original Jupyter Notebook can be obtained from https://github.com/toruseo/UXsim/tree/main/demos_and_examples.
@@ -15,4 +15,5 @@ The original Jupyter Notebook can be obtained from https://github.com/toruseo/UX
    ../notebooks/demo_notebook_01en.ipynb
    ../notebooks/demo_notebook_02en.ipynb
    ../notebooks/demo_notebook_03en_pytorch.ipynb
+   ../notebooks/demo_notebook_04en_OpenStreetMap.ipynb
    

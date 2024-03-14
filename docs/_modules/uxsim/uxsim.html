@@ -92,6 +92,7 @@ gtag('config', 'UA-111714220-1');
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">csv</span><span class="o">,</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span><span class="p">,</span> <span class="n">ImageOps</span>
 <span class="kn">from</span> <span class="nn">PIL.Image</span> <span class="kn">import</span> <span class="n">Resampling</span><span class="p">,</span> <span class="n">Transpose</span>
 <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
@@ -111,7 +112,7 @@ gtag('config', 'UA-111714220-1');
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Node in a network.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Node.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Node.html#uxsim.Node.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+<div class="viewcode-block" id="Node.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Node.html#uxsim.Node.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a node</span>
 
@@ -129,6 +130,10 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            A list representing the signal at the node. Default is [0], representing no signal.</span>
 <span class="sd">            If a signal is present, the list contains the green times for each group.</span>
 <span class="sd">            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</span>
+<span class="sd">        signal_offset : float, optional</span>
+<span class="sd">            The offset of the signal. Default is 0.</span>
+<span class="sd">        flow_capacity : float, optional</span>
+<span class="sd">            The maximum flow capacity of the node. Default is None, meaning infinite capacity.</span>
 
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
@@ -159,8 +164,30 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span>
         <span class="n">s</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">s</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">signal_offset</span> <span class="o">=</span> <span class="n">signal_offset</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">signal_offset</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">signal</span> <span class="o">!=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">=</span> <span class="n">offset</span>
+                    <span class="k">break</span>
+                <span class="n">offset</span> <span class="o">-=</span> <span class="n">s</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">signal</span><span class="p">):</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">signal_log</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1">#流量制限</span>
+        <span class="k">if</span> <span class="n">flow_capacity</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity</span> <span class="o">=</span> <span class="n">flow_capacity</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_remain</span> <span class="o">=</span> <span class="n">flow_capacity</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_remain</span> <span class="o">=</span> <span class="mi">99999999999</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -181,6 +208,13 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">signal_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">signal_phase</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Node.flow_capacity_update"><a class="viewcode-back" href="../../uxsim.html#uxsim.Node.flow_capacity_update">[docs]</a>    <span class="k">def</span> <span class="nf">flow_capacity_update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        flow capacity updates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_remain</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_remain</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span></div>
 
 <div class="viewcode-block" id="Node.generate"><a class="viewcode-back" href="../../uxsim.html#uxsim.Node.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -234,9 +268,10 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        - The next link it intends to move to has space.</span>
 <span class="sd">        - The vehicle has the right signal phase to proceed.</span>
 <span class="sd">        - The current link has enough capacity to allow the vehicle to exit.</span>
+<span class="sd">        - The node capacity is not exceeded.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">outlink</span> <span class="ow">in</span> <span class="p">{</span><span class="n">veh</span><span class="o">.</span><span class="n">route_next_link</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">incoming_vehicles</span> <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">route_next_link</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">}:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outlink</span><span class="o">.</span><span class="n">vehicles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">outlink</span><span class="o">.</span><span class="n">vehicles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">outlink</span><span class="o">.</span><span class="n">delta</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">)</span> <span class="ow">and</span> <span class="n">outlink</span><span class="o">.</span><span class="n">capacity_in_remain</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outlink</span><span class="o">.</span><span class="n">vehicles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">outlink</span><span class="o">.</span><span class="n">vehicles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">outlink</span><span class="o">.</span><span class="n">delta</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">)</span> <span class="ow">and</span> <span class="n">outlink</span><span class="o">.</span><span class="n">capacity_in_remain</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_remain</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">:</span>
                 <span class="c1">#受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択</span>
                 <span class="n">vehs</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">veh</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">incoming_vehicles</span> 
@@ -258,6 +293,8 @@ gtag('config', 'UA-111714220-1');
 
                 <span class="n">inlink</span><span class="o">.</span><span class="n">capacity_out_remain</span> <span class="o">-=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
                 <span class="n">outlink</span><span class="o">.</span><span class="n">capacity_in_remain</span> <span class="o">-=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_remain</span> <span class="o">-=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
 
                 <span class="c1">#リンク間遷移実行</span>
                 <span class="n">inlink</span><span class="o">.</span><span class="n">vehicles</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
@@ -293,7 +330,8 @@ gtag('config', 'UA-111714220-1');
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make necessary updates when the timestep is incremented.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">signal_control</span><span class="p">()</span></div></div>
+        <span class="n">s</span><span class="o">.</span><span class="n">signal_control</span><span class="p">()</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_update</span><span class="p">()</span></div></div>
 
 <span class="c1"># リンククラス</span>
 <div class="viewcode-block" id="Link"><a class="viewcode-back" href="../../uxsim.html#uxsim.Link">[docs]</a><span class="k">class</span> <span class="nc">Link</span><span class="p">:</span>
@@ -361,6 +399,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        The `capacity_out` and `capacity_in` parameters are used to set the capacities, and if not provided, they are calculated based on other parameters.</span>
 <span class="sd">        Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.</span>
 <span class="sd">        Some of the traffic flow model parameters can be altered during simulation by changing `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority`.</span>
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
@@ -726,8 +765,8 @@ gtag('config', 'UA-111714220-1');
             <span class="n">s</span><span class="o">.</span><span class="n">route_pref</span> <span class="o">=</span> <span class="p">{</span><span class="n">l</span><span class="p">:</span><span class="mi">0</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">}</span>
 
         <span class="c1">#好むリンクと避けるリンク（近視眼的）</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">links_prefer</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_link</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">links_prefer</span><span class="p">]</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">links_avoid</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_link</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">links_avoid</span><span class="p">]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">links_prefer</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">links_prefer</span><span class="p">]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">links_avoid</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">links_avoid</span><span class="p">]</span>
 
         <span class="c1">#行き止まりに行ってしまったときにトリップを止める</span>
         <span class="n">s</span><span class="o">.</span><span class="n">trip_abort</span> <span class="o">=</span> <span class="n">trip_abort</span>
@@ -1986,7 +2025,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">([(</span><span class="n">x1</span><span class="p">,</span> <span class="n">flip</span><span class="p">(</span><span class="n">y1</span><span class="p">)),</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">flip</span><span class="p">(</span><span class="n">y2</span><span class="p">))],</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">joint</span><span class="o">=</span><span class="s2">&quot;curve&quot;</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">network_font_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">draw</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="n">xmid1</span><span class="p">,</span> <span class="n">flip</span><span class="p">(</span><span class="n">ymid1</span><span class="p">)),</span> <span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+                    <span class="n">draw</span><span class="o">.</span><span class="n">text</span><span class="p">(((</span><span class="n">x1</span><span class="o">+</span><span class="n">x2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">flip</span><span class="p">((</span><span class="n">y1</span><span class="o">+</span><span class="n">y2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span> <span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="n">font</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;mm&quot;</span><span class="p">)</span>
 
             <span class="n">traces</span> <span class="o">=</span> <span class="n">draw_dict</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
@@ -2149,6 +2188,8 @@ gtag('config', 'UA-111714220-1');
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;wait&quot;</span><span class="p">:</span>
                                 <span class="n">linkname</span> <span class="o">=</span> <span class="s2">&quot;waiting_at_origin_node&quot;</span>
+                            <span class="k">elif</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;abort&quot;</span><span class="p">:</span>
+                                <span class="n">linkname</span> <span class="o">=</span> <span class="s2">&quot;trip_aborted&quot;</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="n">linkname</span> <span class="o">=</span> <span class="s2">&quot;trip_end&quot;</span>
                         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">veh</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_t</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">linkname</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_s</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_v</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
@@ -2280,7 +2321,7 @@ gtag('config', 'UA-111714220-1');
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for a route that store concective links.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">trust_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Route.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Route.html#uxsim.Route.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">trust_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Define a route.</span>
 
@@ -2310,7 +2351,7 @@ gtag('config', 'UA-111714220-1');
         <span class="k">else</span><span class="p">:</span>
             <span class="c1">#検査せずそのまま使用（計算コスト削減）</span>
             <span class="n">s</span><span class="o">.</span><span class="n">links</span> <span class="o">=</span> <span class="n">links</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">links_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="p">]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">links_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Route </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
@@ -2354,6 +2395,318 @@ gtag('config', 'UA-111714220-1');
             <span class="k">return</span> <span class="n">tt</span><span class="p">,</span> <span class="n">tts</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tt</span></div></div>
+
+<div class="viewcode-block" id="OSMImporter"><a class="viewcode-back" href="../../uxsim.html#uxsim.OSMImporter">[docs]</a><span class="k">class</span> <span class="nc">OSMImporter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    OpenStreetMap importer using OSMnx.</span>
+<span class="sd">    Work in progress. Import from OSM is experimental and may not work as expected. It is functional but produces inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="OSMImporter.import_osm_data"><a class="viewcode-back" href="../../uxsim.html#uxsim.OSMImporter.import_osm_data">[docs]</a>    <span class="k">def</span> <span class="nf">import_osm_data</span><span class="p">(</span><span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="p">,</span> <span class="n">east</span><span class="p">,</span> <span class="n">west</span><span class="p">,</span> <span class="n">custom_filter</span><span class="o">=</span><span class="s1">&#39;[&quot;highway&quot;~&quot;trunk|primary&quot;]&#39;</span><span class="p">,</span> 
+                        <span class="n">default_number_of_lanes_mortorway</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">default_number_of_lanes_trunk</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> 
+                        <span class="n">default_number_of_lanes_primary</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">default_number_of_lanes_secondary</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+                        <span class="n">default_number_of_lanes_residential</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">default_number_of_lanes_tertiary</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+                        <span class="n">default_number_of_lanes_others</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+                        <span class="n">default_maxspeed_mortorway</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">default_maxspeed_trunk</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> 
+                        <span class="n">default_maxspeed_primary</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">default_maxspeed_secondary</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> 
+                        <span class="n">default_maxspeed_residential</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">default_maxspeed_tertiary</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> 
+                        <span class="n">default_maxspeed_others</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Import road network data from OpenStreetMap using OSMnx.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        north, south, east, west: float</span>
+<span class="sd">            The latitudes and longitudes of the area to be imported.</span>
+<span class="sd">        custom_filter: str</span>
+<span class="sd">            The filter to be used for importing the data. </span>
+<span class="sd">            The default is &#39;[&quot;highway&quot;~&quot;trunk|primary&quot;]&#39;, which means that only trunk and primary roads (usually correspond to major arterial roads) are imported.</span>
+<span class="sd">        default_number_of_lanes_*: int</span>
+<span class="sd">            The default number of lanes for * {road_type}.</span>
+<span class="sd">        default_maxspeed_*: float</span>
+<span class="sd">            The default maximum speed for * {road_type}.    </span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        links: list</span>
+<span class="sd">            A list of links, where each element is a list of [name, from, to, lanes, maxspeed].</span>
+<span class="sd">        nodes: dict</span>
+<span class="sd">            A dictionary of nodes, where the key is the node ID and the value is a list of [node_id, x, y].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#experimental warning</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Import from OSM is experimental and may not work as expected. It is functional but produces inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Import from OSM is experimental and may not work as expected. It is functional but produces inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">osmnx</span> <span class="k">as</span> <span class="nn">ox</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Optional module &#39;osmnx&#39; is not installed. Please install it by &#39;pip install osmnx&#39; to use this function.&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start downloading OSM data. This may take some time.&quot;</span><span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">ox</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">graph_from_bbox</span><span class="p">(</span><span class="n">north</span><span class="o">=</span><span class="n">north</span><span class="p">,</span> <span class="n">south</span><span class="o">=</span><span class="n">south</span><span class="p">,</span> <span class="n">east</span><span class="o">=</span><span class="n">east</span><span class="p">,</span> <span class="n">west</span><span class="o">=</span><span class="n">west</span><span class="p">,</span> <span class="n">network_type</span><span class="o">=</span><span class="s2">&quot;drive&quot;</span><span class="p">,</span> 
+                                    <span class="n">custom_filter</span><span class="o">=</span><span class="n">custom_filter</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Download completed&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        motorway: 高速道路</span>
+<span class="sd">        trunk: 一般国道</span>
+<span class="sd">        primary: 主要地方道（2桁番号県道・市道）</span>
+<span class="sd">        secondary: 一般地方道（3桁番号県道・市道）</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># データ抽出</span>
+        <span class="n">node_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">nd</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">node_dict</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">nd</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">nd</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]]</span>
+
+        <span class="n">links</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">ed</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            
+            <span class="k">if</span> <span class="s2">&quot;highway&quot;</span> <span class="ow">in</span> <span class="n">ed</span><span class="p">:</span>
+                <span class="n">road_type</span> <span class="o">=</span> <span class="n">ed</span><span class="p">[</span><span class="s2">&quot;highway&quot;</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">ed</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">osmid</span> <span class="o">=</span> <span class="n">ed</span><span class="p">[</span><span class="s2">&quot;osmid&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">osmid</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                        <span class="n">osmid</span> <span class="o">=</span> <span class="n">osmid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">name</span> <span class="o">+=</span> <span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">osmid</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="n">osmid</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">lanes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ed</span><span class="p">[</span><span class="s2">&quot;lanes&quot;</span><span class="p">])</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">&quot;mortorway&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">lanes</span> <span class="o">=</span> <span class="n">default_number_of_lanes_mortorway</span>
+                        <span class="k">elif</span> <span class="s2">&quot;trunk&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">lanes</span> <span class="o">=</span> <span class="n">default_number_of_lanes_trunk</span>
+                        <span class="k">elif</span> <span class="s2">&quot;primary&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">lanes</span> <span class="o">=</span> <span class="n">default_number_of_lanes_primary</span>
+                        <span class="k">elif</span> <span class="s2">&quot;secondary&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">lanes</span> <span class="o">=</span> <span class="n">default_number_of_lanes_secondary</span>
+                        <span class="k">elif</span> <span class="s2">&quot;residential&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">lanes</span> <span class="o">=</span> <span class="n">default_number_of_lanes_residential</span>
+                        <span class="k">elif</span> <span class="s2">&quot;tertiary&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">lanes</span> <span class="o">=</span> <span class="n">default_number_of_lanes_tertiary</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">lanes</span> <span class="o">=</span> <span class="n">default_number_of_lanes_others</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">lanes</span> <span class="o">=</span> <span class="n">default_number_of_lanes_others</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">maxspeed</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ed</span><span class="p">[</span><span class="s2">&quot;maxspeed&quot;</span><span class="p">])</span><span class="o">/</span><span class="mf">3.6</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">&quot;mortorway&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">default_maxspeed_mortorway</span><span class="o">/</span><span class="mf">3.6</span>
+                        <span class="k">elif</span> <span class="s2">&quot;trunk&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">default_maxspeed_trunk</span><span class="o">/</span><span class="mf">3.6</span>
+                        <span class="k">elif</span> <span class="s2">&quot;primary&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">default_maxspeed_primary</span><span class="o">/</span><span class="mf">3.6</span>
+                        <span class="k">elif</span> <span class="s2">&quot;secondary&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">default_maxspeed_secondary</span><span class="o">/</span><span class="mf">3.6</span>
+                        <span class="k">elif</span> <span class="s2">&quot;residential&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">default_maxspeed_residential</span><span class="o">/</span><span class="mf">3.6</span>
+                        <span class="k">elif</span> <span class="s2">&quot;tertiary&quot;</span> <span class="ow">in</span> <span class="n">road_type</span><span class="p">:</span>
+                            <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">default_maxspeed_tertiary</span><span class="o">/</span><span class="mf">3.6</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">default_maxspeed_others</span><span class="o">/</span><span class="mf">3.6</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">default_maxspeed_others</span><span class="o">/</span><span class="mf">3.6</span>
+            
+
+                <span class="n">links</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lanes</span><span class="p">,</span> <span class="n">maxspeed</span><span class="p">])</span> <span class="c1"># name, from, to, number_of_lanes, maxspeed</span>
+                <span class="n">nodes</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node_dict</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="n">nodes</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">node_dict</span><span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;imported network size:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; number of links:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">links</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; number of nodes:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">links</span></div>
+                    
+<div class="viewcode-block" id="OSMImporter.osm_network_postprocessing"><a class="viewcode-back" href="../../uxsim.html#uxsim.OSMImporter.osm_network_postprocessing">[docs]</a>    <span class="k">def</span> <span class="nf">osm_network_postprocessing</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">node_merge_threshold</span><span class="p">,</span> <span class="n">node_merge_iteration</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">enforce_bidirectional</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Postprocess the network to make it suitable for simulation. First, it aggregates the network by merging nodes that are closer than the threshold. Second, if `enforce_bidirectional` is True, it adds reverse links for each link to eliminate deadend nodes as much as possible.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nodes: list</span>
+<span class="sd">            A list of nodes, where each element is a list of [node_id, x, y].</span>
+<span class="sd">        links: list </span>
+<span class="sd">            A list of links, where each element is a list of [name, from, to, lanes, maxspeed].</span>
+<span class="sd">        node_merge_threshold: float</span>
+<span class="sd">            If two nodes are connected by a link that is shorter than this threshold, the nodes are merged and the link is removed.</span>
+<span class="sd">        node_merge_iteration: int</span>
+<span class="sd">            The number of iterations for the node merge.</span>
+<span class="sd">        enforce_bidirectional: bool</span>
+<span class="sd">            True if you want to enforce bidirectional links. It will automatically add a reverse link for each link. This will eliminate deadend nodes as much as possible, but the original network topology is not preserved rigorously.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        nodes: list</span>
+<span class="sd">            A list of nodes, where each element is a list of [node_id, x, y].</span>
+<span class="sd">        links: list</span>
+<span class="sd">            A list of links, where each element is a list of [name, from, to, lanes, maxspeed].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#ネットワーク縮約：リンクベース</span>
+        <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">pos1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">pos1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">node_merge_iteration</span><span class="p">):</span>
+            <span class="c1"># ノード座標の辞書を作成</span>
+            <span class="n">node_positions</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">node</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">}</span>
+
+            <span class="c1"># 長さが node_merge_threshold 以下のリンクを省略し、起点ノードと終点ノードを融合</span>
+            <span class="c1">#縮約対象になったノードのマッピング：keyが縮約元，valueが縮約先</span>
+            <span class="n">delete_node_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="n">number_of_deleted_links</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+                <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">start_pos</span> <span class="o">=</span> <span class="n">node_positions</span><span class="p">[</span><span class="n">start_node</span><span class="p">]</span>
+                <span class="n">end_pos</span> <span class="o">=</span> <span class="n">node_positions</span><span class="p">[</span><span class="n">end_node</span><span class="p">]</span>
+                <span class="n">link_length</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">start_pos</span><span class="p">,</span> <span class="n">end_pos</span><span class="p">)</span>
+                <span class="c1">#print(link_length, link[0], start_node, end_node)</span>
+
+                <span class="k">if</span> <span class="n">link_length</span> <span class="o">&lt;=</span> <span class="n">node_merge_threshold</span><span class="p">:</span>
+                    <span class="c1">#縮約先に登録されていなければ登録</span>
+                    <span class="k">if</span> <span class="n">end_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">delete_node_map</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="ow">and</span> <span class="n">start_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">delete_node_map</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">delete_node_map</span><span class="p">[</span><span class="n">end_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_node</span>
+                    <span class="k">if</span> <span class="n">start_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">delete_node_map</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="ow">and</span> <span class="n">end_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">delete_node_map</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">delete_node_map</span><span class="p">[</span><span class="n">start_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node</span>
+                    
+                    <span class="n">number_of_deleted_links</span> <span class="o">+=</span> <span class="mi">1</span>
+                
+            <span class="c1"># 新しいノードリストとリンクリストを作成</span>
+            <span class="n">new_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">new_links</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="n">number_of_deleted_nodes</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">number_of_new_nodes</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="c1"># for group in delete_node_groups:</span>
+                <span class="c1">#     if node[0] in delete_node_map.keys():</span>
+                <span class="c1">#         break</span>
+                <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">delete_node_map</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">number_of_deleted_nodes</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                    <span class="n">number_of_new_nodes</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">start_node</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">end_node</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">lanes</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">start_node</span> <span class="ow">in</span> <span class="n">delete_node_map</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">start_node</span> <span class="o">=</span> <span class="n">delete_node_map</span><span class="p">[</span><span class="n">start_node</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">end_node</span> <span class="ow">in</span> <span class="n">delete_node_map</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">end_node</span> <span class="o">=</span> <span class="n">delete_node_map</span><span class="p">[</span><span class="n">end_node</span><span class="p">]</span>
+
+                <span class="n">length</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">node_positions</span><span class="p">[</span><span class="n">start_node</span><span class="p">],</span> <span class="n">node_positions</span><span class="p">[</span><span class="n">end_node</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">start_node</span> <span class="o">!=</span> <span class="n">end_node</span><span class="p">:</span>
+                    <span class="n">new_links</span><span class="p">[</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">lanes</span><span class="p">,</span> <span class="n">maxspeed</span><span class="p">,</span> <span class="n">length</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">enforce_bidirectional</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_links</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">start_node</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">end_node</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">lanes</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                    <span class="n">maxspeed</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+                    <span class="n">length</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">end_node</span><span class="p">,</span> <span class="n">start_node</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_links</span><span class="p">:</span>
+                        <span class="n">new_links</span><span class="p">[</span><span class="n">end_node</span><span class="p">,</span> <span class="n">start_node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot;-reverse&quot;</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">lanes</span><span class="p">,</span> <span class="n">maxspeed</span><span class="p">,</span> <span class="n">length</span><span class="p">]</span>
+
+            <span class="n">new_links</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_links</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="c1"># 孤立したノードの除去</span>
+            <span class="n">used_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">new_links</span><span class="p">:</span>
+                <span class="n">used_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">used_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+            <span class="n">new_nodes_used</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">new_nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">used_nodes</span><span class="p">:</span>
+                    <span class="n">new_nodes_used</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+            <span class="n">new_nodes</span> <span class="o">=</span> <span class="n">new_nodes_used</span>
+
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">new_nodes</span>
+            <span class="n">links</span> <span class="o">=</span> <span class="n">new_links</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;aggregated network size:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; number of links:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">links</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; number of nodes:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">links</span></div>
+
+<div class="viewcode-block" id="OSMImporter.osm_network_visualize"><a class="viewcode-back" href="../../uxsim.html#uxsim.OSMImporter.osm_network_visualize">[docs]</a>    <span class="k">def</span> <span class="nf">osm_network_visualize</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],</span> <span class="n">show_link_name</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Visualize the imported network. Mainly for test purpose.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_positions</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">node</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">}</span>
+
+        <span class="c1"># グラフを描画</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ノードをプロット</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">node_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;ro&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># リンクをプロット</span>
+        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+            <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span> <span class="o">=</span> <span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">start_pos</span> <span class="o">=</span> <span class="n">node_positions</span><span class="p">[</span><span class="n">start_node</span><span class="p">]</span>
+            <span class="n">end_pos</span> <span class="o">=</span> <span class="n">node_positions</span><span class="p">[</span><span class="n">end_node</span><span class="p">]</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">start_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="n">start_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">end_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y2</span> <span class="o">=</span> <span class="n">end_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span> <span class="o">=</span> <span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y2</span><span class="p">)</span><span class="o">*</span><span class="mf">0.025</span><span class="p">,</span> <span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="mf">0.025</span>
+            <span class="n">xmid1</span><span class="p">,</span> <span class="n">ymid1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x1</span><span class="o">+</span><span class="n">x2</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="o">+</span><span class="n">vx</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">y1</span><span class="o">+</span><span class="n">y2</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="o">+</span><span class="n">vy</span>
+            <span class="n">xmid2</span><span class="p">,</span> <span class="n">ymid2</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">x2</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="o">+</span><span class="n">vx</span><span class="p">,</span> <span class="p">(</span><span class="n">y1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">y2</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="o">+</span><span class="n">vy</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">xmid1</span><span class="p">,</span> <span class="n">xmid2</span><span class="p">,</span> <span class="n">x2</span><span class="p">],</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="n">ymid1</span><span class="p">,</span> <span class="n">ymid2</span><span class="p">,</span> <span class="n">y2</span><span class="p">],</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">show_link_name</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="n">x1</span><span class="o">+</span><span class="n">x2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">y1</span><span class="o">+</span><span class="n">y2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="OSMImporter.osm_network_to_World"><a class="viewcode-back" href="../../uxsim.html#uxsim.OSMImporter.osm_network_to_World">[docs]</a>    <span class="k">def</span> <span class="nf">osm_network_to_World</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">default_jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">coef_degree_to_meter</span><span class="o">=</span><span class="mi">111000</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the imported network to the World object of UXsim.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nodes: list</span>
+<span class="sd">            A list of nodes, where each element is a list of [node_id, x, y].</span>
+<span class="sd">        links: list</span>
+<span class="sd">            A list of links, where each element is a list of [name, from, to, lanes, maxspeed, length].</span>
+<span class="sd">        default_jam_density: float</span>
+<span class="sd">            The default jam density for the links.</span>
+<span class="sd">        coef_degree_to_meter: float</span>
+<span class="sd">            The coefficient to convert lon/lat degree to meter. Default is 111000.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="n">link</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="n">coef_degree_to_meter</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">link</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">jam_density</span><span class="o">=</span><span class="n">default_jam_density</span><span class="p">)</span></div></div>
+
 
 <div class="viewcode-block" id="World"><a class="viewcode-back" href="../../uxsim.html#uxsim.World">[docs]</a><span class="k">class</span> <span class="nc">World</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2591,6 +2944,90 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">W</span><span class="o">.</span><span class="n">addVehicle</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">)</span>
                 <span class="n">f</span> <span class="o">-=</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span></div>
 
+<div class="viewcode-block" id="World.adddemand_point2point"><a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_point2point">[docs]</a>    <span class="k">def</span> <span class="nf">adddemand_point2point</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand using coordinates.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x_orig : float</span>
+<span class="sd">            The x-coordinate of the origin.</span>
+<span class="sd">        y_orig : float</span>
+<span class="sd">            The y-coordinate of the origin.</span>
+<span class="sd">        x_dest : float</span>
+<span class="sd">            The x-coordinate of the destination.</span>
+<span class="sd">        y_dest : float</span>
+<span class="sd">            The y-coordinate of the destination.</span>
+<span class="sd">        t_start : float</span>
+<span class="sd">            The start time for the demand in seconds.</span>
+<span class="sd">        t_end : float</span>
+<span class="sd">            The end time for the demand in seconds.</span>
+<span class="sd">        flow : float, optional</span>
+<span class="sd">            The flow rate from the origin to the destination in vehicles per second.</span>
+<span class="sd">        volume: float, optional</span>
+<span class="sd">            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</span>
+<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_nearest_node</span><span class="p">(</span><span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">)</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_nearest_node</span><span class="p">(</span><span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">)</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="World.adddemand_area2area"><a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_area2area">[docs]</a>    <span class="k">def</span> <span class="nf">adddemand_area2area</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span>  <span class="n">radious_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">radious_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x_orig : float</span>
+<span class="sd">            The x-coordinate of the center of the origin area.</span>
+<span class="sd">        y_orig : float</span>
+<span class="sd">            The y-coordinate of the center of the origin area.</span>
+<span class="sd">        radious_orig : float</span>
+<span class="sd">            The radious of the origin area. Note that too large radious may generate too sparse demand that is rounded to zero.</span>
+<span class="sd">        x_dest : float</span>
+<span class="sd">            The x-coordinate of the center of the destination area.</span>
+<span class="sd">        y_dest : float</span>
+<span class="sd">            The y-coordinate of the center of the destination area.</span>
+<span class="sd">        radious_dest : float</span>
+<span class="sd">            The radious of the destination area.</span>
+<span class="sd">        t_start : float</span>
+<span class="sd">            The start time for the demand in seconds.</span>
+<span class="sd">        t_end : float</span>
+<span class="sd">            The end time for the demand in seconds.</span>
+<span class="sd">        flow : float, optional</span>
+<span class="sd">            The flow rate from the origin to the destination in vehicles per second.</span>
+<span class="sd">        volume: float, optional</span>
+<span class="sd">            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</span>
+<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">origs</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_nodes_in_area</span><span class="p">(</span><span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span> <span class="n">radious_orig</span><span class="p">)</span>
+        <span class="n">dests</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_nodes_in_area</span><span class="p">(</span><span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">radious_dest</span><span class="p">)</span>
+
+        <span class="n">origs_new</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dests_new</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">origs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">outlinks</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">origs_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dests</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">inlinks</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dests_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">origs</span> <span class="o">=</span> <span class="n">origs_new</span>
+        <span class="n">dests</span> <span class="o">=</span> <span class="n">dests_new</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">origs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">origs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">get_nearest_node</span><span class="p">(</span><span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dests</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">get_nearest_node</span><span class="p">(</span><span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="n">flow</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">flow</span> <span class="o">=</span> <span class="n">flow</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">origs</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">dests</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">volume</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">origs</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">dests</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">origs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dests</span><span class="p">:</span>
+                <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span></div>
+    
 <div class="viewcode-block" id="World.finalize_scenario"><a class="viewcode-back" href="../../uxsim.html#uxsim.World.finalize_scenario">[docs]</a>    <span class="k">def</span> <span class="nf">finalize_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finalizes the settings and preparations for the simulation scenario execution.</span>
@@ -2826,6 +3263,54 @@ gtag('config', 'UA-111714220-1');
                     <span class="k">return</span> <span class="n">l</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s2">&#39; is not Link in this World&quot;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="World.get_nearest_node"><a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_nearest_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_nearest_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the nearest node to the given coordinates.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : float</span>
+<span class="sd">            The x-coordinate.</span>
+<span class="sd">        y : float</span>
+<span class="sd">            The y-coordinate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        object</span>
+<span class="sd">            The nearest Node object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_dist</span> <span class="o">=</span> <span class="mf">1e10</span>
+        <span class="n">nearest_node</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+            <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="n">min_dist</span><span class="p">:</span>
+                <span class="n">min_dist</span> <span class="o">=</span> <span class="n">dist</span>
+                <span class="n">nearest_node</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">return</span> <span class="n">nearest_node</span></div>
+
+<div class="viewcode-block" id="World.get_nodes_in_area"><a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_nodes_in_area">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes_in_area</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the nodes in the area defined by the center coordinates and radius.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : float</span>
+<span class="sd">            The x-coordinate of the center.</span>
+<span class="sd">        y : float</span>
+<span class="sd">            The y-coordinate of the center.</span>
+<span class="sd">        r : float</span>
+<span class="sd">            The radius of the area.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of Node objects in the area.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nodes</span></div>
+
 <div class="viewcode-block" id="World.load_scenario_from_csv"><a class="viewcode-back" href="../../uxsim.html#uxsim.World.load_scenario_from_csv">[docs]</a>    <span class="k">def</span> <span class="nf">load_scenario_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname_node</span><span class="p">,</span> <span class="n">fname_link</span><span class="p">,</span> <span class="n">fname_demand</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a scenario from CSV files.</span>
@@ -2914,7 +3399,6 @@ gtag('config', 'UA-111714220-1');
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-    
     <span class="c1">#@catch_exceptions_and_warn()</span>
 <div class="viewcode-block" id="World.show_network"><a class="viewcode-back" href="../../uxsim.html#uxsim.World.show_network">[docs]</a>    <span class="k">def</span> <span class="nf">show_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

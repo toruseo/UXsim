@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network data import from OpenStreetMap &mdash; UXsim v1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulation mechanism" href="../mechanism.html" />
+    <link rel="prev" title="Signal control by PyTorch (DQN)" href="demo_notebook_03en_pytorch.html" />
+ 
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            UXsim
+          </a>
+              <div class="version">
+                v1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_01en.html">Step-by-step tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_02en.html">Advanced example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Network data import from OpenStreetMap</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Network-import">Network import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Demand">Demand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Simulation-and-results">Simulation and results</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tech_ref.html">Technical reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UXsim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorial.html">Tutorial and Examples</a></li>
+      <li class="breadcrumb-item active">Network data import from OpenStreetMap</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/demo_notebook_04en_OpenStreetMap.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Network-data-import-from-OpenStreetMap">
+<h1>Network data import from OpenStreetMap<a class="headerlink" href="#Network-data-import-from-OpenStreetMap" title="Permalink to this heading"></a></h1>
+<p>This noteboook demonstrates how to import network data from <a class="reference external" href="https://www.openstreetmap.org/">OpenStreetMap</a> (OSM). This is enabled by <a class="reference external" href="https://geoffboeing.com/publications/osmnx-complex-street-networks/">OSMnx</a> (<a class="reference external" href="https://github.com/gboeing/osmnx">github</a>), a Python package for OSM data handling. OSMnx is an optional module for UXsim. If you haven’t installed it, please install it first.</p>
+<p>WARNING: Import from OSM is experimental and may not work as expected. It is functional but produces inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.</p>
+<section id="Network-import">
+<h2>Network import<a class="headerlink" href="#Network-import" title="Permalink to this heading"></a></h2>
+<p>Now, define UXsim World as always.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mi">7200</span><span class="p">,</span>
+    <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We are going to import the highway network in Tokyo. The map of the network is shown below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out/osm_tokyo.png&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_04en_OpenStreetMap_4_0.png" src="../_images/notebooks_demo_notebook_04en_OpenStreetMap_4_0.png" />
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">OSMImporter</span></code> class summarizes the import and related functions.</p>
+<p>The area is specified by lon/lat coordinates.</p>
+<p><code class="docutils literal notranslate"><span class="pre">custom_filter='[&quot;highway&quot;~&quot;motorway&quot;]'</span></code> means only <code class="docutils literal notranslate"><span class="pre">motorway</span></code> links are imported. If you want to import major arterial roads, you may use <code class="docutils literal notranslate"><span class="pre">custom_filter='[&quot;highway&quot;~&quot;trunk|primary&quot;]'</span></code>. For the details, please see <a class="reference external" href="https://osmnx.readthedocs.io/en/stable/user-reference.html">OSMnx documentation</a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span> <span class="o">=</span> <span class="n">OSMImporter</span><span class="o">.</span><span class="n">import_osm_data</span><span class="p">(</span><span class="n">north</span><span class="o">=</span><span class="mf">35.817</span><span class="p">,</span> <span class="n">south</span><span class="o">=</span><span class="mf">35.570</span><span class="p">,</span> <span class="n">east</span><span class="o">=</span><span class="mf">139.881</span><span class="p">,</span> <span class="n">west</span><span class="o">=</span><span class="mf">139.583</span><span class="p">,</span> <span class="n">custom_filter</span><span class="o">=</span><span class="s1">&#39;[&quot;highway&quot;~&quot;motorway&quot;]&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING: Import from OSM is experimental and may not work as expected. It is functional but produces inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.
+Start downloading OSM data. This may take some time.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+UserWarning: Import from OSM is experimental and may not work as expected. It is functional but produces inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.
+ShapelyDeprecationWarning: Iteration over multi-part geometries is deprecated and will be removed in Shapely 2.0. Use the `geoms` property to access the constituent parts of a multi-part geometry.
+ShapelyDeprecationWarning: Iteration over multi-part geometries is deprecated and will be removed in Shapely 2.0. Use the `geoms` property to access the constituent parts of a multi-part geometry.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Download completed
+imported network size:
+ number of links: 812
+ number of nodes: 718
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+ShapelyDeprecationWarning: Iteration over multi-part geometries is deprecated and will be removed in Shapely 2.0. Use the `geoms` property to access the constituent parts of a multi-part geometry.
+</pre></div></div>
+</div>
+<p>Below shows the imported network data.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">OSMImporter</span><span class="o">.</span><span class="n">osm_network_visualize</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">show_link_name</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">OSMImporter</span><span class="o">.</span><span class="n">osm_network_visualize</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">show_link_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mf">139.75</span><span class="p">,</span> <span class="mf">139.76</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mf">35.60</span><span class="p">,</span> <span class="mf">35.615</span><span class="p">],</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_04en_OpenStreetMap_8_0.png" src="../_images/notebooks_demo_notebook_04en_OpenStreetMap_8_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_04en_OpenStreetMap_8_1.png" src="../_images/notebooks_demo_notebook_04en_OpenStreetMap_8_1.png" />
+</div>
+</div>
+<p>Unfortunately, the raw data is too detailed and not suitable for UXsim simulation. For example, many intersections of OSM consists of 4 nodes and may create strange traffic simulation results such as gridlocks.</p>
+<p>Therefore, postprocessing is required to make the network suitable for simulation as follows. First, it aggregates the network by merging nodes that are closer than the threshold (0.05 degree ~= 500 m). Second, we add reverse links for each link to eliminate dead-end nodes as much as possible. WIthout it, a lot of vehicles will lost their way and loiter the network randomly. Please be aware that in this postprocessing the original network topology is not preserved rigorously. This function is
+just for convenience; if you need rigorous network data, you have to manually adjust it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">OSMImporter.osm_network_to_World</span></code> will load the postprocessed network into the World.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span> <span class="o">=</span> <span class="n">OSMImporter</span><span class="o">.</span><span class="n">osm_network_postprocessing</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">node_merge_threshold</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">node_merge_iteration</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">enforce_bidirectional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">OSMImporter</span><span class="o">.</span><span class="n">osm_network_to_World</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">default_jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">coef_degree_to_meter</span><span class="o">=</span><span class="mi">111000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+aggregated network size:
+ number of links: 658
+ number of nodes: 273
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">OSMImporter</span><span class="o">.</span><span class="n">osm_network_visualize</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">show_link_name</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">OSMImporter</span><span class="o">.</span><span class="n">osm_network_visualize</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">show_link_name</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mf">139.75</span><span class="p">,</span> <span class="mf">139.76</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mf">35.60</span><span class="p">,</span> <span class="mf">35.615</span><span class="p">],</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_04en_OpenStreetMap_11_0.png" src="../_images/notebooks_demo_notebook_04en_OpenStreetMap_11_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_04en_OpenStreetMap_11_1.png" src="../_images/notebooks_demo_notebook_04en_OpenStreetMap_11_1.png" />
+</div>
+</div>
+<p>As a result, the network data is significantly simplified. You can see that this is still similar to the real network shown before.</p>
+</section>
+<section id="Demand">
+<h2>Demand<a class="headerlink" href="#Demand" title="Permalink to this heading"></a></h2>
+<p>The travel demand is now defined using coordinates. Below add demand from a circular area to another circular area. It represents demand to central Tokyo from surroundings.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">adddemand_area2area</span><span class="p">(</span><span class="mf">139.70</span><span class="p">,</span> <span class="mf">35.60</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">139.75</span><span class="p">,</span> <span class="mf">35.68</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">adddemand_area2area</span><span class="p">(</span><span class="mf">139.65</span><span class="p">,</span> <span class="mf">35.70</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">139.75</span><span class="p">,</span> <span class="mf">35.68</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">adddemand_area2area</span><span class="p">(</span><span class="mf">139.75</span><span class="p">,</span> <span class="mf">35.75</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">139.75</span><span class="p">,</span> <span class="mf">35.68</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">adddemand_area2area</span><span class="p">(</span><span class="mf">139.85</span><span class="p">,</span> <span class="mf">35.70</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">139.75</span><span class="p">,</span> <span class="mf">35.68</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Simulation-and-results">
+<h2>Simulation and results<a class="headerlink" href="#Simulation-and-results" title="Permalink to this heading"></a></h2>
+<p>Now you can execute the simulation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+simulation setting:
+ scenario name:
+ simulation duration:    7200 s
+ number of vehicles:     18900 veh
+ total road length:      911654.2133305998 m
+ time discret. width:    5 s
+ platoon size:           5 veh
+ number of timesteps:    1440
+ number of platoons:     3780
+ number of links:        658
+ number of nodes:        273
+ setup time:             114.70 s
+simulating...
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|     1220 vehs|  13.9 m/s|     2.28 s
+    1200 s|     3090 vehs|  12.8 m/s|     4.13 s
+    1800 s|     4060 vehs|  12.1 m/s|     6.22 s
+    2400 s|     4270 vehs|  11.9 m/s|     8.36 s
+    3000 s|     4435 vehs|  12.2 m/s|    10.46 s
+    3600 s|     4435 vehs|  11.9 m/s|    12.45 s
+    4200 s|     4360 vehs|  12.0 m/s|    14.39 s
+    4800 s|     4350 vehs|  11.7 m/s|    16.14 s
+    5400 s|     4355 vehs|  11.8 m/s|    17.77 s
+    6000 s|     3435 vehs|  10.7 m/s|    19.30 s
+    6600 s|     2445 vehs|  10.4 m/s|    20.65 s
+    7195 s|     1590 vehs|   9.8 m/s|    21.20 s
+ simulation finished
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out/anim_network0.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out/anim_network_fancy.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+results:
+ average speed:  12.1 m/s
+ number of completed trips:      16840 / 18900
+ average travel time of trips:   2547.3 s
+ average delay of trips:         1280.5 s
+ delay ratio:                    0.503
+ generating animation...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8027b8a110da4fc8b885f4fe7c7660c5", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ generating animation...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ecd976cc8b8d41b3a30928b8d34549f1", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_04en_OpenStreetMap_17_4.png" src="../_images/notebooks_demo_notebook_04en_OpenStreetMap_17_4.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_04en_OpenStreetMap_17_5.png" src="../_images/notebooks_demo_notebook_04en_OpenStreetMap_17_5.png" />
+</div>
+</div>
+<p>Now we get somewhat plausible results. Traffic from outskirts goes to the central Tokyo, causing traffic congestion due to the concentration.</p>
+<p>Note that the above results is not realistic. To obtain realistic results, you have to calibrate demands and scenario parameters very carefully. This is generally very difficult.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="demo_notebook_03en_pytorch.html" class="btn btn-neutral float-left" title="Signal control by PyTorch (DQN)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mechanism.html" class="btn btn-neutral float-right" title="Simulation mechanism" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Toru Seo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

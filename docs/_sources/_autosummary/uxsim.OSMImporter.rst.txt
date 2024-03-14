@@ -1,0 +1,26 @@
+﻿uxsim.OSMImporter
+=================
+
+.. currentmodule:: uxsim
+
+.. autoclass:: OSMImporter
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~OSMImporter.__init__
+      ~OSMImporter.import_osm_data
+      ~OSMImporter.osm_network_postprocessing
+      ~OSMImporter.osm_network_to_World
+      ~OSMImporter.osm_network_visualize
+   
+   
+
+   
+   
+   

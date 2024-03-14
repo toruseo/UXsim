@@ -57,7 +57,7 @@ gtag('config', 'UA-111714220-1');
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#modules">Modules</a><ul class="current">
@@ -107,19 +107,22 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link" title="uxsim.uxsim.Link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Link</span></code></a>(W, name, start_node, end_node, length, ...)</p></td>
 <td><p>Link in a network.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(W, name, x, y[, signal])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(W, name, x, y[, signal, signal_offset, ...])</p></td>
 <td><p>Node in a network.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Route" title="uxsim.uxsim.Route"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Route</span></code></a>(W, links[, name, trust_input])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.OSMImporter" title="uxsim.uxsim.OSMImporter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OSMImporter</span></code></a>()</p></td>
+<td><p>OpenStreetMap importer using OSMnx.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Route" title="uxsim.uxsim.Route"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Route</span></code></a>(W, links[, name, trust_input])</p></td>
 <td><p>Class for a route that store concective links.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.RouteChoice" title="uxsim.uxsim.RouteChoice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RouteChoice</span></code></a>(W)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.RouteChoice" title="uxsim.uxsim.RouteChoice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RouteChoice</span></code></a>(W)</p></td>
 <td><p>Class for computing shortest path for all vehicles.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle" title="uxsim.uxsim.Vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vehicle</span></code></a>(W, orig, dest, departure_time[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle" title="uxsim.uxsim.Vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vehicle</span></code></a>(W, orig, dest, departure_time[, ...])</p></td>
 <td><p>Vehicle or platoon in a network.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><code class="xref py py-obj docutils literal notranslate"><span class="pre">World</span></code></a>([name, deltan, reaction_time, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><code class="xref py py-obj docutils literal notranslate"><span class="pre">World</span></code></a>([name, deltan, reaction_time, ...])</p></td>
 <td><p>World (i.e., simulation environment).</p></td>
 </tr>
 </tbody>

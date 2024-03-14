@@ -54,7 +54,7 @@ gtag('config', 'UA-111714220-1');
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial and Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tech_ref.html">Technical reference</a></li>
 </ul>
@@ -120,6 +120,8 @@ gtag('config', 'UA-111714220-1');
 </li>
         <li><a href="_autosummary/uxsim.Node.html#uxsim.Node.__init__">(uxsim.Node method)</a>
 </li>
+        <li><a href="_autosummary/uxsim.OSMImporter.html#uxsim.OSMImporter.__init__">(uxsim.OSMImporter method)</a>
+</li>
         <li><a href="_autosummary/uxsim.Route.html#uxsim.Route.__init__">(uxsim.Route method)</a>
 </li>
         <li><a href="_autosummary/uxsim.RouteChoice.html#uxsim.RouteChoice.__init__">(uxsim.RouteChoice method)</a>
@@ -145,10 +147,14 @@ gtag('config', 'UA-111714220-1');
       </ul></li>
       <li><a href="uxsim.html#uxsim.uxsim.World.adddemand">adddemand() (uxsim.uxsim.World method)</a>
 </li>
-      <li><a href="uxsim.html#uxsim.uxsim.World.addLink">addLink() (uxsim.uxsim.World method)</a>
+      <li><a href="uxsim.html#uxsim.uxsim.World.adddemand_area2area">adddemand_area2area() (uxsim.uxsim.World method)</a>
+</li>
+      <li><a href="uxsim.html#uxsim.uxsim.World.adddemand_point2point">adddemand_point2point() (uxsim.uxsim.World method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="uxsim.html#uxsim.uxsim.World.addLink">addLink() (uxsim.uxsim.World method)</a>
+</li>
       <li><a href="uxsim.html#uxsim.uxsim.World.addNode">addNode() (uxsim.uxsim.World method)</a>
 </li>
       <li><a href="uxsim.html#uxsim.uxsim.World.addVehicle">addVehicle() (uxsim.uxsim.World method)</a>
@@ -231,9 +237,11 @@ gtag('config', 'UA-111714220-1');
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="uxsim.html#uxsim.uxsim.World.finalize_scenario">finalize_scenario() (uxsim.uxsim.World method)</a>
 </li>
+      <li><a href="_autosummary/uxsim.Link.html#uxsim.Link.flow">flow (uxsim.Link attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/uxsim.Link.html#uxsim.Link.flow">flow (uxsim.Link attribute)</a>
+      <li><a href="uxsim.html#uxsim.uxsim.Node.flow_capacity_update">flow_capacity_update() (uxsim.uxsim.Node method)</a>
 </li>
       <li><a href="_autosummary/uxsim.Link.html#uxsim.Link.free_flow_speed">free_flow_speed (uxsim.Link attribute)</a>
 </li>
@@ -249,13 +257,17 @@ gtag('config', 'UA-111714220-1');
 </li>
       <li><a href="uxsim.html#uxsim.uxsim.World.generate_Links_from_csv">generate_Links_from_csv() (uxsim.uxsim.World method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="uxsim.html#uxsim.uxsim.World.generate_Nodes_from_csv">generate_Nodes_from_csv() (uxsim.uxsim.World method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="uxsim.html#uxsim.uxsim.World.get_link">get_link() (uxsim.uxsim.World method)</a>
 </li>
+      <li><a href="uxsim.html#uxsim.uxsim.World.get_nearest_node">get_nearest_node() (uxsim.uxsim.World method)</a>
+</li>
       <li><a href="uxsim.html#uxsim.uxsim.World.get_node">get_node() (uxsim.uxsim.World method)</a>
+</li>
+      <li><a href="uxsim.html#uxsim.uxsim.World.get_nodes_in_area">get_nodes_in_area() (uxsim.uxsim.World method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -271,6 +283,8 @@ gtag('config', 'UA-111714220-1');
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="uxsim.html#uxsim.uxsim.OSMImporter.import_osm_data">import_osm_data() (uxsim.uxsim.OSMImporter method)</a>
+</li>
       <li><a href="uxsim.html#uxsim.uxsim.Link.in_out_flow_constraint">in_out_flow_constraint() (uxsim.uxsim.Link method)</a>
 </li>
   </ul></td>
@@ -380,10 +394,22 @@ gtag('config', 'UA-111714220-1');
 </li>
       <li><a href="uxsim.html#uxsim.uxsim.Analyzer.od_to_pandas">od_to_pandas() (uxsim.uxsim.Analyzer method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="uxsim.html#uxsim.uxsim.World.on_time">on_time() (uxsim.uxsim.World method)</a>
 </li>
+      <li><a href="uxsim.html#uxsim.uxsim.OSMImporter.osm_network_postprocessing">osm_network_postprocessing() (uxsim.uxsim.OSMImporter method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="uxsim.html#uxsim.uxsim.OSMImporter.osm_network_to_World">osm_network_to_World() (uxsim.uxsim.OSMImporter method)</a>
+</li>
+      <li><a href="uxsim.html#uxsim.uxsim.OSMImporter.osm_network_visualize">osm_network_visualize() (uxsim.uxsim.OSMImporter method)</a>
+</li>
+      <li><a href="_autosummary/uxsim.OSMImporter.html#uxsim.OSMImporter">OSMImporter (class in uxsim)</a>
+
+      <ul>
+        <li><a href="uxsim.html#uxsim.uxsim.OSMImporter">(class in uxsim.uxsim)</a>
+</li>
+      </ul></li>
       <li><a href="uxsim.html#uxsim.uxsim.Analyzer.output_data">output_data() (uxsim.uxsim.Analyzer method)</a>
 </li>
   </ul></td>
