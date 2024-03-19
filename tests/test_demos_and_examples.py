@@ -3,7 +3,7 @@ import subprocess
 import os
 
 # Directory containing example scripts
-examples_dir = 'demos_and_examples'
+examples_dir = '../demos_and_examples'
 # Ignore list
 nontest_files = [
     "example_14en_multiple_signals_Deep_Reinforcement_Learning_pytorch.py" #takes too much time. DQN can be tested by example_12en_* as well.
