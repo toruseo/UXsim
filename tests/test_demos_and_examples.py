@@ -1,3 +1,7 @@
+"""
+This script tests whether the example scripts can run without errors.
+"""
+
 import pytest
 import subprocess
 import os
