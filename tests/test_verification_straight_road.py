@@ -29,7 +29,7 @@ def test_1link():
     W.analyzer.print_simple_stats()
 
     W.analyzer.basic_analysis()
-    assert equal_tolerance(W.analyzer.trip_all, 2500)
+    assert equal_tolerance(W.analyzer.trip_all, 250)
     assert equal_tolerance(W.analyzer.trip_completed, 250)
     assert equal_tolerance(W.analyzer.total_travel_time, 12500)
     assert equal_tolerance(W.analyzer.average_travel_time, 50)
@@ -75,7 +75,7 @@ def test_1link_deltan1():
     assert equal_tolerance(link.k_mat[2, 5], 0.025)
     assert equal_tolerance(link.k_mat[7, 5], 0)
     assert equal_tolerance(link.v_mat[2, 5], 20)
-    assert equal_tolerance(link.v_mat[7, 5], 200)
+    assert equal_tolerance(link.v_mat[7, 5], 20)
 
 def test_2link():
     W = World(
