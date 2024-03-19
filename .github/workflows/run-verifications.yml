@@ -8,7 +8,7 @@ on:
     - cron: '0 6 * * 1'
 
 jobs:
-  run-examples:
+  run-verifications:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -19,6 +19,6 @@ jobs:
     - name: Install uxsim and dependencies
       run: pip install .
     - name: Install pytest other dependencies
-      run: pip install pytest
+      run: pip install pytest setuptools
     - name: Run verifications with pytest
       run: pytest tests/test_verification_straight_road.py --durations=0
