@@ -195,10 +195,6 @@ The right is with DRL control scenario, where traffic signal can be changed by o
 ## Future Plans
 
 - multi-lane link
-	- Note: The current model assumes that all links are 1 lane, and the reaction time of all drivers are the same. This means that all links have more or less the same capacity.  It is not possible to model  multi-lane links that have 2 or 3 times the capacity of 1-lane links. This is a theoretical limitation.
- 	- Workarounds for the current model:
-		- Create multiple links between same node pair; each link corresponds to each lane between the nodes. This is a reasonable solution. However, the analysis becomes tedious.
-		- Reduce `capacity_out` parameter of `Link`. In this way, we can place a bottleneck to the end of a link, so that capacities of links can vary significantly. However, it only reduce the capacity. Also, the jam propagation speed becomes too fast or slow.
 - day-to-day dynamics
 - taxi and shared mobility (i.e., vehicles travel through a network by passing through specific nodes that are dynamically updated)
 - network import from OSMnx
@@ -214,6 +210,16 @@ When publishing works based on from UXsim, please cite:
 
 - Toru Seo. Macroscopic Traffic Flow Simulation: Fundamental Mathematical Theory and Python Implementation. Corona Publishing Co., Ltd., 2023.
 - Toru Seo. UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview. arXiv preprint arXiv: 2309.17114, 2023
+
+## Contributing and Discussion
+
+Contribution is welcome!
+For minor changes including bug fixes, please submit a pull request.
+If you want a major change, please start a discussion at [Issues](https://github.com/toruseo/UXsim/issues) page first.
+
+If you have any questions or suggestions, please start a discussion at [Issues](https://github.com/toruseo/UXsim/issues) page (in English or Japanese).
+
+I (Toru Seo) work on this project in my spare time. Please understand that my response may be delayed.
 
 ## Acknowledgments
 

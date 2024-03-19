@@ -137,5 +137,8 @@ compare.ps1
 p*_*.py
 *.code-workspace
 
+# pre-commit
+.pre-commit-config.yaml
+
 # Pycharm
 .idea/

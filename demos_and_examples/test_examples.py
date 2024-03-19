@@ -4,11 +4,15 @@ import os
 
 # Directory containing example scripts
 examples_dir = 'demos_and_examples'
+# Ignore list
+nontest_files = [
+    "example_14en_multiple_signals_Deep_Reinforcement_Learning_pytorch.py" #takes too much time. DQN can be tested by example_12en_* as well.
+]
 
 # Dynamically generate test cases for each example script
 def pytest_generate_tests(metafunc):
     # List all .py files in the examples_dir
-    example_scripts = [f for f in os.listdir(examples_dir) if f.endswith('.py')]
+    example_scripts = [f for f in os.listdir(examples_dir) if f.endswith('.py') and not f in nontest_files]
     # If the test function expects an "example_script" argument, parametrize it
     if 'example_script' in metafunc.fixturenames:
         metafunc.parametrize('example_script', example_scripts)
