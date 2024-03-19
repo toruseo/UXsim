@@ -133,7 +133,7 @@ demos_and_examples/out/
 cache/
 _private_files/*
 dev*.ipynb
-compare.ps1
+_*.ps1
 p*_*.py
 *.code-workspace
 
