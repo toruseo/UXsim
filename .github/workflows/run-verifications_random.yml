@@ -1,0 +1,24 @@
+name: Run Python verifications (flaky due to random numbers)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  run-verifications-random:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Install uxsim and dependencies
+      run: pip install .
+    - name: Install pytest other dependencies
+      run: pip install pytest pytest-rerunfailures setuptools
+    - name: Run verifications with pytest
+      run: pytest tests\test_verification_route_choice.py --durations=0 -v

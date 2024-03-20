@@ -6,7 +6,7 @@ import pytest
 from uxsim import *
 
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
-    if check == 0:
+    if check == 0 and abs_tol == 0:
         abs_tol = 0.1
     return abs(val - check) <= abs(check*rel_tol) + abs_tol
 
@@ -35,6 +35,40 @@ def test_1link():
     W.adddemand("orig", "dest", 0, 500, 0.5)
 
     W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    W.analyzer.basic_analysis()
+    assert equal_tolerance(W.analyzer.trip_all, 250)
+    assert equal_tolerance(W.analyzer.trip_completed, 250)
+    assert equal_tolerance(W.analyzer.total_travel_time, 12500)
+    assert equal_tolerance(W.analyzer.average_travel_time, 50)
+    assert equal_tolerance(W.analyzer.average_delay, 0)
+
+    W.analyzer.compute_edie_state()
+    assert equal_tolerance(link.q_mat[2, 5], 0.5)
+    assert equal_tolerance(link.q_mat[7, 5], 0)
+    assert equal_tolerance(link.k_mat[2, 5], 0.025)
+    assert equal_tolerance(link.k_mat[7, 5], 0)
+    assert equal_tolerance(link.v_mat[2, 5], 20)
+    assert equal_tolerance(link.v_mat[7, 5], 20)
+
+def test_1link_iterative_exec():
+    W = World(
+        name="",
+        deltan=5, 
+        tmax=2000, 
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=0
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("dest", 1, 1)
+    link = W.addLink("link", "orig", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+    W.adddemand("orig", "dest", 0, 500, 0.5)
+
+    while W.check_simulation_ongoing():
+        W.exec_simulation(duration_t=random.randint(50, 200)) 
 
     W.analyzer.print_simple_stats()
 
@@ -725,6 +759,52 @@ def test_2link_signal():
     assert equal_tolerance(link1.q_mat[12,:].mean(),  0.19687499999999997)
     assert equal_tolerance(link1.k_mat[12,:].mean(),  0.011875)
     assert equal_tolerance(link1.v_mat[12,:].mean(),  18.607142857142858)
+    assert equal_tolerance(link2.q_mat[:,8].mean() , 0.29427083333333337)
+    assert equal_tolerance(link2.k_mat[:,8].mean() , 0.014713541666666666)
+    assert equal_tolerance(link2.v_mat[:,8].mean() , 20.0)
+
+
+def test_2link_signal_deltan1():
+    W = World(
+        name="",
+        deltan=1, 
+        tmax=2000, 
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=0
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("mid", 1, 1, signal=[60,60])
+    W.addNode("dest", 2, 2)
+    link1 = W.addLink("link", "orig", "mid", length=1000, free_flow_speed=20, jam_density=0.2)
+    link2 = W.addLink("link", "mid", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+    W.adddemand("orig", "dest", 300, 800, 0.4)
+    W.adddemand("orig", "dest", 0, 2000, 0.2)
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    W.analyzer.basic_analysis()
+    assert equal_tolerance(W.analyzer.trip_all, 600)
+    assert equal_tolerance(W.analyzer.trip_completed, 568)
+    assert equal_tolerance(W.analyzer.total_travel_time, 112348)
+    assert equal_tolerance(W.analyzer.average_travel_time, 197)
+    assert equal_tolerance(W.analyzer.average_delay, 97)
+    
+    W.analyzer.compute_edie_state()
+    assert equal_tolerance(link1.q_mat[:,8].mean() , 0.2994791666666667)
+    assert equal_tolerance(link1.k_mat[:,8].mean() , 0.06033072916666667)
+    assert equal_tolerance(link1.v_mat[:,8].mean() , 11.848820125791734)
+    assert equal_tolerance(link1.q_mat[:,2].mean() , 0.3026041666666667)
+    assert equal_tolerance(link1.k_mat[:,2].mean() , 0.02812717013888889)
+    assert equal_tolerance(link1.v_mat[:,2].mean() , 16.587738607378817)
+    assert equal_tolerance(link1.q_mat[8,:].mean() , 0.3302083333333333)
+    assert equal_tolerance(link1.k_mat[8,:].mean() , 0.07739166666666668)
+    assert equal_tolerance(link1.v_mat[8,:].mean() , 7.4833973250262265)
+    assert equal_tolerance(link1.q_mat[12,:].mean(),  0.2)
+    assert equal_tolerance(link1.k_mat[12,:].mean(),  0.013500000000000002)
+    assert equal_tolerance(link1.v_mat[12,:].mean(),  18.444444444444446)
     assert equal_tolerance(link2.q_mat[:,8].mean() , 0.29427083333333337)
     assert equal_tolerance(link2.k_mat[:,8].mean() , 0.014713541666666666)
     assert equal_tolerance(link2.v_mat[:,8].mean() , 20.0)
