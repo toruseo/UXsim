@@ -19,6 +19,6 @@ jobs:
     - name: Install uxsim and dependencies
       run: pip install .
     - name: Install pytest other dependencies
-      run: pip install pytest setuptools
+      run: pip install pytest pytest-rerunfailures setuptools
     - name: Run verifications with pytest
-      run: pytest tests/test_verification_straight_road.py --durations=0
+      run: pytest tests/test_verification_straight_road.py --durations=0 -v
