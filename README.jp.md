@@ -2,7 +2,10 @@
 
 [![PyPi](https://img.shields.io/pypi/v/uxsim.svg)](https://pypi.python.org/pypi/uxsim)
 [![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
-[(English readme is here)](https://github.com/toruseo/UXsim/blob/main/README.md)
+[![Demo in Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en_for_colab.ipynb)
+[![Static Badge](https://img.shields.io/badge/readme-English%20%F0%9F%87%BA%F0%9F%87%B8%20-%20darkblue)](https://github.com/toruseo/UXsim/blob/main/README.md)
+
+
 
 *UXsim*はPython製のオープンソース・フリーなマクロ・メソ交通流シミュレータです．
 これは，都市規模のような大局的な自動車交通とその渋滞を再現する交通シミュレーションであり，交通工学分野で標準的なモデルにより道路ネットワークの動的交通流を計算するものです．
@@ -27,14 +30,34 @@ UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に
 - 純Pythonであることを活かした高度なカスタマイズ性
 	- Python製の他のフレームワークとも直接連携可能．例：PyTorchを用いた深層強化学習による交通制御
 
-## 主なファイル構成
 
-- `uxsim`ディレクトリ: UXsimパッケージ
-	- `uxsim/uxsim.py`: UXsim本体のコード
-	- `uxsim/utils.py`: 関連コード
- 	- `uxsim/utils`ディレクトリ: 関連ファイル
-- `demos_and_examples`ディレクトリ: チュートリアルや使用例
-- `dat`ディレクトリ: サンプルシナリオファイル
+## 計算例
+
+### 大規模ネットワーク
+
+10km x 10kmのグリッドネットワーク内を2時間で約6万台が通行する様子．計算時間は通常のデスクトップPCで約30秒．
+
+リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）と一部車両の軌跡：
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
+</p>
+
+上記ネットワークのある回廊上の車両軌跡図：
+
+<img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
+
+### 深層強化学習（AI）による信号制御
+
+信号制御を[PyTorch](https://pytorch.org/)の深層強化学習によって効率化する例です．
+下の左図は単純な固定時間の信号の場合で，交通需要がネットワーク容量を上回りグリッドロックが生じています．
+右図は深層強化学習を適用した場合で，需要レベルが同じであるのに関わらず効率的な交通が実現しています．
+このコードは[Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb)にもまとめてあります.
+
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_nocontrol.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
+</p>
 
 ## インストール
 
@@ -168,33 +191,15 @@ results:
 [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01.ipynb)に基本的な使用法と機能をまとめています．
 さらなる詳細は`demos_and_examples`ディレクトリ内の[使用例](https://github.com/toruseo/UXsim/tree/main/demos_and_examples)や，[UXsim技術資料](https://toruseo.jp/UXsim/docs/index.html)を確認してください．
 
-## 計算例
+## 主なファイル構成
 
-### 大規模ネットワーク
-
-10km x 10kmのグリッドネットワーク内を2時間で約6万台が通行する様子．計算時間は通常のデスクトップPCで約30秒．
-
-リンク交通状況（リンクの線が太いと車両台数が多く，色が暗いと速度が遅い）と一部車両の軌跡：
-<p float="left">
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
-</p>
-
-上記ネットワークのある回廊上の車両軌跡図：
-
-<img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
-
-### 深層強化学習（AI）による信号制御
-
-信号制御を[PyTorch](https://pytorch.org/)の深層強化学習によって効率化する例です．
-下の左図は単純な固定時間の信号の場合で，交通需要がネットワーク容量を上回りグリッドロックが生じています．
-右図は深層強化学習を適用した場合で，需要レベルが同じであるのに関わらず効率的な交通が実現しています．
-このコードは[Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb)にもまとめてあります.
-
-<p float="left">
-<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_nocontrol.gif" width="400"/>
-<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
-</p>
+- `uxsim`ディレクトリ: UXsimパッケージ
+	- `uxsim/uxsim.py`: UXsim本体のコード
+	- `uxsim/utils.py`: 関連コード
+ 	- `uxsim/utils`ディレクトリ: 関連ファイル
+- `demos_and_examples`ディレクトリ: チュートリアルや使用例
+- `dat`ディレクトリ: サンプルシナリオファイル
+- `tests`，`.github`ディレクトリ: 開発用ファイル
 
 ## 使用条件・ライセンス
 

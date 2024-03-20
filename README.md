@@ -2,7 +2,9 @@
 
 [![PyPi](https://img.shields.io/pypi/v/uxsim.svg)](https://pypi.python.org/pypi/uxsim)
 [![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
-[(日本語の説明書はこちら/Japanese readme is here)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
+[![Demo in Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en_for_colab.ipynb)
+[![Static Badge](https://img.shields.io/badge/readme-%E6%97%A5%E6%9C%AC%E8%AA%9E%20%F0%9F%87%AF%F0%9F%87%B5%20-pink)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
+
 
 *UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python.
 It is suitable for simulating large-scale (e.g., city-scale) vehicular transportation.
@@ -26,14 +28,33 @@ UXsim would be especially useful for scientific and educational purposes because
 - Can be flexibly customized by users thanks to pure Python implementation.
 	- Can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control.
 
-## Main Files
 
-- `uxsim` directory: UXsim main package
-	- `uxsim/uxsim.py`: UXsim main code
-	- `uxsim/utils.py`: UXsim utilities code
- 	- `uxsim/utils` directory:  UXsim utilities files
-- `demos_and_examples` directory: Tutorials and examples of UXsim
-- `dat` directory: Sample scenario files
+## Simulation Examples
+
+### Large-scale scenario
+
+Belows are simulation result where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC.
+
+Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
+</p>
+
+Vehicle trajectory diagram on a corridor of the above network:
+<img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
+
+### Deep reinforcement learning signal control using PyTorch
+
+Traffic signal controller is trained by deep reinforcement learning (DRL) of [PyTorch](https://pytorch.org/).
+The left is no control scenario with fixed signal timing; the traffic demand exceeds the network capacity with naive signal setting, and a gridlock occurs.
+The right is with DRL control scenario, where traffic signal can be changed by observing queue length; although the demand level is the same, traffic is smoothly flowing.
+[Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb) is available.
+
+<p float="left">
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_nocontrol.gif" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
+</p>
 
 ## Install
 
@@ -164,33 +185,16 @@ results:
 The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
 For the further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
 
-## Simulation Examples
 
-### Large-scale scenario
+## Main Files
 
-Belows are simulation result where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC.
-
-Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
-<p float="left">
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_macro.gif" width="400"/>
-<img src="https://github.com/toruseo/UXsim/blob/images/gridnetwork_fancy.gif" width="400"/>
-</p>
-
-Vehicle trajectory diagram on a corridor of the above network:
-<img src="https://github.com/toruseo/UXsim/blob/images/tsd_traj_links_grid.png" width="600">
-
-### Deep reinforcement learning signal control using PyTorch
-
-Traffic signal controller is trained by deep reinforcement learning (DRL) of [PyTorch](https://pytorch.org/).
-The left is no control scenario with fixed signal timing; the traffic demand exceeds the network capacity with naive signal setting, and a gridlock occurs.
-The right is with DRL control scenario, where traffic signal can be changed by observing queue length; although the demand level is the same, traffic is smoothly flowing.
-[Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb) is available.
-
-<p float="left">
-<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_nocontrol.gif" width="400"/>
-<img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
-</p>
-
+- `uxsim` directory: UXsim main package
+	- `uxsim/uxsim.py`: UXsim main code
+	- `uxsim/utils.py`: UXsim utilities code
+ 	- `uxsim/utils` directory:  UXsim utilities files
+- `demos_and_examples` directory: Tutorials and examples of UXsim
+- `dat` directory: Sample scenario files
+- `tests`, `.github` directories: Development-related files
 
 ## Future Plans
 
