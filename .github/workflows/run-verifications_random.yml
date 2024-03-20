@@ -1,4 +1,4 @@
-name: Run Python verifications involves random route choice and node (flaky)
+name: Run Python verifications (route choice and node; flaky)
 
 on:
   push:

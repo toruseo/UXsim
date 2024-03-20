@@ -1,4 +1,4 @@
-name: Run Python verifications
+name: Run Python verifications (deterministic)
 
 on:
   push:

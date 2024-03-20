@@ -1,4 +1,4 @@
-name: Run Python verifications in Sioux Falls network (flaky)
+name: Run Python verifications (Sioux Falls network; flaky)
 
 on:
   push:
