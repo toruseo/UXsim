@@ -1,5 +1,5 @@
 """
-This script verifies whether UXsim outputs reasonable solutions for two route networks in various configurations.
+This script verifies whether UXsim outputs reasonable solutions for multiple route networks in various configurations.
 Note that it uses random numbers for rouce choice behavior, so the results may vary slightly between runs.
 """
 
