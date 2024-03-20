@@ -194,6 +194,7 @@ For the further details, please see [demos_and_examples](https://github.com/toru
  	- `uxsim/utils` directory:  UXsim utilities files
 - `demos_and_examples` directory: Tutorials and examples of UXsim
 - `dat` directory: Sample scenario files
+- `tests`, `.github` directories: Development-related files
 
 ## Future Plans
 
