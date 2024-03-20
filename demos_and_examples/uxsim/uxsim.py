@@ -2732,6 +2732,10 @@ class World:
             A list representing the signal at the node. Default is [0], representing no signal.
             If a signal is present, the list contains the green times for each group.
             For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.
+        signal_offset : float, optional
+            The offset of the signal. Default is 0.
+        flow_capacity : float, optional
+            The maximum flow capacity of the node. Default is None, meaning infinite capacity.
 
         Returns
         -------
