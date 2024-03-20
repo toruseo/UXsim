@@ -374,7 +374,7 @@ def test_4route_congestion_avoidance():
     vol4s = []
     ttas = []
 
-    for i in range(10):
+    for i in range(20):
         W = World(
             name="",
             deltan=5, 
