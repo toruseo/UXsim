@@ -21,5 +21,4 @@ jobs:
     - name: Install pytest other dependencies
       run: pip install pytest pytest-rerunfailures setuptools
     - name: Run verifications with pytest
-      run: pytest tests/test_verification_route_choice.py --durations=0 -v
-      run: pytest tests/test_verification_node.py --durations=0 -v
+      run: pytest tests/test_verification_route_choice.py tests/test_verification_node.py --durations=0 -v
