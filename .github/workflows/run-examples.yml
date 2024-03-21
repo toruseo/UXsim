@@ -24,4 +24,4 @@ jobs:
     - name: Install pytest other dependencies
       run: pip install pytest setuptools gymnasium torch osmnx
     - name: Run examples with pytest
-      run: pytest tests/test_examples.py --durations=0
+      run: pytest tests/test_examples.py --durations=0 -v

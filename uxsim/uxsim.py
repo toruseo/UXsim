@@ -2622,10 +2622,16 @@ class OSMImporter:
         coef_degree_to_meter: float
             The coefficient to convert lon/lat degree to meter. Default is 111000.
         """
-        for node in nodes:
+        for i, node in enumerate(nodes):
+            nname = str(node[0])
+            if nname in [n.name for n in W.NODES.values()]:
+                nname + f"_osm{i}"
             W.addNode(str(node[0]), x=node[1], y=node[2])
-        for link in links:
-            W.addLink(link[0], str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density=default_jam_density)
+        for i, link in enumerate(links):
+            lname = str(link[0])
+            if lname in [l.name for l in W.LINKS.values()]:
+                lname + f"_osm{i}"
+            W.addLink(lname, str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density=default_jam_density)
 
 
 class World:
