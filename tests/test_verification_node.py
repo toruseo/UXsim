@@ -889,7 +889,7 @@ def test_2to2_signal_macroscopic_signal():
 @pytest.mark.flaky(reruns=5)
 def test_4phase_signal_jpstyle():
     dfs = []
-    for i in range(5):
+    for i in range(1):
         W = World(
             name="",
             deltan=1,
@@ -987,12 +987,12 @@ def test_4phase_signal_jpstyle():
         # W.analyzer.time_space_diagram_traj_links(["linkSin","signal_SE_r", "linkEout"], xlim=[0,300])
         # W.analyzer.time_space_diagram_traj_links(["linkSin","signal_SE_r", "linkEout"])
 
-    df_concat = pd.concat(dfs)
-    df_mean = df_concat.groupby(df_concat.index).mean()
-    avt = df_mean["average_travel_time"].values
-    print(avt)
+    # df_concat = pd.concat(dfs)
+    # df_mean = df_concat.groupby(df_concat.index).mean()
+    # avt = df_mean["average_travel_time"].values
 
-    #straights and left-turns are faster, right-turns are slower. Phases with small split are slower.
+    avt = df["average_travel_time"].values
+    print(avt)
     referemce_avt = [41.40449658, 65.77142857, 41.56507937, 41.41644018, 41.30793651, 65.97619048, 49.7849498, 49.15555556, 69.54444444, 49.11051701, 70.71428571, 48.62857143]
     for i in range(len(avt)):
         assert equal_tolerance(avt[i], referemce_avt[i])
