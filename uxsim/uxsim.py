@@ -2638,7 +2638,7 @@ class OSMImporter:
         """
         for i, node in enumerate(nodes):
             nname = str(node[0])
-            if nname in [n.name for n in W.NODES.values()]:
+            if nname in [n.name for n in W.NODES]:
                 nname + f"_osm{i}"
             W.addNode(str(node[0]), x=node[1], y=node[2], auto_rename=True)
         for i, link in enumerate(links):
