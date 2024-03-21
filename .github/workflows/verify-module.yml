@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-script: [tests/test_verification_straight_road.py, tests/test_verification_route_choice.py tests/test_verification_node.py, tests/test_verification_sioux_falls.py]
+        test-script: [tests/test_verification_straight_road.py, tests/test_verification_route_choice.py tests/test_verification_node.py, tests/test_verification_exceptional.py, tests/test_verification_sioux_falls.py]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.12

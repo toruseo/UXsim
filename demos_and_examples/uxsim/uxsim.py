@@ -1323,7 +1323,7 @@ class Analyzer:
         pass
 
     @catch_exceptions_and_warn()
-    def time_space_diagram_traj(s, links=None, figsize=(12,4), plot_signal=True):
+    def time_space_diagram_traj(s, links=None, figsize=(12,4), plot_signal=True, xlim=None, ylim=None):
         """
         Draws the time-space diagram of vehicle trajectories for vehicles on specified links.
 
@@ -1364,8 +1364,14 @@ class Analyzer:
                 plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
-            plt.xlim([0, s.W.TMAX])
-            plt.ylim([0, l.length])
+            if xlim == None:
+                plt.xlim([0, s.W.TMAX])
+            else:
+                plt.xlim(xlim)
+            if ylim == None:
+                plt.ylim([0, l.length])
+            else:
+                plt.ylim(ylim)
             plt.grid()
             plt.tight_layout()
             if s.W.save_mode:
@@ -1376,7 +1382,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def time_space_diagram_density(s, links=None, figsize=(12,4), plot_signal=True):
+    def time_space_diagram_density(s, links=None, figsize=(12,4), plot_signal=True, xlim=None, ylim=None):
         """
         Draws the time-space diagram of traffic density on specified links.
 
@@ -1421,8 +1427,14 @@ class Analyzer:
             plt.colorbar().set_label("density (veh/m)")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
-            plt.xlim([0, s.W.TMAX])
-            plt.ylim([0, l.length])
+            if xlim == None:
+                plt.xlim([0, s.W.TMAX])
+            else:
+                plt.xlim(xlim)
+            if ylim == None:
+                plt.ylim([0, l.length])
+            else:
+                plt.ylim(ylim)
             plt.tight_layout()
 
             if s.W.save_mode:
@@ -1433,7 +1445,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def time_space_diagram_traj_links(s, linkslist, figsize=(12,4), plot_signal=True):
+    def time_space_diagram_traj_links(s, linkslist, figsize=(12,4), plot_signal=True, xlim=None, ylim=None):
         """
         Draws the time-space diagram of vehicle trajectories for vehicles on concective links.
 
@@ -1483,6 +1495,14 @@ class Analyzer:
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
             plt.xlim([0, s.W.TMAX])
+            if xlim == None:
+                plt.xlim([0, s.W.TMAX])
+            else:
+                plt.xlim(xlim)
+            if ylim == None:
+                pass
+            else:
+                plt.ylim(ylim)
             plt.grid()
             plt.tight_layout()
             if s.W.save_mode:

@@ -53,6 +53,39 @@ def test_1link():
     assert equal_tolerance(link.v_mat[2, 5], 20)
     assert equal_tolerance(link.v_mat[7, 5], 20)
 
+def test_1link_demand_by_volume():
+    W = World(
+        name="",
+        deltan=5, 
+        tmax=2000, 
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=0
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("dest", 1, 1)
+    link = W.addLink("link", "orig", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+    W.adddemand("orig", "dest", 0, 500, volume=0.5*500)
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    W.analyzer.basic_analysis()
+    assert equal_tolerance(W.analyzer.trip_all, 250)
+    assert equal_tolerance(W.analyzer.trip_completed, 250)
+    assert equal_tolerance(W.analyzer.total_travel_time, 12500)
+    assert equal_tolerance(W.analyzer.average_travel_time, 50)
+    assert equal_tolerance(W.analyzer.average_delay, 0)
+
+    W.analyzer.compute_edie_state()
+    assert equal_tolerance(link.q_mat[2, 5], 0.5)
+    assert equal_tolerance(link.q_mat[7, 5], 0)
+    assert equal_tolerance(link.k_mat[2, 5], 0.025)
+    assert equal_tolerance(link.k_mat[7, 5], 0)
+    assert equal_tolerance(link.v_mat[2, 5], 20)
+    assert equal_tolerance(link.v_mat[7, 5], 20)
+
 def test_1link_iterative_exec():
     W = World(
         name="",
@@ -809,4 +842,96 @@ def test_2link_signal_deltan1():
     assert equal_tolerance(link2.k_mat[:,8].mean() , 0.014713541666666666)
     assert equal_tolerance(link2.v_mat[:,8].mean() , 20.0)
 
+def test_KW_theory_cumulative_curves_and_travel_time():
+    W = World(
+        name="",
+        deltan=5, 
+        tmax=3000, 
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=0
+    )
 
+    W.addNode("orig", 0, 0)
+    W.addNode("bottleneck", 1, 1)
+    W.addNode("dest", 1, 1)
+    link1 = W.addLink("link1", "orig", "bottleneck", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.5)
+    link2 = W.addLink("link2", "bottleneck", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+    W.adddemand("orig", "dest", 0, 500, 0.2)
+    W.adddemand("orig", "dest", 500, 1000, 0.5)
+    W.adddemand("orig", "dest", 1000, 1500, 0.6)
+    W.adddemand("orig", "dest", 1500, 2000, 0.2)
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    # W.analyzer.cumulative_curves(link1)
+
+    assert equal_tolerance(link1.arrival_count(700) - link1.departure_count(700), 0.5/link1.u*link1.length)    #free-flow
+    assert equal_tolerance(link1.actual_travel_time(700), link1.length/link1.u)    #free-flow
+    assert link1.arrival_count(1500) - link1.departure_count(1500) > link1.k_star*link1.length    #congested
+    assert link1.actual_travel_time(1500) > link1.length/link1.u    #congested
+    assert equal_tolerance(link1.arrival_count(1500), 650)
+    assert equal_tolerance(link1.departure_count(1500), 575)
+    assert equal_tolerance(link1.arrival_count(1500), link1.departure_count(1500+link1.actual_travel_time(1500))) #congested
+    for t in range(0, W.TMAX, 10):
+        assert equal_tolerance(link1.arrival_count(t), link1.departure_count(t+link1.actual_travel_time(t)))
+
+@pytest.mark.flaky(reruns=5)
+def test_KW_theory_cumulative_curves_and_travel_time_random():
+    W = World(
+        name="",
+        deltan=5, 
+        tmax=3000, 
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("bottleneck", 1, 1)
+    W.addNode("dest", 1, 1)
+    link1 = W.addLink("link1", "orig", "bottleneck", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.6)
+    link2 = W.addLink("link2", "bottleneck", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+
+    dt = 50
+    for t in range(0, 2000, dt):
+        W.adddemand("orig", "dest", t, t+dt, random.uniform(0,1.0))
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    #W.analyzer.cumulative_curves(link1)
+
+    for t in range(0, W.TMAX, 10):
+        assert equal_tolerance(link1.arrival_count(t), link1.departure_count(t+link1.actual_travel_time(t)), abs_tol=W.DELTAN)
+
+
+@pytest.mark.flaky(reruns=5)
+def test_KW_theory_cumulative_curves_and_travel_time_random_deltan1():
+    W = World(
+        name="",
+        deltan=1, 
+        tmax=3000, 
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("bottleneck", 1, 1)
+    W.addNode("dest", 1, 1)
+    link1 = W.addLink("link1", "orig", "bottleneck", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.6)
+    link2 = W.addLink("link2", "bottleneck", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+
+    dt = 50
+    for t in range(0, 2000, dt):
+        W.adddemand("orig", "dest", t, t+dt, random.uniform(0,1.0))
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    #W.analyzer.cumulative_curves(link1)
+
+    for t in range(0, W.TMAX, 10):
+        assert equal_tolerance(link1.arrival_count(t), link1.departure_count(t+link1.actual_travel_time(t)), abs_tol=W.DELTAN)
