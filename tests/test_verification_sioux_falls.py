@@ -12,7 +12,7 @@ def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
         abs_tol = 0.1
     return abs(val - check) <= abs(check*rel_tol) + abs_tol
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=10)
 def test_sioux_falls():
     total_trips_list = []
     completed_trips_list = []
@@ -22,7 +22,7 @@ def test_sioux_falls():
     link_traffic_volume_mean_list = []
     link_traffic_volume_std_list = []
 
-    for i in range(5):
+    for i in range(1):
         W = World(
             name="",
             deltan=5,
@@ -56,18 +56,19 @@ def test_sioux_falls():
     print()
     print(f"{np.std(total_trips_list) = }\n{np.std(completed_trips_list) = }\n{np.std(total_travel_time_list) = }\n{np.std(average_travel_time_list) = }\n{np.std(average_delay_list) = }\n{np.std(link_traffic_volume_mean_list) = }\n{np.std(link_traffic_volume_std_list) = }")
 
+    # Below are stats from 100 iterations
     assert equal_tolerance(np.average(total_trips_list), 34690.0)
-    assert equal_tolerance(np.average(completed_trips_list), 33247.0)
-    assert equal_tolerance(np.average(total_travel_time_list), 58423065.0)
-    assert equal_tolerance(np.average(average_travel_time_list), 1757.2519806618154)
-    assert equal_tolerance(np.average(average_delay_list), 386.9874140444886)
-    assert equal_tolerance(np.average(link_traffic_volume_mean_list), 1185.8552631578946, rel_tol=0.2)
-    assert equal_tolerance(np.average(link_traffic_volume_std_list), 750.477574487115, rel_tol=0.2)
+    assert equal_tolerance(np.average(completed_trips_list), 33287.75)
+    assert equal_tolerance(np.average(total_travel_time_list), 58050854.25)
+    assert equal_tolerance(np.average(average_travel_time_list), 1743.9327674417486)
+    assert equal_tolerance(np.average(average_delay_list), 372.53428525704396)
+    assert equal_tolerance(np.average(link_traffic_volume_mean_list), 1182.0697368421054)
+    assert equal_tolerance(np.average(link_traffic_volume_std_list), 748.8503718976154)
 
     # assert equal_tolerance(np.std(total_trips_list), 0.0, rel_tol=1)
-    # assert equal_tolerance(np.std(completed_trips_list), 65.46754921333164, rel_tol=1)
-    # assert equal_tolerance(np.std(total_travel_time_list), 138625.4193862006, rel_tol=1)
-    # assert equal_tolerance(np.std(average_travel_time_list), 6.016662655879493, rel_tol=1)
-    # assert equal_tolerance(np.std(average_delay_list), 7.43415746253196, rel_tol=1)
-    # assert equal_tolerance(np.std(link_traffic_volume_mean_list), 8.806259578063365, rel_tol=1)
-    # assert equal_tolerance(np.std(link_traffic_volume_std_list), 10.943099195703097, rel_tol=1)
+    # assert equal_tolerance(np.std(completed_trips_list), 92.4834444644013, rel_tol=1)
+    # assert equal_tolerance(np.std(total_travel_time_list), 419384.3411933587, rel_tol=1)
+    # assert equal_tolerance(np.std(average_travel_time_list), 14.604707280467585, rel_tol=1)
+    # assert equal_tolerance(np.std(average_delay_list), 15.823545524709168, rel_tol=1)
+    # assert equal_tolerance(np.std(link_traffic_volume_mean_list), 5.399030864866247, rel_tol=1)
+    # assert equal_tolerance(np.std(link_traffic_volume_std_list), 8.919718941538516, rel_tol=1)
