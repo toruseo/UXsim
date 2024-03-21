@@ -659,7 +659,7 @@ class Vehicle:
         s.dest = s.W.get_node(dest)
 
         #出発・到着時刻
-        if departure_time_is_time_step:#互換性のため，departure_timeは常にタイムステップ表記
+        if departure_time_is_time_step:#互換性のため，departure_timeは常にタイムステップ表記 -> TODO: 要訂正！
             s.departure_time = departure_time
         else:
             s.departure_time = int(departure_time/s.W.DELTAT)
@@ -713,7 +713,6 @@ class Vehicle:
         s.color = (random.random(), random.random(), random.random())
 
         s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
-        #todo: s.departure_timeはタイムステップ表記
 
         s.attribute = attribute
 
@@ -795,7 +794,7 @@ class Vehicle:
         s.link.vehicles.popleft()
         s.link = None
         s.x = 0
-        s.arrival_time = s.W.T
+        s.arrival_time = s.W.T  #TODO: arrival_timeもタイムステップ表記．要修正
         s.travel_time = (s.arrival_time - s.departure_time)*s.W.DELTAT
         s.W.VEHICLES_RUNNING.pop(s.name)
         s.W.VEHICLES_LIVING.pop(s.name)

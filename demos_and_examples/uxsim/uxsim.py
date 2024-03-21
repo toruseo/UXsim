@@ -339,6 +339,8 @@ class Link:
         s.w = 1/s.tau/s.kappa
         s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
         s.delta = 1/s.kappa
+        s.q_star = s.capacity   #flow capacity
+        s.k_star = s.capacity/s.u   #critical density
 
         #合流時優先度
         s.merge_priority = merge_priority
@@ -657,7 +659,7 @@ class Vehicle:
         s.dest = s.W.get_node(dest)
 
         #出発・到着時刻
-        if departure_time_is_time_step:#互換性のため，タイムステップ表記
+        if departure_time_is_time_step:#互換性のため，departure_timeは常にタイムステップ表記 -> TODO: 要訂正！
             s.departure_time = departure_time
         else:
             s.departure_time = int(departure_time/s.W.DELTAT)
@@ -710,8 +712,7 @@ class Vehicle:
         s.log_v = [] #現在速度
         s.color = (random.random(), random.random(), random.random())
 
-        s.log_t_link = [[s.departure_time, "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
-        #todo: s.departure_timeがタイムステップ表記の事がある
+        s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
 
         s.attribute = attribute
 
@@ -793,7 +794,7 @@ class Vehicle:
         s.link.vehicles.popleft()
         s.link = None
         s.x = 0
-        s.arrival_time = s.W.T
+        s.arrival_time = s.W.T  #TODO: arrival_timeもタイムステップ表記．要修正
         s.travel_time = (s.arrival_time - s.departure_time)*s.W.DELTAT
         s.W.VEHICLES_RUNNING.pop(s.name)
         s.W.VEHICLES_LIVING.pop(s.name)

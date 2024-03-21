@@ -924,12 +924,12 @@ def rigorous_verification_of_KW_theory_cumulative_curves_and_travel_time(deltan)
         traveltime_from_log_t_onlink = W.VEHICLES[vehid].log_t[-1] - W.VEHICLES[vehid].log_t[link_enter_timestep] + W.DELTAT
 
         #trip travel time including waiting at the vertical queue
-        assert traveltime_recorded_by_vehicle >= link1.length/link1.u
+        assert traveltime_recorded_by_vehicle >= traveltime_from_log_state_onlink
         assert traveltime_recorded_by_vehicle == traveltime_from_log_state
         assert traveltime_recorded_by_vehicle == traveltime_from_log_t
 
         #within link travel time
-        assert traveltime_recorded_by_vehicle >= traveltime_from_log_state_onlink
+        assert traveltime_from_log_state_onlink >= link1.length/link1.u
         assert traveltime_from_log_state_onlink == traveltime_from_log_t_onlink
         assert equal_tolerance(traveltime_from_log_state_onlink, traveltime_from_cumulative_curves_onlink, abs_tol=W.DELTAT)  #cumulative curve is approximation
 
