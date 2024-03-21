@@ -105,6 +105,8 @@ class Node:
 
         s.id = len(s.W.NODES)
         s.name = name
+        if s.name in [n.name for n in s.W.NODES]:
+            raise ValueError(f"Node name {s.name} already used by another node. Please specify a unique name.")
         s.W.NODES.append(s)
 
     def __repr__(s):
@@ -370,6 +372,8 @@ class Link:
 
         s.id = len(s.W.LINKS)
         s.name = name
+        if s.name in [l.name for l in s.W.LINKS]:
+            raise ValueError(f"Link name {s.name} already used by another link. Please specify a unique name.")
         s.W.LINKS.append(s)
         s.start_node.outlinks[s.name] = s
         s.end_node.inlinks[s.name] = s
@@ -704,7 +708,9 @@ class Vehicle:
         if name != None:
             s.name = name
         else:
-            s.name = str(s.id)
+            s.name = str(s.id)+"_autoid"
+        # if s.name in [veh.name for veh in s.W.VEHICLES.values()]:
+        #     raise ValueError(f"Vehicle name {s.name} already used by another vehicle. Please specify a unique name.")
         s.W.VEHICLES[s.name] = s
         s.W.VEHICLES_LIVING[s.name] = s
 
