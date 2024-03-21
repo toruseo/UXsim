@@ -1,4 +1,4 @@
-name: Run Python verifications (deterministic)
+name: Verify module
 
 on:
   push:
@@ -8,8 +8,11 @@ on:
     - cron: '0 6 * * 1'
 
 jobs:
-  run-verifications:
+  verify-module:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-script: [tests/test_verification_straight_road.py, tests/test_verification_route_choice.py tests/test_verification_node.py, tests/test_verification_sioux_falls.py]
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.12
@@ -21,4 +24,4 @@ jobs:
     - name: Install pytest other dependencies
       run: pip install pytest pytest-rerunfailures setuptools
     - name: Run verifications with pytest
-      run: pytest tests/test_verification_straight_road.py --durations=0 -v
+      run: pytest ${{ matrix.test-script }} --durations=0 -v
