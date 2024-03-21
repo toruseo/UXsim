@@ -1,4 +1,4 @@
-name: Run Python examples
+name: Run examples
 
 on:
   push:
@@ -10,15 +10,18 @@ on:
 jobs:
   run-examples:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.12
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: "3.12"
+        python-version: ${{ matrix.python-version }}
     - name: Install uxsim and dependencies
       run: pip install .
     - name: Install pytest other dependencies
       run: pip install pytest setuptools gymnasium torch osmnx
     - name: Run examples with pytest
-      run: pytest tests/test_examples.py --durations=0
+      run: pytest tests/test_examples.py --durations=0 -v

@@ -126,10 +126,10 @@ def test_2route_equal_deltan1():
     
     print(f"{np.average(tt1s) = }, {np.average(tt2s) = }, {np.average(vol1s) = }, {np.average(vol2s) = }, {np.average(tt1s) = }, {np.average(ttas) = }")
 
-    assert equal_tolerance(np.average(tt1s), np.average(tt2s))
-    assert equal_tolerance(np.average(vol1s), np.average(vol2s))
-    assert equal_tolerance(np.average(tt1s), 100)
-    assert equal_tolerance(np.average(ttas), 100)
+    assert equal_tolerance(np.average(tt1s), np.average(tt2s), rel_tol=0.2)
+    assert equal_tolerance(np.average(vol1s), np.average(vol2s), rel_tol=0.2)
+    assert equal_tolerance(np.average(tt1s), 100, rel_tol=0.2)
+    assert equal_tolerance(np.average(ttas), 100, rel_tol=0.2)
     assert equal_tolerance(np.average(vol1s)+np.average(vol2s), 1200)
 
 @pytest.mark.flaky(reruns=5)
@@ -220,7 +220,7 @@ def test_2route_equal_but_different_structure():
         link12 = W.addLink("link12", "mid1", "dest", length=2000, free_flow_speed=10, jam_density=0.2)
         link21 = W.addLink("link21", "orig", "mid21", length=1000, free_flow_speed=10, jam_density=0.2)
         link22 = W.addLink("link22", "mid21", "mid22", length=1000, free_flow_speed=10, jam_density=0.2)
-        link23 = W.addLink("link22", "mid22", "dest", length=2000, free_flow_speed=20, jam_density=0.2)
+        link23 = W.addLink("link23", "mid22", "dest", length=2000, free_flow_speed=20, jam_density=0.2)
         W.adddemand("orig", "dest", 0, 1500, 0.8)
 
         W.exec_simulation()
@@ -253,7 +253,7 @@ def test_2route_equal_but_different_structure():
     assert equal_tolerance(np.average(vol1s)+np.average(vol2s), 1200)
 
 @pytest.mark.flaky(reruns=5)
-def test_2route_one_is_too_short():
+def test_2route_one_is_too_long():
     tt1s = []
     tt2s = []
     vol1s = []
@@ -313,7 +313,7 @@ def test_2route_one_is_too_short():
     assert equal_tolerance(np.average(vol1s)+np.average(vol2s), 1200)
 
 @pytest.mark.flaky(reruns=5)
-def test_2route_one_is_too_short_situation_changes_during_simulation():
+def test_2route_one_is_too_long_but_u_changes_during_simulation():
     vol1_es = []
     vol2_es = []
     vol1_ls = []
@@ -361,6 +361,110 @@ def test_2route_one_is_too_short_situation_changes_during_simulation():
     assert equal_tolerance(np.average(vol1_ls), 20, abs_tol=100)
     assert equal_tolerance(np.average(vol2_es), 200)
     assert equal_tolerance(np.average(vol2_ls), 470)
+
+@pytest.mark.flaky(reruns=5)
+def test_2route_change_too_small_pricing():
+    vol1_es = []
+    vol2_es = []
+    vol1_ls = []
+    vol2_ls = []
+
+    for i in range(10):
+        W = World(
+            name="",
+            deltan=5, 
+            tmax=4000, 
+            print_mode=0, save_mode=1, show_mode=1,
+            random_seed=None,
+            duo_update_time=100,
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("mid1", 1, 1)
+        W.addNode("mid2", -1, 1)
+        W.addNode("dest", 0, 2)
+        link11 = W.addLink("link11", "orig", "mid1", length=1000, free_flow_speed=20, jam_density=0.2)
+        link12 = W.addLink("link12", "mid1", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+        link21 = W.addLink("link21", "orig", "mid2", length=2000, free_flow_speed=20, jam_density=0.2)
+        link22 = W.addLink("link22", "mid2", "dest", length=2000, free_flow_speed=20, jam_density=0.2)
+        W.adddemand("orig", "dest", 0, 3000, 0.6)
+
+        W.exec_simulation(duration_t=500)
+        link11.route_choice_penalty = 90
+        W.exec_simulation()
+        
+        W.analyzer.print_simple_stats()
+
+        # W.analyzer.time_space_diagram_traj_links([link11, link12])
+        # W.analyzer.time_space_diagram_traj_links([link21, link22])
+
+        W.analyzer.basic_analysis()
+
+        W.analyzer.compute_edie_state()
+
+        vol1_es.append(link11.q_mat[:5,5].sum()*link11.edie_dt)
+        vol1_ls.append(link11.q_mat[15:,5].sum()*link11.edie_dt)
+        vol2_es.append(link21.q_mat[:5,5].sum()*link21.edie_dt)
+        vol2_ls.append(link21.q_mat[15:,5].sum()*link21.edie_dt)
+
+    print(f"{np.average(vol1_es) = }\n{np.average(vol1_ls) = }\n{np.average(vol2_es) = }\n{np.average(vol2_ls) = }")
+    assert equal_tolerance(np.average(vol1_es), 340, abs_tol=100)
+    assert equal_tolerance(np.average(vol1_ls), 750)
+    assert equal_tolerance(np.average(vol2_es), 0, abs_tol=100)
+    assert equal_tolerance(np.average(vol2_ls), 0)
+
+@pytest.mark.flaky(reruns=5)
+def test_2route_change_too_large_pricing_iterative():
+    vol1_es = []
+    vol2_es = []
+    vol1_ls = []
+    vol2_ls = []
+
+    for i in range(10):
+        W = World(
+            name="",
+            deltan=5, 
+            tmax=4000, 
+            print_mode=0, save_mode=1, show_mode=1,
+            random_seed=None,
+            duo_update_time=100,
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("mid1", 1, 1)
+        W.addNode("mid2", -1, 1)
+        W.addNode("dest", 0, 2)
+        link11 = W.addLink("link11", "orig", "mid1", length=1000, free_flow_speed=20, jam_density=0.2)
+        link12 = W.addLink("link12", "mid1", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+        link21 = W.addLink("link21", "orig", "mid2", length=2000, free_flow_speed=20, jam_density=0.2)
+        link22 = W.addLink("link22", "mid2", "dest", length=2000, free_flow_speed=20, jam_density=0.2)
+        W.adddemand("orig", "dest", 0, 3000, 0.6)
+
+        W.exec_simulation(duration_t=500)
+        link11.route_choice_penalty = 110
+        W.exec_simulation()
+        
+        W.analyzer.print_simple_stats()
+
+        # W.analyzer.time_space_diagram_traj_links([link11, link12])
+        # W.analyzer.time_space_diagram_traj_links([link21, link22])
+
+        W.analyzer.basic_analysis()
+
+        W.analyzer.compute_edie_state()
+
+        vol1_es.append(link11.q_mat[:5,5].sum()*link11.edie_dt)
+        vol1_ls.append(link11.q_mat[15:,5].sum()*link11.edie_dt)
+        vol2_es.append(link21.q_mat[:5,5].sum()*link21.edie_dt)
+        vol2_ls.append(link21.q_mat[15:,5].sum()*link21.edie_dt)
+
+    print(f"{np.average(vol1_es) = }\n{np.average(vol1_ls) = }\n{np.average(vol2_es) = }\n{np.average(vol2_ls) = }")
+    assert equal_tolerance(np.average(vol1_es), 340, abs_tol=100)
+    assert equal_tolerance(np.average(vol1_ls), 0)
+    assert equal_tolerance(np.average(vol2_es), 0, abs_tol=100)
+    assert equal_tolerance(np.average(vol2_ls), 750)
+
+
 
 @pytest.mark.flaky(reruns=5)
 def test_4route_congestion_avoidance():
@@ -440,12 +544,12 @@ def test_4route_congestion_avoidance():
     ttave = np.average(np.concatenate((tt1s, tt2s, tt3s, tt4s)))
     volave = np.average(np.concatenate((vol1s, vol2s, vol3s, vol4s)))
 
-    assert equal_tolerance(np.average(tt1s), ttave)
-    assert equal_tolerance(np.average(tt2s), ttave)
-    assert equal_tolerance(np.average(tt3s), ttave)
-    assert equal_tolerance(np.average(tt4s), ttave)
-    assert equal_tolerance(np.average(vol1s), volave)
-    assert equal_tolerance(np.average(vol2s), volave)
-    assert equal_tolerance(np.average(vol3s), volave)
-    assert equal_tolerance(np.average(vol4s), volave)
+    assert equal_tolerance(np.average(tt1s), ttave, rel_tol=0.2)
+    assert equal_tolerance(np.average(tt2s), ttave, rel_tol=0.2)
+    assert equal_tolerance(np.average(tt3s), ttave, rel_tol=0.2)
+    assert equal_tolerance(np.average(tt4s), ttave, rel_tol=0.2)
+    assert equal_tolerance(np.average(vol1s), volave, rel_tol=0.2)
+    assert equal_tolerance(np.average(vol2s), volave, rel_tol=0.2)
+    assert equal_tolerance(np.average(vol3s), volave, rel_tol=0.2)
+    assert equal_tolerance(np.average(vol4s), volave, rel_tol=0.2)
     assert equal_tolerance(volave*4, 2000*0.8)

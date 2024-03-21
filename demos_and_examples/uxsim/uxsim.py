@@ -4,9 +4,8 @@ Macroscopic/mesoscopic traffic flow simulator in a network.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import random, glob, os, csv, time
+import random, glob, os, csv, time, math, string
 import pandas as pd
-import math
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from PIL.Image import Resampling, Transpose
 from tqdm.auto import tqdm
@@ -26,7 +25,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None):
+    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False):
         """
         Create a node
 
@@ -48,6 +47,8 @@ class Node:
             The offset of the signal. Default is 0.
         flow_capacity : float, optional
             The maximum flow capacity of the node. Default is None, meaning infinite capacity.
+        auto_rename : bool, optional
+            Whether to automatically rename the node if the name is already used. Default is False.
 
         Attributes
         ----------
@@ -105,6 +106,11 @@ class Node:
 
         s.id = len(s.W.NODES)
         s.name = name
+        if s.name in [n.name for n in s.W.NODES]:
+            if auto_rename:
+                s.name = s.name+"_renamed"+"".join(random.choices(string.ascii_letters + string.digits, k=8))
+            else:
+                raise ValueError(f"Node name {s.name} already used by another node. Please specify a unique name.")
         s.W.NODES.append(s)
 
     def __repr__(s):
@@ -252,7 +258,7 @@ class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False):
         """
         Create a link
 
@@ -284,6 +290,8 @@ class Link:
             The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
+        auto_rename : bool, optional
+            Whether to automatically rename the link if the name is already used. Default is False.
 
         Attributes
         ----------
@@ -331,6 +339,8 @@ class Link:
         s.w = 1/s.tau/s.kappa
         s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
         s.delta = 1/s.kappa
+        s.q_star = s.capacity   #flow capacity
+        s.k_star = s.capacity/s.u   #critical density
 
         #合流時優先度
         s.merge_priority = merge_priority
@@ -370,6 +380,11 @@ class Link:
 
         s.id = len(s.W.LINKS)
         s.name = name
+        if s.name in [l.name for l in s.W.LINKS]:
+            if auto_rename:
+                s.name = s.name+"_renamed"+"".join(random.choices(string.ascii_letters + string.digits, k=8))
+            else:
+                raise ValueError(f"Link name {s.name} already used by another link. Please specify a unique name.")
         s.W.LINKS.append(s)
         s.start_node.outlinks[s.name] = s
         s.end_node.inlinks[s.name] = s
@@ -606,7 +621,7 @@ class Vehicle:
     """
     Vehicle or platoon in a network.
     """
-    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None):
+    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, auto_rename=False):
         """
         Create a vehicle (more precisely, platoon)
 
@@ -634,6 +649,8 @@ class Vehicle:
             Whether to abort the trip if a dead end is reached, default is 1.
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
+        auto_rename : bool, optional
+            Whether to automatically rename the vehicle if the name is already used. Default is False.
         """
 
         s.W = W
@@ -642,7 +659,7 @@ class Vehicle:
         s.dest = s.W.get_node(dest)
 
         #出発・到着時刻
-        if departure_time_is_time_step:#互換性のため，タイムステップ表記
+        if departure_time_is_time_step:#互換性のため，departure_timeは常にタイムステップ表記 -> TODO: 要訂正！
             s.departure_time = departure_time
         else:
             s.departure_time = int(departure_time/s.W.DELTAT)
@@ -695,8 +712,7 @@ class Vehicle:
         s.log_v = [] #現在速度
         s.color = (random.random(), random.random(), random.random())
 
-        s.log_t_link = [[s.departure_time, "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
-        #todo: s.departure_timeがタイムステップ表記の事がある
+        s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
 
         s.attribute = attribute
 
@@ -704,7 +720,12 @@ class Vehicle:
         if name != None:
             s.name = name
         else:
-            s.name = str(s.id)
+            s.name = str(s.id)+"_autoid"
+        if s.name in [veh.name for veh in s.W.VEHICLES.values()]:
+            if auto_rename:
+                s.name = s.name+"_renamed"+"".join(random.choices(string.ascii_letters + string.digits, k=8))
+            else:
+                raise ValueError(f"Vehicle name {s.name} already used by another vehicle. Please specify a unique name.")
         s.W.VEHICLES[s.name] = s
         s.W.VEHICLES_LIVING[s.name] = s
 
@@ -773,7 +794,7 @@ class Vehicle:
         s.link.vehicles.popleft()
         s.link = None
         s.x = 0
-        s.arrival_time = s.W.T
+        s.arrival_time = s.W.T  #TODO: arrival_timeもタイムステップ表記．要修正
         s.travel_time = (s.arrival_time - s.departure_time)*s.W.DELTAT
         s.W.VEHICLES_RUNNING.pop(s.name)
         s.W.VEHICLES_LIVING.pop(s.name)
@@ -1303,7 +1324,7 @@ class Analyzer:
         pass
 
     @catch_exceptions_and_warn()
-    def time_space_diagram_traj(s, links=None, figsize=(12,4), plot_signal=True):
+    def time_space_diagram_traj(s, links=None, figsize=(12,4), plot_signal=True, xlim=None, ylim=None):
         """
         Draws the time-space diagram of vehicle trajectories for vehicles on specified links.
 
@@ -1344,8 +1365,14 @@ class Analyzer:
                 plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
-            plt.xlim([0, s.W.TMAX])
-            plt.ylim([0, l.length])
+            if xlim == None:
+                plt.xlim([0, s.W.TMAX])
+            else:
+                plt.xlim(xlim)
+            if ylim == None:
+                plt.ylim([0, l.length])
+            else:
+                plt.ylim(ylim)
             plt.grid()
             plt.tight_layout()
             if s.W.save_mode:
@@ -1356,7 +1383,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def time_space_diagram_density(s, links=None, figsize=(12,4), plot_signal=True):
+    def time_space_diagram_density(s, links=None, figsize=(12,4), plot_signal=True, xlim=None, ylim=None):
         """
         Draws the time-space diagram of traffic density on specified links.
 
@@ -1401,8 +1428,14 @@ class Analyzer:
             plt.colorbar().set_label("density (veh/m)")
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
-            plt.xlim([0, s.W.TMAX])
-            plt.ylim([0, l.length])
+            if xlim == None:
+                plt.xlim([0, s.W.TMAX])
+            else:
+                plt.xlim(xlim)
+            if ylim == None:
+                plt.ylim([0, l.length])
+            else:
+                plt.ylim(ylim)
             plt.tight_layout()
 
             if s.W.save_mode:
@@ -1413,7 +1446,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def time_space_diagram_traj_links(s, linkslist, figsize=(12,4), plot_signal=True):
+    def time_space_diagram_traj_links(s, linkslist, figsize=(12,4), plot_signal=True, xlim=None, ylim=None):
         """
         Draws the time-space diagram of vehicle trajectories for vehicles on concective links.
 
@@ -1463,6 +1496,14 @@ class Analyzer:
             plt.xlabel("time (s)")
             plt.ylabel("space (m)")
             plt.xlim([0, s.W.TMAX])
+            if xlim == None:
+                plt.xlim([0, s.W.TMAX])
+            else:
+                plt.xlim(xlim)
+            if ylim == None:
+                pass
+            else:
+                plt.ylim(ylim)
             plt.grid()
             plt.tight_layout()
             if s.W.save_mode:
@@ -2616,10 +2657,16 @@ class OSMImporter:
         coef_degree_to_meter: float
             The coefficient to convert lon/lat degree to meter. Default is 111000.
         """
-        for node in nodes:
-            W.addNode(str(node[0]), x=node[1], y=node[2])
-        for link in links:
-            W.addLink(link[0], str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density=default_jam_density)
+        for i, node in enumerate(nodes):
+            nname = str(node[0])
+            if nname in [n.name for n in W.NODES]:
+                nname + f"_osm{i}"
+            W.addNode(str(node[0]), x=node[1], y=node[2], auto_rename=True)
+        for i, link in enumerate(links):
+            lname = str(link[0])
+            if lname in [l.name for l in W.LINKS]:
+                lname + f"_osm{i}"
+            W.addLink(lname, str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density=default_jam_density, auto_rename=True)
 
 
 class World:
@@ -2736,6 +2783,8 @@ class World:
             The offset of the signal. Default is 0.
         flow_capacity : float, optional
             The maximum flow capacity of the node. Default is None, meaning infinite capacity.
+        auto_rename : bool, optional
+            Whether to automatically rename the node if the name is already used. Default is False.
 
         Returns
         -------
@@ -2770,7 +2819,7 @@ class World:
         merge_priority : float, optional
             The priority of the link when merging at the downstream node, default is 1.
         signal_group : int or list, optional
-            The signal group to which the link belongs, default is 0.
+            The signal group to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0.  the If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.
         capacity_out : float, optional
             The capacity out of the link, default is calculated based on other parameters.
         capacity_in : float, optional
@@ -2779,6 +2828,8 @@ class World:
             The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
+        auto_rename : bool, optional
+            Whether to automatically rename the link if the name is already used. Default is False.
 
         Returns
         -------
@@ -2818,6 +2869,8 @@ class World:
             Whether to abort the trip if a dead end is reached, default is 1.
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
+        auto_rename : bool, optional
+            Whether to automatically rename the vehicle if the name is already used. Default is False.
 
         Returns
         -------
