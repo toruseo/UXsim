@@ -2643,7 +2643,7 @@ class OSMImporter:
             W.addNode(str(node[0]), x=node[1], y=node[2], auto_rename=True)
         for i, link in enumerate(links):
             lname = str(link[0])
-            if lname in [l.name for l in W.LINKS.values()]:
+            if lname in [l.name for l in W.LINKS]:
                 lname + f"_osm{i}"
             W.addLink(lname, str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density=default_jam_density, auto_rename=True)
 
