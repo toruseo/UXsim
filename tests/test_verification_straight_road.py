@@ -877,11 +877,15 @@ def test_KW_theory_cumulative_curves_and_travel_time():
     for t in range(0, W.TMAX, 10):
         assert equal_tolerance(link1.arrival_count(t), link1.departure_count(t+link1.actual_travel_time(t)))
 
-@pytest.mark.flaky(reruns=5)
-def test_KW_theory_cumulative_curves_and_travel_time_random():
+def rigorous_verification_of_KW_theory_cumulative_curves_and_travel_time(deltan):
+    """
+    This function is the most rigorous verification of UXsim, checking that UXsim correctly solves KW theory.
+    Specifically, it checks the relation between the cumulative curves and the travel time of vehicles.
+    """
+
     W = World(
         name="",
-        deltan=5, 
+        deltan=deltan, 
         tmax=3000, 
         print_mode=1, save_mode=1, show_mode=1,
         random_seed=None
@@ -906,32 +910,33 @@ def test_KW_theory_cumulative_curves_and_travel_time_random():
     for t in range(0, W.TMAX, 10):
         assert equal_tolerance(link1.arrival_count(t), link1.departure_count(t+link1.actual_travel_time(t)), abs_tol=W.DELTAN)
 
+    for vehid in W.VEHICLES:
+        depart_t = W.VEHICLES[vehid].log_t_link[0][0]
+        depart_timestep = int(depart_t/W.DELTAT)
+        traveltime_recorded_by_vehicle = W.VEHICLES[vehid].travel_time
+        traveltime_from_log_state = (W.VEHICLES[vehid].log_state.count("run") + W.VEHICLES[vehid].log_state.count("wait") )*W.DELTAT
+        traveltime_from_log_t = W.VEHICLES[vehid].log_t[-1] - W.VEHICLES[vehid].log_t[depart_timestep] + W.DELTAT - W.DELTAT
 
-@pytest.mark.flaky(reruns=5)
-def test_KW_theory_cumulative_curves_and_travel_time_random_deltan1():
-    W = World(
-        name="",
-        deltan=1, 
-        tmax=3000, 
-        print_mode=1, save_mode=1, show_mode=1,
-        random_seed=None
-    )
+        link_enter_t = W.VEHICLES[vehid].log_t_link[1][0]
+        link_enter_timestep = int(link_enter_t/W.DELTAT)
+        traveltime_from_cumulative_curves_onlink = int(link1.actual_travel_time(link_enter_t) + link2.actual_travel_time(link1.actual_travel_time(link_enter_t)))
+        traveltime_from_log_state_onlink = (W.VEHICLES[vehid].log_state.count("run"))*W.DELTAT
+        traveltime_from_log_t_onlink = W.VEHICLES[vehid].log_t[-1] - W.VEHICLES[vehid].log_t[link_enter_timestep] + W.DELTAT
 
-    W.addNode("orig", 0, 0)
-    W.addNode("bottleneck", 1, 1)
-    W.addNode("dest", 1, 1)
-    link1 = W.addLink("link1", "orig", "bottleneck", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.6)
-    link2 = W.addLink("link2", "bottleneck", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+        #trip travel time including waiting at the vertical queue
+        assert traveltime_recorded_by_vehicle >= link1.length/link1.u
+        assert traveltime_recorded_by_vehicle == traveltime_from_log_state
+        assert traveltime_recorded_by_vehicle == traveltime_from_log_t
 
-    dt = 50
-    for t in range(0, 2000, dt):
-        W.adddemand("orig", "dest", t, t+dt, random.uniform(0,1.0))
+        #within link travel time
+        assert traveltime_recorded_by_vehicle >= traveltime_from_log_state_onlink
+        assert traveltime_from_log_state_onlink == traveltime_from_log_t_onlink
+        assert equal_tolerance(traveltime_from_log_state_onlink, traveltime_from_cumulative_curves_onlink, abs_tol=W.DELTAT)  #cumulative curve is approximation
 
-    W.exec_simulation()
+@pytest.mark.flaky(reruns=2)
+def test_KW_theory_cumulative_curves_and_travel_time():
+    rigorous_verification_of_KW_theory_cumulative_curves_and_travel_time(5)
 
-    W.analyzer.print_simple_stats()
-
-    #W.analyzer.cumulative_curves(link1)
-
-    for t in range(0, W.TMAX, 10):
-        assert equal_tolerance(link1.arrival_count(t), link1.departure_count(t+link1.actual_travel_time(t)), abs_tol=W.DELTAN)
+@pytest.mark.flaky(reruns=2)
+def test_KW_theory_cumulative_curves_and_travel_time_deltan1():
+    rigorous_verification_of_KW_theory_cumulative_curves_and_travel_time(1)
