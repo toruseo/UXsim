@@ -110,9 +110,11 @@ from uxsim import *
 ```
 and then define your simulation scenario.
 
-<details>
-<summary>A simple example (click to see)</summary>
-	
+The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
+You can also test [Google Colab demo](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb).
+For the further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
+
+As a simple example, the following code will simulate traffic flow in a Y-shaped network. 
 ```python
 from uxsim import *
 
@@ -134,7 +136,7 @@ W.addNode("dest", 2, 1)
 W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=0.5) # Create a link
 W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=2)
 W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
-W.adddemand("orig1", "dest", 0, 1000, 0.4) # Create OD traffic demand. Parameters: origin node, destination node, start time, end time, demand flow rate
+W.adddemand("orig1", "dest", 0, 1000, 0.4) # Create OD traffic demand
 W.adddemand("orig2", "dest", 500, 1000, 0.6)
 
 # Run the simulation to the end
@@ -149,7 +151,7 @@ W.analyzer.network(500, detailed=1, network_font_size=0)
 W.analyzer.network(1000, detailed=1, network_font_size=0)
 ```
 
-This code will simulate traffic flow in a Y-shaped network. It would output text to the terminal and images to `out` directory like below:
+It would output text to the terminal and images to `out` directory like below:
 ```
 simulation setting:
  scenario name:
@@ -180,12 +182,6 @@ results:
 <img src="https://github.com/toruseo/UXsim/blob/images/simple_example_network1_1000.png" width="400"/>
 </p>
 
-</details>
-
-The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
-For the further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
-
-
 ## Main Files
 
 - `uxsim` directory: UXsim main package
@@ -196,15 +192,6 @@ For the further details, please see [demos_and_examples](https://github.com/toru
 - `dat` directory: Sample scenario files
 - `tests`, `.github` directories: Development-related files
 
-## Future Plans
-
-- multi-lane link
-- day-to-day dynamics
-- taxi and shared mobility (i.e., vehicles travel through a network by passing through specific nodes that are dynamically updated)
-- network import from OSMnx
-	- Done, but still experimental.
-- basemap for visualization
-- modern packaging
 
 ## Terms of Use & License
 
@@ -219,6 +206,7 @@ When publishing works based on from UXsim, please cite:
 
 Contribution is welcome!
 For minor changes including bug fixes, please submit a pull request.
+Please make sure that your codes pass the automatic tests in Github Action.
 If you want a major change, please start a discussion at [Issues](https://github.com/toruseo/UXsim/issues) page first.
 
 If you have any questions or suggestions, please start a discussion at [Issues](https://github.com/toruseo/UXsim/issues) page (in English or Japanese).
