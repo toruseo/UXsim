@@ -13,22 +13,14 @@ It is suitable for simulating large-scale (e.g., city-scale) vehicular transport
 It computes dynamic traffic flow in a network by using traffic flow models commonly utilized by transportation research.
 UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features; but of course users are free to use UXsim for any purpose.
 
-- [Simple demo in Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb)
-- [Technical documentation](https://toruseo.jp/UXsim/docs/index.html)
-- [arXiv preprint on scientific overview](https://arxiv.org/abs/2309.17114)
-
 ## Main Features
 
-- Simple and easy-to-use Python implementation of the modern standard models of dynamic network traffic flow.
-- Dynamic network traffic simulation with a given network and time-dependent OD demand (i.e., dynamic traffic assignment). Specifically, the following models are used jointly:
-	- Newell's simplified car-following model (X-Model)
-	- Lagrangian Incremental Node Model
-	- Dynamic User Optimum-type Route Choice Model (with inertia)
-- Implementation of traffic management schemes (e.g., traffic signals, inflow control, route guidance, congestion pricing).
-- Basic analysis of simulation results (e.g., trip completion rate, total travel time, delay), and their export to pandas.DataFrame and CSV files.
-- Visualization of simulation results (e.g., time-space diagram, MFD, network traffic animation).
-- Can be flexibly customized by users thanks to pure Python implementation.
-	- Can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control.
+- Simple, lightweight, and easy-to-use Python implementation of the modern standard models of dynamic network traffic flow.
+- Dynamic network traffic simulation with a given network and time-dependent OD demand (dynamic traffic assignment)
+- Implementation of traffic control/management schemes such as traffic signals and road pricing
+- Basic analysis of simulation results and their export to pandas.DataFrame and CSV files.
+- Visualization of simulation results including animation.
+- Flexible and customizable thanks to pure Python implementation. Can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control.
 
 
 ## Simulation Examples
@@ -49,8 +41,8 @@ Vehicle trajectory diagram on a corridor of the above network:
 ### Deep reinforcement learning signal control using PyTorch
 
 Traffic signal controller is trained by deep reinforcement learning (DRL) of [PyTorch](https://pytorch.org/).
-The left is no control scenario with fixed signal timing; the traffic demand exceeds the network capacity with naive signal setting, and a gridlock occurs.
-The right is with DRL control scenario, where traffic signal can be changed by observing queue length; although the demand level is the same, traffic is smoothly flowing.
+The left (or upper) is no control scenario with fixed signal timing; the traffic demand exceeds the network capacity with naive signal setting, and a gridlock occurs.
+The right (or bottom) is with DRL control scenario, where traffic signal can be changed by observing queue length; although the demand level is the same, traffic is smoothly flowing.
 [Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb) is available.
 
 <p float="left">
@@ -91,14 +83,14 @@ pip install -U -e git+https://github.com/YOUR_FORK/uxsim@YOUR_BRANCH#egg=uxsim
 Download the `uxsim` directory from this Github repo or [the latest release](https://github.com/toruseo/UXsim/releases/latest/download/uxsim.zip) and place it to your local directory as follows:
 ```
 your_project_directory/
-├── uxsim/ # The uxsim directory
-│ ├── utils/ # Utility files of UXsim
-│ ├── uxsim.py # The main code of UXsim. You can customize this as you wish
-│ ├── utils.py # Utility funcsions of UXsim
-│ └── ... # Other files in uxsim
-├── your_simulation_code.py # Your code if nessesary
-├── your_simulation_notebook.ipynb # Your Jupyter notebook if nessesary
-├── ... # Other files if nessesary
+├── uxsim/ 	# The uxsim directory
+│ ├── utils/ 	# Utility files of UXsim
+│ ├── uxsim.py 	# The main code of UXsim. You can customize this as you wish
+│ ├── utils.py 	# Utility funcsions of UXsim
+│ └── ... 	# Other files in uxsim
+├── your_simulation_code.py 		# Your code if nessesary
+├── your_simulation_notebook.ipynb 	# Your Jupyter notebook if nessesary
+├── ... 	# Other files if nessesary
 ```
 In this way, you can flexibly customize UXsim by your own.
 
@@ -194,6 +186,14 @@ results:
 - `dat` directory: Sample scenario files
 - `tests`, `.github` directories: Development-related files
 
+## Further Reading
+
+If you want to know the details of UXsim, please see
+
+- [Technical documentation](https://toruseo.jp/UXsim/docs/index.html): Simulation mechanism and specifications of modules/functions
+- [Simple demo in Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) or [Google Colab](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb): Interactive demo.
+- [Demos and examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples): Various examples of UXsim
+- [arXiv preprint](https://arxiv.org/abs/2309.17114): Scientific overview.
 
 ## Terms of Use & License
 
@@ -217,7 +217,12 @@ I (Toru Seo) work on this project in my spare time. Please understand that my re
 
 ## Acknowledgments
 
-UXsim is based on various works in traffic flow theory. We would like to acknowledge the contributions of the research community in advancing this field.
+UXsim is based on various works in traffic flow theory and related fields. We would like to acknowledge the contributions of the research community in advancing this field.
+Especially, UXsim directly uses the following works:
+
+- [Newell's simplified car-following model](https://doi.org/10.1016/S0191-2615(00)00044-8) and its extention [X-model](https://doi.org/10.1016/j.trb.2013.02.008)
+- [Incremental Node Model](https://doi.org/10.1016/j.trb.2011.04.001) and its [mesoscopic version](https://ubiquitypress.com/site/chapters/e/10.5334/baw.50/)
+- [Dynamic User Optimum](https://doi.org/10.1016/S0191-2615(00)00005-9)-type Route Choice Model
 
 ## Related Links
 
