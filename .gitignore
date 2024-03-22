@@ -134,6 +134,6 @@ cache/
 _private_files/*
 dev.ipynb
 dev_*.ipynb
-compare.ps1
+_*.ps1
 p*_*.py
 *.code-workspace

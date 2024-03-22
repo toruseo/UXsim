@@ -54,7 +54,7 @@ gtag('config', 'UA-111714220-1');
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial and Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tech_ref.html">Technical reference</a></li>
 </ul>
@@ -90,9 +90,8 @@ gtag('config', 'UA-111714220-1');
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">csv</span><span class="o">,</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">csv</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">string</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span><span class="p">,</span> <span class="n">ImageOps</span>
 <span class="kn">from</span> <span class="nn">PIL.Image</span> <span class="kn">import</span> <span class="n">Resampling</span><span class="p">,</span> <span class="n">Transpose</span>
 <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
@@ -112,7 +111,7 @@ gtag('config', 'UA-111714220-1');
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Node in a network.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Node.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Node.html#uxsim.Node.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Node.html#uxsim.Node.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a node</span>
 
@@ -134,6 +133,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The offset of the signal. Default is 0.</span>
 <span class="sd">        flow_capacity : float, optional</span>
 <span class="sd">            The maximum flow capacity of the node. Default is None, meaning infinite capacity.</span>
+<span class="sd">        auto_rename : bool, optional</span>
+<span class="sd">            Whether to automatically rename the node if the name is already used. Default is False.</span>
 
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
@@ -191,6 +192,11 @@ gtag('config', 'UA-111714220-1');
 
         <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">auto_rename</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot;_renamed&quot;</span><span class="o">+</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node name </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already used by another node. Please specify a unique name.&quot;</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
@@ -338,7 +344,7 @@ gtag('config', 'UA-111714220-1');
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Link in a network.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Link.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Link.html#uxsim.Link.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="p">,</span> <span class="n">jam_density</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">capacity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Link.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Link.html#uxsim.Link.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="p">,</span> <span class="n">jam_density</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">capacity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a link</span>
 
@@ -370,6 +376,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</span>
 <span class="sd">        attribute : any, optinonal</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        auto_rename : bool, optional</span>
+<span class="sd">            Whether to automatically rename the link if the name is already used. Default is False.</span>
 
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
@@ -417,6 +425,8 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">tau</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">kappa</span>
         <span class="n">s</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">u</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">w</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">kappa</span><span class="o">/</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">u</span><span class="o">+</span><span class="n">s</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">kappa</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">q_star</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">capacity</span>   <span class="c1">#flow capacity</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">k_star</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">capacity</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">u</span>   <span class="c1">#critical density</span>
 
         <span class="c1">#合流時優先度</span>
         <span class="n">s</span><span class="o">.</span><span class="n">merge_priority</span> <span class="o">=</span> <span class="n">merge_priority</span>
@@ -456,6 +466,11 @@ gtag('config', 'UA-111714220-1');
 
         <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">auto_rename</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot;_renamed&quot;</span><span class="o">+</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Link name </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already used by another link. Please specify a unique name.&quot;</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">outlinks</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
         <span class="n">s</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">inlinks</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
@@ -692,7 +707,7 @@ gtag('config', 'UA-111714220-1');
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Vehicle or platoon in a network.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Vehicle.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Vehicle.html#uxsim.Vehicle.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">links_prefer</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Vehicle.__init__"><a class="viewcode-back" href="../../_autosummary/uxsim.Vehicle.html#uxsim.Vehicle.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">links_prefer</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a vehicle (more precisely, platoon)</span>
 
@@ -720,6 +735,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Whether to abort the trip if a dead end is reached, default is 1.</span>
 <span class="sd">        attribute : any, optinonal</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        auto_rename : bool, optional</span>
+<span class="sd">            Whether to automatically rename the vehicle if the name is already used. Default is False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
@@ -728,7 +745,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">dest</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
 
         <span class="c1">#出発・到着時刻</span>
-        <span class="k">if</span> <span class="n">departure_time_is_time_step</span><span class="p">:</span><span class="c1">#互換性のため，タイムステップ表記</span>
+        <span class="k">if</span> <span class="n">departure_time_is_time_step</span><span class="p">:</span><span class="c1">#互換性のため，departure_timeは常にタイムステップ表記 -&gt; TODO: 要訂正！</span>
             <span class="n">s</span><span class="o">.</span><span class="n">departure_time</span> <span class="o">=</span> <span class="n">departure_time</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">departure_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">departure_time</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
@@ -781,8 +798,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">log_v</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#現在速度</span>
         <span class="n">s</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
 
-        <span class="n">s</span><span class="o">.</span><span class="n">log_t_link</span> <span class="o">=</span> <span class="p">[[</span><span class="n">s</span><span class="o">.</span><span class="n">departure_time</span><span class="p">,</span> <span class="s2">&quot;home&quot;</span><span class="p">]]</span> <span class="c1">#新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用</span>
-        <span class="c1">#todo: s.departure_timeがタイムステップ表記の事がある</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">log_t_link</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">departure_time</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">),</span> <span class="s2">&quot;home&quot;</span><span class="p">]]</span> <span class="c1">#新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
 
@@ -791,6 +807,11 @@ gtag('config', 'UA-111714220-1');
             <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]:</span>
+            <span class="k">if</span> <span class="n">auto_rename</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s2">&quot;_renamed&quot;</span><span class="o">+</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vehicle name </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already used by another vehicle. Please specify a unique name.&quot;</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES_LIVING</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span></div>
 
@@ -859,7 +880,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">vehicles</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
         <span class="n">s</span><span class="o">.</span><span class="n">link</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">s</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">T</span>  <span class="c1">#TODO: arrival_timeもタイムステップ表記．要修正</span>
         <span class="n">s</span><span class="o">.</span><span class="n">travel_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">departure_time</span><span class="p">)</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES_RUNNING</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES_LIVING</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -1389,7 +1410,7 @@ gtag('config', 'UA-111714220-1');
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="Analyzer.time_space_diagram_traj"><a class="viewcode-back" href="../../uxsim.html#uxsim.Analyzer.time_space_diagram_traj">[docs]</a>    <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">time_space_diagram_traj</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">time_space_diagram_traj</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draws the time-space diagram of vehicle trajectories for vehicles on specified links.</span>
 
@@ -1430,8 +1451,14 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal_log</span><span class="p">,</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">length</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lange</span><span class="p">(</span><span class="n">signal_log</span><span class="p">)],</span> <span class="s2">&quot;r.&quot;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;time (s)&quot;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;space (m)&quot;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">])</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">xlim</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ylim</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">save_mode</span><span class="p">:</span>
@@ -1442,7 +1469,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Analyzer.time_space_diagram_density"><a class="viewcode-back" href="../../uxsim.html#uxsim.Analyzer.time_space_diagram_density">[docs]</a>    <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">time_space_diagram_density</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">time_space_diagram_density</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draws the time-space diagram of traffic density on specified links.</span>
 
@@ -1487,8 +1514,14 @@ gtag('config', 'UA-111714220-1');
             <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;density (veh/m)&quot;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;time (s)&quot;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;space (m)&quot;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">])</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">xlim</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ylim</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">save_mode</span><span class="p">:</span>
@@ -1499,7 +1532,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Analyzer.time_space_diagram_traj_links"><a class="viewcode-back" href="../../uxsim.html#uxsim.Analyzer.time_space_diagram_traj_links">[docs]</a>    <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">time_space_diagram_traj_links</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">linkslist</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">time_space_diagram_traj_links</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">linkslist</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</span>
 
@@ -1549,6 +1582,14 @@ gtag('config', 'UA-111714220-1');
             <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;time (s)&quot;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;space (m)&quot;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">xlim</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ylim</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">save_mode</span><span class="p">:</span>
@@ -2702,10 +2743,16 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        coef_degree_to_meter: float</span>
 <span class="sd">            The coefficient to convert lon/lat degree to meter. Default is 111000.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
-            <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="n">link</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="n">coef_degree_to_meter</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">link</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">jam_density</span><span class="o">=</span><span class="n">default_jam_density</span><span class="p">)</span></div></div>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="n">nname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">nname</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">]:</span>
+                <span class="n">nname</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;_osm</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">link</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">links</span><span class="p">):</span>
+            <span class="n">lname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">lname</span> <span class="ow">in</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">]:</span>
+                <span class="n">lname</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;_osm</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="n">lname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">length</span><span class="o">=</span><span class="n">link</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="n">coef_degree_to_meter</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">link</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">jam_density</span><span class="o">=</span><span class="n">default_jam_density</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="World"><a class="viewcode-back" href="../../uxsim.html#uxsim.World">[docs]</a><span class="k">class</span> <span class="nc">World</span><span class="p">:</span>
@@ -2818,6 +2865,12 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            A list representing the signal at the node. Default is [0], representing no signal.</span>
 <span class="sd">            If a signal is present, the list contains the green times for each group.</span>
 <span class="sd">            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</span>
+<span class="sd">        signal_offset : float, optional</span>
+<span class="sd">            The offset of the signal. Default is 0.</span>
+<span class="sd">        flow_capacity : float, optional</span>
+<span class="sd">            The maximum flow capacity of the node. Default is None, meaning infinite capacity.</span>
+<span class="sd">        auto_rename : bool, optional</span>
+<span class="sd">            Whether to automatically rename the node if the name is already used. Default is False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2852,7 +2905,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        merge_priority : float, optional</span>
 <span class="sd">            The priority of the link when merging at the downstream node, default is 1.</span>
 <span class="sd">        signal_group : int or list, optional</span>
-<span class="sd">            The signal group to which the link belongs, default is 0.</span>
+<span class="sd">            The signal group to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0.  the If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.</span>
 <span class="sd">        capacity_out : float, optional</span>
 <span class="sd">            The capacity out of the link, default is calculated based on other parameters.</span>
 <span class="sd">        capacity_in : float, optional</span>
@@ -2861,6 +2914,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</span>
 <span class="sd">        attribute : any, optinonal</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        auto_rename : bool, optional</span>
+<span class="sd">            Whether to automatically rename the link if the name is already used. Default is False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2900,6 +2955,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Whether to abort the trip if a dead end is reached, default is 1.</span>
 <span class="sd">        attribute : any, optinonal</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        auto_rename : bool, optional</span>
+<span class="sd">            Whether to automatically rename the vehicle if the name is already used. Default is False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>

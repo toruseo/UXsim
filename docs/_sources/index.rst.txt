@@ -13,6 +13,18 @@ UXsim is an open-source macroscopic and mesoscopic network traffic flow simulato
 This webpage is a technical documentation of UXsim codes.
 Please visit `Github repo <https://github.com/toruseo/UXsim>`_ first. 
 
+Example
+-------
+Belows are simulation result where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC. 
+The first animation shows link congestion level and the second shows sampled vehicle trajectories.
+
+.. image:: https://raw.githubusercontent.com/toruseo/UXsim/images/gridnetwork_macro.gif
+    :width: 45%
+
+.. image:: https://raw.githubusercontent.com/toruseo/UXsim/images/gridnetwork_fancy.gif
+    :width: 45%
+
+
 Contents
 ========
 
