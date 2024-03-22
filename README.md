@@ -3,25 +3,29 @@
 [![PyPi](https://img.shields.io/pypi/v/uxsim.svg)](https://pypi.python.org/pypi/uxsim)
 [![](https://tokei.rs/b1/github/toruseo/UXsim?style=flat&category=code&color=dddd22)](https://github.com/toruseo/UXsim)
 [![](https://tokei.rs/b1/github/toruseo/UXsim?category=comments&style=flat&color=44cc44)](https://github.com/toruseo/UXsim/)
-[![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
 [![Demo in Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb)
+[![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
 [![Static Badge](https://img.shields.io/badge/readme-English%20%F0%9F%87%BA%F0%9F%87%B8%20-%20darkblue)](https://github.com/toruseo/UXsim/blob/main/README.md)
 [![Static Badge](https://img.shields.io/badge/readme-%E6%97%A5%E6%9C%AC%E8%AA%9E%20%F0%9F%87%AF%F0%9F%87%B5%20-pink)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
 
-*UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator developed in Python.
-It is suitable for simulating large-scale (e.g., city-scale) vehicular transportation.
-It computes dynamic traffic flow in a network by using traffic flow models commonly utilized by transportation research.
-UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features; but of course users are free to use UXsim for any purpose.
+*UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator written in Python.
+It simulates the movements of car travelers and traffic congestion in road networks.
+It is suitable for simulating large-scale (e.g. city-scale) traffic phenomena.
+UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features, but of course users are free to use UXsim for any purpose.
+
+If you are interested in, please see
+
+- [Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) or [Google Colab](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb): Interactive demonstrations and tutorials
+- [Technical Documentation](https://toruseo.jp/UXsim/docs/index.html): Detailed documents on tutorials, simulation mechanism, and specifications of modules/functions
 
 ## Main Features
 
 - Simple, lightweight, and easy-to-use Python implementation of the modern standard models of dynamic network traffic flow.
-- Dynamic network traffic simulation with a given network and time-dependent OD demand (dynamic traffic assignment)
-- Implementation of traffic control/management schemes such as traffic signals and road pricing
+- Traffic flow simulation with a given network and time-dependent OD demand (dynamic traffic assignment).
+- Implementation of traffic control/management schemes such as traffic signals and road pricing.
 - Basic analysis of simulation results and their export to pandas.DataFrame and CSV files.
 - Visualization of simulation results including animation.
 - Flexible and customizable thanks to pure Python implementation. Can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control.
-
 
 ## Simulation Examples
 
@@ -190,10 +194,10 @@ results:
 
 If you want to know the details of UXsim, please see
 
-- [Technical documentation](https://toruseo.jp/UXsim/docs/index.html): Simulation mechanism and specifications of modules/functions
-- [Simple demo in Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) or [Google Colab](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb): Interactive demo.
-- [Demos and examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples): Various examples of UXsim
-- [arXiv preprint](https://arxiv.org/abs/2309.17114): Scientific overview.
+- [Simple demo in Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) or [Google Colab](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb): Interactive demonstrations
+- [UXsim Technical Documentation](https://toruseo.jp/UXsim/docs/index.html): Detailed documents on tutorials, simulation mechanism, and specifications of modules/functions
+- [Demos and examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples): Various examples using Jupyter Notebooks and Python codes
+- [arXiv preprint](https://arxiv.org/abs/2309.17114): Scientific overview
 
 ## Terms of Use & License
 
