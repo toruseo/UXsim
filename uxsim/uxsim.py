@@ -720,7 +720,7 @@ class Vehicle:
         if name != None:
             s.name = name
         else:
-            s.name = str(s.id)+"_autoid"
+            s.name = str(s.id)
         if s.name in [veh.name for veh in s.W.VEHICLES.values()]:
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(random.choices(string.ascii_letters + string.digits, k=8))
