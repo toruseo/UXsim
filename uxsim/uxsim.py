@@ -1543,6 +1543,8 @@ class Analyzer:
             links = [links]
 
         for link in links:
+            link = s.W.get_link(link)
+            
             fig, ax1 = plt.subplots(figsize=figsize)
             plt.title(link)
             ax2 = ax1.twinx()
