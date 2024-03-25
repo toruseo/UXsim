@@ -1,5 +1,5 @@
 from uxsim import *
-
+from uxsim.OSMImporter.OSMImporter import OSMImporter
 
 W = World(
     name="",
