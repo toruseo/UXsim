@@ -2,7 +2,7 @@
 # Copyright (c) 2023 Toru Seo
 # License: MIT License
 
-from setuptools import setup
+from setuptools import setup, find_packages
 #import uxsim
 
 DESCRIPTION = "UXsim: traffic flow simulator"
@@ -12,7 +12,7 @@ AUTHOR_EMAIL = 'seo.t.aa@m.titech.ac.jp'
 URL = 'https://github.com/toruseo/UXsim'
 LICENSE = 'MIT License'
 DOWNLOAD_URL = 'https://github.com/toruseo/UXsim'
-VERSION = "1.0.8"
+VERSION = "1.0.9"
 PYTHON_REQUIRES = ">=3.9"
 
 INSTALL_REQUIRES = [
@@ -22,14 +22,13 @@ INSTALL_REQUIRES = [
     'tqdm>=4.64.1',
     'scipy>=1.9.1',
     'pandas>=1.4.4',
+    'PyQt5>=5.15.7'
 ]
 
 EXTRAS_REQUIRE = {
 }
 
-PACKAGES = [
-    'uxsim'
-]
+PACKAGES = find_packages()
 
 CLASSIFIERS = [
     'Intended Audience :: Science/Research',
