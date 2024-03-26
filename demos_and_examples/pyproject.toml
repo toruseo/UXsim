@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=63.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uxsim"
+description = "UXsim: traffic flow simulator"
+readme = "README.md"
+authors = [{name = "Toru Seo", email = "seo.t.aa@m.titech.ac.jp"}]
+license = {text = "MIT License"}
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.21.5",
+    "matplotlib>=3.5.2",
+    "pillow>=9.2.0",
+    "tqdm>=4.64.1",
+    "scipy>=1.9.1",
+    "pandas>=1.4.4",
+    "PyQt5>=5.15.7"
+]
+dynamic = ["version"] # Version is read from uxsim/__init__.py
+
+[project.urls]
+"Homepage" = "https://github.com/toruseo/UXsim"
+"Download" = "https://github.com/toruseo/UXsim"
+"Bug Tracker" = "https://github.com/toruseo/UXsim/issues"
+
+[tool.setuptools]
+packages = {find = {include = ["uxsim", "uxsim.*"]}}
+
+[tool.setuptools.dynamic]
+version = {attr = "uxsim.__version__"}
