@@ -384,6 +384,7 @@ def launch_World_viewer(W, return_app_window=False):
     print("Launching the interactive viewer for the simulation result (Do NOT close this terminal!)...")
 
     W.show_mode = 1
+    W.save_mode = 1
     W.analyzer.compute_edie_state()
     tmax = W.LINKS[0].q_mat.shape[0]
     nodes = [[n.name, n.x, n.y, n] for n in W.NODES]

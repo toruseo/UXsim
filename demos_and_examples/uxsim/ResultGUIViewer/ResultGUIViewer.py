@@ -60,7 +60,7 @@ class EdgeItem(QGraphicsItem):
             
             c = colormaps["viridis"](speed/self.Link.u)
             #color = QColor(int(density/self.Link.jam_density * 255), int(density/self.Link.jam_density * 255), 0, 255)
-            color = QColor(c[0]*255, c[1]*255, c[2]*255, 255)
+            color = QColor(int(c[0]*255), int(c[1]*255), int(c[2]*255), 255)
             pen = QPen(color, lw)
             painter.setPen(pen)
 
@@ -244,9 +244,10 @@ class GraphWidget(QGraphicsView):
         self.viewport().update()
 
 class MainWindow(QMainWindow):
-    def __init__(self, nodes, edges, vehicle_list, tmax):
+    def __init__(self, W, nodes, edges, vehicle_list, tmax):
         super().__init__()
         self.setWindowTitle("UXsim result viewer")
+        self.W = W
         self.tmax = tmax
         self.playing = False
         self.curve_direction = 1
@@ -290,25 +291,46 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self.update_t)
         
         menu_bar = self.menuBar()
-        settings_menu = menu_bar.addMenu("Settings")
-
-        curve_direction_menu = settings_menu.addMenu("Link Curve Direction")
-        curve_right_action = curve_direction_menu.addAction("Right-handed")
+        
+        # menu_file = menu_bar.addMenu("File")
+        # acrion_save_world = menu_file.addAction("Save World")
+        # acrion_save_world.triggered.connect(lambda: self.save_world())
+        
+        menu_settings = menu_bar.addMenu("Settings")
+        option_curve_direction = menu_settings.addMenu("Link Curve Direction")
+        curve_right_action = option_curve_direction.addAction("Right-handed")
         curve_right_action.triggered.connect(lambda: self.set_curve_direction(1))
-        curve_left_action = curve_direction_menu.addAction("Left-handed")
+        curve_left_action = option_curve_direction.addAction("Left-handed")
         curve_left_action.triggered.connect(lambda: self.set_curve_direction(-1))
         
-        display_menu = settings_menu.addMenu("Display")
-        show_names_action = display_menu.addAction("Show Names")
+        option_display = menu_settings.addMenu("Display")
+        show_names_action = option_display.addAction("Show Names")
         show_names_action.setCheckable(True)
         show_names_action.setChecked(True)
         show_names_action.triggered.connect(self.toggle_show_names)
 
-        self.update_graph()
-        # show_vehicles_action = display_menu.addAction("Show Vehicles")
+        menu_Animation = menu_bar.addMenu("Export Results")
+        action_csv = menu_Animation.addAction("Export Results to CSV files")
+        action_csv.triggered.connect(lambda: self.W.analyzer.output_data())
+        action_network_anim_detailed0 = menu_Animation.addAction("Export Network Animation (link-level)")
+        action_network_anim_detailed0.triggered.connect(lambda: self.W.analyzer.network_anim(detailed=0))
+        action_network_anim_detailed1 = menu_Animation.addAction("Export Network Animation (link segment-level)")
+        action_network_anim_detailed1.triggered.connect(lambda: self.W.analyzer.network_anim(detailed=1))
+        action_network_anim_fancy = menu_Animation.addAction("Export Network Animation (vehicle-level)")
+        action_network_anim_fancy.triggered.connect(lambda: self.W.analyzer.network_fancy())
+
+        # menu_Vehicle = menu_bar.addMenu("Vehicle Analysis")
+        # show_vehicles_action = menu_Vehicle.addAction("Show Vehicles")
         # show_vehicles_action.setCheckable(True)
         # show_vehicles_action.setChecked(True)
         # show_vehicles_action.triggered.connect(self.toggle_show_vehicles)
+
+        self.update_graph()
+
+    def save_world(self):
+        import pickle
+        with open("World.pkl", mode="wb") as f:
+            pickle.dump(self.W, f)
 
     def update_graph(self):
         t = self.t_slider.value()
@@ -347,7 +369,7 @@ class MainWindow(QMainWindow):
         self.show_vehicles = not self.show_vehicles
         self.graph_widget.set_show_vehicles(self.show_vehicles)
 
-def launch_World_viewer(W):
+def launch_World_viewer(W, return_app_window=False):
     """
     Launch the interactive viewer for the simulation result of the given World object.
 
@@ -355,9 +377,14 @@ def launch_World_viewer(W):
     ----------
     W : World
         The World object to visualize.
+    return_app_window : bool, optional
+        If True, this function returns the QApplication and MainWindow objects. Default is False.
     """
 
+    print("Launching the interactive viewer for the simulation result (Do NOT close this terminal!)...")
+
     W.show_mode = 1
+    W.save_mode = 1
     W.analyzer.compute_edie_state()
     tmax = W.LINKS[0].q_mat.shape[0]
     nodes = [[n.name, n.x, n.y, n] for n in W.NODES]
@@ -391,8 +418,10 @@ def launch_World_viewer(W):
     vehicle_list = None
 
     app = QApplication(sys.argv)
-    window = MainWindow(nodes, edges, vehicle_list, tmax)
+    window = MainWindow(W, nodes, edges, vehicle_list, tmax)
     window.show()
+    if return_app_window:
+        return app, window
     sys.exit(app.exec_())
 
 

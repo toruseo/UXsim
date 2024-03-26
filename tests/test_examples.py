@@ -10,7 +10,8 @@ import os
 examples_dir = 'demos_and_examples'
 # Ignore list
 nontest_files = [
-    "example_14en_multiple_signals_Deep_Reinforcement_Learning_pytorch.py" #takes too much time. DQN can be tested by example_12en_* as well.
+    "example_14en_multiple_signals_Deep_Reinforcement_Learning_pytorch.py", #takes too much time. DQN can be tested by example_12en_* as well.
+    "example_17en_resuslt_GUI_viewer.py", #GUI viewer is not testable in Github Actions
 ]
 
 # Dynamically generate test cases for each example script
