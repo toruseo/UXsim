@@ -20,6 +20,12 @@ default FD:
     q^* = 0.8
 """
 
+def test_OSMImporter_temporary():
+    import uxsim as UX
+    from uxsim.OSMImporter import OSMImporter
+    print(OSMImporter.import_osm_data)
+    print(OSMImporter.osm_network_postprocessing)
+
 def test_1link():
     W = World(
         name="",
