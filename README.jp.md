@@ -96,9 +96,7 @@ pip install -U -e git+https://github.com/YOUR_FORK/uxsim@YOUR_BRANCH#egg=uxsim
 ```
 your_project_directory/
 ├── uxsim/ # uxsimディレクトリ
-│ ├── utils/ # UXsimのユーティリティファイル
 │ ├── uxsim.py # UXsimのメインコード。必要に応じてカスタマイズ可能
-│ ├── utils.py # UXsimのユーティリティ関数
 │ └── ... # その他元からあったファイル
 ├── your_simulation_code.py # 自作コード（必要なら）
 ├── your_simulation_notebook.ipynb # 自作Jupyterノートブック（必要なら）
@@ -199,7 +197,9 @@ results:
 - `uxsim`ディレクトリ: UXsimパッケージ
 	- `uxsim/uxsim.py`: UXsim本体のコード
 	- `uxsim/utils.py`: 関連コード
- 	- `uxsim/utils`ディレクトリ: 関連ファイル
+	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: 計算結果可視化用GUIサブモジュール
+	- `uxsim/OSMImporter/OSMImporter.py`: OpenStreetMapからのインポート用サブモジュール
+ 	- `uxsim/files`ディレクトリ: 関連ファイル
 - `demos_and_examples`ディレクトリ: チュートリアルや使用例
 - `dat`ディレクトリ: サンプルシナリオファイル
 - `tests`，`.github`ディレクトリ: 開発用ファイル
