@@ -184,9 +184,9 @@ results:
 - `uxsim` directory: UXsim main package
 	- `uxsim/uxsim.py`: UXsim main code
 	- `uxsim/utils.py`: UXsim utilities code
-	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: GUI for visualizing simulation results
-	- `uxsim/OSMImporter/OSMImporter.py`: Road network importer from OpenStreetMap (experimental)
- 	- `uxsim/files` directory:  UXsim utilities files
+	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: Submodule on GUI for visualizing simulation results
+	- `uxsim/OSMImporter/OSMImporter.py`: Submodule on road network import from OpenStreetMap (experimental)
+ 	- `uxsim/files` directory: UXsim utilities files
 - `demos_and_examples` directory: Tutorials and examples of UXsim
 - `dat` directory: Sample scenario files
 - `tests`, `.github` directories: Development-related files
