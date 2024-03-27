@@ -55,6 +55,10 @@ The right (or bottom) is with DRL control scenario, where traffic signal can be 
 <img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
 </p>
 
+### Interactive GUI for exploring a simulation result
+
+https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127196d9
+
 ## Install
 
 ### Using pip
