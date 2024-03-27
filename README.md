@@ -21,10 +21,11 @@ If you are interested in, please see
 ## Main Features
 
 - Simple, lightweight, and easy-to-use Python implementation of the modern standard models of dynamic network traffic flow.
-- Traffic flow simulation with a given network and time-dependent OD demand (dynamic traffic assignment).
+- Macroscopic traffic simulation: Simulating over 60000 vehicles in 30 seconds in a city.
+- Dynamic traffic assignment: Traffic flow simulation with a given network and time-dependent OD demand.
 - Implementation of traffic control/management schemes such as traffic signals and road pricing.
 - Basic analysis of simulation results and their export to pandas.DataFrame and CSV files.
-- Visualization of simulation results including animation.
+- Visualization of simulation results using matplotlib. Interactive GUI is available.
 - Flexible and customizable thanks to pure Python implementation. Can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control.
 
 ## Simulation Examples
@@ -88,10 +89,8 @@ Download the `uxsim` directory from this Github repo or [the latest release](htt
 ```
 your_project_directory/
 ├── uxsim/ 	# The uxsim directory
-│ ├── utils/ 	# Utility files of UXsim
 │ ├── uxsim.py 	# The main code of UXsim. You can customize this as you wish
-│ ├── utils.py 	# Utility funcsions of UXsim
-│ └── ... 	# Other files in uxsim
+│ └── ... 	# Other files and directories in uxsim
 ├── your_simulation_code.py 		# Your code if nessesary
 ├── your_simulation_notebook.ipynb 	# Your Jupyter notebook if nessesary
 ├── ... 	# Other files if nessesary
@@ -185,7 +184,9 @@ results:
 - `uxsim` directory: UXsim main package
 	- `uxsim/uxsim.py`: UXsim main code
 	- `uxsim/utils.py`: UXsim utilities code
- 	- `uxsim/utils` directory:  UXsim utilities files
+	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: GUI for visualizing simulation results
+	- `uxsim/OSMImporter/OSMImporter.py`: Road network importer from OpenStreetMap (experimental)
+ 	- `uxsim/files` directory:  UXsim utilities files
 - `demos_and_examples` directory: Tutorials and examples of UXsim
 - `dat` directory: Sample scenario files
 - `tests`, `.github` directories: Development-related files
