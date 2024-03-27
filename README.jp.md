@@ -65,7 +65,10 @@ UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に
 
 ### シミュレーション結果可視化GUI
 
-https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127196d9
+
+https://github.com/toruseo/UXsim/assets/34780089/31607686-99a8-42bd-875d-13a911e6054f
+
+
 
 ## インストール
 
