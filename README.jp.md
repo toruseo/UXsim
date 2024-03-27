@@ -15,7 +15,8 @@
 UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に適することを意図していますが，それ以外の目的にも自由に使用可能です．
 
 - [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01jp.ipynb)
-- [技術資料](https://toruseo.jp/UXsim/docs/index.html)
+- [Google Colabデモ](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb)
+- [詳細ページ（チュートリアル，仕様）](https://toruseo.jp/UXsim/docs/index.html)
 - [arXivプレプリント](https://arxiv.org/abs/2309.17114)
 - [交通流理論・シミュレーションの専門書](https://www.coronasha.co.jp/np/isbn/9784339052794/)
 
@@ -61,6 +62,10 @@ UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に
 <img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_nocontrol.gif" width="400"/>
 <img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
 </p>
+
+### シミュレーション結果可視化GUI
+
+https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127196d9
 
 ## インストール
 
