@@ -20,6 +20,8 @@ from scipy.sparse.csgraph import floyd_warshall
 import warnings
 
 plt.rcParams["font.family"] = "monospace"
+if "MS Gothic" in plt.rcParams["font.family"]:
+    plt.rcParams["font.family"] = "MS Gothic"
 
 # ノードクラス
 class Node:
@@ -63,7 +65,7 @@ class Node:
         #ノード位置（可視化用）
         s.x = x
         s.y = y
-
+        
         #流入・流出リンク
         s.inlinks = {}
         s.outlinks = {}
@@ -1740,7 +1742,7 @@ class Analyzer:
 
         img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
         draw = ImageDraw.Draw(img)
-        font_data = read_binary('uxsim.files', 'Inconsolata.otf') 
+        font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
         font_file_like = io.BytesIO(font_data)
         font = ImageFont.truetype(font_file_like, int(network_font_size))
 
@@ -1769,7 +1771,7 @@ class Analyzer:
                 draw.text(((n.x)*coef-minx, flip((n.y)*coef-miny)), n.name, font=font, fill="green", anchor="mm")
                 draw.text(((n.x)*coef-minx, flip((n.y)*coef-miny)), n.name, font=font, fill="green", anchor="mm")
 
-        font_data = read_binary('uxsim.files', 'Inconsolata.otf') 
+        font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
         font_file_like = io.BytesIO(font_data)
         font = ImageFont.truetype(font_file_like, int(30))
         draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
@@ -1973,7 +1975,7 @@ class Analyzer:
         for t in tqdm(range(int(s.W.TMAX*0), int(s.W.TMAX*1), s.W.DELTAT*speed_coef)):
             img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
             draw = ImageDraw.Draw(img)
-            font_data = read_binary('uxsim.files', 'Inconsolata.otf') 
+            font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
             font_file_like = io.BytesIO(font_data)
             font = ImageFont.truetype(font_file_like, int(network_font_size))
 
@@ -1999,7 +2001,7 @@ class Analyzer:
                 draw.ellipse((xs[-1]-size, flip(ys[-1])-size, xs[-1]+size, flip(ys[-1])+size), fill=(int(trace["c"][0]*255), int(trace["c"][1]*255), int(trace["c"][2]*255)))
                 #draw.line([(x1, flip(y1)), (xmid1, flip(ymid1)), (xmid2, flip(ymid2)), (x2, flip(y2))]
 
-            font_data = read_binary('uxsim.files', 'Inconsolata.otf') 
+            font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
             font_file_like = io.BytesIO(font_data)
             font = ImageFont.truetype(font_file_like, int(30))
             draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
