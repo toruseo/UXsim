@@ -1,6 +1,15 @@
 """
 Interactive viewer for UXsim simulation results using PyQt5.
+After running the simulation, you can launch this viewer to visualize the simulation results interactively.
 GUI part was mainly written by Claude 3 Opus under supervision of Toru Seo.
+
+Examples
+--------
+Usage:
+    >>> ... #define the World object W
+    >>> W.exec_simulation()     #you run the simulation.
+    >>> from uxsim.ResultGUIViewer import launch_World_viewer
+    >>> launch_World_viewer(W)
 """
 
 import sys

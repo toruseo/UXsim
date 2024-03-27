@@ -15,7 +15,8 @@
 UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に適することを意図していますが，それ以外の目的にも自由に使用可能です．
 
 - [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01jp.ipynb)
-- [技術資料](https://toruseo.jp/UXsim/docs/index.html)
+- [Google Colabデモ](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb)
+- [詳細ページ（チュートリアル，仕様）](https://toruseo.jp/UXsim/docs/index.html)
 - [arXivプレプリント](https://arxiv.org/abs/2309.17114)
 - [交通流理論・シミュレーションの専門書](https://www.coronasha.co.jp/np/isbn/9784339052794/)
 
@@ -62,6 +63,10 @@ UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に
 <img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
 </p>
 
+### シミュレーション結果可視化GUI
+
+https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127196d9
+
 ## インストール
 
 ### pipを使用
@@ -96,9 +101,7 @@ pip install -U -e git+https://github.com/YOUR_FORK/uxsim@YOUR_BRANCH#egg=uxsim
 ```
 your_project_directory/
 ├── uxsim/ # uxsimディレクトリ
-│ ├── utils/ # UXsimのユーティリティファイル
 │ ├── uxsim.py # UXsimのメインコード。必要に応じてカスタマイズ可能
-│ ├── utils.py # UXsimのユーティリティ関数
 │ └── ... # その他元からあったファイル
 ├── your_simulation_code.py # 自作コード（必要なら）
 ├── your_simulation_notebook.ipynb # 自作Jupyterノートブック（必要なら）
@@ -199,7 +202,9 @@ results:
 - `uxsim`ディレクトリ: UXsimパッケージ
 	- `uxsim/uxsim.py`: UXsim本体のコード
 	- `uxsim/utils.py`: 関連コード
- 	- `uxsim/utils`ディレクトリ: 関連ファイル
+	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: 計算結果可視化用GUIサブモジュール
+	- `uxsim/OSMImporter/OSMImporter.py`: OpenStreetMapからのインポート用サブモジュール
+ 	- `uxsim/files`ディレクトリ: 関連ファイル
 - `demos_and_examples`ディレクトリ: チュートリアルや使用例
 - `dat`ディレクトリ: サンプルシナリオファイル
 - `tests`，`.github`ディレクトリ: 開発用ファイル
