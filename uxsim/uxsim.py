@@ -28,7 +28,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False):
+    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None):
         """
         Create a node
 
@@ -52,6 +52,8 @@ class Node:
             The maximum flow capacity of the node. Default is None, meaning infinite capacity.
         auto_rename : bool, optional
             Whether to automatically rename the node if the name is already used. Default is False.
+        number_of_lanes : int, optional
+            The number of lanes that can be green simultaniously at the node. Default is None.
 
         Attributes
         ----------
@@ -99,13 +101,20 @@ class Node:
 
         s.signal_log = []
 
-        #流量制限
+        #流量制限（マクロ信号）
+        s.flag_lanes_automatically_determined = False
         if flow_capacity != None:
             s.flow_capacity = flow_capacity
             s.flow_capacity_remain = flow_capacity*s.W.DELTAT
+            if number_of_lanes != None:
+                s.lanes = number_of_lanes
+            else:
+                s.lanes = math.ceil(flow_capacity/0.8) #TODO: 要調整
+                s.flag_lanes_automatically_determined = True
         else:
             s.flow_capacity = None
             s.flow_capacity_remain = 99999999999
+            s.lanes = None
 
         s.id = len(s.W.NODES)
         s.name = name
@@ -136,7 +145,7 @@ class Node:
         """
         flow capacity updates.
         """
-        if s.flow_capacity != None and s.flow_capacity_remain < s.W.DELTAN:
+        if s.flow_capacity != None and s.flow_capacity_remain < s.W.DELTAN*s.lanes:
             s.flow_capacity_remain += s.flow_capacity*s.W.DELTAT
 
     def generate(s):
@@ -148,37 +157,50 @@ class Node:
         If there are vehicles in the generation queue of the node, this method attempts to depart a vehicle to one of the outgoing links.
         The choice of the outgoing link is based on the vehicle's route preference for each link. Once a vehicle is departed, it is removed from the generation queue, added to the list of vehicles on the chosen link, and its state is set to "run".
         """
-        if len(s.generation_queue) > 0:
-            veh = s.generation_queue[0]
-            outlinks = list(s.outlinks.values())
+        outlinks = list(s.outlinks.values())
+        if len(outlinks):
+            for i in range(sum([l.lanes for l in outlinks])):
+                if len(s.generation_queue) > 0:
+                    veh = s.generation_queue[0]
+                    
+                    preference = [veh.route_pref[l] for l in outlinks]
+                    if sum(preference) > 0:
+                        outlink = random.choices(outlinks, preference)[0]
+                    else:
+                        outlink = random.choices(outlinks)[0]
 
-            if len(outlinks):
-                preference = [veh.route_pref[l] for l in outlinks]
-                if sum(preference) > 0:
-                    outlink = random.choices(outlinks, preference)[0]
+                    if (len(outlink.vehicles) < outlink.lanes or outlink.vehicles[-outlink.lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
+                        #受け入れ可能な場合，リンク優先度に応じて選択
+                        veh = s.generation_queue.popleft()
+
+                        veh.state = "run"
+                        veh.link = outlink
+                        veh.x = 0
+                        veh.v = outlink.u #端部の挙動改善
+                        s.W.VEHICLES_RUNNING[veh.name] = veh
+
+                        if len(outlink.vehicles) > 0:
+                            veh.lane = (outlink.vehicles[-1].lane + 1)%outlink.lanes
+                        else:
+                            veh.lane = 0
+
+                        veh.leader = None
+                        if len(outlink.vehicles) >= outlink.lanes:
+                            veh.leader = outlink.vehicles[-outlink.lanes]
+                            veh.leader.follower = veh
+                            assert veh.leader.lane == veh.lane
+
+                        outlink.vehicles.append(veh)
+
+                        outlink.cum_arrival[-1] += s.W.DELTAN
+                        veh.link_arrival_time = s.W.T*s.W.DELTAT
+
+                        outlink.capacity_in_remain -= s.W.DELTAN
+                    else:
+                        #受入れ不可能ならこのノードから流入しない
+                        break
                 else:
-                    outlink = random.choices(outlinks)[0]
-
-                if (len(outlink.vehicles) == 0 or outlink.vehicles[-1].x > outlink.delta*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
-                    #受け入れ可能な場合，リンク優先度に応じて選択
-                    veh = s.generation_queue.popleft()
-
-                    veh.state = "run"
-                    veh.link = outlink
-                    veh.x = 0
-                    veh.v = outlink.u #端部の挙動改善
-                    s.W.VEHICLES_RUNNING[veh.name] = veh
-
-                    if len(outlink.vehicles) > 0:
-                        veh.leader = outlink.vehicles[-1]
-                        veh.leader.follower = veh
-
-                    outlink.vehicles.append(veh)
-
-                    outlink.cum_arrival[-1] += s.W.DELTAN
-                    veh.link_arrival_time = s.W.T*s.W.DELTAT
-
-                    outlink.capacity_in_remain -= s.W.DELTAN
+                    break
 
     def transfer(s):
         """
@@ -193,18 +215,26 @@ class Node:
         - The current link has enough capacity to allow the vehicle to exit.
         - The node capacity is not exceeded.
         """
+        outlinks = []
         for outlink in {veh.route_next_link for veh in s.incoming_vehicles if veh.route_next_link != None}:
-            if (len(outlink.vehicles) == 0 or outlink.vehicles[-1].x > outlink.delta*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN and s.flow_capacity_remain >= s.W.DELTAN:
+            for i in range(outlink.lanes):#車線の数だけ受け入れ試行回数あり
+                outlinks.append(outlink)
+        random.shuffle(outlinks)
+
+        for outlink in outlinks: 
+            if (len(outlink.vehicles) < outlink.lanes or outlink.vehicles[-outlink.lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN and s.flow_capacity_remain >= s.W.DELTAN:
                 #受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択
                 vehs = [
                     veh for veh in s.incoming_vehicles 
-                    if veh.route_next_link == outlink and
-                      (s.signal_phase in veh.link.signal_group or len(s.signal)<=1) and 
-                      veh.link.capacity_out_remain >= s.W.DELTAN
-                ]
+                    if veh == veh.link.vehicles[0] and #送り出しリンクで先頭車線の車両
+                    veh.route_next_link == outlink and #行先リンクが受け入れリンク
+                    (s.signal_phase in veh.link.signal_group or len(s.signal)<=1) and #信号が合致
+                    veh.link.capacity_out_remain >= s.W.DELTAN
+                ] 
                 if len(vehs) == 0:
                     continue
                 veh = random.choices(vehs, [veh.link.merge_priority for veh in vehs])[0]
+                
                 inlink = veh.link
 
                 #累積台数関連更新
@@ -227,15 +257,22 @@ class Node:
                 if veh.follower != None:
                     veh.follower.leader = None
                     veh.follower = None
+
+                if len(outlink.vehicles) > 0:
+                    veh.lane = (outlink.vehicles[-1].lane + 1)%outlink.lanes
+                else:
+                    veh.lane = 0
+                
                 veh.leader = None
-                if len(outlink.vehicles):
-                    veh.leader = outlink.vehicles[-1]
+                if len(outlink.vehicles) >= outlink.lanes:
+                    veh.leader = outlink.vehicles[-outlink.lanes]
                     veh.leader.follower = veh
+                    assert veh.leader.lane == veh.lane
 
                 #走り残し処理
                 x_next = veh.move_remain*outlink.u/inlink.u
                 if veh.leader != None:
-                    x_cong = veh.leader.x_old - veh.link.delta*veh.W.DELTAN
+                    x_cong = veh.leader.x_old - veh.link.delta_per_lane*veh.W.DELTAN
                     if x_cong < veh.x:
                         x_cong = veh.x
                     if x_next > x_cong:
@@ -261,7 +298,7 @@ class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False, number_of_lanes=1):
         """
         Create a link
 
@@ -295,6 +332,8 @@ class Link:
             Additional (meta) attributes defined by users.
         auto_rename : bool, optional
             Whether to automatically rename the link if the name is already used. Default is False.
+        number_of_lanes : int, optional
+            The number of lanes on the link, default is 1.
 
         Attributes
         ----------
@@ -325,6 +364,19 @@ class Link:
         Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
         Some of the traffic flow model parameters can be altered during simulation by changing `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority`.
         
+        複数車線のモデル
+        - リンクモデル
+            - multi-lane, single-pipe model．リンク単位でFIFOが担保される．車線変更なし
+            - リンクは車線数lanesを持つ
+            - 各車両は車線laneを持つ
+            - 各車両は同じ車線の先行車両を追従する．つまり，そのリンクのlanes台前の車両を追従する
+        - ノードモデル
+            - 送り出しリンクの挙動
+                - リンク最下流端部の全ての車線の車両が送り出され権利を持つ
+                - ただし，リンクFIFOは担保するため，リンク流入順で送り出しを試行し，受け入れられなかったらそのリンクからの流出は止まる
+            - 受け入れリンクの挙動
+                - リンク最上流端部の全ての車線が受け入れ可能
+
         """
 
         s.W = W
@@ -335,15 +387,23 @@ class Link:
         #リンク長
         s.length = length
 
-        #フローモデルパラメータ
+        #車線数
+        s.lanes = int(number_of_lanes)
+        if s.lanes != number_of_lanes:
+            raise ValueError(f"number_of_lanes must be an integer. Got {number_of_lanes} at {s}.")
+        
+
+        #フローモデルパラメータ:per road
         s.u = free_flow_speed
-        s.kappa = jam_density
-        s.tau = s.W.REACTION_TIME
+        s.kappa = jam_density*s.lanes
+        s.tau = s.W.REACTION_TIME/s.lanes
         s.w = 1/s.tau/s.kappa
         s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
         s.delta = 1/s.kappa
+        s.delta_per_lane = s.delta*s.lanes #m/veh/lane. used for car-following model per lane
         s.q_star = s.capacity   #flow capacity
         s.k_star = s.capacity/s.u   #critical density
+
 
         #合流時優先度
         s.merge_priority = merge_priority
@@ -457,10 +517,10 @@ class Link:
         """
         Link capacity updates.
         """
-        #リンク流入出率を流出容量以下にするための処理
-        if s.capacity_out_remain < s.W.DELTAN:
+        #リンク流入出率を流出容量以下にするための処理．一タイムステップ当りに通り抜ける最大数を確保する
+        if s.capacity_out_remain < s.W.DELTAN*s.lanes:
             s.capacity_out_remain += s.capacity_out*s.W.DELTAT
-        if s.capacity_in_remain < s.W.DELTAN:
+        if s.capacity_in_remain < s.W.DELTAN*s.lanes:
             s.capacity_in_remain += s.capacity_in*s.W.DELTAT
 
     def set_traveltime_instant(s):
@@ -680,6 +740,9 @@ class Vehicle:
         s.x_old = 0
         s.v = 0
 
+        #走行車線
+        s.lane = 0
+
         #先行・後行車
         s.leader = None
         s.follower = None
@@ -815,7 +878,7 @@ class Vehicle:
         """
         s.x_next = s.x + s.link.u*s.W.DELTAT
         if s.leader != None:
-            x_cong = s.leader.x - s.link.delta*s.W.DELTAN
+            x_cong = s.leader.x - s.link.delta_per_lane*s.W.DELTAN
             if x_cong < s.x:
                 x_cong = s.x
             if s.x_next > x_cong:

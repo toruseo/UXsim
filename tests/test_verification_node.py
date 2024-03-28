@@ -996,5 +996,3 @@ def test_4phase_signal_jpstyle():
     referemce_avt = [41.40449658, 65.77142857, 41.56507937, 41.41644018, 41.30793651, 65.97619048, 49.7849498, 49.15555556, 69.54444444, 49.11051701, 70.71428571, 48.62857143]
     for i in range(len(avt)):
         assert equal_tolerance(avt[i], referemce_avt[i])
-                                                     
-#TODO: add tests later, check flow values
