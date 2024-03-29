@@ -13,7 +13,6 @@ from tqdm.auto import tqdm
 from collections import defaultdict as ddict
 from importlib.resources import read_binary #according to official doc, this is also not recommended
 import io
-
 from scipy.sparse.csgraph import floyd_warshall
 
 from .utils  import *
@@ -22,7 +21,7 @@ plt.rcParams["font.family"] = "monospace"
 if "MS Gothic" in plt.rcParams["font.family"]:
     plt.rcParams["font.family"] = "MS Gothic"
 
-# 結果分析クラス
+
 class Analyzer:
     """
     Class for analyzing and visualizing a simulation result.

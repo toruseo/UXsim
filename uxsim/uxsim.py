@@ -1,25 +1,18 @@
 """
-Macroscopic/mesoscopic traffic flow simulator in a network.
+UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.
+This `uxsim.py` is the core of UXsim. It summarizes the classes and methods for that are essential for the simulation.
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
-import random, csv, time, math, string
+import random, csv, time, math, string, warnings
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
+from scipy.sparse.csgraph import floyd_warshall
 
 from .analyzer import *
 from .utils  import *
 
-from scipy.sparse.csgraph import floyd_warshall
-
-import warnings
-
-plt.rcParams["font.family"] = "monospace"
-if "MS Gothic" in plt.rcParams["font.family"]:
-    plt.rcParams["font.family"] = "MS Gothic"
-
-# ノードクラス
 class Node:
     """
     Node in a network.
@@ -105,7 +98,7 @@ class Node:
             if number_of_lanes != None:
                 s.lanes = number_of_lanes
             else:
-                s.lanes = math.ceil(flow_capacity/0.8) #TODO: 要調整
+                s.lanes = math.ceil(flow_capacity/0.8) #TODO: 要調整．現状は1車線0.8 veh/sと見なし，車線数を決定している
                 s.flag_lanes_automatically_determined = True
         else:
             s.flow_capacity = None
@@ -229,7 +222,7 @@ class Node:
                 ] 
                 if len(vehs) == 0:
                     continue
-                veh = random.choices(vehs, [veh.link.merge_priority for veh in vehs])[0]
+                veh = random.choices(vehs, [veh.link.merge_priority for veh in vehs])[0] #車線の少ないリンクは，車線の多いリンクの試行回数の恩恵を受けて少し有利になる．大きな差はでないので許容する
                 
                 inlink = veh.link
 
@@ -289,7 +282,7 @@ class Node:
         s.signal_control()
         s.flow_capacity_update()
 
-# リンククラス
+
 class Link:
     """
     Link in a network.
@@ -372,7 +365,6 @@ class Link:
                 - ただし，リンクFIFOは担保するため，リンク流入順で送り出しを試行し，受け入れられなかったらそのリンクからの流出は止まる
             - 受け入れリンクの挙動
                 - リンク最上流端部の全ての車線が受け入れ可能
-
         """
 
         s.W = W
@@ -675,7 +667,6 @@ class Link:
             warnings.warn(f"ignored negative jam_density at {s}", UserWarning)
 
 
-# 車両クラス
 class Vehicle:
     """
     Vehicle or platoon in a network.
@@ -995,7 +986,7 @@ class Vehicle:
             s.W.analyzer.average_speed_count += 1
             s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
 
-# 経路選択クラス
+
 class RouteChoice:
     """
     Class for computing shortest path for all vehicles.
@@ -1117,6 +1108,7 @@ class RouteChoice:
                     s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight
                 else:
                     s.route_pref[k][l] = (1-weight)*s.route_pref[k][l]
+
 
 class World:
     """
@@ -1824,6 +1816,10 @@ class World:
         """
         Visualizes the entire transportation network shape.
         """
+        plt.rcParams["font.family"] = "monospace"
+        if "MS Gothic" in plt.rcParams["font.family"]:
+            plt.rcParams["font.family"] = "MS Gothic"
+
         plt.figure(figsize=figsize)
         plt.subplot(111, aspect="equal")
         for n in W.NODES:
@@ -1857,7 +1853,6 @@ class World:
         plt.show()
 
 
-# 経路クラス
 class Route:
     """
     Class for a route that store concective links.

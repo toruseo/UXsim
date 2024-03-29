@@ -12,6 +12,9 @@ def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
         abs_tol = 0.1
     return abs(val - check) <= abs(check*rel_tol) + abs_tol
 
+def q2k_cong(q, link):
+    return -(q-link.kappa*link.w)/link.w
+
 @pytest.mark.flaky(reruns=5)
 def test_merge_fair_nocongestion():
     tt1s = []
@@ -546,6 +549,59 @@ def test_merge_flowcheck_veryunfair():
     assert equal_tolerance(q2, 0.6)
     assert equal_tolerance(q3, 0.8)
     assert equal_tolerance(v2, 20, rel_tol=0.2)
+
+
+@pytest.mark.flaky(reruns=5)
+def test_diverge_flowcheck():
+    q1s = []
+    k1s = []
+    v1s = []
+    q2s = []
+    k2s = []
+    q3s = []
+    k3s = []
+    for i in range(5):
+        W = World(
+            name="",
+            deltan=5,
+            tmax=1000,
+            print_mode=0, save_mode=0, show_mode=1,
+            random_seed=None
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("mid", 0, 0)
+        W.addNode("dest1", 2, 1)
+        W.addNode("dest2", 2, 1)
+        link1 = W.addLink("link1", "orig", "mid", length=1000, free_flow_speed=20, jam_density=0.2,   number_of_lanes=1)
+        link2 = W.addLink("link2", "mid", "dest1", length=1000, free_flow_speed=20, jam_density=0.2,  number_of_lanes=1, capacity_in=0.4)
+        link3 = W.addLink("link3", "mid", "dest2",  length=1000, free_flow_speed=20, jam_density=0.2, number_of_lanes=1, capacity_in=0.4)
+        t1 = 1000
+        flow1 = 0.8*2/3
+        t2 = 1000
+        flow2 = 0.8*1/3
+        W.adddemand("orig", "dest1", 0, t1, flow1)
+        W.adddemand("orig", "dest2", 0, t2, flow2)
+
+        W.exec_simulation()
+        W.analyzer.print_simple_stats()
+
+        W.analyzer.compute_edie_state()
+        q1s.append(link1.q_mat[5:,6:8].mean())
+        k1s.append(link1.k_mat[5:,6:8].mean())
+        v1s.append(link1.v_mat[5:,6:8].mean())
+        q2s.append(link2.q_mat[5:,6:8].mean())
+        k2s.append(link2.k_mat[5:,6:8].mean())
+        q3s.append(link3.q_mat[5:,6:8].mean())
+        k3s.append(link3.k_mat[5:,6:8].mean())
+
+    print(np.average(q1s), 0.6) 
+    print(np.average(k1s), q2k_cong(0.6, link1))
+    print(np.average(v1s), 0.6/q2k_cong(0.6, link1))
+    print(np.average(q2s), 0.4)
+    print(np.average(k2s), 0.02)
+    print(np.average(q3s), 0.2) 
+    print(np.average(k3s), 0.01)
 
 @pytest.mark.flaky(reruns=5)
 def test_2to2_no_flow_to_one_dest():

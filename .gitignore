@@ -136,6 +136,7 @@ dev*.ipynb
 _*.ps1
 p*_*.py
 *.code-workspace
+.VSCodeCounter/*
 
 # pre-commit
 .pre-commit-config.yaml
