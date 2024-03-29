@@ -1,3 +1,21 @@
+"""
+OpenStreetMap importer using OSMnx.
+Work in progress. Import from OSM is experimental and may not work as expected. It is functional but may produce inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.
+
+
+Examples
+--------
+Import highway in Tokyo:
+    >>> from uxsim.OSMImporter import OSMImporter
+    >>> ... #define World object W
+    >>> nodes, links = OSMImporter.import_osm_data(north=35.817, south=35.570, east=139.881, west=139.583, custom_filter='["highway"~"motorway"]')
+    >>> nodes, links = OSMImporter.osm_network_postprocessing(nodes, links, node_merge_threshold=0.005, node_merge_iteration=5, >>> enforce_bidirectional=True)  # merge threshold distance: 0.005 degree ~= 500 m. `enforce_bidirectional` makes all links bidirectional, so >>> that network is not fragmented (but the original network topology is not preserved rigorously).
+    >>> OSMImporter.osm_network_visualize(nodes, links, show_link_name=0)
+    >>> OSMImporter.osm_network_to_World(W, nodes, links, default_jam_density=0.2, coef_degree_to_meter=111000)
+    >>> ... #add demand
+    >>> W.exec_simulation()
+"""
+
 
 import matplotlib.pyplot as plt
 import math

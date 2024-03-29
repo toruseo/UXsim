@@ -22,6 +22,7 @@ default FD:
     q^* = 0.8
 """
 
+
 @pytest.mark.flaky(reruns=5)
 def test_straight_1link_2lane_low_demand():
     W = World(
@@ -52,6 +53,7 @@ def test_straight_1link_2lane_low_demand():
     assert equal_tolerance(link.q_mat[6:,3:5].mean(), 0)
     assert equal_tolerance(link.v_mat[6:,3:5].mean(), link.u)
     assert equal_tolerance(link.k_mat[6:,3:5].mean(), 0)
+    
 
 @pytest.mark.flaky(reruns=5)
 def test_straight_1link_2lane_high_demand():
@@ -80,6 +82,7 @@ def test_straight_1link_2lane_high_demand():
     assert equal_tolerance(link.q_mat[2:6,3:5].mean(), link.capacity)
     assert equal_tolerance(link.v_mat[2:6,3:5].mean(), link.u)
     assert equal_tolerance(link.k_mat[2:6,3:5].mean(), link.k_star)
+    
 
 @pytest.mark.flaky(reruns=5)
 def test_straight_2link_2lane_low_demand():
@@ -117,6 +120,7 @@ def test_straight_2link_2lane_low_demand():
     assert equal_tolerance(link2.q_mat[7:,3:5].mean(), 0)
     assert equal_tolerance(link2.v_mat[7:,3:5].mean(), link2.u)
     assert equal_tolerance(link2.k_mat[7:,3:5].mean(), 0)
+    
 
 @pytest.mark.flaky(reruns=5)
 def test_straight_2link_2lane_high_demand():
@@ -154,6 +158,7 @@ def test_straight_2link_2lane_high_demand():
     assert equal_tolerance(link2.q_mat[7:,3:5].mean(), 0)
     assert equal_tolerance(link2.v_mat[7:,3:5].mean(), link2.u)
     assert equal_tolerance(link2.k_mat[7:,3:5].mean(), 0)
+    
 
 
 @pytest.mark.flaky(reruns=5)
@@ -190,6 +195,7 @@ def test_straight_2link_2lane_to_1lane_congestion():
     assert equal_tolerance(link2.v_mat[2:,3:5].mean(), 20)
     assert equal_tolerance(link2.k_mat[2:,3:5].mean(), 0.04)
     
+
 @pytest.mark.flaky(reruns=5)
 def test_straight_2link_2lane_to_1lane_congestion_deltan1():
     W = World(
@@ -223,6 +229,7 @@ def test_straight_2link_2lane_to_1lane_congestion_deltan1():
     assert equal_tolerance(link2.q_mat[2:,3:5].mean(), 0.8)  #downstream
     assert equal_tolerance(link2.v_mat[2:,3:5].mean(), 20)
     assert equal_tolerance(link2.k_mat[2:,3:5].mean(), 0.04)
+    
     
 
 @pytest.mark.flaky(reruns=5)
@@ -258,6 +265,7 @@ def test_straight_2link_2lane_to_3lane():
     assert equal_tolerance(link2.q_mat[2:,3:5].mean(), 0.8*2)
     assert equal_tolerance(link2.v_mat[2:,3:5].mean(), 20)
     assert equal_tolerance(link2.k_mat[2:,3:5].mean(), 0.04*2)
+    
 
 @pytest.mark.flaky(reruns=5)
 def test_merge_saturated():
@@ -296,6 +304,7 @@ def test_merge_saturated():
     assert equal_tolerance(link3.q_mat[3:6,3].mean(), 2.4) 
     assert equal_tolerance(link3.k_mat[3:6,3].mean(), 0.12)
     assert equal_tolerance(link3.v_mat[3:6,3].mean(), 20)
+    
 
 
 @pytest.mark.flaky(reruns=5)
@@ -335,5 +344,8 @@ def test_merge_small_demand():
     assert equal_tolerance(link3.q_mat[3:6,3].mean(), 1.6) 
     assert equal_tolerance(link3.k_mat[3:6,3].mean(), 0.08)
     assert equal_tolerance(link3.v_mat[3:6,3].mean(), 20)
+
+
+
 
 #TODO: add more tests, merging logic should be checked
