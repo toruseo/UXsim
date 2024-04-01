@@ -102,7 +102,7 @@ class Node:
                 s.flag_lanes_automatically_determined = True
         else:
             s.flow_capacity = None
-            s.flow_capacity_remain = 99999999999
+            s.flow_capacity_remain = 10e10
             s.lanes = None
 
         s.id = len(s.W.NODES)
@@ -134,8 +134,11 @@ class Node:
         """
         flow capacity updates.
         """
-        if s.flow_capacity != None and s.flow_capacity_remain < s.W.DELTAN*s.lanes:
-            s.flow_capacity_remain += s.flow_capacity*s.W.DELTAT
+        if s.flow_capacity != None:
+            if s.flow_capacity_remain < s.W.DELTAN*s.lanes:
+                s.flow_capacity_remain += s.flow_capacity*s.W.DELTAT
+        else:
+            s.flow_capacity_remain = 10e10
 
     def generate(s):
         """
@@ -270,8 +273,20 @@ class Node:
                         x_next = outlink.length
                 veh.x = x_next
 
+                #今移動した車両の後続車両がトリップ終了待ちの場合，トリップ終了させる
+                if len(inlink.vehicles) and inlink.vehicles[0].flag_waiting_for_trip_end:
+                    inlink.vehicles[0].end_trip()
+
                 outlink.vehicles.append(veh)
                 s.incoming_vehicles.remove(veh)
+
+        #各リンクの先頭のトリップ終了待ち車両をトリップ終了させる
+        for link in s.inlinks.values():
+            for lane in range(link.lanes):
+                if len(link.vehicles) and link.vehicles[0].flag_waiting_for_trip_end:
+                    link.vehicles[0].end_trip()
+                else:
+                    break
 
         s.incoming_vehicles = []
 
@@ -294,7 +309,7 @@ class Link:
         Parameters
         ----------
         W : object
-            The network to which the link belongs.
+            The world to which the link belongs.
         name : str
             The name of the link.
         start_node : str
@@ -461,9 +476,10 @@ class Link:
         #流入容量
         s.capacity_in = capacity_in
         if capacity_in == None:
-            s.capacity_in = s.capacity*2
-            #todo_later: capacity_inは微妙にバグがあるらしい（多分離散化誤差）．少なくとも未設定時にはバグが顕在化しないように2倍にしている
-        s.capacity_in_remain = s.capacity_in*s.W.DELTAT
+            s.capacity_in = 10e10
+            s.capacity_in_remain = 10e10
+        else:
+            s.capacity_in_remain = s.capacity_in*s.W.DELTAT
 
         s.id = len(s.W.LINKS)
         s.name = name
@@ -542,10 +558,14 @@ class Link:
         Link capacity updates.
         """
         #リンク流入出率を流出容量以下にするための処理．一タイムステップ当りに通り抜ける最大数を確保する
-        if s.capacity_out_remain < s.W.DELTAN*s.lanes:
-            s.capacity_out_remain += s.capacity_out*s.W.DELTAT
-        if s.capacity_in_remain < s.W.DELTAN*s.lanes:
-            s.capacity_in_remain += s.capacity_in*s.W.DELTAT
+        if s.capacity_in != None:
+            if s.capacity_out_remain < s.W.DELTAN*s.lanes:
+                s.capacity_out_remain += s.capacity_out*s.W.DELTAT
+            if s.capacity_in_remain < s.W.DELTAN*s.lanes:
+                s.capacity_in_remain += s.capacity_in*s.W.DELTAT
+        else:
+            s.capacity_out_remain = 10e10
+            s.capacity_in_remain = 10e10
 
     def set_traveltime_instant(s):
         """
@@ -770,6 +790,9 @@ class Vehicle:
         s.leader = None
         s.follower = None
 
+        #トリップ終了準備フラグ
+        s.flag_waiting_for_trip_end = 0
+
         #リンク端部の走り残し処理
         s.move_remain = 0
 
@@ -854,12 +877,17 @@ class Vehicle:
             #リンク下流端
             if s.x == s.link.length:
                 if s.link.end_node == s.dest:
-                    #トリップ終了
-                    s.end_trip()
+                    #トリップ終了待ちにする
+                    s.flag_waiting_for_trip_end = 1
+                    if s.link.vehicles[0] == s:
+                        s.end_trip()
                 elif len(s.link.end_node.outlinks.values()) == 0 and s.trip_abort == 1:
+                    #トリップ終了待ち（目的地到達不可）にする
                     s.flag_trip_aborted = 1
                     s.route_next_link = None
-                    s.end_trip()
+                    s.flag_waiting_for_trip_end = 1
+                    if s.link.vehicles[0] == s:
+                        s.end_trip()
                 else:
                     #リンク間遷移リクエスト
                     s.route_next_link_choice()

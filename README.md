@@ -134,11 +134,11 @@ W.addNode("orig1", 0, 0) # Create a node
 W.addNode("orig2", 0, 2)
 W.addNode("merge", 1, 1)
 W.addNode("dest", 2, 1)
-W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=0.5) # Create a link
-W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=2)
-W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
-W.adddemand("orig1", "dest", 0, 1000, 0.4) # Create OD traffic demand
-W.adddemand("orig2", "dest", 500, 1000, 0.6)
+W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20) # Create a link
+W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20)
+W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20)
+W.adddemand("orig1", "dest", 0, 1000, 0.45) # Create OD traffic demand
+W.adddemand("orig2", "dest", 400, 1000, 0.6)
 
 # Run the simulation to the end
 W.exec_simulation()
@@ -147,9 +147,9 @@ W.exec_simulation()
 W.analyzer.print_simple_stats()
 
 # Visualize snapshots of network traffic state for several timesteps
-W.analyzer.network(0, detailed=1, network_font_size=0)
-W.analyzer.network(500, detailed=1, network_font_size=0)
-W.analyzer.network(1000, detailed=1, network_font_size=0)
+W.analyzer.network(100, detailed=1, network_font_size=12)
+W.analyzer.network(600, detailed=1, network_font_size=12)
+W.analyzer.network(800, detailed=1, network_font_size=12)
 ```
 
 It would output text to the terminal and images to `out` directory like below:
@@ -157,27 +157,27 @@ It would output text to the terminal and images to `out` directory like below:
 simulation setting:
  scenario name:
  simulation duration:    1200 s
- number of vehicles:     700 veh
+ number of vehicles:     810 veh
  total road length:      3000 m
  time discret. width:    5 s
  platoon size:           5 veh
  number of timesteps:    240
- number of platoons:     140
+ number of platoons:     162
  number of links:        3
  number of nodes:        4
  setup time:             0.00 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|      100 vehs|  17.5 m/s|     0.03 s
-    1195 s|       25 vehs|  20.0 m/s|     0.05 s
+     600 s|      130 vehs|  13.7 m/s|     0.03 s
+    1195 s|       75 vehs|  12.3 m/s|     0.06 s
  simulation finished
 results:
- average speed:  13.8 m/s
- number of completed trips:      675 / 700
- average travel time of trips:   142.7 s
- average delay of trips:         42.7 s
- delay ratio:                    0.299
+ average speed:  11.6 m/s
+ number of completed trips:      735 / 810
+ average travel time of trips:   162.6 s
+ average delay of trips:         62.6 s
+ delay ratio:                    0.385
 ```
 <p float="left">
 <img src="https://github.com/toruseo/UXsim/blob/images/simple_example_network1_1000.png" width="400"/>
@@ -220,7 +220,7 @@ For minor changes including bug fixes, please submit a pull request.
 Please make sure that your codes pass the automatic tests in Github Action.
 If you want a major change, please start a discussion at [Issues](https://github.com/toruseo/UXsim/issues) page first.
 
-If you have any questions or suggestions, please start a discussion at [Issues](https://github.com/toruseo/UXsim/issues) page (in English or Japanese).
+If you have any questions or suggestions, please start a discussion at [Discussions](https://github.com/toruseo/UXsim/discussions) page (in English or Japanese).
 
 I (Toru Seo) work on this project in my spare time. Please understand that my response may be delayed.
 

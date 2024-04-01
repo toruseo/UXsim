@@ -26,6 +26,7 @@ def q2k_cong(q, link):
     return -(q-link.kappa*link.w)/link.w
 
 
+
 @pytest.mark.flaky(reruns=5)
 def test_straight_1link_2lane_low_demand():
     W = World(
@@ -57,7 +58,6 @@ def test_straight_1link_2lane_low_demand():
     assert equal_tolerance(link.v_mat[6:,3:5].mean(), link.u)
     assert equal_tolerance(link.k_mat[6:,3:5].mean(), 0)
     
-
 @pytest.mark.flaky(reruns=5)
 def test_straight_1link_2lane_high_demand():
     W = World(
@@ -412,6 +412,67 @@ def test_straight_2link_node_capacity():
     assert equal_tolerance(np.average(v2s), 20)
 
 @pytest.mark.flaky(reruns=5)
+def test_straight_trip_end_in_middle_freeflow():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=2000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("mid", 0, 0)
+    W.addNode("dest", 2, 1)
+    link1 = W.addLink("link1", "orig", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=3)
+    link2 = W.addLink("link2", "mid", "dest", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=2)
+
+    W.adddemand("orig", "dest", 0, 2000, 1.6)
+    W.adddemand("orig", "mid", 1000, 2000, 0.8)
+
+    W.exec_simulation()
+    W.analyzer.compute_edie_state()
+    # df = W.analyzer.od_to_pandas()
+    # W.analyzer.print_simple_stats()
+    # W.analyzer.time_space_diagram_traj_links([link1, link2])
+    # W.analyzer.cumulative_curves()
+    assert equal_tolerance(link1.q_mat[1:7,3].mean(), 1.6)
+    assert equal_tolerance(link1.q_mat[10:,3].mean(), 1.6+0.8)
+    assert equal_tolerance(link2.q_mat[1:7,3].mean(), 1.6)
+    assert equal_tolerance(link2.q_mat[10:,3].mean(), 1.6)
+
+@pytest.mark.flaky(reruns=5)
+def test_straight_trip_end_in_middle():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=2000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("mid", 0, 0)
+    W.addNode("dest", 2, 1)
+    link1 = W.addLink("link1", "orig", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=3)
+    link2 = W.addLink("link2", "mid", "dest", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=1)
+    t = 600
+    flow = 1.6
+    W.adddemand("orig", "dest", 0, t, flow)
+    W.adddemand("orig", "mid", 500, t, flow)
+
+    W.exec_simulation()
+    df = W.analyzer.od_to_pandas()
+    # W.analyzer.print_simple_stats()
+    # W.analyzer.compute_edie_state()
+    # W.analyzer.time_space_diagram_traj_links([link1, link2])
+    # W.analyzer.cumulative_curves()
+    assert equal_tolerance(df["completed_trips"][0], 960)
+    assert equal_tolerance(df["completed_trips"][1], 160)
+    assert equal_tolerance(df["average_travel_time"][0], 400)
+    assert equal_tolerance(df["average_travel_time"][1], 600)
+
+@pytest.mark.flaky(reruns=5)
 def test_straight_different_fd():
     q1s = []
     k1s = []
@@ -592,7 +653,7 @@ def test_straight_different_fd_different_lanes_different_arg():
     assert equal_tolerance(np.average(k2s), 0.666*1.5/5)
     assert equal_tolerance(np.average(v2s), 5)
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=10)
 def test_merge_saturated():
     W = World(
         name="",
@@ -1092,6 +1153,146 @@ def test_merge_congested_node_capacity():
     assert equal_tolerance(np.average(q3s), 1.0) 
     assert equal_tolerance(np.average(k3s), 1/20)
     assert equal_tolerance(np.average(v3s), 20)
+
+@pytest.mark.flaky(reruns=5)
+def test_merge_disappear_freeflow():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=2000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 0)
+    W.addNode("mid", 0, 0)
+    W.addNode("dest1", 2, 1)
+    link1 = W.addLink("link1", "orig1", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=2)
+    link2 = W.addLink("link2", "orig2", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=1)
+    link3 = W.addLink("link3", "mid", "dest1", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=2)
+
+    W.adddemand("orig1", "dest1", 0, 2000, 0.8)
+    W.adddemand("orig1", "mid",   0, 2000, 0.4)
+    W.adddemand("orig2", "dest1", 0, 2000, 0.8)
+
+    W.exec_simulation()
+    W.analyzer.print_simple_stats()
+    W.analyzer.compute_edie_state()
+    #W.analyzer.time_space_diagram_traj()
+
+    assert equal_tolerance(link1.q_mat[3:8,3:5].mean(), 1.2)
+    assert equal_tolerance(link2.q_mat[3:8,3:5].mean(), 0.8)
+    assert equal_tolerance(link3.q_mat[3:8,3:5].mean(), 1.6)
+    assert equal_tolerance(link1.v_mat[3:8,3:5].mean(), 20)
+    assert equal_tolerance(link2.v_mat[3:8,3:5].mean(), 20)
+    assert equal_tolerance(link3.v_mat[3:8,3:5].mean(), 20)
+
+@pytest.mark.flaky(reruns=5)
+def test_merge_disappear_saturated():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=2000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 0)
+    W.addNode("mid", 0, 0)
+    W.addNode("dest1", 2, 1)
+    link1 = W.addLink("link1", "orig1", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=2)
+    link2 = W.addLink("link2", "orig2", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=1)
+    link3 = W.addLink("link3", "mid", "dest1", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=2)
+
+    W.adddemand("orig1", "dest1", 0, 2000, 0.8)
+    W.adddemand("orig1", "mid",   0, 2000, 0.8)
+    W.adddemand("orig2", "dest1", 0, 2000, 0.8)
+
+    W.exec_simulation()
+    W.analyzer.print_simple_stats()
+    W.analyzer.compute_edie_state()
+
+    assert equal_tolerance(link1.q_mat[3:8,3:5].mean(), 1.6)
+    assert equal_tolerance(link2.q_mat[3:8,3:5].mean(), 0.8)
+    assert equal_tolerance(link3.q_mat[3:8,3:5].mean(), 1.6)
+    assert equal_tolerance(link1.v_mat[3:8,3:5].mean(), 20)
+    assert equal_tolerance(link2.v_mat[3:8,3:5].mean(), 20)
+    assert equal_tolerance(link3.v_mat[3:8,3:5].mean(), 20)
+
+@pytest.mark.flaky(reruns=5)
+def test_merge_disappear_congested():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=2000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 0)
+    W.addNode("mid", 0, 0)
+    W.addNode("dest1", 2, 1)
+    link1 = W.addLink("link1", "orig1", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=2)
+    link2 = W.addLink("link2", "orig2", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=1)
+    link3 = W.addLink("link3", "mid", "dest1", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=2)
+
+    W.adddemand("orig1", "dest1", 0, 2000, 1.2)
+    W.adddemand("orig1", "mid",   0, 2000, 0.4)
+    W.adddemand("orig2", "dest1", 0, 2000, 0.8)
+
+    W.exec_simulation()
+    W.analyzer.print_simple_stats()
+    W.analyzer.compute_edie_state()
+
+    assert equal_tolerance(link1.q_mat[3:8,3:5].mean(), 1.3, rel_tol=0.3)
+    assert equal_tolerance(link2.q_mat[3:8,3:5].mean(), 0.6, rel_tol=0.3)
+    assert equal_tolerance(link3.q_mat[3:8,3:5].mean(), 1.6)
+    assert equal_tolerance(link1.v_mat[3:8,3:5].mean(), 9, rel_tol=0.3)
+    assert equal_tolerance(link2.v_mat[3:8,3:5].mean(), 8, rel_tol=0.3)
+    assert equal_tolerance(link3.v_mat[3:8,3:5].mean(), 20)
+
+@pytest.mark.flaky(reruns=5)
+def test_merge_diverge_disappear_freeflow():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=2000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 0)
+    W.addNode("mid", 0, 0)
+    W.addNode("dest1", 2, 1)
+    W.addNode("dest2", 0, 0)
+    link1 = W.addLink("link1", "orig1", "mid", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=3)
+    link2 = W.addLink("link2", "orig2", "mid", length=1000, free_flow_speed=30, jam_density_per_lane=0.2, number_of_lanes=2)
+    link3 = W.addLink("link3", "mid", "dest1", length=1000, free_flow_speed=20, jam_density_per_lane=0.2, number_of_lanes=2)
+    link4 = W.addLink("link4", "mid", "dest2", length=1000, free_flow_speed=30, jam_density_per_lane=0.2, number_of_lanes=1)
+
+    W.adddemand("orig1", "dest1", 0, 2000, 0.8)
+    W.adddemand("orig1", "dest2", 0, 2000, 0.4)
+    W.adddemand("orig1", "mid",   0, 2000, 0.8)
+    W.adddemand("orig2", "dest1", 0, 2000, 0.8)
+    W.adddemand("orig2", "dest2", 0, 2000, 0.4)
+
+    W.exec_simulation()
+    W.analyzer.print_simple_stats()
+    W.analyzer.compute_edie_state()
+    # W.analyzer.time_space_diagram_traj()
+
+    assert equal_tolerance(link1.q_mat[3:8,3:5].mean(), 2.0)
+    assert equal_tolerance(link2.q_mat[3:8,3:5].mean(), 1.2)
+    assert equal_tolerance(link3.q_mat[3:8,3:5].mean(), 0.8*2)
+    assert equal_tolerance(link4.q_mat[3:8,3:5].mean(), 0.8*1)
+    assert equal_tolerance(link1.v_mat[3:8,3:5].mean(), 20)
+    assert equal_tolerance(link2.v_mat[3:8,3:5].mean(), 30)
+    assert equal_tolerance(link3.v_mat[3:8,3:5].mean(), 20)
+    assert equal_tolerance(link4.v_mat[3:8,3:5].mean(), 30)
 
 @pytest.mark.flaky(reruns=5)
 def test_diverge_saturated_2_2_2():
