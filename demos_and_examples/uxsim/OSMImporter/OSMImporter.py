@@ -1,3 +1,21 @@
+"""
+OpenStreetMap importer using OSMnx.
+Work in progress. Import from OSM is experimental and may not work as expected. It is functional but may produce inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.
+
+
+Examples
+--------
+Import highway in Tokyo:
+    >>> from uxsim.OSMImporter import OSMImporter
+    >>> ... #define World object W
+    >>> nodes, links = OSMImporter.import_osm_data(north=35.817, south=35.570, east=139.881, west=139.583, custom_filter='["highway"~"motorway"]')
+    >>> nodes, links = OSMImporter.osm_network_postprocessing(nodes, links, node_merge_threshold=0.005, node_merge_iteration=5, >>> enforce_bidirectional=True)  # merge threshold distance: 0.005 degree ~= 500 m. `enforce_bidirectional` makes all links bidirectional, so >>> that network is not fragmented (but the original network topology is not preserved rigorously).
+    >>> OSMImporter.osm_network_visualize(nodes, links, show_link_name=0)
+    >>> OSMImporter.osm_network_to_World(W, nodes, links, default_jam_density=0.2, coef_degree_to_meter=111000)
+    >>> ... #add demand
+    >>> W.exec_simulation()
+"""
+
 
 import matplotlib.pyplot as plt
 import math
@@ -104,6 +122,8 @@ class OSMImporter:
                             lanes = default_number_of_lanes_others
                     except:
                         lanes = default_number_of_lanes_others
+                    if lanes < 1:
+                        lanes = 1
                 try:
                     maxspeed = float(ed["maxspeed"])/3.6
                 except:
@@ -127,6 +147,7 @@ class OSMImporter:
             
 
                 links.append([name, e[0], e[1], lanes, maxspeed]) # name, from, to, number_of_lanes, maxspeed
+                #links.append([name, e[0], e[1], 1, maxspeed]) # name, from, to, number_of_lanes, maxspeed
                 nodes[e[0]] = node_dict[e[0]]
                 nodes[e[1]] = node_dict[e[1]]
 
@@ -318,4 +339,4 @@ class OSMImporter:
             lname = str(link[0])
             if lname in [l.name for l in W.LINKS]:
                 lname + f"_osm{i}"
-            W.addLink(lname, str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density=default_jam_density, auto_rename=True)
+            W.addLink(lname, str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density_per_lane=default_jam_density, number_of_lanes=link[3], auto_rename=True)

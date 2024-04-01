@@ -122,10 +122,7 @@ from uxsim import *
 ```
 し，その後に自分のシミュレーションシナリオを定義します．
 
-
-<details>
-<summary>単純な例（クリックして表示）</summary>
-Y字型の合流ネットワークのシミュレーションシナリオは以下の通り：
+単純な例として，Y字型の合流ネットワークのシミュレーションシナリオを以下に示します：
 	
 ```python
 from uxsim import *
@@ -136,20 +133,20 @@ W = World(
     name="",    # シナリオ名
     deltan=5,   # 車両集計単位
     tmax=1200,  # シミュレーション時間
-    print_mode=1, save_mode=0, show_mode=0,    # オプション
+    print_mode=1, save_mode=1, show_mode=0,    # オプション
     random_seed=0    # ランダムシード
 )
 
-# Define the scenario
+# シナリオ定義
 W.addNode("orig1", 0, 0) # ノードの作成
 W.addNode("orig2", 0, 2)
 W.addNode("merge", 1, 1)
 W.addNode("dest", 2, 1)
-W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=0.5) # リンクの作成
-W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=2)
-W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
-W.adddemand("orig1", "dest", 0, 1000, 0.4) # 交通需要の作成
-W.adddemand("orig2", "dest", 500, 1000, 0.6)
+W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20) # リンクの作成
+W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20)
+W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20)
+W.adddemand("orig1", "dest", 0, 1000, 0.45) # 交通需要の作成
+W.adddemand("orig2", "dest", 400, 1000, 0.6)
 
 # シミュレーション実行
 W.exec_simulation()
@@ -158,44 +155,45 @@ W.exec_simulation()
 W.analyzer.print_simple_stats()
 
 # ネットワーク交通状態のスナップショット可視化
-W.analyzer.network(0, detailed=1, network_font_size=0)
-W.analyzer.network(500, detailed=1, network_font_size=0)
-W.analyzer.network(1000, detailed=1, network_font_size=0)
+W.analyzer.network(100, detailed=1, network_font_size=12)
+W.analyzer.network(600, detailed=1, network_font_size=12)
+W.analyzer.network(800, detailed=1, network_font_size=12)
 ```
 
-結果として以下のような文字列をターミナルに出力し，`out`ディレクトリにその下のような画像を出力します：
+これは結果として以下のような文字列をターミナルに出力し，`out`ディレクトリにその下のような画像を出力します：
 ```
 simulation setting:
  scenario name:
  simulation duration:    1200 s
- number of vehicles:     700 veh
+ number of vehicles:     810 veh
  total road length:      3000 m
  time discret. width:    5 s
  platoon size:           5 veh
  number of timesteps:    240
- number of platoons:     140
+ number of platoons:     162
  number of links:        3
  number of nodes:        4
  setup time:             0.00 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|      100 vehs|  17.5 m/s|     0.03 s
-    1195 s|       25 vehs|  20.0 m/s|     0.05 s
+     600 s|      130 vehs|  13.7 m/s|     0.03 s
+    1195 s|       75 vehs|  12.3 m/s|     0.06 s
  simulation finished
 results:
- average speed:  13.8 m/s
- number of completed trips:      675 / 700
- average travel time of trips:   142.7 s
- average delay of trips:         42.7 s
- delay ratio:                    0.299
+ average speed:  11.6 m/s
+ number of completed trips:      735 / 810
+ average travel time of trips:   162.6 s
+ average delay of trips:         62.6 s
+ delay ratio:                    0.385
 ```
 
 <p float="left">
-<img src="https://github.com/toruseo/UXsim/blob/images/simple_example_network1_1000.png" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_100.png" width="250"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_600.png" width="250"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_800.png" width="250"/>
 </p>
 
-</details>
  
 [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01jp.ipynb)に基本的な使用法と機能をまとめています．
 さらなる詳細は`demos_and_examples`ディレクトリ内の[使用例](https://github.com/toruseo/UXsim/tree/main/demos_and_examples)や，[UXsim技術資料](https://toruseo.jp/UXsim/docs/index.html)を確認してください．
@@ -204,6 +202,7 @@ results:
 
 - `uxsim`ディレクトリ: UXsimパッケージ
 	- `uxsim/uxsim.py`: UXsim本体のコード
+	- `uxsim/analyzer.py`: 計算結果分析用コード
 	- `uxsim/utils.py`: 関連コード
 	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: 計算結果可視化用GUIサブモジュール
 	- `uxsim/OSMImporter/OSMImporter.py`: OpenStreetMapからのインポート用サブモジュール
@@ -230,7 +229,7 @@ results:
 バグ修正などの小さな変更の場合は，pull requestを送ってください．
 機能の大きな変更の場合は，まず[Issues](https://github.com/toruseo/UXsim/issues)ページでディスカッションを始めてください．
 
-質問や提案がある場合は，[Issues](https://github.com/toruseo/UXsim/issues)ページに投稿してください（言語は英語または日本語）．
+質問や提案がある場合は，[Discussions](https://github.com/toruseo/UXsim/discussions)ページに投稿してください（言語は英語または日本語）．
 
 私（瀬尾亨）は仕事の合間にこのプロジェクトに取り組んでいます．
 反応が遅れる可能性があることをご了承ください．

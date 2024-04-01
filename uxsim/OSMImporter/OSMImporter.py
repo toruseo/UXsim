@@ -122,6 +122,8 @@ class OSMImporter:
                             lanes = default_number_of_lanes_others
                     except:
                         lanes = default_number_of_lanes_others
+                    if lanes < 1:
+                        lanes = 1
                 try:
                     maxspeed = float(ed["maxspeed"])/3.6
                 except:
@@ -145,6 +147,7 @@ class OSMImporter:
             
 
                 links.append([name, e[0], e[1], lanes, maxspeed]) # name, from, to, number_of_lanes, maxspeed
+                #links.append([name, e[0], e[1], 1, maxspeed]) # name, from, to, number_of_lanes, maxspeed
                 nodes[e[0]] = node_dict[e[0]]
                 nodes[e[1]] = node_dict[e[1]]
 
@@ -336,4 +339,4 @@ class OSMImporter:
             lname = str(link[0])
             if lname in [l.name for l in W.LINKS]:
                 lname + f"_osm{i}"
-            W.addLink(lname, str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density=default_jam_density, auto_rename=True)
+            W.addLink(lname, str(link[1]), str(link[2]), length=link[5]*coef_degree_to_meter, free_flow_speed=link[4], jam_density_per_lane=default_jam_density, number_of_lanes=link[3], auto_rename=True)
