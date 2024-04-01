@@ -122,10 +122,7 @@ from uxsim import *
 ```
 し，その後に自分のシミュレーションシナリオを定義します．
 
-
-<details>
-<summary>単純な例（クリックして表示）</summary>
-Y字型の合流ネットワークのシミュレーションシナリオは以下の通り：
+単純な例として，Y字型の合流ネットワークのシミュレーションシナリオを以下に示します：
 	
 ```python
 from uxsim import *
@@ -163,7 +160,7 @@ W.analyzer.network(600, detailed=1, network_font_size=12)
 W.analyzer.network(800, detailed=1, network_font_size=12)
 ```
 
-結果として以下のような文字列をターミナルに出力し，`out`ディレクトリにその下のような画像を出力します：
+これは結果として以下のような文字列をターミナルに出力し，`out`ディレクトリにその下のような画像を出力します：
 ```
 simulation setting:
  scenario name:
@@ -192,10 +189,11 @@ results:
 ```
 
 <p float="left">
-<img src="https://github.com/toruseo/UXsim/blob/images/simple_example_network1_1000.png" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_100.png" width="250"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_600.png" width="250"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_800.png" width="250"/>
 </p>
 
-</details>
  
 [Jupyter Notebookデモ](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01jp.ipynb)に基本的な使用法と機能をまとめています．
 さらなる詳細は`demos_and_examples`ディレクトリ内の[使用例](https://github.com/toruseo/UXsim/tree/main/demos_and_examples)や，[UXsim技術資料](https://toruseo.jp/UXsim/docs/index.html)を確認してください．
@@ -204,6 +202,7 @@ results:
 
 - `uxsim`ディレクトリ: UXsimパッケージ
 	- `uxsim/uxsim.py`: UXsim本体のコード
+	- `uxsim/analyzer.py`: 計算結果分析用コード
 	- `uxsim/utils.py`: 関連コード
 	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: 計算結果可視化用GUIサブモジュール
 	- `uxsim/OSMImporter/OSMImporter.py`: OpenStreetMapからのインポート用サブモジュール
