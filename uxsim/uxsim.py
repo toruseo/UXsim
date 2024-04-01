@@ -15,7 +15,8 @@ from .utils  import *
 from importlib.resources import read_binary #according to official doc, this is also not recommended
 import io
 
-from scipy.sparse.csgraph import floyd_warshall
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import dijkstra, floyd_warshall
 
 import warnings
 
@@ -952,51 +953,51 @@ class RouteChoice:
             The world to which this belongs.
         """
         s.W = W
-        #リンク旅行時間行列
-        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        #ij間最短距離
-        s.dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        #iからjに行くために次に進むべきノード
-        s.next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        #iからjに行くために来たノード
-        s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        # Link travel time matrix
+        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=float)
+        # ij shortest distance
+        s.dist = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=float)
+        # Node to proceed to next for traveling from i to j
+        s.next = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=int)
+        # Node from which one came to travel to j from i
+        s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=int)
 
-        #homogeneous DUO用．kに行くための最短経路的上にあれば1
-        s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES}
+        # For homogeneous DUO, 1 if on the shortest path to k
+        s.route_pref = {k.id: {l: 0 for l in s.W.LINKS} for k in s.W.NODES}
 
     def route_search_all(s, infty=np.inf, noise=0):
         """
-        Compute the current shortest path based on instantanious travel time.
+        Compute the current shortest path based on instantaneous travel time.
 
         Parameters
         ----------
         infty : float
             value representing infinity.
         noise : float
-            very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
+            very small noise to slightly randomize route choice. Useful to eliminate strange results at an initial stage of simulation where many routes have identical travel time.
         """
         for link in s.W.LINKS:
             i = link.start_node.id
             j = link.end_node.id
-            if s.W.ADJ_MAT[i,j]:
-                s.adj_mat_time[i,j] = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
-                if link.capacity_in == 0: #流入禁止の場合は通行不可
-                    s.adj_mat_time[i,j] = np.inf
+            if s.W.ADJ_MAT[i, j]:
+                s.adj_mat_time[i, j] = link.traveltime_instant[-1] * np.random.uniform(1, 1 + noise) + link.route_choice_penalty
+                if link.capacity_in == 0:  # If entry is prohibited, then passage is not possible
+                    s.adj_mat_time[i, j] = np.inf
             else:
-                s.adj_mat_time[i,j] = np.inf
+                s.adj_mat_time[i, j] = np.inf
 
-        s.dist, s.pred = floyd_warshall(s.adj_mat_time, return_predecessors=True)
+        # Convert adjacency matrix time to CSR format for efficient graph analysis
+        csr_mat = csr_matrix(s.adj_mat_time)
+        # Using Dijkstra's algorithm to find the shortest paths
+        s.dist, s.pred = dijkstra(csgraph=csr_mat, directed=True, indices=None, return_predecessors=True)
 
+        # Directly use the predecessors to update the next matrix for route choice
         n_vertices = s.pred.shape[0]
-        s.next = -np.ones((n_vertices, n_vertices), dtype=int)
+        s.next = np.full((n_vertices, n_vertices), -1, dtype=int)  # Initialize with -1
         for i in range(n_vertices):
             for j in range(n_vertices):
-                # iからjへの最短経路を逆にたどる．．． -> todo: 起終点を逆にした最短経路探索にすればよい
-                if i != j:
-                    prev = j
-                    while s.pred[i, prev] != i and s.pred[i, prev] != -9999:
-                        prev = s.pred[i, prev]
-                    s.next[i, j] = prev
+                if i != j and s.pred[i, j] != -9999:
+                    s.next[i, j] = s.pred[i, j]
 
     def route_search_all_old(s, infty=9999999999999999999, noise=0):
         """
@@ -1049,15 +1050,15 @@ class RouteChoice:
             k = dest.id
             weight = s.W.DUO_UPDATE_WEIGHT
             if sum(list(s.route_pref[k].values())) == 0:
-                #最初にpreferenceが空なら確定的に初期化
+                # Deterministically initialize preference if empty initially
                 weight = 1
             for l in s.W.LINKS:
                 i = l.start_node.id
                 j = l.end_node.id
-                if j == s.W.ROUTECHOICE.next[i,k]:
-                    s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight
+                if j == s.next[i, k]:
+                    s.route_pref[k][l] = (1 - weight) * s.route_pref[k][l] + weight
                 else:
-                    s.route_pref[k][l] = (1-weight)*s.route_pref[k][l]
+                    s.route_pref[k][l] = (1 - weight) * s.route_pref[k][l]
 
 # 結果分析クラス
 class Analyzer:
