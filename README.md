@@ -189,6 +189,7 @@ results:
 
 - `uxsim` directory: UXsim main package
 	- `uxsim/uxsim.py`: UXsim main code
+	- `uxsim/analyzer.py`: Simulation result analysis code
 	- `uxsim/utils.py`: UXsim utilities code
 	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: Submodule on GUI for visualizing simulation results
 	- `uxsim/OSMImporter/OSMImporter.py`: Submodule on road network import from OpenStreetMap (experimental)
