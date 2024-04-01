@@ -15,6 +15,9 @@ Modules
 
    uxsim.uxsim
    uxsim.utils
+   uxsim.analyzer
+   uxsim.ResultGUIViewer.ResultGUIViewer
+   
    
 Classes
 -------
@@ -29,8 +32,8 @@ Classes
    uxsim.Vehicle
    uxsim.RouteChoice
    uxsim.Route
-   uxsim.Analyzer
-   uxsim.OSMImporter
+   uxsim.analyzer.Analyzer
+   uxsim.OSMImporter.OSMImporter
    
 
 * :ref:`genindex`

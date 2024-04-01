@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uxsim.OSMImporter &mdash; UXsim v1.0 documentation</title>
+  <title>uxsim.OSMImporter &mdash; UXsim v1.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,6 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="uxsim.Analyzer" href="uxsim.Analyzer.html" />
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
 <script>
@@ -44,7 +43,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.0
+                v1.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -54,25 +53,11 @@ gtag('config', 'UA-111714220-1');
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#modules">Modules</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes">Classes</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Route.html">uxsim.Route</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.OSMImporter</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../tech_ref.html">Technical reference</a></li>
 </ul>
 
         </div>
@@ -89,7 +74,6 @@ gtag('config', 'UA-111714220-1');
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../tech_ref.html">Technical reference</a></li>
       <li class="breadcrumb-item active">uxsim.OSMImporter</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/_autosummary/uxsim.OSMImporter.rst.txt" rel="nofollow"> View page source</a>
@@ -100,48 +84,14 @@ gtag('config', 'UA-111714220-1');
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="uxsim-osmimporter">
-<h1>uxsim.OSMImporter<a class="headerlink" href="#uxsim-osmimporter" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="uxsim.OSMImporter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">OSMImporter</span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#OSMImporter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.OSMImporter" title="Permalink to this definition"></a></dt>
-<dd><p>OpenStreetMap importer using OSMnx.
-Work in progress. Import from OSM is experimental and may not work as expected. It is functional but produces inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.OSMImporter.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uxsim.OSMImporter.__init__" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.OSMImporter.__init__" title="uxsim.OSMImporter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.OSMImporter.import_osm_data" title="uxsim.uxsim.OSMImporter.import_osm_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_osm_data</span></code></a>(south, east, west[, ...])</p></td>
-<td><p>Import road network data from OpenStreetMap using OSMnx.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.OSMImporter.osm_network_postprocessing" title="uxsim.uxsim.OSMImporter.osm_network_postprocessing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">osm_network_postprocessing</span></code></a>(links, ...[, ...])</p></td>
-<td><p>Postprocess the network to make it suitable for simulation.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.OSMImporter.osm_network_to_World" title="uxsim.uxsim.OSMImporter.osm_network_to_World"><code class="xref py py-obj docutils literal notranslate"><span class="pre">osm_network_to_World</span></code></a>(nodes, links[, ...])</p></td>
-<td><p>Load the imported network to the World object of UXsim.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.OSMImporter.osm_network_visualize" title="uxsim.uxsim.OSMImporter.osm_network_visualize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">osm_network_visualize</span></code></a>(links[, figsize, ...])</p></td>
-<td><p>Visualize the imported network.</p></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+  <section id="module-uxsim.OSMImporter">
+<span id="uxsim-osmimporter"></span><h1>uxsim.OSMImporter<a class="headerlink" href="#module-uxsim.OSMImporter" title="Permalink to this heading"></a></h1>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="uxsim.Analyzer.html" class="btn btn-neutral float-left" title="uxsim.Analyzer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
+          <footer>
 
   <hr/>
 

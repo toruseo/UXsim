@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uxsim.Link &mdash; UXsim v1.0 documentation</title>
+  <title>uxsim.Link &mdash; UXsim v1.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,7 +45,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.0
+                v1.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -68,8 +68,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Route.html">uxsim.Route</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.OSMImporter.html">uxsim.OSMImporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 </ul>
 </li>
 </ul>
@@ -105,29 +105,31 @@ gtag('config', 'UA-111714220-1');
 <h1>uxsim.Link<a class="headerlink" href="#uxsim-link" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.Link">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link" title="Permalink to this definition"></a></dt>
 <dd><p>Link in a network.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Create a link</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<em>object</em>) – The network to which the link belongs.</p></li>
+<li><p><strong>W</strong> (<em>object</em>) – The world to which the link belongs.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – The name of the link.</p></li>
 <li><p><strong>start_node</strong> (<em>str</em>) – The name of the start node of the link.</p></li>
 <li><p><strong>end_node</strong> (<em>str</em>) – The name of the end node of the link.</p></li>
 <li><p><strong>length</strong> (<em>float</em>) – The length of the link.</p></li>
-<li><p><strong>free_flow_speed</strong> (<em>float</em>) – The free flow speed on the link.</p></li>
-<li><p><strong>jam_density</strong> (<em>float</em>) – The jam density on the link.</p></li>
+<li><p><strong>free_flow_speed</strong> (<em>float</em><em>, </em><em>optional</em>) – The free flow speed on the link, default is 20.</p></li>
+<li><p><strong>jam_density</strong> (<em>float</em><em>, </em><em>optional</em>) – The jam density on the link, default is 0.2. If jam_density_per_lane is specified, this value is ignored.</p></li>
+<li><p><strong>jam_density_per_lane</strong> (<em>float</em><em>, </em><em>optional</em>) – The jam density per lane on the link. If specified, it overrides the jam_density value.</p></li>
+<li><p><strong>number_of_lanes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of lanes on the link, default is 1.</p></li>
 <li><p><strong>merge_priority</strong> (<em>float</em><em>, </em><em>optional</em>) – The priority of the link when merging at the downstream node, default is 1.</p></li>
-<li><p><strong>signal_group</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The signal group to which the link belongs, default is 0. If <cite>signal_group</cite> is int, say 0, it becomes green if <cite>end_node.signal_phase</cite> is 0.  the If <cite>signal_group</cite> is list, say [0,1], it becomes green if the <cite>end_node.signal_phase</cite> is 0 or 1.</p></li>
+<li><p><strong>signal_group</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The signal group(s) to which the link belongs, default is 0. If <cite>signal_group</cite> is int, say 0, it becomes green if <cite>end_node.signal_phase</cite> is 0. If <cite>signal_group</cite> is list, say [0,1], it becomes green if the <cite>end_node.signal_phase</cite> is 0 or 1.</p></li>
 <li><p><strong>capacity_out</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity out of the link, default is calculated based on other parameters.</p></li>
 <li><p><strong>capacity_in</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity into the link, default is calculated based on other parameters.</p></li>
-<li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
-<li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the link if the name is already used. Default is False.</p></li>
+<li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.</p></li>
+<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users.</p></li>
+<li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the link if the name is already used. Default is False (raise an exception).</p></li>
 </ul>
 </dd>
 </dl>
@@ -242,15 +244,73 @@ gtag('config', 'UA-111714220-1');
 </dd></dl>
 
 <p class="rubric">Notes</p>
-<p>The <cite>capacity_out</cite> and <cite>capacity_in</cite> parameters are used to set the capacities, and if not provided, they are calculated based on other parameters.
-Real-time link status for external reference is maintained with attributes <cite>speed</cite>, <cite>density</cite>, <cite>flow</cite>, <cite>num_vehicles</cite>, and <cite>num_vehicles_queue</cite>.
-Some of the traffic flow model parameters can be altered during simulation by changing <cite>free_flow_speed</cite>, <cite>jam_density</cite>, <cite>capacity_out</cite>, <cite>capacity_in</cite>, and <cite>merge_priority</cite>.</p>
+<p>Traffic Flow Model:
+- The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.
+- Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link’s flow characteristics. Reaction time of drivers <cite>REACTION_TIME</cite> is a grobal parameter.
+- Real-time link status for external reference is maintained with attributes <cite>speed</cite>, <cite>density</cite>, <cite>flow</cite>, <cite>num_vehicles</cite>, and <cite>num_vehicles_queue</cite>.</p>
+<p>Capacity and Bottlenecks:
+- The <cite>capacity_out</cite> and <cite>capacity_in</cite> parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.
+- These capacities can represent bottlenecks at the beginning or end of the link.</p>
+<p>Connection to Node Model:
+- At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.
+- At the upstream end of a receiving link, all lanes can accept vehicles.</p>
+<p>Parameter Adjustments:
+- Some traffic flow model parameters like <cite>free_flow_speed</cite>, <cite>jam_density</cite>, <cite>capacity_out</cite>, <cite>capacity_in</cite>, and <cite>merge_priority</cite> can be altered during simulation to reflect changing conditions.</p>
+<p>Details on Multi-lane model:
+- Link model:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.</p></li>
+<li><p>Links have a <cite>lanes</cite> attribute representing the number of lanes.</p></li>
+<li><p>Each vehicle has a <cite>lane</cite> attribute.</p></li>
+<li><p>Each vehicle follows the leader vehicle in the same lane, i.e., the vehicle <cite>lanes</cite> steps ahead on the link.</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Node model:</dt><dd><ul>
+<li><dl class="simple">
+<dt>Sending links:</dt><dd><ul>
+<li><p>Vehicles in all lanes at the downstream end of the link have the right to be sent out.</p></li>
+<li><p>However, to ensure link FIFO, vehicles are tried to be sent out in the order they entered the link. If a vehicle cannot be accepted, the outflow from that link stops.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Receiving links:</dt><dd><ul>
+<li><p>All lanes at the upstream end of the link can accept vehicles.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Details on Fundamental diagram parameters (<em>: input, *</em>: alternative input):
+- <a href="#id1"><span class="problematic" id="id2">*</span></a>free_flow_speed (m/s)
+- <a href="#id3"><span class="problematic" id="id4">*</span></a>jam_density (veh/m/LINK)
+- <a href="#id5"><span class="problematic" id="id6">**</span></a>jam_density_per_lane (veh/m/lane)
+- <a href="#id7"><span class="problematic" id="id8">*</span></a>lanes, number_of_lane (lane)
+- tau: y-intercept of link FD (s/veh*LINK)
+- REACTION_TIME (s/veh*lane)
+- w (m/s)
+- capacity (veh/s/LINK)
+- capacity_per_lane (veh/s/lane)
+- delta: minimum spacing (m/veh*LINK)
+- delta_per_lane: minimum spacing in lane (m/veh*lane)
+- q_star: capacity (veh/s/LINK)
+- k_star: critical density (veh/s/LINK)
+- <a href="#id9"><span class="problematic" id="id10">*</span></a>capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)
+- <a href="#id11"><span class="problematic" id="id12">*</span></a>Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE)</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.__init__" title="uxsim.Link.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, name, start_node, end_node, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.__init__" title="uxsim.Link.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, name, start_node, end_node, length)</p></td>
 <td><p>Create a link</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link.actual_travel_time" title="uxsim.uxsim.Link.actual_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">actual_travel_time</span></code></a>(t)</p></td>

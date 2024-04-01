@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulation mechanism &mdash; UXsim v1.0 documentation</title>
+  <title>Simulation mechanism &mdash; UXsim v1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,7 +45,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.0
+                v1.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,7 +61,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Simulation mechanism</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#models">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#key-inputs">Key inputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#structure">Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#traffic-flow-model-fundamental-diagram-parameters">Traffic flow model (fundamental diagram) parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#program-structure">Program structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#computation-flow">Computation flow</a></li>
 </ul>
 </li>
@@ -112,21 +113,27 @@ gtag('config', 'UA-111714220-1');
 <li><p>Platoon size for mesoscopic simulation (<cite>deltan</cite> of <cite>World</cite>). This value determines the simulation time step width. This is a global parameter.</p></li>
 <li><p>Route choice model parameters: shortest path update interval (<cite>duo_update_time</cite> of <cite>World</cite>) and weight value (<cite>duo_update_weight</cite> of <cite>World</cite>).</p></li>
 <li><p>Lists of nodes and links. They define the network structure.</p></li>
-<li><p>Parameters of each link. For example, length, free flow speed (<cite>free_flow_speed</cite>), jam density (<cite>jam_density</cite>), merging priority parameter (<cite>merge_priority</cite>), and traffic signal setting (<cite>signal_group</cite>).</p></li>
+<li><p>Parameters of each link. For example, length, free flow speed (<cite>free_flow_speed</cite>), number of lanes (<cite>number_of_lanes</cite>), jam density (<cite>jam_density</cite>), merging priority parameter (<cite>merge_priority</cite>), and traffic signal setting (<cite>signal_group</cite>).</p></li>
 <li><p>Parameters of each node. For example, position (<cite>x</cite> and <cite>y</cite>) and traffic signal setting (<cite>signal</cite>).</p></li>
 <li><p>Demand. For example, origin, destination, and departure time of each vehicle are specified.</p></li>
 </ul>
 </section>
-<section id="structure">
-<h2>Structure<a class="headerlink" href="#structure" title="Permalink to this heading"></a></h2>
-<p>Class diagram of UXsim</p>
+<section id="traffic-flow-model-fundamental-diagram-parameters">
+<h2>Traffic flow model (fundamental diagram) parameters<a class="headerlink" href="#traffic-flow-model-fundamental-diagram-parameters" title="Permalink to this heading"></a></h2>
+<p>If you are familiar to the traffic flow theory, the following figure would be useful to understand the parameter definitions in UXsim that are defined through <cite>Link</cite>, <cite>World</cite>, and <cite>Node</cite>.
+If you are not familiar with this, it is recommended that you adjust only <cite>free_flow_speed</cite> and <cite>number_of_lanes</cite> for the traffic flow model parameters of <cite>Link</cite>, leaving the other parameters at their default values.</p>
+<img alt="_images/fundamental_diagram.png" src="_images/fundamental_diagram.png" />
+</section>
+<section id="program-structure">
+<h2>Program structure<a class="headerlink" href="#program-structure" title="Permalink to this heading"></a></h2>
+<p>Class diagram of UXsim: the relationship between classes and their key properties.</p>
 <img alt="_images/class_diagram.png" src="_images/class_diagram.png" />
 </section>
 <section id="computation-flow">
 <h2>Computation flow<a class="headerlink" href="#computation-flow" title="Permalink to this heading"></a></h2>
-<p>Activity diagram of UXsim</p>
+<p>Activity diagram of UXsim: the overall computation procedure of UXsim.</p>
 <img alt="_images/activity_diagram.png" src="_images/activity_diagram.png" />
-<p>Activity diagram of a specific vehicle in UXsim</p>
+<p>Activity diagram of a specific vehicle in UXsim: the computation procedure for each vehicle.</p>
 <img alt="_images/activity_diagram_veh.png" src="_images/activity_diagram_veh.png" />
 </section>
 </section>

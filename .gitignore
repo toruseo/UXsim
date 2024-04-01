@@ -137,3 +137,4 @@ dev_*.ipynb
 _*.ps1
 p*_*.py
 *.code-workspace
+.VSCodeCounter/*

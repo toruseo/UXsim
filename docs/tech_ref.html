@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Technical reference &mdash; UXsim v1.0 documentation</title>
+  <title>Technical reference &mdash; UXsim v1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,7 +45,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.0
+                v1.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -63,6 +63,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a><ul>
@@ -72,8 +73,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.Vehicle.html">uxsim.Vehicle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.Route.html">uxsim.Route</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.Analyzer.html">uxsim.Analyzer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.OSMImporter.html">uxsim.OSMImporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 </ul>
 </li>
 </ul>
@@ -114,10 +115,16 @@ This was prepared with the intention of “better than nothing.”</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="uxsim.html#module-uxsim.uxsim" title="uxsim.uxsim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.uxsim</span></code></a></p></td>
-<td><p>Macroscopic/mesoscopic traffic flow simulator in a network.</p></td>
+<td><p>UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="utils.html#module-uxsim.utils" title="uxsim.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.utils</span></code></a></p></td>
 <td><p>General utilities for UXsim.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.Analyzer.html#module-uxsim.analyzer" title="uxsim.analyzer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.analyzer</span></code></a></p></td>
+<td><p>Analyzer for a UXsim simulation result.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#module-uxsim.ResultGUIViewer.ResultGUIViewer" title="uxsim.ResultGUIViewer.ResultGUIViewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.ResultGUIViewer.ResultGUIViewer</span></code></a></p></td>
+<td><p>Interactive viewer for UXsim simulation results using PyQt5.</p></td>
 </tr>
 </tbody>
 </table>
@@ -144,10 +151,10 @@ This was prepared with the intention of “better than nothing.”</p>
 <tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.Route.html#uxsim.Route" title="uxsim.Route"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.Route</span></code></a></p></td>
 <td><p>Class for a route that store concective links.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.Analyzer.html#uxsim.Analyzer" title="uxsim.Analyzer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.Analyzer</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer" title="uxsim.analyzer.Analyzer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.analyzer.Analyzer</span></code></a></p></td>
 <td><p>Class for analyzing and visualizing a simulation result.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.OSMImporter.html#uxsim.OSMImporter" title="uxsim.OSMImporter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.OSMImporter</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html#uxsim.OSMImporter.OSMImporter" title="uxsim.OSMImporter.OSMImporter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.OSMImporter.OSMImporter</span></code></a></p></td>
 <td><p>OpenStreetMap importer using OSMnx.</p></td>
 </tr>
 </tbody>

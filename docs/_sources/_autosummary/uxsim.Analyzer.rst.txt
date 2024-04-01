@@ -1,50 +1,29 @@
-﻿uxsim.Analyzer
+﻿uxsim.analyzer
 ==============
 
-.. currentmodule:: uxsim
-
-.. autoclass:: Analyzer
+.. automodule:: uxsim.analyzer
 
    
-   .. automethod:: __init__
+   
+   
 
    
-   .. rubric:: Methods
+   
+   
+
+   
+   
+   .. rubric:: Classes
 
    .. autosummary::
    
-      ~Analyzer.__init__
-      ~Analyzer.basic_analysis
-      ~Analyzer.basic_to_pandas
-      ~Analyzer.comp_route_travel_time
-      ~Analyzer.compute_accurate_traj
-      ~Analyzer.compute_edie_state
-      ~Analyzer.compute_mfd
-      ~Analyzer.cumulative_curves
-      ~Analyzer.link_analysis_coarse
-      ~Analyzer.link_cumulative_to_pandas
-      ~Analyzer.link_to_pandas
-      ~Analyzer.link_traffic_state_to_pandas
-      ~Analyzer.log_vehicles_to_pandas
-      ~Analyzer.macroscopic_fundamental_diagram
-      ~Analyzer.mfd_to_pandas
-      ~Analyzer.network
-      ~Analyzer.network_anim
-      ~Analyzer.network_fancy
-      ~Analyzer.network_pillow
-      ~Analyzer.od_analysis
-      ~Analyzer.od_to_pandas
-      ~Analyzer.output_data
-      ~Analyzer.plot_vehicle_log
-      ~Analyzer.print_simple_stats
-      ~Analyzer.show_simulation_progress
-      ~Analyzer.time_space_diagram_density
-      ~Analyzer.time_space_diagram_traj
-      ~Analyzer.time_space_diagram_traj_links
-      ~Analyzer.vehicles_to_pandas
+      Analyzer
    
    
 
    
    
    
+
+
+

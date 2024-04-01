@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uxsim.uxsim &mdash; UXsim v1.1 documentation</title>
+  <title>uxsim.ResultGUIViewer.ResultGUIViewer &mdash; UXsim v1.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="uxsim.utils" href="uxsim.utils.html" />
-    <link rel="prev" title="Technical reference" href="../tech_ref.html" />
+    <link rel="next" title="uxsim.World" href="uxsim.World.html" />
+    <link rel="prev" title="uxsim.utils" href="uxsim.utils.html" />
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
 <script>
@@ -61,9 +61,9 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#modules">Modules</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.uxsim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#classes">Classes</a></li>
@@ -86,9 +86,9 @@ gtag('config', 'UA-111714220-1');
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../tech_ref.html">Technical reference</a></li>
-      <li class="breadcrumb-item active">uxsim.uxsim</li>
+      <li class="breadcrumb-item active">uxsim.ResultGUIViewer.ResultGUIViewer</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/_autosummary/uxsim.uxsim.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -96,30 +96,46 @@ gtag('config', 'UA-111714220-1');
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-uxsim.uxsim">
-<span id="uxsim-uxsim"></span><h1>uxsim.uxsim<a class="headerlink" href="#module-uxsim.uxsim" title="Permalink to this heading"></a></h1>
-<p>UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.
-This <cite>uxsim.py</cite> is the core of UXsim. It summarizes the classes and methods that are essential for the simulation.</p>
+  <section id="module-uxsim.ResultGUIViewer.ResultGUIViewer">
+<span id="uxsim-resultguiviewer-resultguiviewer"></span><h1>uxsim.ResultGUIViewer.ResultGUIViewer<a class="headerlink" href="#module-uxsim.ResultGUIViewer.ResultGUIViewer" title="Permalink to this heading"></a></h1>
+<p>Interactive viewer for UXsim simulation results using PyQt5.
+After running the simulation, you can launch this viewer to visualize the simulation results interactively.
+GUI part was mainly written by Claude 3 Opus under supervision of Toru Seo.</p>
+<p class="rubric">Examples</p>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define the World object W</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>     <span class="c1">#you run the simulation.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">uxsim.ResultGUIViewer</span> <span class="kn">import</span> <span class="n">launch_World_viewer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">launch_World_viewer</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">launch_World_viewer</span></code>(W[, return_app_window])</p></td>
+<td><p>Launch the interactive viewer for the simulation result of the given World object.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link" title="uxsim.uxsim.Link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Link</span></code></a>(W, name, start_node, end_node, length)</p></td>
-<td><p>Link in a network.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">EdgeItem</span></code>(name, start_node, end_node, ...)</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Node</span></code></a>(W, name, x, y[, signal, signal_offset, ...])</p></td>
-<td><p>Node in a network.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphWidget</span></code>(nodes, edges, vehicle_list)</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Route" title="uxsim.uxsim.Route"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Route</span></code></a>(W, links[, name, trust_input])</p></td>
-<td><p>Class for a route that store concective links.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MainWindow</span></code>(W, nodes, edges, vehicle_list, tmax)</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.RouteChoice" title="uxsim.uxsim.RouteChoice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RouteChoice</span></code></a>(W)</p></td>
-<td><p>Class for computing shortest path for all vehicles.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodeItem</span></code>(name, x, y, Node)</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle" title="uxsim.uxsim.Vehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vehicle</span></code></a>(W, orig, dest, departure_time[, ...])</p></td>
-<td><p>Vehicle or platoon in a network.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><code class="xref py py-obj docutils literal notranslate"><span class="pre">World</span></code></a>([name, deltan, reaction_time, ...])</p></td>
-<td><p>World (i.e., simulation environment).</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">VehicleItem</span></code>(x, y)</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -129,8 +145,8 @@ This <cite>uxsim.py</cite> is the core of UXsim. It summarizes the classes and m
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../tech_ref.html" class="btn btn-neutral float-left" title="Technical reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="uxsim.utils.html" class="btn btn-neutral float-right" title="uxsim.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="uxsim.utils.html" class="btn btn-neutral float-left" title="uxsim.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uxsim.World.html" class="btn btn-neutral float-right" title="uxsim.World" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

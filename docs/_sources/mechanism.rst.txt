@@ -22,25 +22,32 @@ UXsim's key inputs (i.e., simulation scenario parameters) are as follows:
 * Platoon size for mesoscopic simulation (`deltan` of `World`). This value determines the simulation time step width. This is a global parameter.
 * Route choice model parameters: shortest path update interval (`duo_update_time` of `World`) and weight value (`duo_update_weight` of `World`).
 * Lists of nodes and links. They define the network structure.
-* Parameters of each link. For example, length, free flow speed (`free_flow_speed`), jam density (`jam_density`), merging priority parameter (`merge_priority`), and traffic signal setting (`signal_group`).
+* Parameters of each link. For example, length, free flow speed (`free_flow_speed`), number of lanes (`number_of_lanes`), jam density (`jam_density`), merging priority parameter (`merge_priority`), and traffic signal setting (`signal_group`).
 * Parameters of each node. For example, position (`x` and `y`) and traffic signal setting (`signal`).
 * Demand. For example, origin, destination, and departure time of each vehicle are specified.
 
-Structure
----------
+Traffic flow model (fundamental diagram) parameters
+---------------------------------------------------
 
-Class diagram of UXsim
+If you are familiar to the traffic flow theory, the following figure would be useful to understand the parameter definitions in UXsim that are defined through `Link`, `World`, and `Node`.
+If you are not familiar with this, it is recommended that you adjust only `free_flow_speed` and `number_of_lanes` for the traffic flow model parameters of `Link`, leaving the other parameters at their default values.
+
+.. image:: img/fundamental_diagram.png
+
+Program structure
+-----------------
+
+Class diagram of UXsim: the relationship between classes and their key properties.
 
 .. image:: img/class_diagram.png
 
 Computation flow
 ----------------
 
-Activity diagram of UXsim
+Activity diagram of UXsim: the overall computation procedure of UXsim.
 
 .. image:: img/activity_diagram.png
 
-
-Activity diagram of a specific vehicle in UXsim
+Activity diagram of a specific vehicle in UXsim: the computation procedure for each vehicle.
 
 .. image:: img/activity_diagram_veh.png
