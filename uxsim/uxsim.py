@@ -1,6 +1,6 @@
 """
 UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.
-This `uxsim.py` is the core of UXsim. It summarizes the classes and methods for that are essential for the simulation.
+This `uxsim.py` is the core of UXsim. It summarizes the classes and methods that are essential for the simulation.
 """
 
 import numpy as np
@@ -287,7 +287,7 @@ class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed, jam_density, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False, number_of_lanes=1):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False):
         """
         Create a link
 
@@ -303,26 +303,28 @@ class Link:
             The name of the end node of the link.
         length : float
             The length of the link.
-        free_flow_speed : float
-            The free flow speed on the link.
-        jam_density : float
-            The jam density on the link.
+        free_flow_speed : float, optional
+            The free flow speed on the link, default is 20.
+        jam_density : float, optional  
+            The jam density on the link, default is 0.2. If jam_density_per_lane is specified, this value is ignored.
+        jam_density_per_lane : float, optional
+            The jam density per lane on the link. If specified, it overrides the jam_density value.
+        number_of_lanes : int, optional
+            The number of lanes on the link, default is 1.
         merge_priority : float, optional
             The priority of the link when merging at the downstream node, default is 1.
         signal_group : int or list, optional
-            The signal group to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0.  the If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.
+            The signal group(s) to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0. If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.
         capacity_out : float, optional
             The capacity out of the link, default is calculated based on other parameters.
         capacity_in : float, optional
             The capacity into the link, default is calculated based on other parameters.
         eular_dx : float, optional
-            The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
-        attribute : any, optinonal
+            The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         auto_rename : bool, optional
-            Whether to automatically rename the link if the name is already used. Default is False.
-        number_of_lanes : int, optional
-            The number of lanes on the link, default is 1.
+            Whether to automatically rename the link if the name is already used. Default is False (raise an exception).
 
         Attributes
         ----------
@@ -349,22 +351,51 @@ class Link:
 
         Notes
         -----
-        The `capacity_out` and `capacity_in` parameters are used to set the capacities, and if not provided, they are calculated based on other parameters.
-        Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
-        Some of the traffic flow model parameters can be altered during simulation by changing `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority`.
-        
-        複数車線のモデル
-        - リンクモデル
-            - multi-lane, single-pipe model．リンク単位でFIFOが担保される．車線変更なし
-            - リンクは車線数lanesを持つ
-            - 各車両は車線laneを持つ
-            - 各車両は同じ車線の先行車両を追従する．つまり，そのリンクのlanes台前の車両を追従する
-        - ノードモデル
-            - 送り出しリンクの挙動
-                - リンク最下流端部の全ての車線の車両が送り出され権利を持つ
-                - ただし，リンクFIFOは担保するため，リンク流入順で送り出しを試行し，受け入れられなかったらそのリンクからの流出は止まる
-            - 受け入れリンクの挙動
-                - リンク最上流端部の全ての車線が受け入れ可能
+        Traffic Flow Model:
+        - The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.
+        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link's flow characteristics. Reaction time of drivers `REACTION_TIME` is a grobal parameter.
+        - Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
+
+        Capacity and Bottlenecks:
+        - The `capacity_out` and `capacity_in` parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.
+        - These capacities can represent bottlenecks at the beginning or end of the link.
+
+        Connection to Node Model:
+        - At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.
+        - At the upstream end of a receiving link, all lanes can accept vehicles.
+
+        Parameter Adjustments:
+        - Some traffic flow model parameters like `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority` can be altered during simulation to reflect changing conditions.
+            
+        Details on Multi-lane model:
+        - Link model:
+            - Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.
+            - Links have a `lanes` attribute representing the number of lanes. 
+            - Each vehicle has a `lane` attribute.
+            - Each vehicle follows the leader vehicle in the same lane, i.e., the vehicle `lanes` steps ahead on the link.
+        - Node model: 
+            - Sending links:
+                - Vehicles in all lanes at the downstream end of the link have the right to be sent out.
+                - However, to ensure link FIFO, vehicles are tried to be sent out in the order they entered the link. If a vehicle cannot be accepted, the outflow from that link stops.
+            - Receiving links:  
+                - All lanes at the upstream end of the link can accept vehicles.
+
+        Details on Fundamental diagram parameters (*: input, **: alternative input):
+        - *free_flow_speed (m/s)
+        - *jam_density (veh/m/LINK)  
+        - **jam_density_per_lane (veh/m/lane)
+        - *lanes, number_of_lane (lane) 
+        - tau: y-intercept of link FD (s/veh*LINK)
+        - REACTION_TIME (s/veh*lane) 
+        - w (m/s)
+        - capacity (veh/s/LINK)
+        - capacity_per_lane (veh/s/lane)
+        - delta: minimum spacing (m/veh*LINK)
+        - delta_per_lane: minimum spacing in lane (m/veh*lane) 
+        - q_star: capacity (veh/s/LINK)
+        - k_star: critical density (veh/s/LINK)
+        - *capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)
+        - *Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE) 
         """
 
         s.W = W
@@ -381,9 +412,14 @@ class Link:
             raise ValueError(f"number_of_lanes must be an integer. Got {number_of_lanes} at {s}.")
         
 
-        #フローモデルパラメータ:per road
+        #フローモデルパラメータ:per link
         s.u = free_flow_speed
-        s.kappa = jam_density*s.lanes
+        s.kappa = jam_density
+        if jam_density == 0.2 and jam_density_per_lane != None:
+            s.kappa = jam_density_per_lane*number_of_lanes
+        if jam_density != 0.2 and jam_density_per_lane != None:
+            s.kappa = jam_density_per_lane*number_of_lanes
+            warnings.warn(f"{s}: jam_density is ignored because jam_density_per_lane is set.", UserWarning)
         s.tau = s.W.REACTION_TIME/s.lanes
         s.w = 1/s.tau/s.kappa
         s.capacity = s.u*s.w*s.kappa/(s.u+s.w)

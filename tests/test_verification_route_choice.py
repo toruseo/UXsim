@@ -465,9 +465,8 @@ def test_2route_change_too_large_pricing_iterative():
     assert equal_tolerance(np.average(vol2_ls), 750)
 
 
-
 @pytest.mark.flaky(reruns=5)
-def test_4route_congestion_avoidance():
+def test_route_choice_4route_congestion_avoidance():
     tt1s = []
     tt2s = []
     tt3s = []
