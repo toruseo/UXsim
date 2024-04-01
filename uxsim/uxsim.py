@@ -992,12 +992,17 @@ class RouteChoice:
         s.dist, s.pred = dijkstra(csgraph=csr_mat, directed=True, indices=None, return_predecessors=True)
 
         # Directly use the predecessors to update the next matrix for route choice
+        # Vectorized update of s.next
         n_vertices = s.pred.shape[0]
         s.next = np.full((n_vertices, n_vertices), -1, dtype=int)  # Initialize with -1
-        for i in range(n_vertices):
-            for j in range(n_vertices):
-                if i != j and s.pred[i, j] != -9999:
-                    s.next[i, j] = s.pred[i, j]
+
+        # Vectorized operation to copy `s.pred` into `s.next` where pred != -9999
+        valid_pred = s.pred != -9999
+        s.next[valid_pred] = s.pred[valid_pred]
+
+        # Correcting diagonal elements if necessary
+        # This step ensures that diagonal elements, which represent paths from a node to itself, are correctly set to -1.
+        np.fill_diagonal(s.next, -1)
 
     def route_search_all_old(s, infty=9999999999999999999, noise=0):
         """
