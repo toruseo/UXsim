@@ -180,7 +180,9 @@ results:
  delay ratio:                    0.385
 ```
 <p float="left">
-<img src="https://github.com/toruseo/UXsim/blob/images/simple_example_network1_1000.png" width="400"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_100.png" width="250"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_600.png" width="250"/>
+<img src="https://github.com/toruseo/UXsim/blob/images/network1_800.png" width="250"/>
 </p>
 
 ## Main Files
