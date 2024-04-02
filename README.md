@@ -10,29 +10,30 @@
 
 *UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator written in Python.
 It simulates the movements of car travelers and traffic congestion in road networks.
-It is suitable for simulating large-scale (e.g. city-scale) traffic phenomena.
-UXsim would be especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features, but of course users are free to use UXsim for any purpose.
+It is suitable for simulating large-scale (e.g., city-scale) traffic phenomena.
+UXsim is especially useful for scientific and educational purposes because of its simple, lightweight, and customizable features, but users are free to use UXsim for any purpose.
 
-If you are interested in, please see
+If you are interested, please see:
 
 - [Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) or [Google Colab](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb): Interactive demonstrations and tutorials
 - [Technical Documentation](https://toruseo.jp/UXsim/docs/index.html): Detailed documents on tutorials, simulation mechanism, and specifications of modules/functions
 
 ## Main Features
 
-- Simple, lightweight, and easy-to-use Python implementation of the modern standard models of dynamic network traffic flow.
-- Macroscopic traffic simulation: Simulating over 60000 vehicles in 30 seconds in a city.
-- Dynamic traffic assignment: Traffic flow simulation with a given network and time-dependent OD demand.
-- Implementation of traffic control/management schemes such as traffic signals and road pricing.
-- Basic analysis of simulation results and their export to pandas.DataFrame and CSV files.
-- Visualization of simulation results using matplotlib. Interactive GUI is available.
-- Flexible and customizable thanks to pure Python implementation. Can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control.
+- Simple, lightweight, and easy-to-use Python implementation of modern standard models of dynamic network traffic flow
+- Macroscopic traffic simulation: Simulating over 60000 vehicles in a city in 30 seconds
+- Dynamic traffic assignment: Traffic flow simulation with a given network and time-dependent OD demand
+- Theoretically valid models commonly used in academic/professional transportation research
+- Implementation of traffic control/management schemes such as traffic signals and road pricing
+- Basic analysis of simulation results and their export to pandas.DataFrame and CSV files
+- Visualization of simulation results using matplotlib; interactive GUI is available
+- Flexible and customizable thanks to pure Python implementation; can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control
 
 ## Simulation Examples
 
 ### Large-scale scenario
 
-Belows are simulation result where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC.
+Below are simulation results where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC.
 
 Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
 <p float="left">
@@ -45,10 +46,10 @@ Vehicle trajectory diagram on a corridor of the above network:
 
 ### Deep reinforcement learning signal control using PyTorch
 
-Traffic signal controller is trained by deep reinforcement learning (DRL) of [PyTorch](https://pytorch.org/).
-The left (or upper) is no control scenario with fixed signal timing; the traffic demand exceeds the network capacity with naive signal setting, and a gridlock occurs.
-The right (or bottom) is with DRL control scenario, where traffic signal can be changed by observing queue length; although the demand level is the same, traffic is smoothly flowing.
-[Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb) is available.
+A traffic signal controller is trained by deep reinforcement learning (DRL) using [PyTorch](https://pytorch.org/).
+The left (or upper) scenario shows no control with fixed signal timing; the traffic demand exceeds the network capacity with the naive signal setting, and a gridlock occurs.
+The right (or bottom) scenario shows DRL control, where the traffic signal can be changed by observing queue length; although the demand level is the same, traffic flows smoothly.
+A [Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb) is available.
 
 <p float="left">
 <img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_nocontrol.gif" width="400"/>
@@ -63,7 +64,7 @@ https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127
 
 ### Using pip
 
-The simplest way is using pip to install from PyPI.
+The simplest way is to use pip to install from PyPI:
 
 ```
 pip install uxsim
@@ -89,17 +90,17 @@ pip install -U -e git+https://github.com/YOUR_FORK/uxsim@YOUR_BRANCH#egg=uxsim
 	
 ### Manual install
 
-Download the `uxsim` directory from this Github repo or [the latest release](https://github.com/toruseo/UXsim/releases/latest/download/uxsim.zip) and place it to your local directory as follows:
+Download the `uxsim` directory from this Github repo or [the latest release](https://github.com/toruseo/UXsim/releases/latest/download/uxsim.zip) and place it in your local directory as follows:
 ```
 your_project_directory/
 ├── uxsim/ 	# The uxsim directory
 │ ├── uxsim.py 	# The main code of UXsim. You can customize this as you wish
 │ └── ... 	# Other files and directories in uxsim
-├── your_simulation_code.py 		# Your code if nessesary
-├── your_simulation_notebook.ipynb 	# Your Jupyter notebook if nessesary
-├── ... 	# Other files if nessesary
+├── your_simulation_code.py 		# Your code if necessary
+├── your_simulation_notebook.ipynb 	# Your Jupyter notebook if necessary
+├── ... 	# Other files if necessary
 ```
-In this way, you can flexibly customize UXsim by your own.
+This way, you can flexibly customize UXsim on your own.
 
 </details>
 
@@ -112,8 +113,8 @@ from uxsim import *
 and then define your simulation scenario.
 
 The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
-You can also test [Google Colab demo](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb).
-For the further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
+You can also test the [Google Colab demo](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb).
+For further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
 
 As a simple example, the following code will simulate traffic flow in a Y-shaped network. 
 ```python
@@ -152,7 +153,7 @@ W.analyzer.network(600, detailed=1, network_font_size=12)
 W.analyzer.network(800, detailed=1, network_font_size=12)
 ```
 
-It would output text to the terminal and images to `out` directory like below:
+It will output text to the terminal and images to the `out` directory like below:
 ```
 simulation setting:
  scenario name:
@@ -200,7 +201,7 @@ results:
 
 ## Further Reading
 
-If you want to know the details of UXsim, please see
+To learn more about UXsim, please see:
 
 - [Simple demo in Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) or [Google Colab](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb): Interactive demonstrations
 - [UXsim Technical Documentation](https://toruseo.jp/UXsim/docs/index.html): Detailed documents on tutorials, simulation mechanism, and specifications of modules/functions
@@ -211,28 +212,28 @@ If you want to know the details of UXsim, please see
 
 UXsim is released under the MIT License. You are free to use it as long as the source is acknowledged.
 
-When publishing works based on from UXsim, please cite:
+When publishing works based on UXsim, please cite:
 
 - Toru Seo. Macroscopic Traffic Flow Simulation: Fundamental Mathematical Theory and Python Implementation. Corona Publishing Co., Ltd., 2023.
 - Toru Seo. UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview. arXiv preprint arXiv: 2309.17114, 2023
 
 ## Contributing and Discussion
 
-Contribution is welcome!
-For minor changes including bug fixes, please submit a pull request.
-Please make sure that your codes pass the automatic tests in Github Action.
-If you want a major change, please start a discussion at [Issues](https://github.com/toruseo/UXsim/issues) page first.
+Contributions are welcome!
+For minor changes, including bug fixes, please submit a pull request.
+Please make sure that your code passes the automatic tests in Github Action.
+If you want a major change, please start a discussion on the [Issues](https://github.com/toruseo/UXsim/issues) or [Discussions](https://github.com/toruseo/UXsim/discussions) pages first.
 
-If you have any questions or suggestions, please start a discussion at [Discussions](https://github.com/toruseo/UXsim/discussions) page (in English or Japanese).
+If you have any questions or suggestions, please start a discussion on the [Discussions](https://github.com/toruseo/UXsim/discussions) page (in English or Japanese).
 
 I (Toru Seo) work on this project in my spare time. Please understand that my response may be delayed.
 
 ## Acknowledgments
 
-UXsim is based on various works in traffic flow theory and related fields. We would like to acknowledge the contributions of the research community in advancing this field.
-Especially, UXsim directly uses the following works:
+UXsim is based on various works in traffic flow theory and related fields. We acknowledge the contributions of the research community in advancing this field.
+Specifically, UXsim directly uses the following works:
 
-- [Newell's simplified car-following model](https://doi.org/10.1016/S0191-2615(00)00044-8) and its extention [X-model](https://doi.org/10.1016/j.trb.2013.02.008)
+- [Newell's simplified car-following model](https://doi.org/10.1016/S0191-2615(00)00044-8) and its extension [X-model](https://doi.org/10.1016/j.trb.2013.02.008)
 - [Incremental Node Model](https://doi.org/10.1016/j.trb.2011.04.001) and its [mesoscopic version](https://ubiquitypress.com/site/chapters/e/10.5334/baw.50/)
 - [Dynamic User Optimum](https://doi.org/10.1016/S0191-2615(00)00005-9)-type Route Choice Model
 
