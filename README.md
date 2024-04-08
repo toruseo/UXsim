@@ -71,7 +71,7 @@ pip install uxsim
 ```
 
 <details>
-<summary>Alternative methods (click to see)</summary>
+<summary>Alternative methods for advanced users (click to see)</summary>
 	
 ### Using pip with custom configuration
 
@@ -104,17 +104,7 @@ This way, you can flexibly customize UXsim on your own.
 
 </details>
 
-## Usage
-
-Import the module using:
-```python
-from uxsim import *
-```
-and then define your simulation scenario.
-
-The [Jupyter Notebook Demo](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) summarizes the basic usage and features.
-You can also test the [Google Colab demo](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb).
-For further details, please see [demos_and_examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples) and [UXsim technical documentation](https://toruseo.jp/UXsim/docs/index.html).
+## Getting Started
 
 As a simple example, the following code will simulate traffic flow in a Y-shaped network. 
 ```python
@@ -186,27 +176,21 @@ results:
 <img src="https://github.com/toruseo/UXsim/blob/images/network1_800.png" width="250"/>
 </p>
 
-## Main Files
-
-- `uxsim` directory: UXsim main package
-	- `uxsim/uxsim.py`: UXsim main code
-	- `uxsim/analyzer.py`: Simulation result analysis code
-	- `uxsim/utils.py`: UXsim utilities code
-	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: Submodule on GUI for visualizing simulation results
-	- `uxsim/OSMImporter/OSMImporter.py`: Submodule on road network import from OpenStreetMap (experimental)
- 	- `uxsim/files` directory: UXsim utilities files
-- `demos_and_examples` directory: Tutorials and examples of UXsim
-- `dat` directory: Sample scenario files
-- `tests`, `.github` directories: Development-related files
-
 ## Further Reading
 
 To learn more about UXsim, please see:
 
 - [Simple demo in Jupyter Notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_01en.ipynb) or [Google Colab](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb): Interactive demonstrations
-- [UXsim Technical Documentation](https://toruseo.jp/UXsim/docs/index.html): Detailed documents on tutorials, simulation mechanism, and specifications of modules/functions
 - [Demos and examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples): Various examples using Jupyter Notebooks and Python codes
+- [UXsim Technical Documentation](https://toruseo.jp/UXsim/docs/index.html): Detailed documents on tutorials, simulation mechanism, and specifications of modules/functions
 - [arXiv preprint](https://arxiv.org/abs/2309.17114): Scientific overview
+
+## Main Files
+
+- `uxsim` directory: UXsim main package
+	- `uxsim/uxsim.py`: UXsim main code
+- `demos_and_examples` directory: Tutorials and examples of UXsim
+- `dat` directory: Sample scenario files
 
 ## Terms of Use & License
 
@@ -220,11 +204,9 @@ When publishing works based on UXsim, please cite:
 ## Contributing and Discussion
 
 Contributions are welcome!
-For minor changes, including bug fixes, please submit a pull request.
-Please make sure that your code passes the automatic tests in Github Action.
-If you want a major change, please start a discussion on the [Issues](https://github.com/toruseo/UXsim/issues) or [Discussions](https://github.com/toruseo/UXsim/discussions) pages first.
+Please see the [Contributing Guideline](https://github.com/toruseo/UXsim/blob/main/.github/CONTRIBUTING.md).
 
-If you have any questions or suggestions, please start a discussion on the [Discussions](https://github.com/toruseo/UXsim/discussions) page (in English or Japanese).
+If you have any questions or suggestions, please post them to the [Issues](https://github.com/toruseo/UXsim/issues) or [Discussions](https://github.com/toruseo/UXsim/discussions) (in English or Japanese).
 
 I (Toru Seo) work on this project in my spare time. Please understand that my response may be delayed.
 
@@ -240,7 +222,4 @@ Specifically, UXsim directly uses the following works:
 ## Related Links
 
 - [Toru Seo (Author)](https://toruseo.jp/index_en.html)
-- [Collection of related simulators by Seo](https://toruseo.jp/uxsim/index_en.html)
-- Japanese book "[Macroscopic Traffic Simulation: Fundamental Mathematical Theory and Python Implementation](https://www.coronasha.co.jp/np/isbn/9784339052794/)" (Author: [Toru Seo](https://toruseo.jp/), Publisher: [Corona Publishing Co., Ltd.](https://www.coronasha.co.jp/)): UXsim is a significant expansion of the traffic flow simulator *UroborosX* described in this book.
 - [Seo Laboratory, Tokyo Institute of Technology](http://seo.cv.ens.titech.ac.jp/en/)
-- [Interactive Traffic Flow Simulator that Runs on a Web Browser](http://seo.cv.ens.titech.ac.jp/traffic-flow-demo/bottleneck.html): Play with the same link traffic flow model used in this simulator interactively, and learn the basics of traffic flow and its simulation.
