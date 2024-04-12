@@ -130,6 +130,7 @@ dmypy.json
 
 out/
 demos_and_examples/out/
+demos_and_examples/out*/
 cache/
 _private_files/*
 dev*.ipynb

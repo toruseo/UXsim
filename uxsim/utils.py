@@ -84,3 +84,30 @@ def printtry(*args, **kwargs):
     except Exception as e:
         # Print the exception if it occurs
         print("EXCEPTION:", e)
+    
+
+def get_font_for_matplotlib():
+    """
+    Get a multi-language (currently Japanese only) font for matplotlib.
+    TODO: check if it works on different OS. It is only checked on Japanese Windows. 
+    TODO: explore if it can be extended for other languages.
+
+    Returns
+    -------
+    str
+        The name of a Japanese font that is available on the system. If no Japanese font is found, "monospace" is returned.
+    """
+    from matplotlib import font_manager
+
+    font_list = font_manager.findSystemFonts()
+
+    japanese_font = None
+
+    if any("Noto Sans Mono CJK JP" in font.lower() for font in font_list):
+        japanese_font = "Noto Sans Mono CJK JP"
+    elif any("msgothic" in font.lower() for font in font_list):
+        japanese_font = "MS Gothic"
+    else:
+        japanese_font = "monospace"
+        
+    return japanese_font

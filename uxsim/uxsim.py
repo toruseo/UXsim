@@ -371,6 +371,10 @@ class Link:
         - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link's flow characteristics. Reaction time of drivers `REACTION_TIME` is a grobal parameter.
         - Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
 
+        Traffic Flow Model Parameters:
+        - Their definition is illustrated as https://toruseo.jp/UXsim/docs/_images/fundamental_diagram.png
+        - If you are not familiar to the traffic flow theory, it is recommended that you adjust only `free_flow_speed` and `number_of_lanes` for the traffic flow model parameters, leaving the other parameters at their default values.
+
         Capacity and Bottlenecks:
         - The `capacity_out` and `capacity_in` parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.
         - These capacities can represent bottlenecks at the beginning or end of the link.
@@ -1112,48 +1116,48 @@ class RouteChoice:
                         prev = s.pred[i, prev]
                     s.next[i, j] = prev
 
-    def route_search_all_old(s, infty=9999999999999999999, noise=0):
-        """
-        Compute the current shortest path based on instantanious travel time. Old version, slow for large networks.
+    # def route_search_all_old(s, infty=9999999999999999999, noise=0):
+    #     """
+    #     Compute the current shortest path based on instantanious travel time. Old version, slow for large networks.
 
-        Parameters
-        ----------
-        infty : float
-            value representing infinity.
-        noise : float
-            very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
-        """
-        for link in s.W.LINKS:
-            i = link.start_node.id
-            j = link.end_node.id
-            if s.W.ADJ_MAT[i,j]:
-                s.adj_mat_time[i,j] = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
-                if link.capacity_in == 0: #流入禁止の場合は通行不可
-                    s.adj_mat_time[i,j] = 0
-            else:
-                s.adj_mat_time[i,j] = 0
+    #     Parameters
+    #     ----------
+    #     infty : float
+    #         value representing infinity.
+    #     noise : float
+    #         very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
+    #     """
+    #     for link in s.W.LINKS:
+    #         i = link.start_node.id
+    #         j = link.end_node.id
+    #         if s.W.ADJ_MAT[i,j]:
+    #             s.adj_mat_time[i,j] = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
+    #             if link.capacity_in == 0: #流入禁止の場合は通行不可
+    #                 s.adj_mat_time[i,j] = 0
+    #         else:
+    #             s.adj_mat_time[i,j] = 0
 
-        dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        for i in range(len(s.W.NODES)):
-            for j in range(len(s.W.NODES)):
-                if s.adj_mat_time[i,j] > 0:
-                    dist[i,j] = s.adj_mat_time[i,j]
-                    next[i,j] = j
-                elif i == j:
-                    next[i,j] = j
-                else:
-                    dist[i,j] = infty
-                    next[i,j] = -1
+    #     dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+    #     next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+    #     for i in range(len(s.W.NODES)):
+    #         for j in range(len(s.W.NODES)):
+    #             if s.adj_mat_time[i,j] > 0:
+    #                 dist[i,j] = s.adj_mat_time[i,j]
+    #                 next[i,j] = j
+    #             elif i == j:
+    #                 next[i,j] = j
+    #             else:
+    #                 dist[i,j] = infty
+    #                 next[i,j] = -1
 
-        for k in range(len(s.W.NODES)):
-            for i in range(len(s.W.NODES)):
-                for j in range(len(s.W.NODES)):
-                    if dist[i,j] > dist[i,k]+dist[k,j]:
-                        dist[i,j] = dist[i,k]+dist[k,j]
-                        next[i,j] = next[i,k]
-        s.dist = dist
-        s.next = next
+    #     for k in range(len(s.W.NODES)):
+    #         for i in range(len(s.W.NODES)):
+    #             for j in range(len(s.W.NODES)):
+    #                 if dist[i,j] > dist[i,k]+dist[k,j]:
+    #                     dist[i,j] = dist[i,k]+dist[k,j]
+    #                     next[i,j] = next[i,k]
+    #     s.dist = dist
+    #     s.next = next
 
     def homogeneous_DUO_update(s):
         """
@@ -1880,9 +1884,7 @@ class World:
         """
         Visualizes the entire transportation network shape.
         """
-        plt.rcParams["font.family"] = "monospace"
-        if "MS Gothic" in plt.rcParams["font.family"]:
-            plt.rcParams["font.family"] = "MS Gothic"
+        plt.rcParams["font.family"] = get_font_for_matplotlib()
 
         plt.figure(figsize=figsize)
         plt.subplot(111, aspect="equal")
@@ -1914,7 +1916,12 @@ class World:
         plt.xlim([minx-buffx, maxx+buffx])
         plt.ylim([miny-buffy, maxy+buffy])
         plt.tight_layout()
-        plt.show()
+        if W.save_mode:
+            plt.savefig(f"out{W.name}/network.png")
+        if W.show_mode:
+            plt.show()
+        else:
+            plt.close("all")
 
 
 class Route:
