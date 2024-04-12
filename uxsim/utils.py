@@ -131,3 +131,9 @@ def print_columns(*lists):
             else:
                 print(" " * 10, end=" ")  # Adjust spacing to match the above width
         print()  # Newline after each row
+
+class LoggingWarning(UserWarning):
+    """
+    This warns that when vehicle_logging_timestep_interval is not 1 but called vehicle logging-related functions.
+    """
+    pass

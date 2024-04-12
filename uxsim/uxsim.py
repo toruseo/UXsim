@@ -925,7 +925,7 @@ class Vehicle:
             s.arrival_time = -1
             s.travel_time = -1
 
-        s.record_log()
+        s.record_log(enforce_log=1)
 
     def carfollow(s):
         """
@@ -1019,40 +1019,47 @@ class Vehicle:
 
         return Route(s.W, route[:-1]), ts
 
-    def record_log(s):
+    def record_log(s, enforce_log=0):
         """
         Record travel logs.
+
+        Parameters
+        ----------
+        enforce_log : bool, optional
+            Record log regardless of the logging interval, default is 0.
         """
-        if s.state != "run":
-            if s.state == "end" and s.log_t_link[-1][1] != "end":
-                s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
+        if s.W.vehicle_logging_timestep_interval != -1:
+            if (s.W.T%s.W.vehicle_logging_timestep_interval == 0 or enforce_log):
+                if s.state != "run":
+                    if s.state == "end" and s.log_t_link[-1][1] != "end":
+                        s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
 
-            s.log_t.append(s.W.T*s.W.DELTAT)
-            s.log_state.append(s.state)
-            s.log_link.append(-1)
-            s.log_x.append(-1)
-            s.log_s.append(-1)
-            s.log_v.append(-1)
+                    s.log_t.append(s.W.T*s.W.DELTAT)
+                    s.log_state.append(s.state)
+                    s.log_link.append(-1)
+                    s.log_x.append(-1)
+                    s.log_s.append(-1)
+                    s.log_v.append(-1)
 
-            if s.state == "wait":
-                s.W.analyzer.average_speed_count += 1
-                s.W.analyzer.average_speed += 0
-        else:
-            if len(s.log_link) == 0 or s.log_link[-1] != s.link:
-                s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
+                    if s.state == "wait":
+                        s.W.analyzer.average_speed_count += 1
+                        s.W.analyzer.average_speed += 0
+                else:
+                    if len(s.log_link) == 0 or s.log_link[-1] != s.link:
+                        s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
 
-            s.log_t.append(s.W.T*s.W.DELTAT)
-            s.log_state.append(s.state)
-            s.log_link.append(s.link)
-            s.log_x.append(s.x)
-            s.log_v.append(s.v)
-            if s.leader != None and s.link == s.leader.link:
-                s.log_s.append(s.leader.x-s.x)
-            else:
-                s.log_s.append(-1)
+                    s.log_t.append(s.W.T*s.W.DELTAT)
+                    s.log_state.append(s.state)
+                    s.log_link.append(s.link)
+                    s.log_x.append(s.x)
+                    s.log_v.append(s.v)
+                    if s.leader != None and s.link == s.leader.link:
+                        s.log_s.append(s.leader.x-s.x)
+                    else:
+                        s.log_s.append(-1)
 
-            s.W.analyzer.average_speed_count += 1
-            s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
+                    s.W.analyzer.average_speed_count += 1
+                    s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
 
 
 class RouteChoice:
@@ -1183,7 +1190,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", show_progress=1, show_progress_deltat=600, tmax=None):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1):
         """
         Create a World.
 
@@ -1219,6 +1226,9 @@ class World:
             The time interval for showing network progress, default is 600 seconds.
         tmax : float or None, optional
             The simulation duration, default is None (automatically determined).
+        vehicle_logging_timestep_interval : int, optional
+            The interval for logging vehicle data, default is 1. Logging is off if set to -1.
+            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
 
         Notes
         -----
@@ -1248,6 +1258,8 @@ class World:
         W.VEHICLES_RUNNING = OrderedDict()    #run
         W.NODES = []
         W.LINKS = []
+
+        W.vehicle_logging_timestep_interval = vehicle_logging_timestep_interval
 
         W.route_choice_principle = route_choice_principle
 
