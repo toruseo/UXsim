@@ -17,10 +17,7 @@ from scipy.sparse.csgraph import floyd_warshall
 
 from .utils  import *
 
-plt.rcParams["font.family"] = "monospace"
-if "MS Gothic" in plt.rcParams["font.family"]:
-    plt.rcParams["font.family"] = "MS Gothic"
-
+plt.rcParams["font.family"] = get_font_for_matplotlib()
 
 class Analyzer:
     """

@@ -84,3 +84,50 @@ def printtry(*args, **kwargs):
     except Exception as e:
         # Print the exception if it occurs
         print("EXCEPTION:", e)
+    
+
+def get_font_for_matplotlib():
+    """
+    Get a multi-language (currently Japanese only) font for matplotlib.
+    TODO: check if it works on different OS. It is only checked on Japanese Windows. 
+    TODO: explore if it can be extended for other languages.
+
+    Returns
+    -------
+    str
+        The name of a Japanese font that is available on the system. If no Japanese font is found, "monospace" is returned.
+    """
+    from matplotlib import font_manager
+
+    font_list = font_manager.findSystemFonts()
+
+    japanese_font = None
+
+    if any("Noto Sans Mono CJK JP" in font.lower() for font in font_list):
+        japanese_font = "Noto Sans Mono CJK JP"
+    elif any("msgothic" in font.lower() for font in font_list):
+        japanese_font = "MS Gothic"
+    else:
+        japanese_font = "monospace"
+        
+    return japanese_font
+
+def print_columns(*lists):
+    """
+    Convinient function to check contents of 1d lists. For debug.
+    """
+    # Determine the maximum length of the lists
+    max_length = max(len(lst) for lst in lists)
+
+    # Iterate through the maximum number of rows
+    for i in range(max_length):
+        # For each list, print the element at the current row or space if out of range
+        for lst in lists:
+            if i < len(lst):
+                try:
+                    print(f"{lst[i]:<10}", end=" ")  # Adjust the width as necessary
+                except TypeError:
+                    print(f"{str(lst[i]):<10}", end=" ")
+            else:
+                print(" " * 10, end=" ")  # Adjust spacing to match the above width
+        print()  # Newline after each row

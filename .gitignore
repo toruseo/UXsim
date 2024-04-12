@@ -130,6 +130,7 @@ dmypy.json
 
 out/
 demos_and_examples/out/
+demos_and_examples/out*/
 cache/
 _private_files/*
 dev*.ipynb
@@ -138,6 +139,7 @@ p*_*.py
 *.code-workspace
 .VSCodeCounter/*
 .vscode/*
+*.prof
 
 # pre-commit
 .pre-commit-config.yaml
