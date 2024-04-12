@@ -819,13 +819,14 @@ class Vehicle:
         s.trip_abort = trip_abort
         s.flag_trip_aborted = 0
 
-        #ログなど
-        s.log_t = [] #時刻
-        s.log_state = [] #状態
-        s.log_link = [] #リンク
-        s.log_x = [] #位置
-        s.log_s = [] #車頭距離
-        s.log_v = [] #現在速度
+        #Logs. TODO: need to save memory by mapping int dtype
+        s.log_t = np.zeros(s.W.TSIZE)-1 #time
+        s.log_state = np.zeros(s.W.TSIZE, dtype=int)-1 #state
+        s.log_link = np.zeros(s.W.TSIZE, dtype=int)-1 #link
+        s.log_x = np.zeros(s.W.TSIZE)-1 #in-link position
+        s.log_s = np.zeros(s.W.TSIZE)-1 #headway
+        s.log_v = np.zeros(s.W.TSIZE)-1 #speed
+
         s.color = (random.random(), random.random(), random.random())
 
         s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
@@ -925,7 +926,7 @@ class Vehicle:
             s.arrival_time = -1
             s.travel_time = -1
 
-        s.record_log()
+        s.end_log()
 
     def carfollow(s):
         """
@@ -1027,32 +1028,62 @@ class Vehicle:
             if s.state == "end" and s.log_t_link[-1][1] != "end":
                 s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
 
-            s.log_t.append(s.W.T*s.W.DELTAT)
-            s.log_state.append(s.state)
-            s.log_link.append(-1)
-            s.log_x.append(-1)
-            s.log_s.append(-1)
-            s.log_v.append(-1)
+            s.log_t[s.W.T] = s.W.T*s.W.DELTAT
+            s.log_state[s.W.T] = s.W.veh_statemap[s.state]
+            s.log_link[s.W.T] = -1
+            s.log_x[s.W.T] = -1
+            s.log_s[s.W.T] = -1
+            s.log_v[s.W.T] = -1
 
             if s.state == "wait":
                 s.W.analyzer.average_speed_count += 1
                 s.W.analyzer.average_speed += 0
         else:
-            if len(s.log_link) == 0 or s.log_link[-1] != s.link:
+            if len(s.log_link) == 0 or s.log_link[-1] != s.link.id:
                 s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
-
-            s.log_t.append(s.W.T*s.W.DELTAT)
-            s.log_state.append(s.state)
-            s.log_link.append(s.link)
-            s.log_x.append(s.x)
-            s.log_v.append(s.v)
+                
+            s.log_t[s.W.T] = s.W.T*s.W.DELTAT
+            s.log_state[s.W.T] = s.W.veh_statemap[s.state]
+            s.log_link[s.W.T] = s.link.id
+            s.log_x[s.W.T] = s.x
+            s.log_v[s.W.T] = s.v
             if s.leader != None and s.link == s.leader.link:
-                s.log_s.append(s.leader.x-s.x)
+                s.log_s[s.W.T] = s.leader.x-s.x
             else:
-                s.log_s.append(-1)
+                s.log_s[s.W.T] = -1
 
             s.W.analyzer.average_speed_count += 1
             s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
+    
+    def end_log(s):
+        """
+        Finalize travel logs when the trip ended.
+        """
+        if s.state == "end" and s.log_t_link[-1][1] != "end":
+            s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
+        
+        s.log_t = s.log_t[:s.W.T+1].tolist()
+        s.log_t.append(s.W.T*s.W.DELTAT)
+        s.log_state = s.log_state[:s.W.T+1].tolist()
+        s.log_state.append(s.W.veh_statemap[s.state])
+        s.log_state = [s.W.veh_statemap_inv[state] for state in s.log_state]
+        s.log_link = s.log_link[:s.W.T+1].tolist()
+        s.log_link = [s.W.link_id_map_inv[l] for l in s.log_link]
+        s.log_link.append(-1)
+        s.log_x = s.log_x[:s.W.T+1].tolist()
+        s.log_x.append(-1)
+        s.log_s = s.log_s[:s.W.T+1].tolist()
+        s.log_s.append(-1)
+        s.log_v = s.log_v[:s.W.T+1].tolist()
+        s.log_v.append(-1)
+    
+    def end_log_when_simulation_terminated(s):
+        """
+        Finalize travel logs when the simulation terminated.
+        """
+        #TODO: write
+        pass
+
 
 
 class RouteChoice:
@@ -1233,6 +1264,7 @@ class World:
 
         W.DELTAN = deltan         #車群サイズ（veh）
         W.REACTION_TIME = reaction_time         #反応時間（s）
+        
 
         W.DUO_UPDATE_TIME = duo_update_time     #経路選択時間間隔（s）
         W.DUO_UPDATE_WEIGHT = duo_update_weight    #経路選択の更新重み
@@ -1242,12 +1274,31 @@ class World:
         W.DELTAT = W.REACTION_TIME*W.DELTAN
         W.DELTAT_ROUTE = int(W.DUO_UPDATE_TIME/W.DELTAT)
 
+        W.TSIZE = int(W.TMAX/W.DELTAT)  #総タイムステップ数．finalize_scenario()で再計算されることもある
+
         ## データ格納先定義
         W.VEHICLES = OrderedDict()            #home, wait, run, end
         W.VEHICLES_LIVING = OrderedDict()     #home, wait, run
         W.VEHICLES_RUNNING = OrderedDict()    #run
         W.NODES = []
         W.LINKS = []
+
+        W.veh_statemap = {
+            -1: -1,
+            "home": 0,
+            "wait": 1,
+            "run": 2,
+            "end": 3,
+            "abort": 4
+        }
+        W.veh_statemap_inv = {
+            -1: -1,
+            0: "home",
+            1: "wait",
+            2: "run",
+            3: "end",
+            4: "abort"
+        }
 
         W.route_choice_principle = route_choice_principle
 
@@ -1554,6 +1605,10 @@ class World:
             W.ADJ_MAT[i,j] = 1
             W.ADJ_MAT_LINKS[i,j] = link
 
+        #map of link id
+        W.link_id_map_inv = {l.id: l for l in W.LINKS}
+        W.link_id_map_inv[-1] = -1
+
         W.analyzer = Analyzer(W)
 
         W.finalized = 1
@@ -1652,7 +1707,7 @@ class World:
             if W.T % W.DELTAT_ROUTE == 0:
                 W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
                 W.ROUTECHOICE.homogeneous_DUO_update()
-                for veh in W.VEHICLES_LIVING.values():
+                for veh in W.VEHICLES_LIVING.values():  #TODO: this is redundant. To be moved to the previous for-loop.
                     veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
 
             W.TIME = W.T*W.DELTAT

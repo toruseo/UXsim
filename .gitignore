@@ -139,6 +139,7 @@ p*_*.py
 *.code-workspace
 .VSCodeCounter/*
 .vscode/*
+*.prof
 
 # pre-commit
 .pre-commit-config.yaml

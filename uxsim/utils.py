@@ -111,3 +111,23 @@ def get_font_for_matplotlib():
         japanese_font = "monospace"
         
     return japanese_font
+
+def print_columns(*lists):
+    """
+    Convinient function to check contents of 1d lists. For debug.
+    """
+    # Determine the maximum length of the lists
+    max_length = max(len(lst) for lst in lists)
+    
+    # Iterate through the maximum number of rows
+    for i in range(max_length):
+        # For each list, print the element at the current row or space if out of range
+        for lst in lists:
+            if i < len(lst):
+                try:
+                    print(f"{lst[i]:<10}", end=" ")  # Adjust the width as necessary
+                except TypeError:
+                    print(f"{str(lst[i]):<10}", end=" ")
+            else:
+                print(" " * 10, end=" ")  # Adjust spacing to match the above width
+        print()  # Newline after each row
