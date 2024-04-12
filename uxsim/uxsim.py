@@ -1652,7 +1652,7 @@ class World:
             if W.T % W.DELTAT_ROUTE == 0:
                 W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
                 W.ROUTECHOICE.homogeneous_DUO_update()
-                for veh in W.VEHICLES_LIVING.values():
+                for veh in W.VEHICLES_LIVING.values():  #TODO: this is redundant. To be moved to the previous for-loop.
                     veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
 
             W.TIME = W.T*W.DELTAT
