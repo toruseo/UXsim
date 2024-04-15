@@ -149,11 +149,18 @@ class Node:
         If there are vehicles in the generation queue of the node, this method attempts to depart a vehicle to one of the outgoing links.
         The choice of the outgoing link is based on the vehicle's route preference for each link. Once a vehicle is departed, it is removed from the generation queue, added to the list of vehicles on the chosen link, and its state is set to "run".
         """
-        outlinks = list(s.outlinks.values())
-        if len(outlinks):
-            for i in range(sum([l.lanes for l in outlinks])):
-                if len(s.generation_queue) > 0:
+        outlinks0 = list(s.outlinks.values())
+        if len(outlinks0):
+            for i in range(sum([l.lanes for l in outlinks0])):
+                if len(s.generation_queue) > 0:                    
                     veh = s.generation_queue[0]
+
+                    #consider the link preferences
+                    outlinks = list(s.outlinks.values())
+                    if set(outlinks) & set(veh.links_prefer): 
+                        outlinks = list(set(outlinks) & set(veh.links_prefer))
+                    if set(outlinks) & set(veh.links_avoid):
+                        outlinks = list(set(outlinks) - set(veh.links_avoid))
                     
                     preference = [veh.route_pref[l] for l in outlinks]
                     if sum(preference) > 0:
@@ -1100,12 +1107,19 @@ class RouteChoice:
         noise : float
             very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
         """
+        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+
         for link in s.W.LINKS:
             i = link.start_node.id
             j = link.end_node.id
             if s.W.ADJ_MAT[i,j]:
-                s.adj_mat_time[i,j] = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
-                if link.capacity_in == 0: #流入禁止の場合は通行不可
+                new_link_tt = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
+                n = adj_mat_link_count[i,j]
+                s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
+                # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
+                adj_mat_link_count[i,j] += 1
+                if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
                     s.adj_mat_time[i,j] = np.inf
             else:
                 s.adj_mat_time[i,j] = np.inf
