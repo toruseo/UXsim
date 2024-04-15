@@ -281,7 +281,7 @@ class OSMImporter:
 
         return nodes, links
 
-    def osm_network_visualize(nodes, links, figsize=(12,12), xlim=[None,None], ylim=[None,None], show_link_name=False): 
+    def osm_network_visualize(nodes, links, figsize=(12,12), xlim=[None,None], ylim=[None,None], show_link_name=False, show_mode=1, save_mode=0, save_fname="osm_network.png"): 
         """
         Visualize the imported network. Mainly for test purpose.
         """
@@ -313,7 +313,11 @@ class OSMImporter:
         
         plt.xlim(xlim)
         plt.ylim(ylim)
-        plt.show()
+        if show_mode:
+            plt.show()
+        if save_mode:
+            plt.savefig(save_fname)
+        plt.close()
 
     def osm_network_to_World(W, nodes, links, default_jam_density=0.2, coef_degree_to_meter=111000):
         """

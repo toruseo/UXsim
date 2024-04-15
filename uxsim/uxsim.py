@@ -149,11 +149,18 @@ class Node:
         If there are vehicles in the generation queue of the node, this method attempts to depart a vehicle to one of the outgoing links.
         The choice of the outgoing link is based on the vehicle's route preference for each link. Once a vehicle is departed, it is removed from the generation queue, added to the list of vehicles on the chosen link, and its state is set to "run".
         """
-        outlinks = list(s.outlinks.values())
-        if len(outlinks):
-            for i in range(sum([l.lanes for l in outlinks])):
-                if len(s.generation_queue) > 0:
+        outlinks0 = list(s.outlinks.values())
+        if len(outlinks0):
+            for i in range(sum([l.lanes for l in outlinks0])):
+                if len(s.generation_queue) > 0:                    
                     veh = s.generation_queue[0]
+
+                    #consider the link preferences
+                    outlinks = list(s.outlinks.values())
+                    if set(outlinks) & set(veh.links_prefer): 
+                        outlinks = list(set(outlinks) & set(veh.links_prefer))
+                    if set(outlinks) & set(veh.links_avoid):
+                        outlinks = list(set(outlinks) - set(veh.links_avoid))
                     
                     preference = [veh.route_pref[l] for l in outlinks]
                     if sum(preference) > 0:
@@ -925,7 +932,7 @@ class Vehicle:
             s.arrival_time = -1
             s.travel_time = -1
 
-        s.record_log()
+        s.record_log(enforce_log=1)
 
     def carfollow(s):
         """
@@ -958,7 +965,7 @@ class Vehicle:
         This method updates the link preferences used by the vehicle to select its route based on its current understanding of the system.
 
         - If the vehicle's route choice principle is "homogeneous_DUO", it will update its preferences based on a global, homogenous dynamic user optimization (DUO) model.
-        - If the route choice principle is "heterogeneous_DUO", it will update its preferences based on a heterogeneous DUO model, considering both its past preferences and the system's current state.
+        - If the route choice principle is "heterogeneous_DUO", it will update its preferences based on a heterogeneous DUO model, considering both its past preferences and the system's current state. This is imcomplete feature. Not recommended.
 
         The updated preferences guide the vehicle's decisions in subsequent route choices.
         """
@@ -1019,40 +1026,47 @@ class Vehicle:
 
         return Route(s.W, route[:-1]), ts
 
-    def record_log(s):
+    def record_log(s, enforce_log=0):
         """
         Record travel logs.
+
+        Parameters
+        ----------
+        enforce_log : bool, optional
+            Record log regardless of the logging interval, default is 0.
         """
-        if s.state != "run":
-            if s.state == "end" and s.log_t_link[-1][1] != "end":
-                s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
+        if s.W.vehicle_logging_timestep_interval != -1:
+            if (s.W.T%s.W.vehicle_logging_timestep_interval == 0 or enforce_log):
+                if s.state != "run":
+                    if s.state == "end" and s.log_t_link[-1][1] != "end":
+                        s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
 
-            s.log_t.append(s.W.T*s.W.DELTAT)
-            s.log_state.append(s.state)
-            s.log_link.append(-1)
-            s.log_x.append(-1)
-            s.log_s.append(-1)
-            s.log_v.append(-1)
+                    s.log_t.append(s.W.T*s.W.DELTAT)
+                    s.log_state.append(s.state)
+                    s.log_link.append(-1)
+                    s.log_x.append(-1)
+                    s.log_s.append(-1)
+                    s.log_v.append(-1)
 
-            if s.state == "wait":
-                s.W.analyzer.average_speed_count += 1
-                s.W.analyzer.average_speed += 0
-        else:
-            if len(s.log_link) == 0 or s.log_link[-1] != s.link:
-                s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
+                    if s.state == "wait":
+                        s.W.analyzer.average_speed_count += 1
+                        s.W.analyzer.average_speed += 0
+                else:
+                    if len(s.log_link) == 0 or s.log_link[-1] != s.link:
+                        s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
 
-            s.log_t.append(s.W.T*s.W.DELTAT)
-            s.log_state.append(s.state)
-            s.log_link.append(s.link)
-            s.log_x.append(s.x)
-            s.log_v.append(s.v)
-            if s.leader != None and s.link == s.leader.link:
-                s.log_s.append(s.leader.x-s.x)
-            else:
-                s.log_s.append(-1)
+                    s.log_t.append(s.W.T*s.W.DELTAT)
+                    s.log_state.append(s.state)
+                    s.log_link.append(s.link)
+                    s.log_x.append(s.x)
+                    s.log_v.append(s.v)
+                    if s.leader != None and s.link == s.leader.link:
+                        s.log_s.append(s.leader.x-s.x)
+                    else:
+                        s.log_s.append(-1)
 
-            s.W.analyzer.average_speed_count += 1
-            s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
+                    s.W.analyzer.average_speed_count += 1
+                    s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
 
 
 class RouteChoice:
@@ -1093,12 +1107,19 @@ class RouteChoice:
         noise : float
             very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
         """
+        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+
         for link in s.W.LINKS:
             i = link.start_node.id
             j = link.end_node.id
             if s.W.ADJ_MAT[i,j]:
-                s.adj_mat_time[i,j] = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
-                if link.capacity_in == 0: #流入禁止の場合は通行不可
+                new_link_tt = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
+                n = adj_mat_link_count[i,j]
+                s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
+                # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
+                adj_mat_link_count[i,j] += 1
+                if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
                     s.adj_mat_time[i,j] = np.inf
             else:
                 s.adj_mat_time[i,j] = np.inf
@@ -1183,7 +1204,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", show_progress=1, show_progress_deltat=600, tmax=None):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1):
         """
         Create a World.
 
@@ -1219,6 +1240,9 @@ class World:
             The time interval for showing network progress, default is 600 seconds.
         tmax : float or None, optional
             The simulation duration, default is None (automatically determined).
+        vehicle_logging_timestep_interval : int, optional
+            The interval for logging vehicle data, default is 1. Logging is off if set to -1.
+            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
 
         Notes
         -----
@@ -1248,6 +1272,8 @@ class World:
         W.VEHICLES_RUNNING = OrderedDict()    #run
         W.NODES = []
         W.LINKS = []
+
+        W.vehicle_logging_timestep_interval = vehicle_logging_timestep_interval
 
         W.route_choice_principle = route_choice_principle
 
