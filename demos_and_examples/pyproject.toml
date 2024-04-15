@@ -28,9 +28,9 @@ dependencies = [
 dynamic = ["version"] # Version is read from uxsim/__init__.py
 
 [project.urls]
-"Homepage" = "https://github.com/toruseo/UXsim"
-"Download" = "https://github.com/toruseo/UXsim"
-"Bug Tracker" = "https://github.com/toruseo/UXsim/issues"
+Homepage = "https://github.com/toruseo/UXsim"
+Documentation = "https://toruseo.jp/UXsim/docs"
+Issues = "https://github.com/toruseo/UXsim/issues"
 
 [tool.setuptools]
 packages = {find = {include = ["uxsim", "uxsim.*"]}}

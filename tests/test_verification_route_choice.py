@@ -552,3 +552,116 @@ def test_route_choice_4route_congestion_avoidance():
     assert equal_tolerance(np.average(vol3s), volave, rel_tol=0.2)
     assert equal_tolerance(np.average(vol4s), volave, rel_tol=0.2)
     assert equal_tolerance(volave*4, 2000*0.8)
+
+def test_route_links_prefer():     
+    W = World(
+        name="",
+        deltan=5,
+        tmax=2000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("mid1",0,0)
+    W.addNode("mid2",0,0)
+    W.addNode("dest", 0, 0)
+    link11 = W.addLink("link11", "orig", "mid1", length=1000, free_flow_speed=20)
+    link12 = W.addLink("link12", "orig", "mid1", length=1000, free_flow_speed=10)
+    link21 = W.addLink("link21", "mid1", "mid2", length=1000, free_flow_speed=20)
+    link22 = W.addLink("link22", "mid1", "mid2", length=1000, free_flow_speed=10)
+    link31 = W.addLink("link31", "mid2", "dest", length=1000, free_flow_speed=20)
+    link32 = W.addLink("link32", "mid2", "dest", length=1000, free_flow_speed=10)
+
+    for t in range(0,1000, 10):
+        W.addVehicle("orig", "dest", links_prefer=[link12, link21, link32], departure_time=t)
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    df = W.analyzer.link_to_pandas()
+
+    assert equal_tolerance(df[df["link"]=="link12"]["traffic_volume"].values[0], 500)
+    assert equal_tolerance(df[df["link"]=="link21"]["traffic_volume"].values[0], 500)
+    assert equal_tolerance(df[df["link"]=="link32"]["traffic_volume"].values[0], 500)
+
+def test_route_links_avoid():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=2000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("mid1",0,0)
+    W.addNode("mid2",0,0)
+    W.addNode("dest", 0, 0)
+    link11 = W.addLink("link11", "orig", "mid1", length=1000, free_flow_speed=20)
+    link12 = W.addLink("link12", "orig", "mid1", length=1000, free_flow_speed=10)
+    link21 = W.addLink("link21", "mid1", "mid2", length=1000, free_flow_speed=20)
+    link22 = W.addLink("link22", "mid1", "mid2", length=1000, free_flow_speed=10)
+    link31 = W.addLink("link31", "mid2", "dest", length=1000, free_flow_speed=20)
+    link32 = W.addLink("link32", "mid2", "dest", length=1000, free_flow_speed=10)
+
+    for t in range(0,1000, 10):
+        W.addVehicle("orig", "dest", links_avoid=[link12, link21, link32], departure_time=t)
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    df = W.analyzer.link_to_pandas()
+
+    assert equal_tolerance(df[df["link"]=="link11"]["traffic_volume"].values[0], 500)
+    assert equal_tolerance(df[df["link"]=="link22"]["traffic_volume"].values[0], 500)
+    assert equal_tolerance(df[df["link"]=="link31"]["traffic_volume"].values[0], 500)
+
+def test_route_multiple_links_between_same_nodes():    
+    vol11s = []
+    vol12s = []
+    vol21s = []
+    vol22s = []
+
+    for i in range(10):
+
+        W = World(
+            name="",
+            deltan=5,
+            tmax=2000,
+            print_mode=0, save_mode=1, show_mode=1,
+            random_seed=None,
+            duo_update_time=100
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("mid1",0,0)
+        W.addNode("mid2",0,0)
+        W.addNode("dest", 0, 0)
+        link11 = W.addLink("link11", "orig", "mid1", length=1000, free_flow_speed=20)
+        link12 = W.addLink("link12", "orig", "mid1", length=1000, free_flow_speed=10)
+        link21 = W.addLink("link21", "orig", "mid2", length=1000, free_flow_speed=20)
+        link22 = W.addLink("link22", "orig", "mid2", length=1000, free_flow_speed=10)
+        link31 = W.addLink("link31", "mid1", "dest", length=1000, free_flow_speed=20)
+        link32 = W.addLink("link32", "mid2", "dest", length=1000, free_flow_speed=20)
+
+        W.adddemand("orig", "dest", 0, 1000, 0.8)
+
+        W.exec_simulation()
+
+        W.analyzer.print_simple_stats()
+
+        df = W.analyzer.link_to_pandas()
+        #display(df)
+
+        vol11s.append(df[df["link"]=="link11"]["traffic_volume"].values[0])
+        vol12s.append(df[df["link"]=="link12"]["traffic_volume"].values[0])
+        vol21s.append(df[df["link"]=="link21"]["traffic_volume"].values[0])
+        vol22s.append(df[df["link"]=="link22"]["traffic_volume"].values[0])
+
+    print(f"{np.average(vol11s) = }\n{np.average(vol12s) = }\n{np.average(vol21s) = }\n{np.average(vol22s) = }")
+    assert equal_tolerance(np.average(vol11s), np.average(vol12s), rel_tol=0.2)
+    assert equal_tolerance(np.average(vol21s), np.average(vol22s), rel_tol=0.2)
+    assert equal_tolerance(np.average(vol11s)+np.average(vol12s), np.average(vol21s)+np.average(vol22s), rel_tol=0.2)

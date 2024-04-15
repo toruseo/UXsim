@@ -17,10 +17,7 @@ from scipy.sparse.csgraph import floyd_warshall
 
 from .utils  import *
 
-plt.rcParams["font.family"] = "monospace"
-if "MS Gothic" in plt.rcParams["font.family"]:
-    plt.rcParams["font.family"] = "MS Gothic"
-
+plt.rcParams["font.family"] = get_font_for_matplotlib()
 
 class Analyzer:
     """
@@ -139,6 +136,9 @@ class Analyzer:
         """
         Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories. It is assumed that vehicles are in free-flow travel at the end of the link.
         """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The trajecotries are not exactly accurate.", LoggingWarning)
+
         if s.flag_trajectory_computed:
             return 0
         else:
@@ -303,6 +303,8 @@ class Analyzer:
         plot_signal : bool, optional
             Plot the downstream signal red light.
         """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
 
         #リンク車両軌跡の時空間図
         s.W.print(" drawing trajectories...")
@@ -362,6 +364,8 @@ class Analyzer:
         plot_signal : bool, optional
             Plot the downstream signal red light.
         """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
 
         #リンク密度の時空間図
         s.W.print(" drawing traffic states...")
@@ -424,6 +428,9 @@ class Analyzer:
         plot_signal : bool, optional
             Plot the signal red light.
         """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
+            
         #複数リンクの連続した車両軌跡の時空間図
         s.W.print(" drawing trajectories in consecutive links...")
         s.compute_accurate_traj()
@@ -845,6 +852,8 @@ class Analyzer:
 
         Temporary images used to create the animation are removed after the animation is generated.
         """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The animation is not exactly accurate.", LoggingWarning)
 
         s.W.print(" generating animation...")
 
@@ -1059,6 +1068,9 @@ class Analyzer:
         The speed is plotted on the primary y-axis, and the links are plotted on the secondary y-axis.
         The plot is saved to the directory `out<W.name>` with the filename `vehicle_<vehname>.png`.
         """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
+        
         veh = s.W.VEHICLES[vehname]
 
         fig, ax1 = plt.subplots()
@@ -1102,6 +1114,9 @@ class Analyzer:
             - 's': the spacing of the vehicle.
             - 'v': the speed of the vehicle.
         """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The output data is not exactly accurate.", LoggingWarning)
+
         if s.flag_pandas_convert == 0:
             s.flag_pandas_convert = 1
 
