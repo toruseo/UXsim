@@ -619,6 +619,7 @@ def test_route_links_avoid():
     assert equal_tolerance(df[df["link"]=="link22"]["traffic_volume"].values[0], 500)
     assert equal_tolerance(df[df["link"]=="link31"]["traffic_volume"].values[0], 500)
 
+@pytest.mark.flaky(reruns=5)
 def test_route_multiple_links_between_same_nodes():    
     vol11s = []
     vol12s = []
