@@ -22,10 +22,11 @@ If you are interested, please see:
 - Macroscopic traffic simulation: Simulating over 60000 vehicles in a city in 30 seconds
 - Dynamic traffic assignment: Traffic flow simulation with a given network and time-dependent OD demand
 - Theoretically valid models commonly used in academic/professional transportation research
-- Implementation of traffic control/management schemes such as traffic signals and road pricing
+- Implementation of traffic control/management schemes such as taxi/shared-mobility, traffic signals, road pricing, and so on
 - Basic analysis of simulation results and their export to pandas.DataFrame and CSV files
 - Visualization of simulation results using matplotlib; interactive GUI is available
 - Flexible and customizable thanks to pure Python implementation; can also be directly integrated with other Python-based frameworks, such as PyTorch for deep reinforcement learning traffic control
+- The main code `uxsim.py` is only about 1800 lines of code. Users may easily understand and customize it
 
 ## Simulation Examples
 
