@@ -1160,8 +1160,6 @@ class Analyzer:
             warnings.warn("vehicle_logging_timestep_interval is not 1. The output data is not exactly accurate.", LoggingWarning)
 
         if s.flag_pandas_convert == 0:
-            s.flag_pandas_convert = 1
-
             out = [["name", "dn", "orig", "dest", "t", "link", "x", "s", "v"]]
             for veh in s.W.VEHICLES.values():
                 for i in range(len(veh.log_t)):
@@ -1175,8 +1173,13 @@ class Analyzer:
                                 linkname = "trip_aborted"
                             else:
                                 linkname = "trip_end"
-                        out.append([veh.name, s.W.DELTAN, veh.orig.name, veh.dest.name, veh.log_t[i], linkname, veh.log_x[i], veh.log_s[i], veh.log_v[i]])
+                        veh_dest_name = None
+                        if veh.dest != None:
+                            veh_dest_name = veh.dest.name
+                        out.append([veh.name, s.W.DELTAN, veh.orig.name, veh_dest_name, veh.log_t[i], linkname, veh.log_x[i], veh.log_s[i], veh.log_v[i]])
             s.df_vehicles = pd.DataFrame(out[1:], columns=out[0])
+
+            s.flag_pandas_convert = 1
         return s.df_vehicles
 
     def log_vehicles_to_pandas(s):

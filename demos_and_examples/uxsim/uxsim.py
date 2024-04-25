@@ -1092,21 +1092,21 @@ class Vehicle:
 
         return Route(s.W, route[:-1]), ts
 
-    def get_xy_coords(s, t):
+    def get_xy_coords(s, t=-1):
         """
-        Get the x-y coordinates of the vehicle at time t from the logs.
+        Get the x-y coordinates of the vehicle. If t is given, the position at time t is returned based on the logs.
 
         Parameters
         ----------
-        t : float | int
+        t : int | float, optional
             Time in seconds. If it is -1, the latest position is returned.
         """
         if t != -1:
             link = s.log_link[int(t/s.W.DELTAT/s.W.logging_timestep_interval)]
             xx = s.log_x[int(t/s.W.DELTAT/s.W.logging_timestep_interval)]
         else:
-            link = s.log_link[-1]
-            xx = s.log_x[-1]
+            link = s.link
+            xx = s.x
         x0 = link.start_node.x
         y0 = link.start_node.y
         x1 = link.end_node.x

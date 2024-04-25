@@ -115,15 +115,15 @@ class TaxiHandler:
         s.trip_requests.remove(trip_request)
     
     def compute_stats(s):
-        s.n_total_requests = len(s.trip_requests_all)
+        s.n_total_requests = len(s.trip_requests_all)*s.W.DELTAN
         s.n_completed_requests = 0
         s.waiting_times = []
         s.travel_times = []
         s.invehicle_times = []
-        s.number_of_taxis = sum([1 for veh in s.W.VEHICLES.values() if veh.mode == "taxi"])
+        s.number_of_taxis = sum([1 for veh in s.W.VEHICLES.values() if veh.mode == "taxi"])*s.W.DELTAN
         for tr in s.trip_requests_all:
             if tr.arrival_time != None:
-                s.n_completed_requests += 1
+                s.n_completed_requests += s.W.DELTAN
                 s.invehicle_times.append(tr.arrival_time - tr.get_taxi_time)
                 s.travel_times.append(tr.arrival_time - tr.depart_time)
             if tr.get_taxi_time != None:

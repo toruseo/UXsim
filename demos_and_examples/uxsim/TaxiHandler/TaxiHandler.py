@@ -4,26 +4,26 @@ Submodule for handling taxis
 
 import random, math
 
-class TravelRequest:
+class TripRequest:
     """
-    A class representing a travel request (or travelers, passengers, cargo, etc.)
+    A class representing a trip request (or travelers, passengers, cargo, etc.)
     """
     def __init__(s, W, orig, dest, depart_time, attribute=None):
         """
-        Initializes a travel request.
+        Initializes a trip request.
 
         Parameters
         ----------
         W : World
             The world object.
         orig : str | Node
-            The origin node of the travel request.
+            The origin node of the trip request.
         dest : str | Node
-            The destination node of the travel request.
+            The destination node of the trip request.
         depart_time : float
-            The time at which the travel request departs.
+            The time at which the trip request departs.
         attribute : any
-            An optional attribute of the travel request. This can be used to store any information by users' need.
+            An optional attribute of the trip request. This can be used to store any information by users' need.
         """
         
         s.W = W
@@ -61,7 +61,7 @@ class TravelRequest:
 
 class TaxiHandler:
     """
-    A base class for handling the assignment of travel requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).
+    A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).
     """
     def __init__(s, W):
         """
@@ -72,142 +72,162 @@ class TaxiHandler:
         W : World
             The world object.
         """
-        s.travel_requests = []
-        s.travel_requests_all = []
+        s.trip_requests = []
+        s.trip_requests_all = []
         s.W = W
         random.seed(s.W.random_seed)
 
-    def add_travel_request(s, orig, dest, depart_time, attribute=None):
+    def add_trip_request(s, orig, dest, depart_time, attribute=None):
         """
-        Adds a travel request to this handler.
+        Adds a trip request to this handler.
 
         Parameters
         ----------
         orig : str | Node
-            The origin node of the travel request.
+            The origin node of the trip request.
         dest : str | Node
-            The destination node of the travel request.
+            The destination node of the trip request.
         depart_time : float
-            The time at which the travel request departs.
+            The time at which the trip request departs.
         attribute : any
-            An optional attribute of the travel request. This can be used to store any information by users' need.
+            An optional attribute of the trip request. This can be used to store any information by users' need.
         """
-        s.travel_requests.append(TravelRequest(s.W, orig, dest, depart_time, attribute=attribute))
-        s.travel_requests_all.append(s.travel_requests[-1])
+        s.trip_requests.append(TripRequest(s.W, orig, dest, depart_time, attribute=attribute))
+        s.trip_requests_all.append(s.trip_requests[-1])
     
-    def assign_taxi(s, vehicle, travel_request):
+    def assign_taxi(s, vehicle, trip_request):
         """
-        Assigns a travel request to a vehicle.
+        Assigns a trip request to a vehicle.
 
         Parameters
         ----------
         vehicle : Vehicle
-            The vehicle to assign the travel request to.
+            The vehicle to assign the trip request to.
         """
-        #print(f"{s.W.TIME}: Assigning {travel_request} to {vehicle}")
+        #print(f"{s.W.TIME}: Assigning {trip_request} to {vehicle}")
 
-        if travel_request not in s.travel_requests:
-            raise ValueError("Travel request not found in the list of travel requests")
+        if trip_request not in s.trip_requests:
+            raise ValueError("Travel request not found in the list of trip requests")
 
-        vehicle.add_dest(travel_request.orig)
-        vehicle.node_event[travel_request.orig] = travel_request.get_on_taxi
-        travel_request.taxi = vehicle
-        s.travel_requests.remove(travel_request)
+        vehicle.add_dest(trip_request.orig)
+        vehicle.node_event[trip_request.orig] = trip_request.get_on_taxi
+        trip_request.taxi = vehicle
+        s.trip_requests.remove(trip_request)
     
     def compute_stats(s):
-        s.n_total_requests = len(s.travel_requests_all)
+        s.n_total_requests = len(s.trip_requests_all)*s.W.DELTAN
         s.n_completed_requests = 0
         s.waiting_times = []
         s.travel_times = []
         s.invehicle_times = []
-        for tr in s.travel_requests_all:
+        s.number_of_taxis = sum([1 for veh in s.W.VEHICLES.values() if veh.mode == "taxi"])*s.W.DELTAN
+        for tr in s.trip_requests_all:
             if tr.arrival_time != None:
-                s.n_completed_requests += 1
+                s.n_completed_requests += s.W.DELTAN
                 s.invehicle_times.append(tr.arrival_time - tr.get_taxi_time)
                 s.travel_times.append(tr.arrival_time - tr.depart_time)
             if tr.get_taxi_time != None:
                 s.waiting_times.append(tr.get_taxi_time - tr.depart_time)
+    
+    def print_stats(s):
+        s.compute_stats()
+        print("results for taxi transportation:")
+        print(f" total trip rquests: {s.n_total_requests}")
+        print(f" completed trip requests: {s.n_completed_requests}")
+        print(f" completed trip requests ratio: {s.n_completed_requests/s.n_total_requests if s.n_total_requests > 0 else 0: .2f}")
+        print(f" average number of completed requests per taxi: {s.n_completed_requests/s.number_of_taxis: .2f}")
+        print(f" average waiting time: {sum(s.waiting_times)/len(s.waiting_times) if len(s.waiting_times) > 0 else 0: .1f}")
+        print(f" average in-vehicle time: {sum(s.invehicle_times)/len(s.invehicle_times) if len(s.invehicle_times) > 0 else 0: .1f}")
+        print(f" average trip time: {sum(s.travel_times)/len(s.travel_times) if len(s.travel_times) > 0 else 0: .1f}")
 
 
 class TaxiHandler_random(TaxiHandler):
     """
-    A naive taxi handler that assigns travel requests to random taxis. 
+    A naive taxi handler that assigns trip requests to random taxis. 
     """
     def __init__(s, W):
         super().__init__(W)
     
-    def assign_travel_request_to_taxi(s):
+    def assign_trip_request_to_taxi(s):
         """
-        Assigns travel request to random available taxi.
+        Assigns trip request to random available taxi.
         """
         vacant_taxis = [veh for veh in s.W.VEHICLES.values() if veh.mode == "taxi" and veh.state == "run" and veh.dest == None]
         random.shuffle(vacant_taxis)
-        for travel_request in s.travel_requests[:]:
+        for trip_request in s.trip_requests[:]:
             if len(vacant_taxis) == 0:
                 break
-            if travel_request.depart_time <= s.W.TIME:
+            if trip_request.depart_time <= s.W.TIME:
                 taxi = vacant_taxis.pop()
-                s.assign_taxi(taxi, travel_request)
+                s.assign_taxi(taxi, trip_request)
 
 
 class TaxiHandler_nearest(TaxiHandler):
     """
-    A taxi handler that assigns travel requests to nearest taxis. 
+    A taxi handler that assigns trip requests to nearest taxis (based on Euclidean distance). 
     """
     def __init__(s, W):
         super().__init__(W)
     
-    def assign_travel_request_to_taxi(s):
+    def assign_trip_request_to_taxi(s):
         """
-        Assigns travel request to nearest available taxi.
+        Assigns trip request to nearest available taxi.
         """
         vacant_taxis = [veh for veh in s.W.VEHICLES.values() if veh.mode == "taxi" and veh.state == "run" and veh.dest == None]
         random.shuffle(vacant_taxis)
-        for travel_request in s.travel_requests[:]:
+        for trip_request in s.trip_requests[:]:
             if len(vacant_taxis) == 0:
                 break
-            if travel_request.depart_time <= s.W.TIME:
+            if trip_request.depart_time <= s.W.TIME:
                 dist_tmp = float("inf")
                 taxi_tmp = None
                 for taxi in vacant_taxis[:]:
-                    x0, y0 = taxi.get_xy_coords(-1)
-                    x1, y1 = travel_request.orig.x, travel_request.orig.y
+                    x0, y0 = taxi.get_xy_coords()
+                    x1, y1 = trip_request.orig.x, trip_request.orig.y
                     dist = math.sqrt((x0-x1)**2 + (y0-y1)**2)
                     if dist <= dist_tmp:
                         dist_tmp = dist
                         taxi_tmp = taxi
                 if taxi_tmp != None:
                     vacant_taxis.remove(taxi_tmp)
-                    s.assign_taxi(taxi_tmp, travel_request)
+                    s.assign_taxi(taxi_tmp, trip_request)
 
 
 class TaxiHandler_nearest_matching_radious(TaxiHandler):
     """
-    A taxi handler that assigns travel requests to nearest taxis that are within a certain radious of the origin node. 
+    A taxi handler that assigns trip requests to nearest taxis that are within a certain radious of the origin node (based on Euclidean distance. 
     """
     def __init__(s, W, matching_radious):
         super().__init__(W)
         s.matching_radious = matching_radious
     
-    def assign_travel_request_to_taxi(s):
+    def assign_trip_request_to_taxi(s):
         """
-        Assigns travel request to nearest available taxi that is within the radious of the origin node.
+        Assigns trip request to nearest available taxi that is within the radious of the origin node.
         """
         vacant_taxis = [veh for veh in s.W.VEHICLES.values() if veh.mode == "taxi" and veh.state == "run" and veh.dest == None]
         random.shuffle(vacant_taxis)
-        for travel_request in s.travel_requests[:]:
+        for trip_request in s.trip_requests[:]:
             if len(vacant_taxis) == 0:
                 break
-            if travel_request.depart_time <= s.W.TIME:
+            if trip_request.depart_time <= s.W.TIME:
                 dist_tmp = float("inf")
                 taxi_tmp = None
                 for taxi in vacant_taxis[:]:
-                    x0, y0 = taxi.get_xy_coords(-1)
-                    x1, y1 = travel_request.orig.x, travel_request.orig.y
+                    x0, y0 = taxi.get_xy_coords()
+                    x1, y1 = trip_request.orig.x, trip_request.orig.y
                     dist = math.sqrt((x0-x1)**2 + (y0-y1)**2)
                     if dist <= s.matching_radious and dist <= dist_tmp:
                         dist_tmp = dist
                         taxi_tmp = taxi
                 if taxi_tmp != None:
                     vacant_taxis.remove(taxi_tmp)
-                    s.assign_taxi(taxi_tmp, travel_request)
+                    s.assign_taxi(taxi_tmp, trip_request)
+
+
+class TaxiHandler_nearest_network_distance(TaxiHandler):
+    """
+    A taxi handler that assigns trip requests to nearest taxis based on network distance considering travel time as well. 
+    This would be useful, but not implemented.
+    """
+    pass
