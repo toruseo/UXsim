@@ -271,7 +271,8 @@ class Analyzer:
         """
         s.W.print("results:")
         s.W.print(f" average speed:\t {s.average_speed:.1f} m/s")
-        s.W.print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
+        s.W.print(" number of completed trips:\t", s.trip_completed, "/", s.trip_all)
+        #s.W.print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
         if s.trip_completed > 0:
             s.W.print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
             s.W.print(f" average delay of trips:\t {s.average_delay:.1f} s")
@@ -280,7 +281,8 @@ class Analyzer:
         if force_print == 1 and s.W.print_mode == 0:
             print("results:")
             print(f" average speed:\t {s.average_speed:.1f} m/s")
-            print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
+            print(" number of completed trips:\t", s.trip_completed, "/", s.trip_all)
+            #print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
             if s.trip_completed > 0:
                 print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
                 print(f" average delay of trips:\t {s.average_delay:.1f} s")

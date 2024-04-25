@@ -34,20 +34,33 @@ for i in range(imax):
         if j != 0:
             links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000, free_flow_speed=20, number_of_lanes=1)
 
-# taxis and passengers
-n_passengers = 20000
-n_taxis = 3000
-for i in range(int(n_taxis/deltan)):
-    node = random.choice(list(nodes.values()))
-    W.addVehicle(node, None, 0, mode="taxi")
-
+# Demand
 Handler = TaxiHandler_nearest(W)
-for i in range(int(n_passengers/deltan)):
+n_total_demand = 20000
+n_car_travelers = 10000
+n_taxi_travelers = n_total_demand-n_car_travelers
+n_taxis = 1000
+
+#car travelers
+for i in range(int(n_car_travelers/deltan)):
     node1 = random.choice(list(nodes.values()))
     node2 = random.choice(list(nodes.values()))
     while node1 == node2:
         node2 = random.choice(list(nodes.values()))
-    Handler.add_trip_request(node1, node2, i/n_passengers*deltan*tmax/2)
+    W.addVehicle(node1, node2, i/n_car_travelers*deltan*tmax/2)
+
+#carsharing (taxi)
+for i in range(int(n_taxis/deltan)):
+    node = random.choice(list(nodes.values()))
+    W.addVehicle(node, None, 0, mode="taxi")
+
+#carsharing (taxi) travelers
+for i in range(int(n_taxi_travelers/deltan)):
+    node1 = random.choice(list(nodes.values()))
+    node2 = random.choice(list(nodes.values()))
+    while node1 == node2:
+        node2 = random.choice(list(nodes.values()))
+    Handler.add_trip_request(node1, node2, i/n_taxi_travelers*deltan*tmax/2)
 
 # Run the simulation 
 while W.check_simulation_ongoing():

@@ -146,6 +146,10 @@ class TaxiHandler:
 
 
     def compute_stats(s):
+        """
+        Computes basic statistics of the taxi travels.
+        """
+
         s.n_total_requests = len(s.trip_requests_all)*s.W.DELTAN
         s.n_completed_requests = 0
         s.waiting_times = []
@@ -160,7 +164,24 @@ class TaxiHandler:
             if tr.get_taxi_time != None:
                 s.waiting_times.append(tr.get_taxi_time - tr.depart_time)
     
+    def basic_to_pandas(s):
+        """
+        Converts the basic statistics on taxi travels to a pandas DataFrame.
+        """
+        s.compute_stats()
+        data = {
+            "total_trips": [s.n_total_requests],
+            "completed_trips": [s.n_completed_requests],
+            "average_waiting_time": [sum(s.waiting_times)/len(s.waiting_times) if len(s.waiting_times) > 0 else 0],
+            "average_invehicle_time": [sum(s.invehicle_times)/len(s.invehicle_times) if len(s.invehicle_times) > 0 else 0],
+            "average_travel_time": [sum(s.travel_times)/len(s.travel_times) if len(s.travel_times) > 0 else 0],
+        }
+        return pd.DataFrame(data)
+    
     def print_stats(s):
+        """
+        Prints the basic statistics.
+        """
         s.compute_stats()
         print("results for taxi transportation:")
         print(f" total trip rquests: {s.n_total_requests}")
