@@ -182,7 +182,7 @@ class TaxiHandler_nearest(TaxiHandler):
                 dist_tmp = float("inf")
                 taxi_tmp = None
                 for taxi in vacant_taxis[:]:
-                    x0, y0 = taxi.get_xy_coords(-1)
+                    x0, y0 = taxi.get_xy_coords()
                     x1, y1 = trip_request.orig.x, trip_request.orig.y
                     dist = math.sqrt((x0-x1)**2 + (y0-y1)**2)
                     if dist <= dist_tmp:
@@ -214,7 +214,7 @@ class TaxiHandler_nearest_matching_radious(TaxiHandler):
                 dist_tmp = float("inf")
                 taxi_tmp = None
                 for taxi in vacant_taxis[:]:
-                    x0, y0 = taxi.get_xy_coords(-1)
+                    x0, y0 = taxi.get_xy_coords()
                     x1, y1 = trip_request.orig.x, trip_request.orig.y
                     dist = math.sqrt((x0-x1)**2 + (y0-y1)**2)
                     if dist <= s.matching_radious and dist <= dist_tmp:
