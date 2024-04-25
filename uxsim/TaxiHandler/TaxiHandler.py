@@ -3,12 +3,13 @@ Submodule for handling taxis
 """
 
 import random, math
+import pandas as pd
 
 class TripRequest:
     """
     A class representing a trip request (or travelers, passengers, cargo, etc.)
     """
-    def __init__(s, W, orig, dest, depart_time, attribute=None):
+    def __init__(s, W, H, orig, dest, depart_time, name=None, attribute=None):
         """
         Initializes a trip request.
 
@@ -16,27 +17,34 @@ class TripRequest:
         ----------
         W : World
             The world object.
+        H : TaxiHandler
+            The TaxiHandler object.
         orig : str | Node
             The origin node of the trip request.
         dest : str | Node
             The destination node of the trip request.
         depart_time : float
             The time at which the trip request departs.
+        name : any, optional
+            The name of the trip request. Default is None.
         attribute : any
             An optional attribute of the trip request. This can be used to store any information by users' need.
         """
         
         s.W = W
+        s.H = H
         s.orig = s.W.get_node(orig)
         s.dest = s.W.get_node(dest)
         s.depart_time = depart_time
         s.attribute = attribute
+        s.name = name
+
         s.get_taxi_time = None
         s.arrival_time = None
         s.taxi = None
 
     def __repr__(s):
-        return f"TravelRequest({s.orig}, {s.dest}, {s.depart_time})"
+        return f"TravelRequest({s.name}: {s.orig}, {s.dest}, {s.depart_time})"
 
     def get_on_taxi(s):
         """
@@ -77,7 +85,7 @@ class TaxiHandler:
         s.W = W
         random.seed(s.W.random_seed)
 
-    def add_trip_request(s, orig, dest, depart_time, attribute=None):
+    def add_trip_request(s, orig, dest, depart_time, name=None, attribute=None):
         """
         Adds a trip request to this handler.
 
@@ -89,10 +97,14 @@ class TaxiHandler:
             The destination node of the trip request.
         depart_time : float
             The time at which the trip request departs.
+        name : any, optional
+            The name of the trip request. Default is None.
         attribute : any
             An optional attribute of the trip request. This can be used to store any information by users' need.
         """
-        s.trip_requests.append(TripRequest(s.W, orig, dest, depart_time, attribute=attribute))
+        if name == None:
+            name = len(s.trip_requests)
+        s.trip_requests.append(TripRequest(s.W, s, orig, dest, depart_time, name, attribute=attribute))
         s.trip_requests_all.append(s.trip_requests[-1])
     
     def assign_taxi(s, vehicle, trip_request):
@@ -114,6 +126,25 @@ class TaxiHandler:
         trip_request.taxi = vehicle
         s.trip_requests.remove(trip_request)
     
+    def get_trip(s, tr):
+        """
+        Get a TripRequest instance by name or object.
+
+        Parameters
+        ----------
+        tr : any | TripRequest
+            The name or object of the trip request.
+        """
+        if type(tr) is TripRequest:
+            if tr in s.trip_requests_all:
+                return tr
+        else:
+            for trr in s.trip_requests_all:
+                if tr == trr.name:
+                    return trr
+        raise Exception(f"'{tr}' is not TripRequest of this TaxiHandler")
+
+
     def compute_stats(s):
         s.n_total_requests = len(s.trip_requests_all)*s.W.DELTAN
         s.n_completed_requests = 0
@@ -139,6 +170,23 @@ class TaxiHandler:
         print(f" average waiting time: {sum(s.waiting_times)/len(s.waiting_times) if len(s.waiting_times) > 0 else 0: .1f}")
         print(f" average in-vehicle time: {sum(s.invehicle_times)/len(s.invehicle_times) if len(s.invehicle_times) > 0 else 0: .1f}")
         print(f" average trip time: {sum(s.travel_times)/len(s.travel_times) if len(s.travel_times) > 0 else 0: .1f}")
+    
+    def trips_to_pandas(s):
+        """
+        Converts the trips and their travel records to a pandas DataFrame.
+        """
+        s.compute_stats()
+        data = {
+            "orig": [tr.orig.name for tr in s.trip_requests_all],
+            "dest": [tr.dest.name for tr in s.trip_requests_all],
+            "depart_time": [tr.depart_time for tr in s.trip_requests_all],
+            "get_taxi_time": [tr.get_taxi_time for tr in s.trip_requests_all],
+            "arrival_time": [tr.arrival_time for tr in s.trip_requests_all],
+            "travel_time": [tr.arrival_time - tr.depart_time if tr.arrival_time != None else None for tr in s.trip_requests_all],
+            "waiting_time": [tr.get_taxi_time - tr.depart_time if tr.get_taxi_time != None else None for tr in s.trip_requests_all],
+            "used_taxi": [tr.taxi.name if tr.taxi != None else None for tr in s.trip_requests_all],
+        }
+        return pd.DataFrame(data)
 
 
 class TaxiHandler_random(TaxiHandler):
@@ -174,7 +222,6 @@ class TaxiHandler_nearest(TaxiHandler):
         Assigns trip request to nearest available taxi.
         """
         vacant_taxis = [veh for veh in s.W.VEHICLES.values() if veh.mode == "taxi" and veh.state == "run" and veh.dest == None]
-        random.shuffle(vacant_taxis)
         for trip_request in s.trip_requests[:]:
             if len(vacant_taxis) == 0:
                 break
@@ -206,7 +253,6 @@ class TaxiHandler_nearest_matching_radious(TaxiHandler):
         Assigns trip request to nearest available taxi that is within the radious of the origin node.
         """
         vacant_taxis = [veh for veh in s.W.VEHICLES.values() if veh.mode == "taxi" and veh.state == "run" and veh.dest == None]
-        random.shuffle(vacant_taxis)
         for trip_request in s.trip_requests[:]:
             if len(vacant_taxis) == 0:
                 break
