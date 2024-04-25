@@ -16,7 +16,6 @@
       ~RouteChoice.__init__
       ~RouteChoice.homogeneous_DUO_update
       ~RouteChoice.route_search_all
-      ~RouteChoice.route_search_all_old
    
    
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uxsim.Route &mdash; UXsim v1.1 documentation</title>
+  <title>uxsim.Route &mdash; UXsim v1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,11 +17,12 @@
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="uxsim.analyzer.Analyzer" href="uxsim.analyzer.Analyzer.html" />
-    <link rel="prev" title="uxsim.RouteChoice" href="uxsim.RouteChoice.html" />
+    <link rel="next" title="uxsim.TaxiHandler.TripRequest" href="uxsim.TaxiHandler.TripRequest.html" />
+    <link rel="prev" title="uxsim.analyzer.Analyzer" href="uxsim.analyzer.Analyzer.html" />
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
 <script>
@@ -45,7 +46,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.1
+                v1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -58,18 +59,16 @@ gtag('config', 'UA-111714220-1');
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#modules">Modules</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes">Classes</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#classes-essential">Classes (essential)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes-support">Classes (support)</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.Route</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 </ul>
 </li>
 </ul>
@@ -106,11 +105,9 @@ gtag('config', 'UA-111714220-1');
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.Route">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Route" title="Permalink to this definition"></a></dt>
-<dd><p>Class for a route that store concective links.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Route.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Route.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Route.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Define a route.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for a route that store concective links.</p>
+<p>Define a route.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="uxsim.Route.links">
 <span class="sig-name descname"><span class="pre">links</span></span><a class="headerlink" href="#uxsim.Route.links" title="Permalink to this definition"></a></dt>
@@ -144,6 +141,43 @@ gtag('config', 'UA-111714220-1');
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Route.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Route.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Route.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Define a route.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">links</span></span><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>List of links. The contents are Link objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">links_name</span></span><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd><p>List of name of links. The contents are str.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">trust_input</span></span><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd><p>True if you trust the <cite>links</cite> in order to reduce the computation cost by omitting verification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -152,11 +186,32 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Route.__init__" title="uxsim.Route.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, links[, name, trust_input])</p></td>
 <td><p>Define a route.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Route.actual_travel_time" title="uxsim.uxsim.Route.actual_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">actual_travel_time</span></code></a>(t[, return_details])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Route.actual_travel_time" title="uxsim.Route.actual_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">actual_travel_time</span></code></a>(t[, return_details])</p></td>
 <td><p>Actual travel time for a (hypothetical) vehicle who start traveling this route on time t.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Route.actual_travel_time">
+<span class="sig-name descname"><span class="pre">actual_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Route.actual_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Route.actual_travel_time" title="Permalink to this definition"></a></dt>
+<dd><p>Actual travel time for a (hypothetical) vehicle who start traveling this route on time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p></li>
+<li><p><strong>return_details</strong> (<em>bool</em>) – True if you want travel time per link.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>float</em> – The actual travel time.</p></li>
+<li><p>list (if <cite>return_details</cite> is True) – List of travel time per link.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -165,8 +220,8 @@ gtag('config', 'UA-111714220-1');
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="uxsim.RouteChoice.html" class="btn btn-neutral float-left" title="uxsim.RouteChoice" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="uxsim.analyzer.Analyzer.html" class="btn btn-neutral float-right" title="uxsim.analyzer.Analyzer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="uxsim.analyzer.Analyzer.html" class="btn btn-neutral float-left" title="uxsim.analyzer.Analyzer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uxsim.TaxiHandler.TripRequest.html" class="btn btn-neutral float-right" title="uxsim.TaxiHandler.TripRequest" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

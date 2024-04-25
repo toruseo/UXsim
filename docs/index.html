@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UXsim technical documentation &mdash; UXsim v1.1 documentation</title>
+  <title>UXsim technical documentation &mdash; UXsim v1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,6 +17,7 @@
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -44,7 +45,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.1
+                v1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -57,7 +58,7 @@ gtag('config', 'UA-111714220-1');
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial and Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tech_ref.html">Technical reference</a></li>
 </ul>
 
@@ -115,19 +116,21 @@ The first animation shows link congestion level and the second shows sampled veh
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation mechanism</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation Mechanism</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="mechanism.html#models">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mechanism.html#key-inputs">Key inputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mechanism.html#traffic-flow-model-fundamental-diagram-parameters">Traffic flow model (fundamental diagram) parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mechanism.html#program-structure">Program structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mechanism.html#computation-flow">Computation flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mechanism.html#key-inputs">Key Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mechanism.html#program-structure">Program Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mechanism.html#computation-procedure">Computation Procedure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mechanism.html#the-details-on-traffic-flow-model-on-link">The Details on Traffic Flow Model on Link</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tech_ref.html">Technical reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tech_ref.html#modules">Modules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tech_ref.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_ref.html#classes-essential">Classes (essential)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_ref.html#classes-support">Classes (support)</a></li>
 </ul>
 </li>
 </ul>

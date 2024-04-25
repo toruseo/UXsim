@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uxsim.utils &mdash; UXsim v1.1 documentation</title>
+  <title>uxsim.utils &mdash; UXsim v1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,6 +16,7 @@
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -42,7 +43,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.1
+                v1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -55,7 +56,7 @@ gtag('config', 'UA-111714220-1');
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial and Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tech_ref.html">Technical reference</a></li>
 </ul>
 
@@ -170,6 +171,59 @@ gtag('config', 'UA-111714220-1');
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="c1"># Print the exception if it occurs</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EXCEPTION:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+    
+
+<div class="viewcode-block" id="get_font_for_matplotlib"><a class="viewcode-back" href="../../utils.html#uxsim.utils.get_font_for_matplotlib">[docs]</a><span class="k">def</span> <span class="nf">get_font_for_matplotlib</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a multi-language (currently Japanese only) font for matplotlib.</span>
+<span class="sd">    TODO: check if it works on different OS. It is only checked on Japanese Windows. </span>
+<span class="sd">    TODO: explore if it can be extended for other languages.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The name of a Japanese font that is available on the system. If no Japanese font is found, &quot;monospace&quot; is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">font_manager</span>
+
+    <span class="n">font_list</span> <span class="o">=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">()</span>
+
+    <span class="n">japanese_font</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;Noto Sans Mono CJK JP&quot;</span> <span class="ow">in</span> <span class="n">font</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">font_list</span><span class="p">):</span>
+        <span class="n">japanese_font</span> <span class="o">=</span> <span class="s2">&quot;Noto Sans Mono CJK JP&quot;</span>
+    <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;msgothic&quot;</span> <span class="ow">in</span> <span class="n">font</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">font_list</span><span class="p">):</span>
+        <span class="n">japanese_font</span> <span class="o">=</span> <span class="s2">&quot;MS Gothic&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">japanese_font</span> <span class="o">=</span> <span class="s2">&quot;monospace&quot;</span>
+        
+    <span class="k">return</span> <span class="n">japanese_font</span></div>
+
+<div class="viewcode-block" id="print_columns"><a class="viewcode-back" href="../../utils.html#uxsim.utils.print_columns">[docs]</a><span class="k">def</span> <span class="nf">print_columns</span><span class="p">(</span><span class="o">*</span><span class="n">lists</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convinient function to check contents of 1d lists. For debug.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Determine the maximum length of the lists</span>
+    <span class="n">max_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="n">lists</span><span class="p">)</span>
+
+    <span class="c1"># Iterate through the maximum number of rows</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_length</span><span class="p">):</span>
+        <span class="c1"># For each list, print the element at the current row or space if out of range</span>
+        <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="n">lists</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>  <span class="c1"># Adjust the width as necessary</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>  <span class="c1"># Adjust spacing to match the above width</span>
+        <span class="nb">print</span><span class="p">()</span>  <span class="c1"># Newline after each row</span></div>
+
+<div class="viewcode-block" id="LoggingWarning"><a class="viewcode-back" href="../../utils.html#uxsim.utils.LoggingWarning">[docs]</a><span class="k">class</span> <span class="nc">LoggingWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This warns that when vehicle_logging_timestep_interval is not 1 but called vehicle logging-related functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
 </pre></div>
 
            </div>

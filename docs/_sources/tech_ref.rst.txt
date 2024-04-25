@@ -17,10 +17,11 @@ Modules
    uxsim.utils
    uxsim.analyzer
    uxsim.ResultGUIViewer.ResultGUIViewer
+   uxsim.TaxiHandler.TaxiHandler
    
    
-Classes
--------
+Classes (essential)
+-------------------
 
 .. autosummary::
    :toctree: _autosummary
@@ -31,9 +32,19 @@ Classes
    uxsim.Link
    uxsim.Vehicle
    uxsim.RouteChoice
-   uxsim.Route
    uxsim.analyzer.Analyzer
-   uxsim.OSMImporter.OSMImporter
    
+
+Classes (support)
+-----------------
+.. autosummary::
+   :toctree: _autosummary
+   :nosignatures:
+
+   uxsim.Route
+   uxsim.TaxiHandler.TaxiHandler
+   uxsim.TaxiHandler.TripRequest
+   uxsim.OSMImporter.OSMImporter
+   uxsim.ResultGUIViewer.ResultGUIViewer
 
 * :ref:`genindex`

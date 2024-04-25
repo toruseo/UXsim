@@ -1,0 +1,29 @@
+﻿uxsim.TaxiHandler.TaxiHandler
+=============================
+
+.. currentmodule:: uxsim.TaxiHandler
+
+.. autoclass:: TaxiHandler
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TaxiHandler.__init__
+      ~TaxiHandler.add_trip_request
+      ~TaxiHandler.assign_taxi
+      ~TaxiHandler.basic_to_pandas
+      ~TaxiHandler.compute_stats
+      ~TaxiHandler.get_trip
+      ~TaxiHandler.print_stats
+      ~TaxiHandler.trips_to_pandas
+   
+   
+
+   
+   
+   

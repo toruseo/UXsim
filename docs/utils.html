@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>utils &mdash; UXsim v1.1 documentation</title>
+  <title>utils &mdash; UXsim v1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,6 +17,7 @@
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -43,7 +44,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.1
+                v1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -56,7 +57,7 @@ gtag('config', 'UA-111714220-1');
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial and Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tech_ref.html">Technical reference</a></li>
 </ul>
 
@@ -87,6 +88,25 @@ gtag('config', 'UA-111714220-1');
   <section id="module-uxsim.utils">
 <span id="utils"></span><h1>utils<a class="headerlink" href="#module-uxsim.utils" title="Permalink to this heading"></a></h1>
 <p>General utilities for UXsim.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="uxsim.utils.LoggingWarning">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">LoggingWarning</span></span><a class="reference internal" href="_modules/uxsim/utils.html#LoggingWarning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.LoggingWarning" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></p>
+<p>This warns that when vehicle_logging_timestep_interval is not 1 but called vehicle logging-related functions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="uxsim.utils.LoggingWarning.args">
+<span class="sig-name descname"><span class="pre">args</span></span><a class="headerlink" href="#uxsim.utils.LoggingWarning.args" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.utils.LoggingWarning.with_traceback">
+<span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uxsim.utils.LoggingWarning.with_traceback" title="Permalink to this definition"></a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="uxsim.utils.catch_exceptions_and_warn">
 <span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">catch_exceptions_and_warn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">warning_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/utils.html#catch_exceptions_and_warn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.catch_exceptions_and_warn" title="Permalink to this definition"></a></dt>
@@ -113,6 +133,22 @@ gtag('config', 'UA-111714220-1');
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="uxsim.utils.get_font_for_matplotlib">
+<span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">get_font_for_matplotlib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/utils.html#get_font_for_matplotlib"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.get_font_for_matplotlib" title="Permalink to this definition"></a></dt>
+<dd><p>Get a multi-language (currently Japanese only) font for matplotlib.
+TODO: check if it works on different OS. It is only checked on Japanese Windows.
+TODO: explore if it can be extended for other languages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of a Japanese font that is available on the system. If no Japanese font is found, “monospace” is returned.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="uxsim.utils.lange">
 <span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">lange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/utils.html#lange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.lange" title="Permalink to this definition"></a></dt>
 <dd><p>Super lazy function for abbreviating range(len(l))</p>
@@ -121,6 +157,12 @@ gtag('config', 'UA-111714220-1');
 <dd class="field-odd"><p><strong>l</strong> (<em>list</em>) – </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.utils.print_columns">
+<span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">print_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">lists</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uxsim/utils.html#print_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.print_columns" title="Permalink to this definition"></a></dt>
+<dd><p>Convinient function to check contents of 1d lists. For debug.</p>
 </dd></dl>
 
 <dl class="py function">

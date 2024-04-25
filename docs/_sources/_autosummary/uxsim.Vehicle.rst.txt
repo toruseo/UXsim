@@ -14,8 +14,11 @@
    .. autosummary::
    
       ~Vehicle.__init__
+      ~Vehicle.add_dest
+      ~Vehicle.add_dests
       ~Vehicle.carfollow
       ~Vehicle.end_trip
+      ~Vehicle.get_xy_coords
       ~Vehicle.record_log
       ~Vehicle.route_next_link_choice
       ~Vehicle.route_pref_update

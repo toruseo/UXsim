@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uxsim.analyzer.Analyzer &mdash; UXsim v1.1 documentation</title>
+  <title>uxsim.analyzer.Analyzer &mdash; UXsim v1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,11 +17,12 @@
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="uxsim.OSMImporter.OSMImporter" href="uxsim.OSMImporter.OSMImporter.html" />
-    <link rel="prev" title="uxsim.Route" href="uxsim.Route.html" />
+    <link rel="next" title="uxsim.Route" href="uxsim.Route.html" />
+    <link rel="prev" title="uxsim.RouteChoice" href="uxsim.RouteChoice.html" />
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
 <script>
@@ -45,7 +46,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.1
+                v1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -58,20 +59,19 @@ gtag('config', 'UA-111714220-1');
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#modules">Modules</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes">Classes</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes-essential">Classes (essential)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Route.html">uxsim.Route</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.analyzer.Analyzer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#classes-support">Classes (support)</a></li>
 </ul>
 </li>
 </ul>
@@ -106,7 +106,14 @@ gtag('config', 'UA-111714220-1');
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.analyzer.</span></span><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer" title="Permalink to this definition"></a></dt>
-<dd><p>Class for analyzing and visualizing a simulation result.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for analyzing and visualizing a simulation result.</p>
+<p>Create result analysis object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>W</strong> (<em>object</em>) – The world to which this belongs.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.__init__" title="Permalink to this definition"></a></dt>
@@ -124,92 +131,478 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.__init__" title="uxsim.analyzer.Analyzer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W)</p></td>
 <td><p>Create result analysis object.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_analysis</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.basic_analysis" title="uxsim.analyzer.Analyzer.basic_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_analysis</span></code></a>()</p></td>
 <td><p>Analyze basic stats.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_to_pandas</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.basic_to_pandas" title="uxsim.analyzer.Analyzer.basic_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the basic stats to a pandas DataFrame.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">comp_route_travel_time</span></code>(t, route)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.comp_route_travel_time" title="uxsim.analyzer.Analyzer.comp_route_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">comp_route_travel_time</span></code></a>(t, route)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_accurate_traj</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.compute_accurate_traj" title="uxsim.analyzer.Analyzer.compute_accurate_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_accurate_traj</span></code></a>()</p></td>
 <td><p>Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_edie_state</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.compute_edie_state" title="uxsim.analyzer.Analyzer.compute_edie_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_edie_state</span></code></a>()</p></td>
 <td><p>Compute Edie's traffic state for each link.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_mfd</span></code>([links])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.compute_mfd" title="uxsim.analyzer.Analyzer.compute_mfd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_mfd</span></code></a>([links])</p></td>
 <td><p>Compute network average flow and density for MFD.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_curves</span></code>([links, figsize])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.cumulative_curves" title="uxsim.analyzer.Analyzer.cumulative_curves"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_curves</span></code></a>([links, figsize])</p></td>
 <td><p>Plots the cumulative curves and travel times for the provided links.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_analysis_coarse</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_analysis_coarse" title="uxsim.analyzer.Analyzer.link_analysis_coarse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_analysis_coarse</span></code></a>()</p></td>
 <td><p>Analyze link-level coarse stats: traffic volume, remaining vehicles, free-flow travel time, average travel time, its std.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_cumulative_to_pandas</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_cumulative_to_pandas" title="uxsim.analyzer.Analyzer.link_cumulative_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_cumulative_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the cumulative counts etc.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_to_pandas</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_to_pandas" title="uxsim.analyzer.Analyzer.link_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the link-level analysis results to a pandas DataFrame.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_traffic_state_to_pandas</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_traffic_state_to_pandas" title="uxsim.analyzer.Analyzer.link_traffic_state_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_traffic_state_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the traffic states in links to a pandas DataFrame.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_vehicles_to_pandas</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.log_vehicles_to_pandas" title="uxsim.analyzer.Analyzer.log_vehicles_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_vehicles_to_pandas</span></code></a>()</p></td>
 <td><p>same to <cite>vehicles_to_pandas</cite>, just for backward compatibility</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">macroscopic_fundamental_diagram</span></code>([kappa, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.macroscopic_fundamental_diagram" title="uxsim.analyzer.Analyzer.macroscopic_fundamental_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">macroscopic_fundamental_diagram</span></code></a>([kappa, ...])</p></td>
 <td><p>Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mfd_to_pandas</span></code>([links])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.mfd_to_pandas" title="uxsim.analyzer.Analyzer.mfd_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mfd_to_pandas</span></code></a>([links])</p></td>
 <td><p>Converts the MFD to a pandas DataFrame.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">network</span></code>([t, detailed, minwidth, maxwidth, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.network" title="uxsim.analyzer.Analyzer.network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network</span></code></a>([t, detailed, minwidth, maxwidth, ...])</p></td>
 <td><p>Visualizes the entire transportation network and its current traffic conditions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_anim</span></code>([animation_speed_inverse, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.network_anim" title="uxsim.analyzer.Analyzer.network_anim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_anim</span></code></a>([animation_speed_inverse, ...])</p></td>
 <td><p>Generates an animation of the entire transportation network and its traffic states over time.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_fancy</span></code>([animation_speed_inverse, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.network_fancy" title="uxsim.analyzer.Analyzer.network_fancy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_fancy</span></code></a>([animation_speed_inverse, ...])</p></td>
 <td><p>Generates a visually appealing animation of vehicles' trajectories across the entire transportation network over time.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_pillow</span></code>([t, detailed, minwidth, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.network_pillow" title="uxsim.analyzer.Analyzer.network_pillow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network_pillow</span></code></a>([t, detailed, minwidth, ...])</p></td>
 <td><p>Visualizes the entire transportation network and its current traffic conditions.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_analysis</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.od_analysis" title="uxsim.analyzer.Analyzer.od_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_analysis</span></code></a>()</p></td>
 <td><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_to_pandas</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.od_to_pandas" title="uxsim.analyzer.Analyzer.od_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the OD-specific analysis results to a pandas DataFrame.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_data</span></code>([fname])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.output_data" title="uxsim.analyzer.Analyzer.output_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_data</span></code></a>([fname])</p></td>
 <td><p>Save all results to CSV files</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_vehicle_log</span></code>(vehname)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.plot_vehicle_log" title="uxsim.analyzer.Analyzer.plot_vehicle_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_vehicle_log</span></code></a>(vehname)</p></td>
 <td><p>Plots the driving link and speed for a single vehicle.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_simple_stats</span></code>([force_print])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.plot_vehicles_log" title="uxsim.analyzer.Analyzer.plot_vehicles_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_vehicles_log</span></code></a>(vehnamelist)</p></td>
+<td><p>Plots the driving link and speed for a single vehicle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.print_simple_stats" title="uxsim.analyzer.Analyzer.print_simple_stats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_simple_stats</span></code></a>([force_print])</p></td>
 <td><p>Prints basic statistics of simulation result.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_simulation_progress</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.show_simulation_progress" title="uxsim.analyzer.Analyzer.show_simulation_progress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_simulation_progress</span></code></a>()</p></td>
 <td><p>Print simulation progress.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_space_diagram_density</span></code>([links, figsize, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.time_space_diagram_density" title="uxsim.analyzer.Analyzer.time_space_diagram_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_space_diagram_density</span></code></a>([links, figsize, ...])</p></td>
 <td><p>Draws the time-space diagram of traffic density on specified links.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_space_diagram_traj</span></code>([links, figsize, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj" title="uxsim.analyzer.Analyzer.time_space_diagram_traj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_space_diagram_traj</span></code></a>([links, figsize, ...])</p></td>
 <td><p>Draws the time-space diagram of vehicle trajectories for vehicles on specified links.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_space_diagram_traj_links</span></code>(linkslist[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj_links" title="uxsim.analyzer.Analyzer.time_space_diagram_traj_links"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_space_diagram_traj_links</span></code></a>(linkslist[, ...])</p></td>
 <td><p>Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicles_to_pandas</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicles_to_pandas" title="uxsim.analyzer.Analyzer.vehicles_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicles_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the vehicle travel logs to a pandas DataFrame.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.basic_analysis">
+<span class="sig-name descname"><span class="pre">basic_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.basic_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.basic_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Analyze basic stats.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.basic_to_pandas">
+<span class="sig-name descname"><span class="pre">basic_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.basic_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.basic_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the basic stats to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.comp_route_travel_time">
+<span class="sig-name descname"><span class="pre">comp_route_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.comp_route_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.comp_route_travel_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.compute_accurate_traj">
+<span class="sig-name descname"><span class="pre">compute_accurate_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.compute_accurate_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.compute_accurate_traj" title="Permalink to this definition"></a></dt>
+<dd><p>Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories. It is assumed that vehicles are in free-flow travel at the end of the link.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.compute_edie_state">
+<span class="sig-name descname"><span class="pre">compute_edie_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.compute_edie_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.compute_edie_state" title="Permalink to this definition"></a></dt>
+<dd><p>Compute Edie’s traffic state for each link.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.compute_mfd">
+<span class="sig-name descname"><span class="pre">compute_mfd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.compute_mfd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.compute_mfd" title="Permalink to this definition"></a></dt>
+<dd><p>Compute network average flow and density for MFD.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.cumulative_curves">
+<span class="sig-name descname"><span class="pre">cumulative_curves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">4)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.cumulative_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.cumulative_curves" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the cumulative curves and travel times for the provided links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>links</strong> (<em>list</em><em> or </em><em>object</em><em>, </em><em>optional</em>) – A list of links or a single link for which the cumulative curves and travel times are to be plotted.
+If not provided, the cumulative curves and travel times for all the links in the network will be plotted.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted. Default is (6, 4).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method plots the cumulative curves for vehicle arrivals and departures, as well as the instantaneous and actual travel times.
+The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with the filename format <cite>cumulative_curves_&lt;link.name&gt;.png</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.link_analysis_coarse">
+<span class="sig-name descname"><span class="pre">link_analysis_coarse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.link_analysis_coarse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.link_analysis_coarse" title="Permalink to this definition"></a></dt>
+<dd><p>Analyze link-level coarse stats: traffic volume, remaining vehicles, free-flow travel time, average travel time, its std.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.link_cumulative_to_pandas">
+<span class="sig-name descname"><span class="pre">link_cumulative_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.link_cumulative_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.link_cumulative_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the cumulative counts etc. in links to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.link_to_pandas">
+<span class="sig-name descname"><span class="pre">link_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.link_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.link_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the link-level analysis results to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.link_traffic_state_to_pandas">
+<span class="sig-name descname"><span class="pre">link_traffic_state_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.link_traffic_state_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.link_traffic_state_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the traffic states in links to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.log_vehicles_to_pandas">
+<span class="sig-name descname"><span class="pre">log_vehicles_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.log_vehicles_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.log_vehicles_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>same to <cite>vehicles_to_pandas</cite>, just for backward compatibility</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.macroscopic_fundamental_diagram">
+<span class="sig-name descname"><span class="pre">macroscopic_fundamental_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(4,</span> <span class="pre">4)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.macroscopic_fundamental_diagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.macroscopic_fundamental_diagram" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kappa</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum network average density for the x-axis of the MFD plot. Default is 0.2.</p></li>
+<li><p><strong>qmax</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum network average flow for the y-axis of the MFD plot. Default is 1.</p></li>
+<li><p><strong>links</strong> (<em>list</em><em> or </em><em>object</em><em>, </em><em>optional</em>) – A list of links or a single link for which the MFD is to be plotted.
+If not provided, the MFD for all the links in the network will be plotted.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – File name for saving (postfix). Default is “”.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted. Default is (4, 4).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method plots the Macroscopic Fundamental Diagram (MFD) for the provided links.
+The MFD provides a relationship between the network average density and the network average flow.
+The plot is saved to the directory <cite>out&lt;W.name&gt;</cite> with the filename <cite>mfd&lt;fname&gt;.png</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.mfd_to_pandas">
+<span class="sig-name descname"><span class="pre">mfd_to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.mfd_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.mfd_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the MFD to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.network">
+<span class="sig-name descname"><span class="pre">network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_anim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.network" title="Permalink to this definition"></a></dt>
+<dd><p>Visualizes the entire transportation network and its current traffic conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>float</em><em>, </em><em>optional</em>) – The current time for which the traffic conditions are visualized.</p></li>
+<li><p><strong>detailed</strong> (<em>int</em><em>, </em><em>optional</em>) – Determines the level of detail in the visualization.
+If set to 1, the link internals (cell) are displayed in detail.
+If set to 0, the visualization is simplified to link-level. Default is 1.</p></li>
+<li><p><strong>minwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum width of the link visualization. Default is 0.5.</p></li>
+<li><p><strong>maxwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum width of the link visualization. Default is 12.</p></li>
+<li><p><strong>left_handed</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.</p></li>
+<li><p><strong>tmp_anim</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the visualization will be saved as a temporary animation frame. Default is 0.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted. Default is (6, 6).</p></li>
+<li><p><strong>network_font_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The font size for the network labels. Default is 4.</p></li>
+<li><p><strong>node_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the nodes in the visualization. Default is 2.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method visualizes the entire transportation network and its current traffic conditions.
+The visualization provides information on vehicle density, velocity, link names, node locations, and more.
+The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with filenames depending on the <cite>detailed</cite> and <cite>t</cite> parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.network_anim">
+<span class="sig-name descname"><span class="pre">network_anim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animation_speed_inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestep_skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">24</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.network_anim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.network_anim" title="Permalink to this definition"></a></dt>
+<dd><p>Generates an animation of the entire transportation network and its traffic states over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>animation_speed_inverse</strong> (<em>int</em><em>, </em><em>optional</em>) – The inverse of the animation speed. A higher value will result in a slower animation. Default is 10.</p></li>
+<li><p><strong>detailed</strong> (<em>int</em><em>, </em><em>optional</em>) – Determines the level of detail in the animation.
+If set to 1, the link internals (cell) are displayed in detail.
+Under some conditions, the detailed mode will produce inappropriate visualization.
+If set to 0, the visualization is simplified to link-level. Default is 0.</p></li>
+<li><p><strong>minwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum width of the link visualization in the animation. Default is 0.5.</p></li>
+<li><p><strong>maxwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum width of the link visualization in the animation. Default is 12.</p></li>
+<li><p><strong>left_handed</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figures in the animation. Default is (6, 6).</p></li>
+<li><p><strong>node_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the nodes in the animation. Default is 2.</p></li>
+<li><p><strong>network_font_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The font size for the network labels in the animation. Default is 20.</p></li>
+<li><p><strong>timestep_skip</strong> (<em>int</em><em>, </em><em>optional</em>) – How many timesteps are skipped per frame. Large value means coarse and lightweight animation. Default is 8.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method generates an animation visualizing the entire transportation network and its traffic conditions over time.
+The animation provides information on vehicle density, velocity, link names, node locations, and more.
+The generated animation is saved to the directory <cite>out&lt;W.name&gt;</cite> with a filename based on the <cite>detailed</cite> parameter.</p>
+<p>Temporary images used to create the animation are removed after the animation is generated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.network_fancy">
+<span class="sig-name descname"><span class="pre">network_fancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animation_speed_inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.network_fancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.network_fancy" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a visually appealing animation of vehicles’ trajectories across the entire transportation network over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>animation_speed_inverse</strong> (<em>int</em><em>, </em><em>optional</em>) – The inverse of the animation speed. A higher value will result in a slower animation. Default is 10.</p></li>
+<li><p><strong>figsize</strong> (<em>int</em><em> or </em><em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figures in the animation. Default is 6.</p></li>
+<li><p><strong>sample_ratio</strong> (<em>float</em><em>, </em><em>optional</em>) – The fraction of vehicles to be visualized. Default is 0.3.</p></li>
+<li><p><strong>interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval at which vehicle positions are sampled. Default is 5.</p></li>
+<li><p><strong>network_font_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The font size for the network labels in the animation. Default is 0.</p></li>
+<li><p><strong>trace_length</strong> (<em>int</em><em>, </em><em>optional</em>) – The length of the vehicles’ trajectory trails in the animation. Default is 3.</p></li>
+<li><p><strong>speed_coef</strong> (<em>int</em><em>, </em><em>optional</em>) – A coefficient that adjusts the animation speed. Default is 2.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method generates a visually appealing animation that visualizes vehicles’ trajectories across the transportation network over time.
+The animation provides information on vehicle positions, speeds, link names, node locations, and more, with Bezier curves used for smooth transitions.
+The generated animation is saved to the directory <cite>out&lt;W.name&gt;</cite> with a filename <cite>anim_network_fancy.gif</cite>.</p>
+<p>Temporary images used to create the animation are removed after the animation is generated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.network_pillow">
+<span class="sig-name descname"><span class="pre">network_pillow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_anim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.network_pillow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.network_pillow" title="Permalink to this definition"></a></dt>
+<dd><p>Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>float</em><em>, </em><em>optional</em>) – The current time for which the traffic conditions are visualized.</p></li>
+<li><p><strong>detailed</strong> (<em>int</em><em>, </em><em>optional</em>) – Determines the level of detail in the visualization.
+If set to 1, the link internals (cell) are displayed in detail.
+If set to 0, the visualization is simplified to link-level. Default is 1.</p></li>
+<li><p><strong>minwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum width of the link visualization. Default is 0.5.</p></li>
+<li><p><strong>maxwidth</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum width of the link visualization. Default is 12.</p></li>
+<li><p><strong>left_handed</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.</p></li>
+<li><p><strong>tmp_anim</strong> (<em>int</em><em>, </em><em>optional</em>) – If set to 1, the visualization will be saved as a temporary animation frame. Default is 0.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted. Default is (6, 6).</p></li>
+<li><p><strong>network_font_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The font size for the network labels. Default is 4.</p></li>
+<li><p><strong>node_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the nodes in the visualization. Default is 2.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method visualizes the entire transportation network and its current traffic conditions.
+The visualization provides information on vehicle density, velocity, link names, node locations, and more.
+The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with filenames depending on the <cite>detailed</cite> and <cite>t</cite> parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.od_analysis">
+<span class="sig-name descname"><span class="pre">od_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.od_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.od_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.od_to_pandas">
+<span class="sig-name descname"><span class="pre">od_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.od_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.od_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the OD-specific analysis results to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.output_data">
+<span class="sig-name descname"><span class="pre">output_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.output_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.output_data" title="Permalink to this definition"></a></dt>
+<dd><p>Save all results to CSV files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.plot_vehicle_log">
+<span class="sig-name descname"><span class="pre">plot_vehicle_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.plot_vehicle_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.plot_vehicle_log" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the driving link and speed for a single vehicle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehname</strong> (<em>str</em>) – The name of the vehicle for which the driving link and speed are to be plotted.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method visualizes the speed profile and the links traversed by a specific vehicle over time.
+The speed is plotted on the primary y-axis, and the links are plotted on the secondary y-axis.
+The plot is saved to the directory <cite>out&lt;W.name&gt;</cite> with the filename <cite>vehicle_&lt;vehname&gt;.png</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.plot_vehicles_log">
+<span class="sig-name descname"><span class="pre">plot_vehicles_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehnamelist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.plot_vehicles_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.plot_vehicles_log" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the driving link and speed for a single vehicle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehname</strong> (<em>str</em>) – The name of the vehicle for which the driving link and speed are to be plotted.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method visualizes the speed profile and the links traversed by a specific vehicle over time.
+The speed is plotted on the primary y-axis, and the links are plotted on the secondary y-axis.
+The plot is saved to the directory <cite>out&lt;W.name&gt;</cite> with the filename <cite>vehicle_&lt;vehname&gt;.png</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.print_simple_stats">
+<span class="sig-name descname"><span class="pre">print_simple_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_print</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.print_simple_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.print_simple_stats" title="Permalink to this definition"></a></dt>
+<dd><p>Prints basic statistics of simulation result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force_print</strong> (<em>bool</em><em>, </em><em>optional</em>) – print the stats regardless of the value of <cite>print_mode</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.show_simulation_progress">
+<span class="sig-name descname"><span class="pre">show_simulation_progress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.show_simulation_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.show_simulation_progress" title="Permalink to this definition"></a></dt>
+<dd><p>Print simulation progress.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.time_space_diagram_density">
+<span class="sig-name descname"><span class="pre">time_space_diagram_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.time_space_diagram_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.time_space_diagram_density" title="Permalink to this definition"></a></dt>
+<dd><p>Draws the time-space diagram of traffic density on specified links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>links</strong> (<em>list of link</em><em> or </em><em>link</em><em>, </em><em>optional</em>) – The names of the links for which the time-space diagram is to be plotted.
+If None, the diagram is plotted for all links in the network. Default is None.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted, default is (12,4).</p></li>
+<li><p><strong>plot_signal</strong> (<em>bool</em><em>, </em><em>optional</em>) – Plot the downstream signal red light.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.time_space_diagram_traj">
+<span class="sig-name descname"><span class="pre">time_space_diagram_traj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.time_space_diagram_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj" title="Permalink to this definition"></a></dt>
+<dd><p>Draws the time-space diagram of vehicle trajectories for vehicles on specified links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>links</strong> (<em>list of link</em><em> or </em><em>link</em><em>, </em><em>optional</em>) – The names of the links for which the time-space diagram is to be plotted.
+If None, the diagram is plotted for all links in the network. Default is None.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted, default is (12,4).</p></li>
+<li><p><strong>plot_signal</strong> (<em>bool</em><em>, </em><em>optional</em>) – Plot the downstream signal red light.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.time_space_diagram_traj_links">
+<span class="sig-name descname"><span class="pre">time_space_diagram_traj_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linkslist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.time_space_diagram_traj_links"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj_links" title="Permalink to this definition"></a></dt>
+<dd><p>Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linkslist</strong> (<em>list of link</em><em> or </em><em>list of list of link</em>) – The names of the concective links for which the time-space diagram is to be plotted.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple of int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted, default is (12,4).</p></li>
+<li><p><strong>plot_signal</strong> (<em>bool</em><em>, </em><em>optional</em>) – Plot the signal red light.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.vehicles_to_pandas">
+<span class="sig-name descname"><span class="pre">vehicles_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.vehicles_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.vehicles_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the vehicle travel logs to a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing the travel logs of vehicles, with the columns:
+- ‘name’: the name of the vehicle (platoon).
+- ‘dn’: the platoon size.
+- ‘orig’: the origin node of the vehicle’s trip.
+- ‘dest’: the destination node of the vehicle’s trip.
+- ‘t’: the timestep.
+- ‘link’: the link the vehicle is on (or relevant status).
+- ‘x’: the position of the vehicle on the link.
+- ‘s’: the spacing of the vehicle.
+- ‘v’: the speed of the vehicle.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -218,8 +611,8 @@ gtag('config', 'UA-111714220-1');
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="uxsim.Route.html" class="btn btn-neutral float-left" title="uxsim.Route" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="uxsim.OSMImporter.OSMImporter.html" class="btn btn-neutral float-right" title="uxsim.OSMImporter.OSMImporter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="uxsim.RouteChoice.html" class="btn btn-neutral float-left" title="uxsim.RouteChoice" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uxsim.Route.html" class="btn btn-neutral float-right" title="uxsim.Route" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

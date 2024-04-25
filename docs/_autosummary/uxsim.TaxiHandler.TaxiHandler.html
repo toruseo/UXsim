@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>uxsim.TaxiHandler.TaxiHandler &mdash; UXsim v1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="uxsim.World" href="uxsim.World.html" />
+    <link rel="prev" title="uxsim.ResultGUIViewer.ResultGUIViewer" href="uxsim.ResultGUIViewer.ResultGUIViewer.html" />
+ 
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            UXsim
+          </a>
+              <div class="version">
+                v1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#modules">Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.TaxiHandler.TaxiHandler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#classes-essential">Classes (essential)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes-support">Classes (support)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uxsim.Route.html">uxsim.Route</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UXsim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tech_ref.html">Technical reference</a></li>
+      <li class="breadcrumb-item active">uxsim.TaxiHandler.TaxiHandler</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/uxsim.TaxiHandler.TaxiHandler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="uxsim-taxihandler-taxihandler">
+<h1>uxsim.TaxiHandler.TaxiHandler<a class="headerlink" href="#uxsim-taxihandler-taxihandler" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.TaxiHandler.</span></span><span class="sig-name descname"><span class="pre">TaxiHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</p>
+<p>Initializes a taxi handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes a taxi handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(W)</p></td>
+<td><p>Initializes a taxi handler.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_trip_request</span></code>(orig, dest, depart_time[, ...])</p></td>
+<td><p>Adds a trip request to this handler.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_taxi</span></code>(vehicle, trip_request)</p></td>
+<td><p>Assigns a trip request to a vehicle.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_to_pandas</span></code>()</p></td>
+<td><p>Converts the basic statistics on taxi travels to a pandas DataFrame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_stats</span></code>()</p></td>
+<td><p>Computes basic statistics of the taxi travels.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trip</span></code>(tr)</p></td>
+<td><p>Get a TripRequest instance by name or object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_stats</span></code>()</p></td>
+<td><p>Prints the basic statistics.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trips_to_pandas</span></code>()</p></td>
+<td><p>Converts the trips and their travel records to a pandas DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.add_trip_request">
+<span class="sig-name descname"><span class="pre">add_trip_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depart_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.add_trip_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.add_trip_request" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a trip request to this handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The origin node of the trip request.</p></li>
+<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node of the trip request.</p></li>
+<li><p><strong>depart_time</strong> (<em>float</em>) – The time at which the trip request departs.</p></li>
+<li><p><strong>name</strong> (<em>any</em><em>, </em><em>optional</em>) – The name of the trip request. Default is None.</p></li>
+<li><p><strong>attribute</strong> (<em>any</em>) – An optional attribute of the trip request. This can be used to store any information by users’ need.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.assign_taxi">
+<span class="sig-name descname"><span class="pre">assign_taxi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.assign_taxi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.assign_taxi" title="Permalink to this definition"></a></dt>
+<dd><p>Assigns a trip request to a vehicle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="uxsim.Vehicle.html#uxsim.Vehicle" title="uxsim.Vehicle"><em>Vehicle</em></a>) – The vehicle to assign the trip request to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.basic_to_pandas">
+<span class="sig-name descname"><span class="pre">basic_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.basic_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.basic_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the basic statistics on taxi travels to a pandas DataFrame.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.compute_stats">
+<span class="sig-name descname"><span class="pre">compute_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.compute_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.compute_stats" title="Permalink to this definition"></a></dt>
+<dd><p>Computes basic statistics of the taxi travels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.get_trip">
+<span class="sig-name descname"><span class="pre">get_trip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.get_trip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.get_trip" title="Permalink to this definition"></a></dt>
+<dd><p>Get a TripRequest instance by name or object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tr</strong> (<em>any</em><em> | </em><a class="reference internal" href="uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest" title="uxsim.TaxiHandler.TaxiHandler.TripRequest"><em>TripRequest</em></a>) – The name or object of the trip request.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.print_stats">
+<span class="sig-name descname"><span class="pre">print_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.print_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.print_stats" title="Permalink to this definition"></a></dt>
+<dd><p>Prints the basic statistics.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.trips_to_pandas">
+<span class="sig-name descname"><span class="pre">trips_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.trips_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.trips_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the trips and their travel records to a pandas DataFrame.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="uxsim.ResultGUIViewer.ResultGUIViewer.html" class="btn btn-neutral float-left" title="uxsim.ResultGUIViewer.ResultGUIViewer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uxsim.World.html" class="btn btn-neutral float-right" title="uxsim.World" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Toru Seo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

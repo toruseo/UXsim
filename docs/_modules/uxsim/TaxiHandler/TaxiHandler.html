@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>uxsim.TaxiHandler.TaxiHandler &mdash; UXsim v1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+ 
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            UXsim
+          </a>
+              <div class="version">
+                v1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial and Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tech_ref.html">Technical reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">UXsim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">uxsim.TaxiHandler.TaxiHandler</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for uxsim.TaxiHandler.TaxiHandler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Submodule for handling taxis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<div class="viewcode-block" id="TripRequest"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest">[docs]</a><span class="k">class</span> <span class="nc">TripRequest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing a trip request (or travelers, passengers, cargo, etc.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TripRequest.__init__"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">depart_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a trip request.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        W : World</span>
+<span class="sd">            The world object.</span>
+<span class="sd">        H : TaxiHandler</span>
+<span class="sd">            The TaxiHandler object.</span>
+<span class="sd">        orig : str | Node</span>
+<span class="sd">            The origin node of the trip request.</span>
+<span class="sd">        dest : str | Node</span>
+<span class="sd">            The destination node of the trip request.</span>
+<span class="sd">        depart_time : float</span>
+<span class="sd">            The time at which the trip request departs.</span>
+<span class="sd">        name : any, optional</span>
+<span class="sd">            The name of the trip request. Default is None.</span>
+<span class="sd">        attribute : any</span>
+<span class="sd">            An optional attribute of the trip request. This can be used to store any information by users&#39; need.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">s</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">H</span> <span class="o">=</span> <span class="n">H</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">dest</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">depart_time</span> <span class="o">=</span> <span class="n">depart_time</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">get_taxi_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">taxi</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;TravelRequest(</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">orig</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">dest</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">depart_time</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="TripRequest.get_on_taxi"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest.get_on_taxi">[docs]</a>    <span class="k">def</span> <span class="nf">get_on_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The event of getting on a taxi. This is called via `Vehicle.event_node`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#print(f&quot;{s.W.TIME}: {s} is getting on a taxi {s.taxi}&quot;)        </span>
+        <span class="n">s</span><span class="o">.</span><span class="n">taxi</span><span class="o">.</span><span class="n">add_dest</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">taxi</span><span class="o">.</span><span class="n">node_event</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">dest</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">arrive_at_dest</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">get_taxi_time</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TIME</span>
+        
+        <span class="k">del</span> <span class="n">s</span><span class="o">.</span><span class="n">taxi</span><span class="o">.</span><span class="n">node_event</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">orig</span><span class="p">]</span></div>
+    
+<div class="viewcode-block" id="TripRequest.arrive_at_dest"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest.arrive_at_dest">[docs]</a>    <span class="k">def</span> <span class="nf">arrive_at_dest</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The event of arriving at the destination. This is called via `Vehicle.event_node`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#print(f&quot;{s.W.TIME}: {s} arrived at the destination {s.dest}&quot;)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TIME</span>
+        
+        <span class="k">del</span> <span class="n">s</span><span class="o">.</span><span class="n">taxi</span><span class="o">.</span><span class="n">node_event</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">dest</span><span class="p">]</span></div></div>
+
+<div class="viewcode-block" id="TaxiHandler"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler">[docs]</a><span class="k">class</span> <span class="nc">TaxiHandler</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TaxiHandler.__init__"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a taxi handler.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        W : World</span>
+<span class="sd">            The world object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">random_seed</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TaxiHandler.add_trip_request"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.add_trip_request">[docs]</a>    <span class="k">def</span> <span class="nf">add_trip_request</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">depart_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a trip request to this handler.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        orig : str | Node</span>
+<span class="sd">            The origin node of the trip request.</span>
+<span class="sd">        dest : str | Node</span>
+<span class="sd">            The destination node of the trip request.</span>
+<span class="sd">        depart_time : float</span>
+<span class="sd">            The time at which the trip request departs.</span>
+<span class="sd">        name : any, optional</span>
+<span class="sd">            The name of the trip request. Default is None.</span>
+<span class="sd">        attribute : any</span>
+<span class="sd">            An optional attribute of the trip request. This can be used to store any information by users&#39; need.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TripRequest</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">depart_time</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">))</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+    
+<div class="viewcode-block" id="TaxiHandler.assign_taxi"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.assign_taxi">[docs]</a>    <span class="k">def</span> <span class="nf">assign_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns a trip request to a vehicle.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vehicle : Vehicle</span>
+<span class="sd">            The vehicle to assign the trip request to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#print(f&quot;{s.W.TIME}: Assigning {trip_request} to {vehicle}&quot;)</span>
+
+        <span class="k">if</span> <span class="n">trip_request</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Travel request not found in the list of trip requests&quot;</span><span class="p">)</span>
+
+        <span class="n">vehicle</span><span class="o">.</span><span class="n">add_dest</span><span class="p">(</span><span class="n">trip_request</span><span class="o">.</span><span class="n">orig</span><span class="p">)</span>
+        <span class="n">vehicle</span><span class="o">.</span><span class="n">node_event</span><span class="p">[</span><span class="n">trip_request</span><span class="o">.</span><span class="n">orig</span><span class="p">]</span> <span class="o">=</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">get_on_taxi</span>
+        <span class="n">trip_request</span><span class="o">.</span><span class="n">taxi</span> <span class="o">=</span> <span class="n">vehicle</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">trip_request</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="TaxiHandler.get_trip"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.get_trip">[docs]</a>    <span class="k">def</span> <span class="nf">get_trip</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">tr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a TripRequest instance by name or object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tr : any | TripRequest</span>
+<span class="sd">            The name or object of the trip request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TripRequest</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">tr</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">trr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tr</span> <span class="o">==</span> <span class="n">trr</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">trr</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">tr</span><span class="si">}</span><span class="s2">&#39; is not TripRequest of this TaxiHandler&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TaxiHandler.compute_stats"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.compute_stats">[docs]</a>    <span class="k">def</span> <span class="nf">compute_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes basic statistics of the taxi travels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">)</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">waiting_times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">travel_times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">invehicle_times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">number_of_taxis</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;taxi&quot;</span><span class="p">])</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
+        <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">invehicle_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">-</span> <span class="n">tr</span><span class="o">.</span><span class="n">get_taxi_time</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">travel_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">-</span> <span class="n">tr</span><span class="o">.</span><span class="n">depart_time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">get_taxi_time</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">waiting_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">get_taxi_time</span> <span class="o">-</span> <span class="n">tr</span><span class="o">.</span><span class="n">depart_time</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="TaxiHandler.basic_to_pandas"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.basic_to_pandas">[docs]</a>    <span class="k">def</span> <span class="nf">basic_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the basic statistics on taxi travels to a pandas DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">compute_stats</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;total_trips&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span><span class="p">],</span>
+            <span class="s2">&quot;completed_trips&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span><span class="p">],</span>
+            <span class="s2">&quot;average_waiting_time&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">waiting_times</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">waiting_times</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">waiting_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;average_invehicle_time&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">invehicle_times</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">invehicle_times</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">invehicle_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;average_travel_time&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">travel_times</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">travel_times</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">travel_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="TaxiHandler.print_stats"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.print_stats">[docs]</a>    <span class="k">def</span> <span class="nf">print_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints the basic statistics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">compute_stats</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;results for taxi transportation:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total trip rquests: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; completed trip requests: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; completed trip requests ratio: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">:</span><span class="s2"> .2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average number of completed requests per taxi: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">number_of_taxis</span><span class="si">:</span><span class="s2"> .2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average waiting time: </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">waiting_times</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">waiting_times</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">waiting_times</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">:</span><span class="s2"> .1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average in-vehicle time: </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">invehicle_times</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">invehicle_times</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">invehicle_times</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">:</span><span class="s2"> .1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average trip time: </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">travel_times</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">travel_times</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">travel_times</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">:</span><span class="s2"> .1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="TaxiHandler.trips_to_pandas"><a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.trips_to_pandas">[docs]</a>    <span class="k">def</span> <span class="nf">trips_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the trips and their travel records to a pandas DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">compute_stats</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;orig&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">tr</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">],</span>
+            <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">tr</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">],</span>
+            <span class="s2">&quot;depart_time&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">tr</span><span class="o">.</span><span class="n">depart_time</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">],</span>
+            <span class="s2">&quot;get_taxi_time&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">tr</span><span class="o">.</span><span class="n">get_taxi_time</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">],</span>
+            <span class="s2">&quot;arrival_time&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">tr</span><span class="o">.</span><span class="n">arrival_time</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">],</span>
+            <span class="s2">&quot;travel_time&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">tr</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">-</span> <span class="n">tr</span><span class="o">.</span><span class="n">depart_time</span> <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">!=</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">],</span>
+            <span class="s2">&quot;waiting_time&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">tr</span><span class="o">.</span><span class="n">get_taxi_time</span> <span class="o">-</span> <span class="n">tr</span><span class="o">.</span><span class="n">depart_time</span> <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">get_taxi_time</span> <span class="o">!=</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">],</span>
+            <span class="s2">&quot;used_taxi&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">tr</span><span class="o">.</span><span class="n">taxi</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">tr</span><span class="o">.</span><span class="n">taxi</span> <span class="o">!=</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests_all</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">TaxiHandler_random</span><span class="p">(</span><span class="n">TaxiHandler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A naive taxi handler that assigns trip requests to random taxis. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">assign_trip_request_to_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns trip request to random available taxi.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vacant_taxis</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;taxi&quot;</span> <span class="ow">and</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span> <span class="ow">and</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span> <span class="o">==</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">vacant_taxis</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">trip_request</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="p">[:]:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vacant_taxis</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">depart_time</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TIME</span><span class="p">:</span>
+                <span class="n">taxi</span> <span class="o">=</span> <span class="n">vacant_taxis</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">assign_taxi</span><span class="p">(</span><span class="n">taxi</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TaxiHandler_nearest</span><span class="p">(</span><span class="n">TaxiHandler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A taxi handler that assigns trip requests to nearest taxis (based on Euclidean distance). </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">assign_trip_request_to_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns trip request to nearest available taxi.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vacant_taxis</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;taxi&quot;</span> <span class="ow">and</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span> <span class="ow">and</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span> <span class="o">==</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">trip_request</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="p">[:]:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vacant_taxis</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">depart_time</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TIME</span><span class="p">:</span>
+                <span class="n">dist_tmp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+                <span class="n">taxi_tmp</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">taxi</span> <span class="ow">in</span> <span class="n">vacant_taxis</span><span class="p">[:]:</span>
+                    <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">taxi</span><span class="o">.</span><span class="n">get_xy_coords</span><span class="p">()</span>
+                    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">y</span>
+                    <span class="n">dist</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y0</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">dist_tmp</span><span class="p">:</span>
+                        <span class="n">dist_tmp</span> <span class="o">=</span> <span class="n">dist</span>
+                        <span class="n">taxi_tmp</span> <span class="o">=</span> <span class="n">taxi</span>
+                <span class="k">if</span> <span class="n">taxi_tmp</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">vacant_taxis</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">)</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">assign_taxi</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TaxiHandler_nearest_matching_radious</span><span class="p">(</span><span class="n">TaxiHandler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A taxi handler that assigns trip requests to nearest taxis that are within a certain radious of the origin node (based on Euclidean distance. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">matching_radious</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">matching_radious</span> <span class="o">=</span> <span class="n">matching_radious</span>
+    
+    <span class="k">def</span> <span class="nf">assign_trip_request_to_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns trip request to nearest available taxi that is within the radious of the origin node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vacant_taxis</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;taxi&quot;</span> <span class="ow">and</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span> <span class="ow">and</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span> <span class="o">==</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">trip_request</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="p">[:]:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vacant_taxis</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">depart_time</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TIME</span><span class="p">:</span>
+                <span class="n">dist_tmp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+                <span class="n">taxi_tmp</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">taxi</span> <span class="ow">in</span> <span class="n">vacant_taxis</span><span class="p">[:]:</span>
+                    <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">taxi</span><span class="o">.</span><span class="n">get_xy_coords</span><span class="p">()</span>
+                    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">y</span>
+                    <span class="n">dist</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y0</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">matching_radious</span> <span class="ow">and</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">dist_tmp</span><span class="p">:</span>
+                        <span class="n">dist_tmp</span> <span class="o">=</span> <span class="n">dist</span>
+                        <span class="n">taxi_tmp</span> <span class="o">=</span> <span class="n">taxi</span>
+                <span class="k">if</span> <span class="n">taxi_tmp</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">vacant_taxis</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">)</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">assign_taxi</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TaxiHandler_nearest_network_distance</span><span class="p">(</span><span class="n">TaxiHandler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A taxi handler that assigns trip requests to nearest taxis based on network distance considering travel time as well. </span>
+<span class="sd">    This would be useful, but not implemented.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Toru Seo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

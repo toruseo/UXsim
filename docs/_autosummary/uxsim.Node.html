@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uxsim.Node &mdash; UXsim v1.1 documentation</title>
+  <title>uxsim.Node &mdash; UXsim v1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,6 +17,7 @@
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -45,7 +46,7 @@ gtag('config', 'UA-111714220-1');
             UXsim
           </a>
               <div class="version">
-                v1.1
+                v1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -58,20 +59,19 @@ gtag('config', 'UA-111714220-1');
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tech_ref.html">Technical reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#modules">Modules</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes">Classes</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../tech_ref.html#classes-essential">Classes (essential)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">uxsim.Node</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.Vehicle.html">uxsim.Vehicle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.Route.html">uxsim.Route</a></li>
 <li class="toctree-l3"><a class="reference internal" href="uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../tech_ref.html#classes-support">Classes (support)</a></li>
 </ul>
 </li>
 </ul>
@@ -106,11 +106,9 @@ gtag('config', 'UA-111714220-1');
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.Node">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_capacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node" title="Permalink to this definition"></a></dt>
-<dd><p>Node in a network.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Node.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_capacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.__init__" title="Permalink to this definition"></a></dt>
-<dd><p>Create a node</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Node in a network.</p>
+<p>Create a node</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -150,6 +148,49 @@ For example, <a href="#id1"><span class="problematic" id="id2">`</span></a>signa
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_capacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Create a node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<em>object</em>) – The world to which the node belongs.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the node.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – The x-coordinate of the node (for visualization purposes).</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – The y-coordinate of the node (for visualization purposes).</p></li>
+<li><p><strong>signal</strong> (<em>list of int</em><em>, </em><em>optional</em>) – A list representing the signal at the node. Default is [0], representing no signal.
+If a signal is present, the list contains the green times for each group.
+For example, <a href="#id3"><span class="problematic" id="id4">`</span></a>signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</p></li>
+<li><p><strong>signal_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – The offset of the signal. Default is 0.</p></li>
+<li><p><strong>flow_capacity</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum flow capacity of the node. Default is None, meaning infinite capacity.</p></li>
+<li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the node if the name is already used. Default is False.</p></li>
+<li><p><strong>number_of_lanes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of lanes that can be green simultaniously at the node. Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">signal_phase</span></span><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>The phase of current signal. Links that have the same <cite>signal_group</cite> have a green signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">signal_t</span></span><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
+<dd><p>The elapsed time since the current signal phase started. When it is larger than <cite>Link.signal[Link.signal_phase]</cite>, the phase changes to the next one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -158,23 +199,63 @@ For example, <a href="#id1"><span class="problematic" id="id2">`</span></a>signa
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Node.__init__" title="uxsim.Node.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, name, x, y[, signal, ...])</p></td>
 <td><p>Create a node</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.flow_capacity_update" title="uxsim.uxsim.Node.flow_capacity_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flow_capacity_update</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Node.flow_capacity_update" title="uxsim.Node.flow_capacity_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flow_capacity_update</span></code></a>()</p></td>
 <td><p>flow capacity updates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.generate" title="uxsim.uxsim.Node.generate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Node.generate" title="uxsim.Node.generate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code></a>()</p></td>
 <td><p>Departs vehicles from the waiting queue.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.signal_control" title="uxsim.uxsim.Node.signal_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signal_control</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Node.signal_control" title="uxsim.Node.signal_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signal_control</span></code></a>()</p></td>
 <td><p>Updates the signal timings for a traffic signal node.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.transfer" title="uxsim.uxsim.Node.transfer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Node.transfer" title="uxsim.Node.transfer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer</span></code></a>()</p></td>
 <td><p>Transfers vehicles between links at the node.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node.update" title="uxsim.uxsim.Node.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Node.update" title="uxsim.Node.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
 <td><p>Make necessary updates when the timestep is incremented.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.flow_capacity_update">
+<span class="sig-name descname"><span class="pre">flow_capacity_update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.flow_capacity_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.flow_capacity_update" title="Permalink to this definition"></a></dt>
+<dd><p>flow capacity updates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.generate" title="Permalink to this definition"></a></dt>
+<dd><p>Departs vehicles from the waiting queue.</p>
+<p class="rubric">Notes</p>
+<p>If there are vehicles in the generation queue of the node, this method attempts to depart a vehicle to one of the outgoing links.
+The choice of the outgoing link is based on the vehicle’s route preference for each link. Once a vehicle is departed, it is removed from the generation queue, added to the list of vehicles on the chosen link, and its state is set to “run”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.signal_control">
+<span class="sig-name descname"><span class="pre">signal_control</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.signal_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.signal_control" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the signal timings for a traffic signal node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.transfer">
+<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.transfer" title="Permalink to this definition"></a></dt>
+<dd><p>Transfers vehicles between links at the node.</p>
+<p class="rubric">Notes</p>
+<p>This method handles the transfer of vehicles from one link to another at the node.
+A vehicle is eligible for transfer if:
+- The next link it intends to move to has space.
+- The vehicle has the right signal phase to proceed.
+- The current link has enough capacity to allow the vehicle to exit.
+- The node capacity is not exceeded.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.update" title="Permalink to this definition"></a></dt>
+<dd><p>Make necessary updates when the timestep is incremented.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>

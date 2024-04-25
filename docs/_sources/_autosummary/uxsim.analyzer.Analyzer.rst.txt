@@ -36,6 +36,7 @@
       ~Analyzer.od_to_pandas
       ~Analyzer.output_data
       ~Analyzer.plot_vehicle_log
+      ~Analyzer.plot_vehicles_log
       ~Analyzer.print_simple_stats
       ~Analyzer.show_simulation_progress
       ~Analyzer.time_space_diagram_density

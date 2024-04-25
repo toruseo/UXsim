@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taxi / Shared mobility &mdash; UXsim v1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulation Mechanism" href="../mechanism.html" />
+    <link rel="prev" title="Network data import from OpenStreetMap" href="demo_notebook_04en_OpenStreetMap.html" />
+ 
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            UXsim
+          </a>
+              <div class="version">
+                v1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_01en.html">Step-by-step tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_02en.html">Advanced example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Taxi / Shared mobility</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#How-many-taxis-do-we-need-in-a-city?">How many taxis do we need in a city?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Defining-custom-TaxiHandler">Defining custom TaxiHandler</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tech_ref.html">Technical reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">UXsim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorial.html">Tutorial and Examples</a></li>
+      <li class="breadcrumb-item active">Taxi / Shared mobility</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/demo_notebook_06en_taxi_or_shared_mobility.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Taxi-/-Shared-mobility">
+<h1>Taxi / Shared mobility<a class="headerlink" href="#Taxi-/-Shared-mobility" title="Permalink to this heading"></a></h1>
+<p>The standard vehicles (added by default <code class="docutils literal notranslate"><span class="pre">addVehicle</span></code> or <code class="docutils literal notranslate"><span class="pre">adddemand</span></code>) in UXsim are a kind of privately owned vehicles: They travel from origin to destination and disappear.</p>
+<p>In this demonstration, we explain how to represent taxi-like (or <em>shared mobility</em> if you want a cool name) vehicles that repeatedly transport multiple passengers. Such taxi can be added by <code class="docutils literal notranslate"><span class="pre">addVehicle</span></code> with <code class="docutils literal notranslate"><span class="pre">mode=&quot;taxi&quot;</span></code> option. Furthermore, the passenger-to-taxi matching problem is handled by <code class="docutils literal notranslate"><span class="pre">uxsim.TaxiHandler</span></code> submodule.</p>
+<p>Let’s define a grid shaped network scenario.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">uxsim.TaxiHandler</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># World definition</span>
+<span class="n">tmax</span> <span class="o">=</span> <span class="mi">7200</span>
+<span class="n">deltan</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">deltan</span><span class="o">=</span><span class="n">deltan</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="p">,</span>
+    <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Scenario definition: grid network</span>
+<span class="c1">#deploy nodes as an imax x jmax grid</span>
+<span class="n">imax</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">jmax</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
+        <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
+
+<span class="c1">#create links between neighborhood nodes</span>
+<span class="n">links</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">jmax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Taxis can be added by <code class="docutils literal notranslate"><span class="pre">W.addVehicle(origin_node,</span> <span class="pre">None,</span> <span class="pre">0,</span> <span class="pre">mode=&quot;taxi&quot;)</span></code> as follows. Their behavior is as follows: - When a taxi has no job, it circulates the network randomly. - When a taxi is ordered to serve a passenger, it travels to the origin node of the passenger to pickup, and then travels to the destination to drop-off.</p>
+<p>In addition, we need to define a taxi handler <code class="docutils literal notranslate"><span class="pre">Handler</span></code>. It is responsible to manage trip requests from passengers and give orders to taxis. This time, we use default <code class="docutils literal notranslate"><span class="pre">TaxiHandler_nearest</span></code> that matches a new passenger to their nearest vacant taxi.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Handler</span> <span class="o">=</span> <span class="n">TaxiHandler_nearest</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+
+<span class="n">n_taxis</span> <span class="o">=</span> <span class="mi">3000</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_taxis</span><span class="o">/</span><span class="n">deltan</span><span class="p">)):</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addVehicle</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;taxi&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>A passenger’ trip request is represented by <code class="docutils literal notranslate"><span class="pre">TripRequest</span></code> class. It can be added by <code class="docutils literal notranslate"><span class="pre">Handler.add_trip_request(origin_node,</span> <span class="pre">destination_node,</span> <span class="pre">departure_time)</span></code>. In this scenario, they are randomly set as follows.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_passengers</span> <span class="o">=</span> <span class="mi">20000</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_passengers</span><span class="o">/</span><span class="n">deltan</span><span class="p">)):</span>
+    <span class="n">node1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">node2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="k">while</span> <span class="n">node1</span> <span class="o">==</span> <span class="n">node2</span><span class="p">:</span>
+        <span class="n">node2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">Handler</span><span class="o">.</span><span class="n">add_trip_request</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">i</span><span class="o">/</span><span class="n">n_passengers</span><span class="o">*</span><span class="n">deltan</span><span class="o">*</span><span class="n">tmax</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we can execute simulation. During the simulation, <code class="docutils literal notranslate"><span class="pre">Handler.assign_trip_request_to_taxi()</span></code> must be called repeatedly in order to let taxis do their jobs.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the simulation</span>
+<span class="k">while</span> <span class="n">W</span><span class="o">.</span><span class="n">check_simulation_ongoing</span><span class="p">():</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">(</span><span class="n">duration_t</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">Handler</span><span class="o">.</span><span class="n">assign_trip_request_to_taxi</span><span class="p">()</span> <span class="c1"># for every 60 seconds, the taxi is assgined</span>
+
+<span class="c1"># Results</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+simulation setting:
+ scenario name:
+ simulation duration:    7200 s
+ number of vehicles:     3000 veh
+ total road length:      120000 m
+ time discret. width:    5 s
+ platoon size:           5 veh
+ number of timesteps:    1440
+ number of platoons:     600
+ number of links:        120
+ number of nodes:        36
+ setup time:             0.34 s
+simulating...
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|     3000 vehs|  13.3 m/s|     0.77 s
+    1200 s|     3000 vehs|  12.6 m/s|     1.44 s
+    1800 s|     3000 vehs|  14.4 m/s|     2.11 s
+    2400 s|     3000 vehs|  14.2 m/s|     2.88 s
+    3000 s|     3000 vehs|  14.2 m/s|     3.56 s
+    3600 s|     3000 vehs|  14.3 m/s|     4.25 s
+    4200 s|     3000 vehs|  14.3 m/s|     4.79 s
+    4800 s|     3000 vehs|  14.2 m/s|     5.32 s
+    5400 s|     3000 vehs|  14.6 m/s|     5.86 s
+    6000 s|     3000 vehs|  14.2 m/s|     6.35 s
+    6600 s|     3000 vehs|  14.1 m/s|     6.86 s
+    7195 s|     3000 vehs|  14.5 m/s|     7.36 s
+ simulation finished
+results:
+ average speed:  14.3 m/s
+ number of completed trips:      0 / 0
+</pre></div></div>
+</div>
+<p>Note that the trip-related stats shown by <code class="docutils literal notranslate"><span class="pre">W.analyzer.print_simple_stats()</span></code> are only for non-taxi trips, so the current one shows 0.</p>
+<p>The summary of taxi transportation can be printed as follows</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Handler</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  6.67
+ average waiting time:  84.6
+ average in-vehicle time:  297.5
+ average trip time:  382.0
+</pre></div></div>
+</div>
+<p>You can also export the trip logs as pandas.Dataframe.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">Handler</span><span class="o">.</span><span class="n">trips_to_pandas</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>orig</th>
+      <th>dest</th>
+      <th>depart_time</th>
+      <th>get_taxi_time</th>
+      <th>arrival_time</th>
+      <th>travel_time</th>
+      <th>waiting_time</th>
+      <th>used_taxi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>n(3, 2)</td>
+      <td>n(2, 2)</td>
+      <td>0.0</td>
+      <td>155</td>
+      <td>210</td>
+      <td>210.0</td>
+      <td>155.0</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>n(1, 5)</td>
+      <td>n(4, 5)</td>
+      <td>0.9</td>
+      <td>140</td>
+      <td>295</td>
+      <td>294.1</td>
+      <td>139.1</td>
+      <td>164</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>n(3, 2)</td>
+      <td>n(4, 4)</td>
+      <td>1.8</td>
+      <td>55</td>
+      <td>225</td>
+      <td>223.2</td>
+      <td>53.2</td>
+      <td>175</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>n(2, 2)</td>
+      <td>n(2, 5)</td>
+      <td>2.7</td>
+      <td>155</td>
+      <td>310</td>
+      <td>307.3</td>
+      <td>152.3</td>
+      <td>344</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>n(2, 0)</td>
+      <td>n(1, 0)</td>
+      <td>3.6</td>
+      <td>55</td>
+      <td>105</td>
+      <td>101.4</td>
+      <td>51.4</td>
+      <td>101</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>3995</th>
+      <td>n(4, 1)</td>
+      <td>n(4, 0)</td>
+      <td>3595.5</td>
+      <td>3655</td>
+      <td>3715</td>
+      <td>119.5</td>
+      <td>59.5</td>
+      <td>86</td>
+    </tr>
+    <tr>
+      <th>3996</th>
+      <td>n(0, 1)</td>
+      <td>n(3, 0)</td>
+      <td>3596.4</td>
+      <td>3765</td>
+      <td>4005</td>
+      <td>408.6</td>
+      <td>168.6</td>
+      <td>111</td>
+    </tr>
+    <tr>
+      <th>3997</th>
+      <td>n(5, 3)</td>
+      <td>n(0, 2)</td>
+      <td>3597.3</td>
+      <td>3770</td>
+      <td>4330</td>
+      <td>732.7</td>
+      <td>172.7</td>
+      <td>528</td>
+    </tr>
+    <tr>
+      <th>3998</th>
+      <td>n(5, 2)</td>
+      <td>n(2, 4)</td>
+      <td>3598.2</td>
+      <td>3750</td>
+      <td>4040</td>
+      <td>441.8</td>
+      <td>151.8</td>
+      <td>332</td>
+    </tr>
+    <tr>
+      <th>3999</th>
+      <td>n(2, 2)</td>
+      <td>n(0, 3)</td>
+      <td>3599.1</td>
+      <td>3655</td>
+      <td>3840</td>
+      <td>240.9</td>
+      <td>55.9</td>
+      <td>107</td>
+    </tr>
+  </tbody>
+</table>
+<p>4000 rows × 8 columns</p>
+</div></div>
+</div>
+<section id="How-many-taxis-do-we-need-in-a-city?">
+<h2>How many taxis do we need in a city?<a class="headerlink" href="#How-many-taxis-do-we-need-in-a-city?" title="Permalink to this heading"></a></h2>
+<p>This is an important question (even <a class="reference external" href="https://www.nature.com/articles/s41586-018-0095-1">a Nature article</a> addresses this issue). If the number of taxis is too small, it cannot provide sufficient services to the travelers. Contrary, if it is too large, the road get congested and the travel time will be increased.</p>
+<p>Let’s answer this question using UXsim. First, we define simulation scenario as a function whose variable is the number of taxis and the number of passengers. The scenario setting is very similar to the previous example. This function returns some stats of the simulation results.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">uxsim.TaxiHandler</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">simulation_with_given_number_of_taxis</span><span class="p">(</span><span class="n">n_taxis</span><span class="p">,</span> <span class="n">n_passengers</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####&quot;</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CASE WTIH NUMBER OF TAXIS = </span><span class="si">{</span><span class="n">n_taxis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># World definition</span>
+    <span class="n">tmax</span> <span class="o">=</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">3</span>
+    <span class="n">tdemand</span> <span class="o">=</span> <span class="mi">3600</span>
+    <span class="n">deltan</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">deltan</span><span class="o">=</span><span class="n">deltan</span><span class="p">,</span>
+        <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="p">,</span>
+        <span class="n">print_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Scenario definition: grid network</span>
+    <span class="c1">#deploy nodes as an imax x jmax grid</span>
+    <span class="n">imax</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">jmax</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
+            <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
+
+    <span class="c1">#create links between neighborhood nodes</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">jmax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># taxis and passengers</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_taxis</span><span class="o">/</span><span class="n">deltan</span><span class="p">)):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">addVehicle</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;taxi&quot;</span><span class="p">)</span>
+
+    <span class="n">Handler</span> <span class="o">=</span> <span class="n">TaxiHandler_nearest</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_passengers</span><span class="o">/</span><span class="n">deltan</span><span class="p">)):</span>
+        <span class="n">node1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">node2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">while</span> <span class="n">node1</span> <span class="o">==</span> <span class="n">node2</span><span class="p">:</span>
+            <span class="n">node2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">Handler</span><span class="o">.</span><span class="n">add_trip_request</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">i</span><span class="o">/</span><span class="n">n_passengers</span><span class="o">*</span><span class="n">deltan</span><span class="o">*</span><span class="n">tdemand</span><span class="p">)</span>
+
+    <span class="c1"># Run the simulation</span>
+    <span class="k">while</span> <span class="n">W</span><span class="o">.</span><span class="n">check_simulation_ongoing</span><span class="p">():</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">(</span><span class="n">duration_t</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="n">Handler</span><span class="o">.</span><span class="n">assign_trip_request_to_taxi</span><span class="p">()</span> <span class="c1"># for every 60 seconds, the taxi is assgined</span>
+
+    <span class="c1"># Results</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
+
+    <span class="n">Handler</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
+
+    <span class="n">df_veh</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">vehicles_to_pandas</span><span class="p">()</span>
+
+    <span class="c1"># Return the average travel time, waiting time, and vehicle speed</span>
+    <span class="k">return</span> <span class="n">average</span><span class="p">(</span><span class="n">Handler</span><span class="o">.</span><span class="n">travel_times</span><span class="p">),</span> <span class="n">average</span><span class="p">(</span><span class="n">Handler</span><span class="o">.</span><span class="n">waiting_times</span><span class="p">),</span> <span class="n">average</span><span class="p">(</span><span class="n">df_veh</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Then we systematically execute simulation scenarios with different number of taxis. The total traveler demand is fixed.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res_passenger_travel_time</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">res_passenger_waiting_time</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">res_vehicle_speed</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">n_taxis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">6001</span><span class="p">,</span> <span class="mi">500</span><span class="p">):</span>
+    <span class="n">ptt</span><span class="p">,</span> <span class="n">pwt</span><span class="p">,</span> <span class="n">vs</span> <span class="o">=</span> <span class="n">simulation_with_given_number_of_taxis</span><span class="p">(</span><span class="n">n_taxis</span><span class="p">,</span> <span class="mi">20000</span><span class="p">)</span>
+    <span class="n">res_passenger_travel_time</span><span class="p">[</span><span class="n">n_taxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">ptt</span>
+    <span class="n">res_passenger_waiting_time</span><span class="p">[</span><span class="n">n_taxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">pwt</span>
+    <span class="n">res_vehicle_speed</span><span class="p">[</span><span class="n">n_taxis</span><span class="p">]</span> <span class="o">=</span> <span class="n">vs</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 1000
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  20.00
+ average waiting time:  1508.5
+ average in-vehicle time:  198.2
+ average trip time:  1706.6
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 1500
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  13.33
+ average waiting time:  455.9
+ average in-vehicle time:  206.8
+ average trip time:  662.7
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 2000
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  10.00
+ average waiting time:  85.6
+ average in-vehicle time:  220.2
+ average trip time:  305.8
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 2500
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  8.00
+ average waiting time:  85.3
+ average in-vehicle time:  261.3
+ average trip time:  346.6
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 3000
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  6.67
+ average waiting time:  82.9
+ average in-vehicle time:  286.6
+ average trip time:  369.5
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 3500
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  5.71
+ average waiting time:  89.5
+ average in-vehicle time:  325.6
+ average trip time:  415.1
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 4000
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  5.00
+ average waiting time:  93.6
+ average in-vehicle time:  375.2
+ average trip time:  468.8
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 4500
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  4.44
+ average waiting time:  99.5
+ average in-vehicle time:  413.0
+ average trip time:  512.5
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 5000
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  4.00
+ average waiting time:  106.4
+ average in-vehicle time:  461.3
+ average trip time:  567.7
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 5500
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  3.64
+ average waiting time:  111.3
+ average in-vehicle time:  505.8
+ average trip time:  617.1
+################################################################################
+CASE WTIH NUMBER OF TAXIS = 6000
+results for taxi transportation:
+ total trip rquests: 20000
+ completed trip requests: 20000
+ completed trip requests ratio:  1.00
+ average number of completed requests per taxi:  3.33
+ average waiting time:  127.9
+ average in-vehicle time:  554.7
+ average trip time:  682.5
+</pre></div></div>
+</div>
+<p>Now visualize the results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="p">()</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">gca</span><span class="p">()</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">res_passenger_travel_time</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="nb">list</span><span class="p">(</span><span class="n">res_passenger_travel_time</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="s2">&quot;bo-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;average travel time per trip&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">res_passenger_waiting_time</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="nb">list</span><span class="p">(</span><span class="n">res_passenger_waiting_time</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="s2">&quot;go-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;average waiting time per trip&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;number of taxis&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;time (s)&quot;</span><span class="p">)</span>
+
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">res_vehicle_speed</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="nb">list</span><span class="p">(</span><span class="n">res_vehicle_speed</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="s2">&quot;rx--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;average vehicle speed&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;speed (m/s)&quot;</span><span class="p">)</span>
+
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_06en_taxi_or_shared_mobility_20_0.png" src="../_images/notebooks_demo_notebook_06en_taxi_or_shared_mobility_20_0.png" />
+</div>
+</div>
+<p>You can see that the waiting time almost monotonically decreases as the number of taxis increases. However, it converges to certain value after 2000 taxis (and slightly increases after that due to congestion).</p>
+<p>On the other hand, the average speed of vehicles monotonically decreases as the the number of taxis increases, resulting long travel time after some point.</p>
+<p>As a result, the optimal number of taxis (that balances both of these factors and minimizes the passenger travel time) is found to be around 2000. This means that 1 taxi serves to 10 passengers in 1-3 hours in this city. Sounds reasonable.</p>
+</section>
+<section id="Defining-custom-TaxiHandler">
+<h2>Defining custom TaxiHandler<a class="headerlink" href="#Defining-custom-TaxiHandler" title="Permalink to this heading"></a></h2>
+<p>You can also define your won TaxiHandler that may have smarter passenger-to-vehicle matching or even ridesharing. To do so, it is recommended to define a custom class by inheriting <code class="docutils literal notranslate"><span class="pre">TaxiHandler</span></code> class.</p>
+<p>Below is an example of (slightly) advanced taxi handler. Important built-in variables and functions: - <code class="docutils literal notranslate"><span class="pre">TaxiHandler.trip_requests</span></code>: A list of all of the trip requests that is handled by <code class="docutils literal notranslate"><span class="pre">TaxiHandler</span></code> - <code class="docutils literal notranslate"><span class="pre">TaxiHandler.assign_taxi(taxi,</span> <span class="pre">trip_request)</span></code>: This assigns <code class="docutils literal notranslate"><span class="pre">taxi</span></code> to <code class="docutils literal notranslate"><span class="pre">trip_request</span></code>. The <code class="docutils literal notranslate"><span class="pre">taxi</span></code> immediately start traveling to pickup the <code class="docutils literal notranslate"><span class="pre">trip_request</span></code> once this function is called.</p>
+<p>For the details, please see the source code of <code class="docutils literal notranslate"><span class="pre">uxsim/TaxiHandler/TaxiHandler.py</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim.TaxiHandler</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">TaxiHandler_nearest_matching_radious</span><span class="p">(</span><span class="n">TaxiHandler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A taxi handler that assigns trip requests to nearest taxis that are within a certain radious of the origin node (based on Euclidean distance).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">matching_radious</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">matching_radious</span> <span class="o">=</span> <span class="n">matching_radious</span>
+
+    <span class="k">def</span> <span class="nf">assign_trip_request_to_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns trip request to nearest available taxi that is within the radious of the origin node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vacant_taxis</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;taxi&quot;</span> <span class="ow">and</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span> <span class="ow">and</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span> <span class="o">==</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">vacant_taxis</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">trip_request</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_requests</span><span class="p">[:]:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vacant_taxis</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">depart_time</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TIME</span><span class="p">:</span>
+                <span class="n">dist_tmp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+                <span class="n">taxi_tmp</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">taxi</span> <span class="ow">in</span> <span class="n">vacant_taxis</span><span class="p">[:]:</span>
+                    <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">taxi</span><span class="o">.</span><span class="n">get_xy_coords</span><span class="p">()</span>
+                    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">trip_request</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">y</span>
+                    <span class="n">dist</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x0</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y0</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">matching_radious</span> <span class="ow">and</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">dist_tmp</span><span class="p">:</span>
+                        <span class="n">dist_tmp</span> <span class="o">=</span> <span class="n">dist</span>
+                        <span class="n">taxi_tmp</span> <span class="o">=</span> <span class="n">taxi</span>
+                <span class="k">if</span> <span class="n">taxi_tmp</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">vacant_taxis</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">)</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">assign_taxi</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>FYI, the following is an explanation by GPT-4 that I proofread. The function <code class="docutils literal notranslate"><span class="pre">assign_trip_request_to_taxi</span></code> is designed to assign trip requests to the nearest available taxi within a specified radius of the request’s origin point. Here’s a detailed explanation for its functionality:</p>
+<p><strong>Description</strong></p>
+<p>This function assigns each trip request to the nearest available taxi that is within the radius of the trip’s origin node. It ensures that trip requests are matched efficiently to taxis that are not currently occupied and are in a state ready to run.</p>
+<p><strong>Workflow</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Identify Vacant Taxis</strong>:</p>
+<ul class="simple">
+<li><p>The function starts by filtering out all vehicles from <code class="docutils literal notranslate"><span class="pre">s.W.VEHICLES</span></code> that are marked as taxis (<code class="docutils literal notranslate"><span class="pre">veh.mode</span> <span class="pre">==</span> <span class="pre">&quot;taxi&quot;</span></code>), are in the running state (<code class="docutils literal notranslate"><span class="pre">veh.state</span> <span class="pre">==</span> <span class="pre">&quot;run&quot;</span></code>), and are not currently assigned to a destination to carry travelers (<code class="docutils literal notranslate"><span class="pre">veh.dest</span> <span class="pre">==</span> <span class="pre">None</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>Process Each Trip Request</strong>:</p>
+<ul class="simple">
+<li><p>It iterates over all current trip requests.</p></li>
+<li><p>If there are no vacant taxis left, it breaks out of the loop as no more assignments can be made.</p></li>
+<li><p>For each trip request, it checks if the request’s departure time is less than or equal to the current world time (<code class="docutils literal notranslate"><span class="pre">s.W.TIME</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>Find the Nearest Available Taxi</strong>:</p>
+<ul class="simple">
+<li><p>For each trip request being processed, it initializes a variable to track the smallest distance found (<code class="docutils literal notranslate"><span class="pre">dist_tmp</span></code>) and a variable to hold the nearest taxi (<code class="docutils literal notranslate"><span class="pre">taxi_tmp</span></code>).</p></li>
+<li><p>It then calculates the distance between the trip request’s origin and each taxi’s current coordinates using the Euclidean distance formula.</p></li>
+<li><p>If a taxi is within the allowed matching radius (<code class="docutils literal notranslate"><span class="pre">s.matching_radious</span></code>) and closer than any previously checked taxi, it updates <code class="docutils literal notranslate"><span class="pre">taxi_tmp</span></code> to this taxi.</p></li>
+</ul>
+</li>
+<li><p><strong>Assign the Taxi</strong>:</p>
+<ul class="simple">
+<li><p>If a nearest taxi (<code class="docutils literal notranslate"><span class="pre">taxi_tmp</span></code>) is found for a trip request, the taxi is removed from the list of vacant taxis to prevent it from being assigned to multiple requests.</p></li>
+<li><p>The taxi is then officially assigned to the trip request using <code class="docutils literal notranslate"><span class="pre">s.assign_taxi(taxi_tmp,</span> <span class="pre">trip_request)</span></code>.</p></li>
+</ul>
+</li>
+</ol>
+<p><strong>Notes</strong> - The function assumes that there are methods and attributes within the object <code class="docutils literal notranslate"><span class="pre">s</span></code> that allow it to access current time (<code class="docutils literal notranslate"><span class="pre">s.W.TIME</span></code>), vehicle list (<code class="docutils literal notranslate"><span class="pre">s.W.VEHICLES</span></code>), and the function <code class="docutils literal notranslate"><span class="pre">assign_taxi</span></code> to handle the assignment. - The radius within which a taxi can be matched to a trip request is defined by <code class="docutils literal notranslate"><span class="pre">s.matching_radious</span></code>. - This function ensures that taxis are utilized efficiently by assigning them to the closest requests, thereby potentially reducing wait times for
+passengers and travel distances for taxis.</p>
+<script type="application/vnd.jupyter.widget-state+json">
+{"02b3228f560f48128236b0924959a3a9": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_1cb3e629b0954694a6d75a335bded00e", "placeholder": "\u200b", "style": "IPY_MODEL_c74c22dbe7d245f2a319db088fa6c56a", "value": "\u20078/8\u2007[00:00&lt;00:00,\u2007\u20078.38it/s]"}}, "04898591621140548120d122831b3d58": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_cc4399fafca34fd482032f327ccfa98e", "placeholder": "\u200b", "style": "IPY_MODEL_9b5946647c58441995c3c844ab9e20a8", "value": "100%"}}, "0a7c6baa8491489d9c652cfdd02e641d": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "11308e9c57854a24991c1ae5cc7025a6": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "1190816a496846848626fc1db2d486e7": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "1952ef3d0a5c4b23a7ce1e96baa980a7": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "1bdc6b53c5c445b5861cb25d365b8af1": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "1c16c097cbe64271afd5a460a43268eb": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_437749d84d3a456aab33ae23dd73c4e6", "max": 8, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_a0d58d78defb4f538ba482399b1e1638", "value": 8}}, "1cb3e629b0954694a6d75a335bded00e": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "2216f855e23e4cc0b50c08b90dec4216": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "30a4c4fef21a4687a076e34dc44538e2": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "37382a7e31274e779bc6586d88486642": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_fb58b35de3b346e397ed9b48cadcf756", "placeholder": "\u200b", "style": "IPY_MODEL_a169c9cfba81424d8f936235ca8336c9", "value": "100%"}}, "37415d569eee42409745a6b0da201f04": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_04898591621140548120d122831b3d58", "IPY_MODEL_935b58cdb527465f8bb06c6617738680", "IPY_MODEL_6119886cfaf344239c38347f3fda9184"], "layout": "IPY_MODEL_1190816a496846848626fc1db2d486e7"}}, "437749d84d3a456aab33ae23dd73c4e6": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "5177729372014a9090cedc152725cc8a": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "6119886cfaf344239c38347f3fda9184": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_8bf41e3bf2744074a2001cd6571d15f8", "placeholder": "\u200b", "style": "IPY_MODEL_66fbfdb19c64477993e91699a5cb940a", "value": "\u200710/10\u2007[00:03&lt;00:00,\u2007\u20073.23it/s]"}}, "643319fe977a425fa80e7a87ce357a37": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "6550b71ee281437f8d0a55cf5c7a170b": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_c2e27e421db6475bb0d4ba6695efe6a6", "IPY_MODEL_b3f26f3366584be3878ed1f9934aea2e", "IPY_MODEL_ed5dfd9e8fb64aeaacfe84bb5a24a9e5"], "layout": "IPY_MODEL_6bb11815d3ca4873b0bc46ce87523e31"}}, "65560ba504934163a65451a128bbf33c": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_ed0a0f46c4834dd29f4e84f1d85374cd", "max": 3, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_d96c49d5cb63400d958e3455f51f52ac", "value": 3}}, "66fbfdb19c64477993e91699a5cb940a": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "6939e90f5625491585c6e3156c0cc8db": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "6bb11815d3ca4873b0bc46ce87523e31": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "721e1a817dff469aafd7b8a332527df2": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_fad7067915df4bd4b0719d7114bdcfa3", "max": 120, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_2216f855e23e4cc0b50c08b90dec4216", "value": 120}}, "734052ca31344ce4940db93e34e61481": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_37382a7e31274e779bc6586d88486642", "IPY_MODEL_1c16c097cbe64271afd5a460a43268eb", "IPY_MODEL_02b3228f560f48128236b0924959a3a9"], "layout": "IPY_MODEL_c10453ea464c447ea65773d16cae9ce8"}}, "7ec879c4296940deacf1a185d39f5e96": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "8285618ce8f7410e9683113c2238f7ba": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_cd5b3d60bb1b469f91185b7b4612fba2", "IPY_MODEL_721e1a817dff469aafd7b8a332527df2", "IPY_MODEL_f03bb23cf3f94e0c950ee2e3c7aa7862"], "layout": "IPY_MODEL_d155d6661d90453998786e8eac431c4c"}}, "8bf41e3bf2744074a2001cd6571d15f8": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "935b58cdb527465f8bb06c6617738680": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_cc7196c9c9c34c92a94aa9b0fbf9f77b", "max": 10, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_e56a8780675f463493ccd2b2034e183c", "value": 10}}, "9362e3599b3a4cac8e32caf836eb44b7": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "97ca94b4ed054f909753cba0330b4e49": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "9b5946647c58441995c3c844ab9e20a8": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "a0d58d78defb4f538ba482399b1e1638": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "a169c9cfba81424d8f936235ca8336c9": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "b3f26f3366584be3878ed1f9934aea2e": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "FloatProgressModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_7ec879c4296940deacf1a185d39f5e96", "max": 3, "min": 0, "orientation": "horizontal", "style": "IPY_MODEL_97ca94b4ed054f909753cba0330b4e49", "value": 3}}, "bf1e5d121edc4964913e69c3085280b0": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "c10453ea464c447ea65773d16cae9ce8": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "c2e27e421db6475bb0d4ba6695efe6a6": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_0a7c6baa8491489d9c652cfdd02e641d", "placeholder": "\u200b", "style": "IPY_MODEL_643319fe977a425fa80e7a87ce357a37", "value": "100%"}}, "c513da548239411c935e5e7410e2f835": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HBoxModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_fd60fe2814ca4c308185b8af29d09ca4", "IPY_MODEL_65560ba504934163a65451a128bbf33c", "IPY_MODEL_fd66bd69c18b4a0b98fef3a9dad17b68"], "layout": "IPY_MODEL_de2474ad69c7416e852ab257037c35ea"}}, "c74c22dbe7d245f2a319db088fa6c56a": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "c7677ad8e834419596f7d47daef871b7": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "cc4399fafca34fd482032f327ccfa98e": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "cc7196c9c9c34c92a94aa9b0fbf9f77b": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "cd5b3d60bb1b469f91185b7b4612fba2": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_c7677ad8e834419596f7d47daef871b7", "placeholder": "\u200b", "style": "IPY_MODEL_5177729372014a9090cedc152725cc8a", "value": "100%"}}, "d155d6661d90453998786e8eac431c4c": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "d2e14198cf6346f5b935651921256f06": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "DescriptionStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "d96c49d5cb63400d958e3455f51f52ac": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "de2474ad69c7416e852ab257037c35ea": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "e56a8780675f463493ccd2b2034e183c": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "ProgressStyleModel", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "ed0a0f46c4834dd29f4e84f1d85374cd": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "ed5dfd9e8fb64aeaacfe84bb5a24a9e5": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_bf1e5d121edc4964913e69c3085280b0", "placeholder": "\u200b", "style": "IPY_MODEL_1952ef3d0a5c4b23a7ce1e96baa980a7", "value": "\u20073/3\u2007[00:01&lt;00:00,\u2007\u20071.61it/s]"}}, "f03bb23cf3f94e0c950ee2e3c7aa7862": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_9362e3599b3a4cac8e32caf836eb44b7", "placeholder": "\u200b", "style": "IPY_MODEL_6939e90f5625491585c6e3156c0cc8db", "value": "\u2007120/120\u2007[00:13&lt;00:00,\u200710.09it/s]"}}, "fad7067915df4bd4b0719d7114bdcfa3": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "fb58b35de3b346e397ed9b48cadcf756": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "fd60fe2814ca4c308185b8af29d09ca4": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_30a4c4fef21a4687a076e34dc44538e2", "placeholder": "\u200b", "style": "IPY_MODEL_d2e14198cf6346f5b935651921256f06", "value": "100%"}}, "fd66bd69c18b4a0b98fef3a9dad17b68": {"model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "model_name": "HTMLModel", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_1bdc6b53c5c445b5861cb25d365b8af1", "placeholder": "\u200b", "style": "IPY_MODEL_11308e9c57854a24991c1ae5cc7025a6", "value": "\u20073/3\u2007[00:01&lt;00:00,\u2007\u20071.58it/s]"}}}
+</script></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="demo_notebook_04en_OpenStreetMap.html" class="btn btn-neutral float-left" title="Network data import from OpenStreetMap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mechanism.html" class="btn btn-neutral float-right" title="Simulation Mechanism" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Toru Seo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

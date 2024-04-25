@@ -14,7 +14,9 @@
    .. autosummary::
    
       catch_exceptions_and_warn
+      get_font_for_matplotlib
       lange
+      print_columns
       printtry
    
    
@@ -24,6 +26,12 @@
    
 
    
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      LoggingWarning
    
    
 
