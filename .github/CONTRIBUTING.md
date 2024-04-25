@@ -9,4 +9,4 @@ The other people may be able to help.
 
 `uxsim.py` is the core of the traffic flow simulation.
 It must contain codes that are essential for simulation only.
-If you have developed useful utilities, please consider to add them as a submodule like the current `ResultGUIViewer`.
+If you have developed useful utilities, please consider to add them as a submodule like the current `Utilities`.

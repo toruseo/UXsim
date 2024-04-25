@@ -105,10 +105,11 @@ class Analyzer:
         for veh in s.W.VEHICLES.values():
             o = veh.orig
             d = veh.dest
-            s.od_trips[o,d] += dn
-            if veh.travel_time != -1:
-                s.od_trips_comp[o,d] += dn
-                s.od_tt[o,d].append(veh.travel_time)
+            if d != None:
+                s.od_trips[o,d] += dn
+                if veh.travel_time != -1:
+                    s.od_trips_comp[o,d] += dn
+                    s.od_tt[o,d].append(veh.travel_time)
         for o,d in s.od_tt.keys():
             s.od_tt_ave[o,d] = np.average(s.od_tt[o,d])
             s.od_tt_std[o,d] = np.std(s.od_tt[o,d])
@@ -713,7 +714,8 @@ class Analyzer:
         draw = ImageDraw.Draw(img)
         font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
         font_file_like = io.BytesIO(font_data)
-        font = ImageFont.truetype(font_file_like, int(network_font_size))
+        if network_font_size > 0:
+            font = ImageFont.truetype(font_file_like, int(network_font_size))
 
         def flip(y):
             return img.size[1]-y
@@ -948,7 +950,8 @@ class Analyzer:
             draw = ImageDraw.Draw(img)
             font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
             font_file_like = io.BytesIO(font_data)
-            font = ImageFont.truetype(font_file_like, int(network_font_size))
+            if network_font_size > 0:
+                font = ImageFont.truetype(font_file_like, int(network_font_size))
 
             def flip(y):
                 return img.size[1]-y
@@ -1090,6 +1093,45 @@ class Analyzer:
 
         if s.W.save_mode:
             plt.savefig(f"out{s.W.name}/vehicle_{vehname}.png")
+        if s.W.show_mode:
+            plt.show()
+        else:
+            plt.close("all")
+
+
+    @catch_exceptions_and_warn()
+    def plot_vehicles_log(s, vehnamelist):
+        """
+        Plots the driving link and speed for a single vehicle.
+
+        Parameters
+        ----------
+        vehname : str
+            The name of the vehicle for which the driving link and speed are to be plotted.
+
+        Notes
+        -----
+        This method visualizes the speed profile and the links traversed by a specific vehicle over time.
+        The speed is plotted on the primary y-axis, and the links are plotted on the secondary y-axis.
+        The plot is saved to the directory `out<W.name>` with the filename `vehicle_<vehname>.png`.
+        """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
+        
+        vehs = [s.W.VEHICLES[vehname] for vehname in vehnamelist]
+
+        plt.figure()
+        for veh in vehs:
+            vehlinks = [str(l.name) if l != -1 else "not in network" for l in veh.log_link]
+            plt.plot([veh.log_t[i] for i in lange(veh.log_t) if veh.log_state[i] != "home"], [vehlinks[i] for i in lange(vehlinks) if veh.log_state[i] != "home"], c=veh.color, label=veh.name)
+        plt.grid()
+        plt.ylabel('link')
+        plt.legend()
+        plt.ylim([0, None])
+        plt.tight_layout()
+
+        if s.W.save_mode:
+            plt.savefig(f"out{s.W.name}/vehicles_{vehnamelist}.png")
         if s.W.show_mode:
             plt.show()
         else:
