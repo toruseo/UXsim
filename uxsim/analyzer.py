@@ -105,10 +105,11 @@ class Analyzer:
         for veh in s.W.VEHICLES.values():
             o = veh.orig
             d = veh.dest
-            s.od_trips[o,d] += dn
-            if veh.travel_time != -1:
-                s.od_trips_comp[o,d] += dn
-                s.od_tt[o,d].append(veh.travel_time)
+            if d != None:
+                s.od_trips[o,d] += dn
+                if veh.travel_time != -1:
+                    s.od_trips_comp[o,d] += dn
+                    s.od_tt[o,d].append(veh.travel_time)
         for o,d in s.od_tt.keys():
             s.od_tt_ave[o,d] = np.average(s.od_tt[o,d])
             s.od_tt_std[o,d] = np.std(s.od_tt[o,d])
@@ -270,7 +271,8 @@ class Analyzer:
         """
         s.W.print("results:")
         s.W.print(f" average speed:\t {s.average_speed:.1f} m/s")
-        s.W.print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
+        s.W.print(" number of completed trips:\t", s.trip_completed, "/", s.trip_all)
+        #s.W.print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
         if s.trip_completed > 0:
             s.W.print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
             s.W.print(f" average delay of trips:\t {s.average_delay:.1f} s")
@@ -279,7 +281,8 @@ class Analyzer:
         if force_print == 1 and s.W.print_mode == 0:
             print("results:")
             print(f" average speed:\t {s.average_speed:.1f} m/s")
-            print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
+            print(" number of completed trips:\t", s.trip_completed, "/", s.trip_all)
+            #print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
             if s.trip_completed > 0:
                 print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
                 print(f" average delay of trips:\t {s.average_delay:.1f} s")
@@ -713,7 +716,8 @@ class Analyzer:
         draw = ImageDraw.Draw(img)
         font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
         font_file_like = io.BytesIO(font_data)
-        font = ImageFont.truetype(font_file_like, int(network_font_size))
+        if network_font_size > 0:
+            font = ImageFont.truetype(font_file_like, int(network_font_size))
 
         def flip(y):
             return img.size[1]-y
@@ -948,7 +952,8 @@ class Analyzer:
             draw = ImageDraw.Draw(img)
             font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
             font_file_like = io.BytesIO(font_data)
-            font = ImageFont.truetype(font_file_like, int(network_font_size))
+            if network_font_size > 0:
+                font = ImageFont.truetype(font_file_like, int(network_font_size))
 
             def flip(y):
                 return img.size[1]-y
@@ -1096,6 +1101,45 @@ class Analyzer:
             plt.close("all")
 
 
+    @catch_exceptions_and_warn()
+    def plot_vehicles_log(s, vehnamelist):
+        """
+        Plots the driving link and speed for a single vehicle.
+
+        Parameters
+        ----------
+        vehname : str
+            The name of the vehicle for which the driving link and speed are to be plotted.
+
+        Notes
+        -----
+        This method visualizes the speed profile and the links traversed by a specific vehicle over time.
+        The speed is plotted on the primary y-axis, and the links are plotted on the secondary y-axis.
+        The plot is saved to the directory `out<W.name>` with the filename `vehicle_<vehname>.png`.
+        """
+        if s.W.vehicle_logging_timestep_interval != 1:
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
+        
+        vehs = [s.W.VEHICLES[vehname] for vehname in vehnamelist]
+
+        plt.figure()
+        for veh in vehs:
+            vehlinks = [str(l.name) if l != -1 else "not in network" for l in veh.log_link]
+            plt.plot([veh.log_t[i] for i in lange(veh.log_t) if veh.log_state[i] != "home"], [vehlinks[i] for i in lange(vehlinks) if veh.log_state[i] != "home"], c=veh.color, label=veh.name)
+        plt.grid()
+        plt.ylabel('link')
+        plt.legend()
+        plt.ylim([0, None])
+        plt.tight_layout()
+
+        if s.W.save_mode:
+            plt.savefig(f"out{s.W.name}/vehicles_{vehnamelist}.png")
+        if s.W.show_mode:
+            plt.show()
+        else:
+            plt.close("all")
+
+
     def vehicles_to_pandas(s):
         """
         Converts the vehicle travel logs to a pandas DataFrame.
@@ -1118,8 +1162,6 @@ class Analyzer:
             warnings.warn("vehicle_logging_timestep_interval is not 1. The output data is not exactly accurate.", LoggingWarning)
 
         if s.flag_pandas_convert == 0:
-            s.flag_pandas_convert = 1
-
             out = [["name", "dn", "orig", "dest", "t", "link", "x", "s", "v"]]
             for veh in s.W.VEHICLES.values():
                 for i in range(len(veh.log_t)):
@@ -1133,8 +1175,13 @@ class Analyzer:
                                 linkname = "trip_aborted"
                             else:
                                 linkname = "trip_end"
-                        out.append([veh.name, s.W.DELTAN, veh.orig.name, veh.dest.name, veh.log_t[i], linkname, veh.log_x[i], veh.log_s[i], veh.log_v[i]])
+                        veh_dest_name = None
+                        if veh.dest != None:
+                            veh_dest_name = veh.dest.name
+                        out.append([veh.name, s.W.DELTAN, veh.orig.name, veh_dest_name, veh.log_t[i], linkname, veh.log_x[i], veh.log_s[i], veh.log_v[i]])
             s.df_vehicles = pd.DataFrame(out[1:], columns=out[0])
+
+            s.flag_pandas_convert = 1
         return s.df_vehicles
 
     def log_vehicles_to_pandas(s):

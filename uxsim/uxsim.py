@@ -319,9 +319,9 @@ class Link:
             The world to which the link belongs.
         name : str
             The name of the link.
-        start_node : str
+        start_node : str | Node
             The name of the start node of the link.
-        end_node : str
+        end_node : str | Node
             The name of the end node of the link.
         length : float
             The length of the link.
@@ -738,7 +738,7 @@ class Vehicle:
     """
     Vehicle or platoon in a network.
     """
-    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, auto_rename=False):
+    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, mode="single_trip", links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, auto_rename=False):
         """
         Create a vehicle (more precisely, platoon)
 
@@ -746,9 +746,9 @@ class Vehicle:
         ----------
         W : object
             The world to which the vehicle belongs.
-        orig : str
+        orig : str | Node
             The origin node.
-        dest : str
+        dest : str | Node
             The destination node.
         departure_time : int
             The departure time step of the vehicle.
@@ -758,6 +758,10 @@ class Vehicle:
             The preference weights for links, default is 0 for all links.
         route_choice_principle : str, optional
             The route choice principle of the vehicle, default is the network's route choice principle.
+        mode : str, optional
+            The mode of the vehicle. Available options are "single_trip" and "taxi", default is "single_trip".
+            "single_trip": The vehicle makes a single trip from the origin to the destination.
+            "taxi": The vehicle serves multiple trips by specifying sequence of destinations. The destination list `Vehicle.dest_list` can be dynamically updated externaly. (TODO: to be implemented next)
         links_prefer : list of str, optional
             The names of the links the vehicle prefers, default is empty list.
         links_avoid : list of str, optional
@@ -812,6 +816,13 @@ class Vehicle:
             s.route_choice_principle = s.W.route_choice_principle
         else:
             s.route_choice_principle = route_choice_principle
+
+        #private vehicle or taxi
+        s.mode = mode
+        s.dest_list = []
+
+        #dict of events that are triggered when this vehicle reaches a certain node {Node: func}
+        s.node_event = {}
 
         #希望リンク重み：{link:重み}
         s.route_pref = route_pref
@@ -872,39 +883,56 @@ class Vehicle:
         s.record_log()
 
         if s.state == "home":
-            #需要生成
+            #depart
             if s.W.T >= s.departure_time:
                 s.state = "wait"
                 s.orig.generation_queue.append(s)
         if s.state == "wait":
-            #出発ノードで待つ
+            #wait at the vertical queue at the origin node
             pass
         if s.state == "run":
-            #走行
+            #drive within the link
             s.v = (s.x_next-s.x)/s.W.DELTAT
             s.x_old = s.x
             s.x = s.x_next
 
-            #リンク下流端
+            #at the end of the link
             if s.x == s.link.length:
+                if s.link.end_node in s.node_event.keys():
+                    s.node_event[s.link.end_node]()
+                
                 if s.link.end_node == s.dest:
-                    #トリップ終了待ちにする
-                    s.flag_waiting_for_trip_end = 1
-                    if s.link.vehicles[0] == s:
-                        s.end_trip()
+                    if s.mode == "single_trip":
+                        #prepare for trip end
+                        s.flag_waiting_for_trip_end = 1
+                        if s.link.vehicles[0] == s:
+                            s.end_trip()
+                    elif s.mode == "taxi":
+                        #proceed to next destination
+                        if len(s.dest_list) > 0:
+                            s.dest = s.dest_list.pop(0)
+                        else:
+                            s.dest = None
+                            s.dest_list = []
+                        s.route_pref_update(weight=1)
+                        s.route_next_link_choice()
+                        s.link.end_node.incoming_vehicles.append(s)
+
                 elif len(s.link.end_node.outlinks.values()) == 0 and s.trip_abort == 1:
-                    #トリップ終了待ち（目的地到達不可）にする
+                    #prepare for trip abort due to dead end
                     s.flag_trip_aborted = 1
                     s.route_next_link = None
                     s.flag_waiting_for_trip_end = 1
                     if s.link.vehicles[0] == s:
                         s.end_trip()
+
                 else:
-                    #リンク間遷移リクエスト
+                    #request link transfer
                     s.route_next_link_choice()
                     s.link.end_node.incoming_vehicles.append(s)
+        
         if s.state in ["end", "abort"] :
-            #終わり
+            #ended the trip
             pass
 
     def end_trip(s):
@@ -970,7 +998,10 @@ class Vehicle:
         The updated preferences guide the vehicle's decisions in subsequent route choices.
         """
         if s.route_choice_principle == "homogeneous_DUO":
-            s.route_pref = s.W.ROUTECHOICE.route_pref[s.dest.id]
+            if s.dest != None:
+                s.route_pref = s.W.ROUTECHOICE.route_pref[s.dest.id]
+            else:
+                s.route_pref = {l:0 for l in s.W.LINKS}
         elif s.route_choice_principle == "heterogeneous_DUO":
             route_pref_new = {l:0 for l in s.W.LINKS}
             k = s.dest.id
@@ -995,7 +1026,7 @@ class Vehicle:
 
             if len(outlinks):
 
-                #好むリンク・避けるリンクがあれば優先する
+                #if links_prefer is given and available at the node, select only from the links in the list. if links_avoid is given, select links not in the list.
                 if set(outlinks) & set(s.links_prefer):
                     outlinks = list(set(outlinks) & set(s.links_prefer))
                 if set(outlinks) & set(s.links_avoid):
@@ -1010,6 +1041,41 @@ class Vehicle:
             else:
                 s.route_next_link = None
 
+    def add_dest(s, dest, order=-1):
+        """
+        Add a destination to the vehicle's destination list.
+
+        Parameters
+        ----------
+        dest : str | Node
+            The destination node to be added.
+        order : int, optional
+            The order of the destination in the list. Default is -1, which appends the destination to the end of the list.
+        """
+        if s.mode == "taxi":
+            if s.dest == None:
+                s.dest = dest
+                s.route_pref_update(weight=1)
+            else:
+                if order == -1:
+                    s.dest_list.append(s.W.get_node(dest))
+                else:
+                    s.dest_list.insert(order, s.W.get_node(dest))
+        else:
+            raise ValueError(f"Vehicle {s.name} is not in taxi mode. Cannot add destination.")
+    
+    def add_dests(s, dests):
+        """
+        Add multiple destinations to the vehicle's destination list.
+
+        Parameters
+        ----------
+        dests : list of str | Node
+            The list of destinations to be added.
+        """
+        for dest in dests:
+            s.add_dest(dest)
+    
     def traveled_route(s):
         """
         Returns the route this vehicle traveled.
@@ -1025,6 +1091,29 @@ class Vehicle:
                 link_old = link
 
         return Route(s.W, route[:-1]), ts
+
+    def get_xy_coords(s, t=-1):
+        """
+        Get the x-y coordinates of the vehicle. If t is given, the position at time t is returned based on the logs.
+
+        Parameters
+        ----------
+        t : int | float, optional
+            Time in seconds. If it is -1, the latest position is returned.
+        """
+        if t != -1:
+            link = s.log_link[int(t/s.W.DELTAT/s.W.logging_timestep_interval)]
+            xx = s.log_x[int(t/s.W.DELTAT/s.W.logging_timestep_interval)]
+        else:
+            link = s.link
+            xx = s.x
+        x0 = link.start_node.x
+        y0 = link.start_node.y
+        x1 = link.end_node.x
+        y1 = link.end_node.y
+        x = x0 + (x1-x0)*xx/link.length
+        y = y0 + (y1-y0)*xx/link.length
+        return (x, y)
 
     def record_log(s, enforce_log=0):
         """
@@ -1137,49 +1226,6 @@ class RouteChoice:
                         prev = s.pred[i, prev]
                     s.next[i, j] = prev
 
-    # def route_search_all_old(s, infty=9999999999999999999, noise=0):
-    #     """
-    #     Compute the current shortest path based on instantanious travel time. Old version, slow for large networks.
-
-    #     Parameters
-    #     ----------
-    #     infty : float
-    #         value representing infinity.
-    #     noise : float
-    #         very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
-    #     """
-    #     for link in s.W.LINKS:
-    #         i = link.start_node.id
-    #         j = link.end_node.id
-    #         if s.W.ADJ_MAT[i,j]:
-    #             s.adj_mat_time[i,j] = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
-    #             if link.capacity_in == 0: #流入禁止の場合は通行不可
-    #                 s.adj_mat_time[i,j] = 0
-    #         else:
-    #             s.adj_mat_time[i,j] = 0
-
-    #     dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-    #     next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-    #     for i in range(len(s.W.NODES)):
-    #         for j in range(len(s.W.NODES)):
-    #             if s.adj_mat_time[i,j] > 0:
-    #                 dist[i,j] = s.adj_mat_time[i,j]
-    #                 next[i,j] = j
-    #             elif i == j:
-    #                 next[i,j] = j
-    #             else:
-    #                 dist[i,j] = infty
-    #                 next[i,j] = -1
-
-    #     for k in range(len(s.W.NODES)):
-    #         for i in range(len(s.W.NODES)):
-    #             for j in range(len(s.W.NODES)):
-    #                 if dist[i,j] > dist[i,k]+dist[k,j]:
-    #                     dist[i,j] = dist[i,k]+dist[k,j]
-    #                     next[i,j] = next[i,k]
-    #     s.dist = dist
-    #     s.next = next
-
     def homogeneous_DUO_update(s):
         """
         Update link preference of all homogeneous travelers based on DUO principle.
@@ -1252,6 +1298,7 @@ class World:
         ## パラメータ設定
         random.seed(random_seed)
         np.random.seed(random_seed)
+        W.random_seed = random_seed
 
         W.TMAX = tmax   #シミュレーション時間（s）
 
@@ -1678,7 +1725,7 @@ class World:
             if W.T % W.DELTAT_ROUTE == 0:
                 W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
                 W.ROUTECHOICE.homogeneous_DUO_update()
-                for veh in W.VEHICLES_LIVING.values():  #TODO: this is redundant. To be moved to the previous for-loop.
+                for veh in W.VEHICLES_LIVING.values():
                     veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
 
             W.TIME = W.T*W.DELTAT
@@ -1729,6 +1776,9 @@ class World:
         Node object
             The found Node object.
         """
+        if node == None:
+            return None
+        
         if type(node) is Node:
             if node in W.NODES:
                 return node
@@ -1756,6 +1806,9 @@ class World:
         Link object
             The found Link object.
         """
+        if link == None:
+            return None
+        
         if type(link) is Link:
             if link in W.LINKS:
                 return link
