@@ -111,8 +111,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.TaxiHandler.</span></span><span class="sig-name descname"><span class="pre">TaxiHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</p>
+<dd><p>A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</p>
 <p>Initializes a taxi handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -159,69 +158,6 @@ gtag('config', 'UA-111714220-1');
 </tr>
 </tbody>
 </table>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.add_trip_request">
-<span class="sig-name descname"><span class="pre">add_trip_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depart_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.add_trip_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.add_trip_request" title="Permalink to this definition"></a></dt>
-<dd><p>Adds a trip request to this handler.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The origin node of the trip request.</p></li>
-<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node of the trip request.</p></li>
-<li><p><strong>depart_time</strong> (<em>float</em>) – The time at which the trip request departs.</p></li>
-<li><p><strong>name</strong> (<em>any</em><em>, </em><em>optional</em>) – The name of the trip request. Default is None.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em>) – An optional attribute of the trip request. This can be used to store any information by users’ need.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.assign_taxi">
-<span class="sig-name descname"><span class="pre">assign_taxi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.assign_taxi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.assign_taxi" title="Permalink to this definition"></a></dt>
-<dd><p>Assigns a trip request to a vehicle.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="uxsim.Vehicle.html#uxsim.Vehicle" title="uxsim.Vehicle"><em>Vehicle</em></a>) – The vehicle to assign the trip request to.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.basic_to_pandas">
-<span class="sig-name descname"><span class="pre">basic_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.basic_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.basic_to_pandas" title="Permalink to this definition"></a></dt>
-<dd><p>Converts the basic statistics on taxi travels to a pandas DataFrame.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.compute_stats">
-<span class="sig-name descname"><span class="pre">compute_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.compute_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.compute_stats" title="Permalink to this definition"></a></dt>
-<dd><p>Computes basic statistics of the taxi travels.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.get_trip">
-<span class="sig-name descname"><span class="pre">get_trip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.get_trip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.get_trip" title="Permalink to this definition"></a></dt>
-<dd><p>Get a TripRequest instance by name or object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tr</strong> (<em>any</em><em> | </em><a class="reference internal" href="uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest" title="uxsim.TaxiHandler.TaxiHandler.TripRequest"><em>TripRequest</em></a>) – The name or object of the trip request.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.print_stats">
-<span class="sig-name descname"><span class="pre">print_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.print_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.print_stats" title="Permalink to this definition"></a></dt>
-<dd><p>Prints the basic statistics.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.trips_to_pandas">
-<span class="sig-name descname"><span class="pre">trips_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.trips_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.trips_to_pandas" title="Permalink to this definition"></a></dt>
-<dd><p>Converts the trips and their travel records to a pandas DataFrame.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>

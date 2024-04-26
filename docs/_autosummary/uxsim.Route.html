@@ -105,8 +105,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.Route">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Route" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class for a route that store concective links.</p>
+<dd><p>Class for a route that store concective links.</p>
 <p>Define a route.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="uxsim.Route.links">
@@ -186,32 +185,11 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Route.__init__" title="uxsim.Route.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, links[, name, trust_input])</p></td>
 <td><p>Define a route.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Route.actual_travel_time" title="uxsim.Route.actual_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">actual_travel_time</span></code></a>(t[, return_details])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Route.actual_travel_time" title="uxsim.uxsim.Route.actual_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">actual_travel_time</span></code></a>(t[, return_details])</p></td>
 <td><p>Actual travel time for a (hypothetical) vehicle who start traveling this route on time t.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Route.actual_travel_time">
-<span class="sig-name descname"><span class="pre">actual_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Route.actual_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Route.actual_travel_time" title="Permalink to this definition"></a></dt>
-<dd><p>Actual travel time for a (hypothetical) vehicle who start traveling this route on time t.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p></li>
-<li><p><strong>return_details</strong> (<em>bool</em>) – True if you want travel time per link.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>float</em> – The actual travel time.</p></li>
-<li><p>list (if <cite>return_details</cite> is True) – List of travel time per link.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>

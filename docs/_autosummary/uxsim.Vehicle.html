@@ -106,8 +106,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.Vehicle">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Vehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_pref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single_trip'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_prefer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links_avoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_abort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_time_is_time_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Vehicle or platoon in a network.</p>
+<dd><p>Vehicle or platoon in a network.</p>
 <p>Create a vehicle (more precisely, platoon)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -163,142 +162,38 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.__init__" title="uxsim.Vehicle.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, orig, dest, departure_time[, ...])</p></td>
 <td><p>Create a vehicle (more precisely, platoon)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Vehicle.add_dest" title="uxsim.Vehicle.add_dest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_dest</span></code></a>(dest[, order])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.add_dest" title="uxsim.uxsim.Vehicle.add_dest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_dest</span></code></a>(dest[, order])</p></td>
 <td><p>Add a destination to the vehicle's destination list.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.add_dests" title="uxsim.Vehicle.add_dests"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_dests</span></code></a>(dests)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.add_dests" title="uxsim.uxsim.Vehicle.add_dests"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_dests</span></code></a>(dests)</p></td>
 <td><p>Add multiple destinations to the vehicle's destination list.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Vehicle.carfollow" title="uxsim.Vehicle.carfollow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">carfollow</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.carfollow" title="uxsim.uxsim.Vehicle.carfollow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">carfollow</span></code></a>()</p></td>
 <td><p>Drive withing a link.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.end_trip" title="uxsim.Vehicle.end_trip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end_trip</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.end_trip" title="uxsim.uxsim.Vehicle.end_trip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end_trip</span></code></a>()</p></td>
 <td><p>Procedure when the vehicle finishes its trip.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Vehicle.get_xy_coords" title="uxsim.Vehicle.get_xy_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_xy_coords</span></code></a>([t])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.get_xy_coords" title="uxsim.uxsim.Vehicle.get_xy_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_xy_coords</span></code></a>([t])</p></td>
 <td><p>Get the x-y coordinates of the vehicle.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.record_log" title="uxsim.Vehicle.record_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">record_log</span></code></a>([enforce_log])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.record_log" title="uxsim.uxsim.Vehicle.record_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">record_log</span></code></a>([enforce_log])</p></td>
 <td><p>Record travel logs.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Vehicle.route_next_link_choice" title="uxsim.Vehicle.route_next_link_choice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_next_link_choice</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.route_next_link_choice" title="uxsim.uxsim.Vehicle.route_next_link_choice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_next_link_choice</span></code></a>()</p></td>
 <td><p>Select a next link from the current link.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.route_pref_update" title="uxsim.Vehicle.route_pref_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_pref_update</span></code></a>(weight)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.route_pref_update" title="uxsim.uxsim.Vehicle.route_pref_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_pref_update</span></code></a>(weight)</p></td>
 <td><p>Updates the vehicle's link preferences for route choice.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Vehicle.traveled_route" title="uxsim.Vehicle.traveled_route"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traveled_route</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.traveled_route" title="uxsim.uxsim.Vehicle.traveled_route"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traveled_route</span></code></a>()</p></td>
 <td><p>Returns the route this vehicle traveled.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.update" title="uxsim.Vehicle.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle.update" title="uxsim.uxsim.Vehicle.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>()</p></td>
 <td><p>Updates the vehicle's state and position.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.add_dest">
-<span class="sig-name descname"><span class="pre">add_dest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.add_dest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.add_dest" title="Permalink to this definition"></a></dt>
-<dd><p>Add a destination to the vehicle’s destination list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node to be added.</p></li>
-<li><p><strong>order</strong> (<em>int</em><em>, </em><em>optional</em>) – The order of the destination in the list. Default is -1, which appends the destination to the end of the list.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.add_dests">
-<span class="sig-name descname"><span class="pre">add_dests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.add_dests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.add_dests" title="Permalink to this definition"></a></dt>
-<dd><p>Add multiple destinations to the vehicle’s destination list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dests</strong> (<em>list of str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The list of destinations to be added.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.carfollow">
-<span class="sig-name descname"><span class="pre">carfollow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.carfollow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.carfollow" title="Permalink to this definition"></a></dt>
-<dd><p>Drive withing a link.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.end_trip">
-<span class="sig-name descname"><span class="pre">end_trip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.end_trip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.end_trip" title="Permalink to this definition"></a></dt>
-<dd><p>Procedure when the vehicle finishes its trip.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.get_xy_coords">
-<span class="sig-name descname"><span class="pre">get_xy_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.get_xy_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.get_xy_coords" title="Permalink to this definition"></a></dt>
-<dd><p>Get the x-y coordinates of the vehicle. If t is given, the position at time t is returned based on the logs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>t</strong> (<em>int</em><em> | </em><em>float</em><em>, </em><em>optional</em>) – Time in seconds. If it is -1, the latest position is returned.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.record_log">
-<span class="sig-name descname"><span class="pre">record_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enforce_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.record_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.record_log" title="Permalink to this definition"></a></dt>
-<dd><p>Record travel logs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>enforce_log</strong> (<em>bool</em><em>, </em><em>optional</em>) – Record log regardless of the logging interval, default is 0.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.route_next_link_choice">
-<span class="sig-name descname"><span class="pre">route_next_link_choice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.route_next_link_choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.route_next_link_choice" title="Permalink to this definition"></a></dt>
-<dd><p>Select a next link from the current link.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.route_pref_update">
-<span class="sig-name descname"><span class="pre">route_pref_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.route_pref_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.route_pref_update" title="Permalink to this definition"></a></dt>
-<dd><p>Updates the vehicle’s link preferences for route choice.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>weight</strong> (<em>float</em>) – The weight for updating the link preferences based on the recent travel time.
-Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This method updates the link preferences used by the vehicle to select its route based on its current understanding of the system.</p>
-<ul class="simple">
-<li><p>If the vehicle’s route choice principle is “homogeneous_DUO”, it will update its preferences based on a global, homogenous dynamic user optimization (DUO) model.</p></li>
-<li><p>If the route choice principle is “heterogeneous_DUO”, it will update its preferences based on a heterogeneous DUO model, considering both its past preferences and the system’s current state. This is imcomplete feature. Not recommended.</p></li>
-</ul>
-<p>The updated preferences guide the vehicle’s decisions in subsequent route choices.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.traveled_route">
-<span class="sig-name descname"><span class="pre">traveled_route</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.traveled_route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.traveled_route" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the route this vehicle traveled.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.Vehicle.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.update" title="Permalink to this definition"></a></dt>
-<dd><p>Updates the vehicle’s state and position.</p>
-<p class="rubric">Notes</p>
-<p>This method updates the state and position of the vehicle based on its current situation.</p>
-<ul class="simple">
-<li><p>If the vehicle is at “home”, it checks if the current time matches its departure time. If so, the vehicle’s state is set to “wait” and it is added to the generation queue of its origin node.</p></li>
-<li><p>If the vehicle is in the “wait” state, it remains waiting at its departure node.</p></li>
-<li><p>If the vehicle is in the “run” state, it updates its speed and position. If the vehicle reaches the end of its current link, it either ends its trip if it has reached its destination, or requests a transfer to the next link.</p></li>
-<li><p>If the vehicle’s state is “end” or “abort”, no further actions are taken.</p></li>
-</ul>
-</dd></dl>
-
 </dd></dl>
 
 </section>

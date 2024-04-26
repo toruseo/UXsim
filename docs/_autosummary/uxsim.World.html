@@ -106,8 +106,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.World">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'homogeneous_DUO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_deltat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_logging_timestep_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>World (i.e., simulation environment). A World object is consistently referred to as <cite>W</cite> in this code.</p>
+<dd><p>World (i.e., simulation environment). A World object is consistently referred to as <cite>W</cite> in this code.</p>
 <p>Create a World.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -171,431 +170,68 @@ Setting large intervel (2 or more) or turn off the logging makes the simulation 
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.__init__" title="uxsim.World.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([name, deltan, reaction_time, ...])</p></td>
 <td><p>Create a World.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.addLink" title="uxsim.World.addLink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addLink</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.addLink" title="uxsim.uxsim.World.addLink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addLink</span></code></a>(*args, **kwargs)</p></td>
 <td><p>add a link to world</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.addNode" title="uxsim.World.addNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addNode</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.addNode" title="uxsim.uxsim.World.addNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addNode</span></code></a>(*args, **kwargs)</p></td>
 <td><p>add a node to world</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.addVehicle" title="uxsim.World.addVehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addVehicle</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.addVehicle" title="uxsim.uxsim.World.addVehicle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addVehicle</span></code></a>(*args, **kwargs)</p></td>
 <td><p>add a vehicle to world</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.adddemand" title="uxsim.World.adddemand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adddemand</span></code></a>(orig, dest, t_start, t_end[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.adddemand" title="uxsim.uxsim.World.adddemand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adddemand</span></code></a>(orig, dest, t_start, t_end[, ...])</p></td>
 <td><p>Generate vehicles by specifying time-dependent origin-destination demand.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.adddemand_area2area" title="uxsim.World.adddemand_area2area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adddemand_area2area</span></code></a>(x_orig, y_orig, ...[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.adddemand_area2area" title="uxsim.uxsim.World.adddemand_area2area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adddemand_area2area</span></code></a>(x_orig, y_orig, ...[, ...])</p></td>
 <td><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.adddemand_point2point" title="uxsim.World.adddemand_point2point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adddemand_point2point</span></code></a>(x_orig, y_orig, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.adddemand_point2point" title="uxsim.uxsim.World.adddemand_point2point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adddemand_point2point</span></code></a>(x_orig, y_orig, ...[, ...])</p></td>
 <td><p>Generate vehicles by specifying time-dependent origin-destination demand using coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.check_simulation_ongoing" title="uxsim.World.check_simulation_ongoing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_simulation_ongoing</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.check_simulation_ongoing" title="uxsim.uxsim.World.check_simulation_ongoing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_simulation_ongoing</span></code></a>()</p></td>
 <td><p>Check whether the simulation is has not reached its final time.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.exec_simulation" title="uxsim.World.exec_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exec_simulation</span></code></a>([until_t, duration_t])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.exec_simulation" title="uxsim.uxsim.World.exec_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exec_simulation</span></code></a>([until_t, duration_t])</p></td>
 <td><p>Execute the main loop of the simulation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.finalize_scenario" title="uxsim.World.finalize_scenario"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize_scenario</span></code></a>([tmax])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.finalize_scenario" title="uxsim.uxsim.World.finalize_scenario"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize_scenario</span></code></a>([tmax])</p></td>
 <td><p>Finalizes the settings and preparations for the simulation scenario execution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.generate_Links_from_csv" title="uxsim.World.generate_Links_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_Links_from_csv</span></code></a>(fname)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.generate_Links_from_csv" title="uxsim.uxsim.World.generate_Links_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_Links_from_csv</span></code></a>(fname)</p></td>
 <td><p>Generate links in the network from a CSV file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.generate_Nodes_from_csv" title="uxsim.World.generate_Nodes_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_Nodes_from_csv</span></code></a>(fname)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.generate_Nodes_from_csv" title="uxsim.uxsim.World.generate_Nodes_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_Nodes_from_csv</span></code></a>(fname)</p></td>
 <td><p>Generate nodes in the network from a CSV file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.generate_demand_from_csv" title="uxsim.World.generate_demand_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_demand_from_csv</span></code></a>(fname)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.generate_demand_from_csv" title="uxsim.uxsim.World.generate_demand_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_demand_from_csv</span></code></a>(fname)</p></td>
 <td><p>Generate demand in the network from a CSV file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.get_link" title="uxsim.World.get_link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_link</span></code></a>(link)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.get_link" title="uxsim.uxsim.World.get_link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_link</span></code></a>(link)</p></td>
 <td><p>Get a Link instance by name or object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.get_nearest_node" title="uxsim.World.get_nearest_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nearest_node</span></code></a>(x, y)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.get_nearest_node" title="uxsim.uxsim.World.get_nearest_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nearest_node</span></code></a>(x, y)</p></td>
 <td><p>Get the nearest node to the given coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.get_node" title="uxsim.World.get_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node</span></code></a>(node)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.get_node" title="uxsim.uxsim.World.get_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node</span></code></a>(node)</p></td>
 <td><p>Get a Node instance by name or object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.get_nodes_in_area" title="uxsim.World.get_nodes_in_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nodes_in_area</span></code></a>(x, y, r)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.get_nodes_in_area" title="uxsim.uxsim.World.get_nodes_in_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nodes_in_area</span></code></a>(x, y, r)</p></td>
 <td><p>Get the nodes in the area defined by the center coordinates and radius.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.load_scenario_from_csv" title="uxsim.World.load_scenario_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_scenario_from_csv</span></code></a>(fname_node, ...[, tmax])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.load_scenario_from_csv" title="uxsim.uxsim.World.load_scenario_from_csv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_scenario_from_csv</span></code></a>(fname_node, ...[, tmax])</p></td>
 <td><p>Load a scenario from CSV files.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.on_time" title="uxsim.World.on_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_time</span></code></a>(time)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.on_time" title="uxsim.uxsim.World.on_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_time</span></code></a>(time)</p></td>
 <td><p>Check if the current time step is close to the specified time.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.World.show_network" title="uxsim.World.show_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_network</span></code></a>([width, left_handed, figsize, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.show_network" title="uxsim.uxsim.World.show_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_network</span></code></a>([width, left_handed, figsize, ...])</p></td>
 <td><p>Visualizes the entire transportation network shape.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.World.simulation_terminated" title="uxsim.World.simulation_terminated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulation_terminated</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World.simulation_terminated" title="uxsim.uxsim.World.simulation_terminated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simulation_terminated</span></code></a>()</p></td>
 <td><p>Postprocessing after simulation finished</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.addLink">
-<span class="sig-name descname"><span class="pre">addLink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.addLink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.addLink" title="Permalink to this definition"></a></dt>
-<dd><p>add a link to world</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the link.</p></li>
-<li><p><strong>start_node</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The name or object of the start node of the link.</p></li>
-<li><p><strong>end_node</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The name or object of the end node of the link.</p></li>
-<li><p><strong>length</strong> (<em>float</em>) – The length of the link.</p></li>
-<li><p><strong>free_flow_speed</strong> (<em>float</em>) – The free flow speed on the link.</p></li>
-<li><p><strong>jam_density</strong> (<em>float</em>) – The jam density on the link.</p></li>
-<li><p><strong>merge_priority</strong> (<em>float</em><em>, </em><em>optional</em>) – The priority of the link when merging at the downstream node, default is 1.</p></li>
-<li><p><strong>signal_group</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The signal group to which the link belongs, default is 0. If <cite>signal_group</cite> is int, say 0, it becomes green if <cite>end_node.signal_phase</cite> is 0.  the If <cite>signal_group</cite> is list, say [0,1], it becomes green if the <cite>end_node.signal_phase</cite> is 0 or 1.</p></li>
-<li><p><strong>capacity_out</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity out of the link, default is calculated based on other parameters.</p></li>
-<li><p><strong>capacity_in</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity into the link, default is calculated based on other parameters.</p></li>
-<li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
-<li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the link if the name is already used. Default is False.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the added Link object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>object</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This function acts as a wrapper for creating a Link object and adding it to the network.
-It passes all given arguments and keyword arguments to the Link class initialization.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.addNode">
-<span class="sig-name descname"><span class="pre">addNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.addNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.addNode" title="Permalink to this definition"></a></dt>
-<dd><p>add a node to world</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the node.</p></li>
-<li><p><strong>x</strong> (<em>float</em>) – The x-coordinate of the node (for visualization purposes).</p></li>
-<li><p><strong>y</strong> (<em>float</em>) – The y-coordinate of the node (for visualization purposes).</p></li>
-<li><p><strong>signal</strong> (<em>list of int</em><em>, </em><em>optional</em>) – A list representing the signal at the node. Default is [0], representing no signal.
-If a signal is present, the list contains the green times for each group.
-For example, <a href="#id1"><span class="problematic" id="id2">`</span></a>signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</p></li>
-<li><p><strong>signal_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – The offset of the signal. Default is 0.</p></li>
-<li><p><strong>flow_capacity</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum flow capacity of the node. Default is None, meaning infinite capacity.</p></li>
-<li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the node if the name is already used. Default is False.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the added Node object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>object</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This function acts as a wrapper for creating a Node object and adding it to the network.
-It passes all given arguments and keyword arguments to the Node class initialization.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.addVehicle">
-<span class="sig-name descname"><span class="pre">addVehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.addVehicle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.addVehicle" title="Permalink to this definition"></a></dt>
-<dd><p>add a vehicle to world</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The origin node.</p></li>
-<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node.</p></li>
-<li><p><strong>departure_time</strong> (<em>int</em>) – The departure time of the vehicle.</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the vehicle, default is the id of the vehicle.</p></li>
-<li><p><strong>route_pref</strong> (<em>dict</em><em>, </em><em>optional</em>) – The preference weights for links, default is 0 for all links.</p></li>
-<li><p><strong>route_choice_principle</strong> (<em>str</em><em>, </em><em>optional</em>) – The route choice principle of the vehicle, default is the network’s route choice principle.</p></li>
-<li><p><strong>links_prefer</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The names of the links the vehicle prefers, default is empty list.</p></li>
-<li><p><strong>links_avoid</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The names of the links the vehicle avoids, default is empty list.</p></li>
-<li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
-<li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the vehicle if the name is already used. Default is False.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the added Vehicle object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>object</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This function acts as a wrapper for creating a Vehicle object and adding it to the network.
-It passes all given arguments and keyword arguments to the Vehicle class initialization.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.adddemand">
-<span class="sig-name descname"><span class="pre">adddemand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.adddemand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.adddemand" title="Permalink to this definition"></a></dt>
-<dd><p>Generate vehicles by specifying time-dependent origin-destination demand.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The name or object of the origin node.</p></li>
-<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The name or object of the destination node.</p></li>
-<li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
-<li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
-<li><p><strong>flow</strong> (<em>float</em><em>, </em><em>optional</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>
-<li><p><strong>volume</strong> (<em>float</em><em>, </em><em>optional</em>) – The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.adddemand_area2area">
-<span class="sig-name descname"><span class="pre">adddemand_area2area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radious_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radious_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.adddemand_area2area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.adddemand_area2area" title="Permalink to this definition"></a></dt>
-<dd><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x_orig</strong> (<em>float</em>) – The x-coordinate of the center of the origin area.</p></li>
-<li><p><strong>y_orig</strong> (<em>float</em>) – The y-coordinate of the center of the origin area.</p></li>
-<li><p><strong>radious_orig</strong> (<em>float</em>) – The radious of the origin area. Note that too large radious may generate too sparse demand that is rounded to zero.</p></li>
-<li><p><strong>x_dest</strong> (<em>float</em>) – The x-coordinate of the center of the destination area.</p></li>
-<li><p><strong>y_dest</strong> (<em>float</em>) – The y-coordinate of the center of the destination area.</p></li>
-<li><p><strong>radious_dest</strong> (<em>float</em>) – The radious of the destination area.</p></li>
-<li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
-<li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
-<li><p><strong>flow</strong> (<em>float</em><em>, </em><em>optional</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>
-<li><p><strong>volume</strong> (<em>float</em><em>, </em><em>optional</em>) – The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.adddemand_point2point">
-<span class="sig-name descname"><span class="pre">adddemand_point2point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.adddemand_point2point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.adddemand_point2point" title="Permalink to this definition"></a></dt>
-<dd><p>Generate vehicles by specifying time-dependent origin-destination demand using coordinates.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x_orig</strong> (<em>float</em>) – The x-coordinate of the origin.</p></li>
-<li><p><strong>y_orig</strong> (<em>float</em>) – The y-coordinate of the origin.</p></li>
-<li><p><strong>x_dest</strong> (<em>float</em>) – The x-coordinate of the destination.</p></li>
-<li><p><strong>y_dest</strong> (<em>float</em>) – The y-coordinate of the destination.</p></li>
-<li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
-<li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
-<li><p><strong>flow</strong> (<em>float</em><em>, </em><em>optional</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>
-<li><p><strong>volume</strong> (<em>float</em><em>, </em><em>optional</em>) – The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.check_simulation_ongoing">
-<span class="sig-name descname"><span class="pre">check_simulation_ongoing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.check_simulation_ongoing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.check_simulation_ongoing" title="Permalink to this definition"></a></dt>
-<dd><p>Check whether the simulation is has not reached its final time.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns 1 if the simulation is ongoing and has not reached its final time.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.exec_simulation">
-<span class="sig-name descname"><span class="pre">exec_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">until_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.exec_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.exec_simulation" title="Permalink to this definition"></a></dt>
-<dd><p>Execute the main loop of the simulation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>until_t</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The time until the simulation is to be executed in seconds. If both <cite>until_t</cite> and <cite>duration_t</cite> are None, the simulation is executed until the end. Default is None.</p></li>
-<li><p><strong>duration_t</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The duration for which the simulation is to be executed in seconds. If both <cite>until_t</cite> and <cite>duration_t</cite> are None, the simulation is executed until the end. Default is None.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Returns 1 if the simulation is finished, 0 otherwise.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The function executes the main simulation loop that update links, nodes, and vehicles for each time step.
-It also performs route search and updates the route preference for vehicles at specified intervals.
-The simulation is executed until the end time is reached or until the maximum simulation time is exceeded.
-The nodes, links, and vehicles must be defined before calling this function.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.finalize_scenario">
-<span class="sig-name descname"><span class="pre">finalize_scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.finalize_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.finalize_scenario" title="Permalink to this definition"></a></dt>
-<dd><p>Finalizes the settings and preparations for the simulation scenario execution.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tmax</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum simulation time. If not provided, it will be determined based on the departure times of the vehicles.</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This function automatically called by <cite>exec_simulation()</cite> if it has not been called manually.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.generate_Links_from_csv">
-<span class="sig-name descname"><span class="pre">generate_Links_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.generate_Links_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.generate_Links_from_csv" title="Permalink to this definition"></a></dt>
-<dd><p>Generate links in the network from a CSV file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – The file name of the CSV file containing link data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.generate_Nodes_from_csv">
-<span class="sig-name descname"><span class="pre">generate_Nodes_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.generate_Nodes_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.generate_Nodes_from_csv" title="Permalink to this definition"></a></dt>
-<dd><p>Generate nodes in the network from a CSV file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – The file name of the CSV file containing node data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.generate_demand_from_csv">
-<span class="sig-name descname"><span class="pre">generate_demand_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.generate_demand_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.generate_demand_from_csv" title="Permalink to this definition"></a></dt>
-<dd><p>Generate demand in the network from a CSV file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – The file name of the CSV file containing demand data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.get_link">
-<span class="sig-name descname"><span class="pre">get_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.get_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.get_link" title="Permalink to this definition"></a></dt>
-<dd><p>Get a Link instance by name or object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>link</strong> (<em>str</em><em> or </em><em>Link object</em>) – The name of the link or the Link object itself.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The found Link object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Link object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.get_nearest_node">
-<span class="sig-name descname"><span class="pre">get_nearest_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.get_nearest_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.get_nearest_node" title="Permalink to this definition"></a></dt>
-<dd><p>Get the nearest node to the given coordinates.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>float</em>) – The x-coordinate.</p></li>
-<li><p><strong>y</strong> (<em>float</em>) – The y-coordinate.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The nearest Node object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.get_node">
-<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.get_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.get_node" title="Permalink to this definition"></a></dt>
-<dd><p>Get a Node instance by name or object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>node</strong> (<em>str</em><em> or </em><em>Node object</em>) – The name of the node or the Node object itself.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The found Node object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Node object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.get_nodes_in_area">
-<span class="sig-name descname"><span class="pre">get_nodes_in_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.get_nodes_in_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.get_nodes_in_area" title="Permalink to this definition"></a></dt>
-<dd><p>Get the nodes in the area defined by the center coordinates and radius.
-:param x: The x-coordinate of the center.
-:type x: float
-:param y: The y-coordinate of the center.
-:type y: float
-:param r: The radius of the area.
-:type r: float</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of Node objects in the area.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.load_scenario_from_csv">
-<span class="sig-name descname"><span class="pre">load_scenario_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname_link</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname_demand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.load_scenario_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.load_scenario_from_csv" title="Permalink to this definition"></a></dt>
-<dd><p>Load a scenario from CSV files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fname_node</strong> (<em>str</em>) – The file name of the CSV file containing node data.</p></li>
-<li><p><strong>fname_link</strong> (<em>str</em>) – The file name of the CSV file containing link data.</p></li>
-<li><p><strong>fname_demand</strong> (<em>str</em>) – The file name of the CSV file containing demand data.</p></li>
-<li><p><strong>tmax</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The maximum simulation time in seconds, default is None.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.on_time">
-<span class="sig-name descname"><span class="pre">on_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.on_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.on_time" title="Permalink to this definition"></a></dt>
-<dd><p>Check if the current time step is close to the specified time.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>time</strong> (<em>float</em>) – The specified time in seconds.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Returns True if the current time step is close to the specified time, False otherwise.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.show_network">
-<span class="sig-name descname"><span class="pre">show_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.show_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.show_network" title="Permalink to this definition"></a></dt>
-<dd><p>Visualizes the entire transportation network shape.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.World.simulation_terminated">
-<span class="sig-name descname"><span class="pre">simulation_terminated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.simulation_terminated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.World.simulation_terminated" title="Permalink to this definition"></a></dt>
-<dd><p>Postprocessing after simulation finished</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>

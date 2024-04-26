@@ -461,26 +461,32 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        Traffic Flow Model:</span>
+
 <span class="sd">        - The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.</span>
 <span class="sd">        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link&#39;s flow characteristics. Reaction time of drivers `REACTION_TIME` is a grobal parameter.</span>
 <span class="sd">        - Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.</span>
 
 <span class="sd">        Traffic Flow Model Parameters:</span>
+
 <span class="sd">        - Their definition is illustrated as https://toruseo.jp/UXsim/docs/_images/fundamental_diagram.png</span>
 <span class="sd">        - If you are not familiar to the traffic flow theory, it is recommended that you adjust only `free_flow_speed` and `number_of_lanes` for the traffic flow model parameters, leaving the other parameters at their default values.</span>
 
 <span class="sd">        Capacity and Bottlenecks:</span>
+
 <span class="sd">        - The `capacity_out` and `capacity_in` parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.</span>
 <span class="sd">        - These capacities can represent bottlenecks at the beginning or end of the link.</span>
 
 <span class="sd">        Connection to Node Model:</span>
+
 <span class="sd">        - At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.</span>
 <span class="sd">        - At the upstream end of a receiving link, all lanes can accept vehicles.</span>
 
 <span class="sd">        Parameter Adjustments:</span>
+
 <span class="sd">        - Some traffic flow model parameters like `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority` can be altered during simulation to reflect changing conditions.</span>
 <span class="sd">            </span>
 <span class="sd">        Details on Multi-lane model:</span>
+
 <span class="sd">        - Link model:</span>
 <span class="sd">            - Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.</span>
 <span class="sd">            - Links have a `lanes` attribute representing the number of lanes. </span>
@@ -493,13 +499,14 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            - Receiving links:  </span>
 <span class="sd">                - All lanes at the upstream end of the link can accept vehicles.</span>
 
-<span class="sd">        Details on Fundamental diagram parameters (*: input, **: alternative input):</span>
-<span class="sd">        - *free_flow_speed (m/s)</span>
-<span class="sd">        - *jam_density (veh/m/LINK)  </span>
-<span class="sd">        - **jam_density_per_lane (veh/m/lane)</span>
-<span class="sd">        - *lanes, number_of_lane (lane) </span>
+<span class="sd">        Details on Fundamental diagram parameters (+: input, ++: alternative input):</span>
+
+<span class="sd">        - free_flow_speed (m/s)+</span>
+<span class="sd">        - jam_density (veh/m/LINK)+</span>
+<span class="sd">        - jam_density_per_lane (veh/m/lane)++</span>
+<span class="sd">        - lanes, number_of_lane (lane)+</span>
 <span class="sd">        - tau: y-intercept of link FD (s/veh*LINK)</span>
-<span class="sd">        - REACTION_TIME (s/veh*lane) </span>
+<span class="sd">        - REACTION_TIME, World.reaction_time (s/veh*lane) </span>
 <span class="sd">        - w (m/s)</span>
 <span class="sd">        - capacity (veh/s/LINK)</span>
 <span class="sd">        - capacity_per_lane (veh/s/lane)</span>
@@ -507,8 +514,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        - delta_per_lane: minimum spacing in lane (m/veh*lane) </span>
 <span class="sd">        - q_star: capacity (veh/s/LINK)</span>
 <span class="sd">        - k_star: critical density (veh/s/LINK)</span>
-<span class="sd">        - *capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)</span>
-<span class="sd">        - *Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE) </span>
+<span class="sd">        - capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)+</span>
+<span class="sd">        - Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE)+</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
