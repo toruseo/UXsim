@@ -1,6 +1,5 @@
 """
-This script verifies whether UXsim outputs plausible solutions for exceptional or uncommon situations.
-The behavior of UXsim may be updated in the future.
+This script verifies whether UXsim outputs reasonable solutions with taxis.
 """
 
 import pytest

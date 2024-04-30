@@ -200,14 +200,8 @@ results:
 
 - `uxsim`ディレクトリ: UXsimパッケージ
 	- `uxsim/uxsim.py`: UXsim本体のコード
-	- `uxsim/analyzer.py`: 計算結果分析用コード
-	- `uxsim/utils.py`: 関連コード
-	- `uxsim/ResultGUIViewer/ResultGUIViewer.py`: 計算結果可視化用GUIサブモジュール
-	- `uxsim/OSMImporter/OSMImporter.py`: OpenStreetMapからのインポート用サブモジュール
- 	- `uxsim/files`ディレクトリ: 関連ファイル
 - `demos_and_examples`ディレクトリ: チュートリアルや使用例
 - `dat`ディレクトリ: サンプルシナリオファイル
-- `tests`，`.github`ディレクトリ: 開発用ファイル
 
 ## 使用条件・ライセンス
 
