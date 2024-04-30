@@ -374,26 +374,32 @@ class Link:
         Notes
         -----
         Traffic Flow Model:
+
         - The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.
         - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link's flow characteristics. Reaction time of drivers `REACTION_TIME` is a grobal parameter.
         - Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
 
         Traffic Flow Model Parameters:
+
         - Their definition is illustrated as https://toruseo.jp/UXsim/docs/_images/fundamental_diagram.png
         - If you are not familiar to the traffic flow theory, it is recommended that you adjust only `free_flow_speed` and `number_of_lanes` for the traffic flow model parameters, leaving the other parameters at their default values.
 
         Capacity and Bottlenecks:
+
         - The `capacity_out` and `capacity_in` parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.
         - These capacities can represent bottlenecks at the beginning or end of the link.
 
         Connection to Node Model:
+
         - At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.
         - At the upstream end of a receiving link, all lanes can accept vehicles.
 
         Parameter Adjustments:
+
         - Some traffic flow model parameters like `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority` can be altered during simulation to reflect changing conditions.
             
         Details on Multi-lane model:
+
         - Link model:
             - Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.
             - Links have a `lanes` attribute representing the number of lanes. 
@@ -406,13 +412,14 @@ class Link:
             - Receiving links:  
                 - All lanes at the upstream end of the link can accept vehicles.
 
-        Details on Fundamental diagram parameters (*: input, **: alternative input):
-        - *free_flow_speed (m/s)
-        - *jam_density (veh/m/LINK)  
-        - **jam_density_per_lane (veh/m/lane)
-        - *lanes, number_of_lane (lane) 
+        Details on Fundamental diagram parameters (+: input, ++: alternative input):
+
+        - free_flow_speed (m/s)+
+        - jam_density (veh/m/LINK)+
+        - jam_density_per_lane (veh/m/lane)++
+        - lanes, number_of_lane (lane)+
         - tau: y-intercept of link FD (s/veh*LINK)
-        - REACTION_TIME (s/veh*lane) 
+        - REACTION_TIME, World.reaction_time (s/veh*lane) 
         - w (m/s)
         - capacity (veh/s/LINK)
         - capacity_per_lane (veh/s/lane)
@@ -420,8 +427,8 @@ class Link:
         - delta_per_lane: minimum spacing in lane (m/veh*lane) 
         - q_star: capacity (veh/s/LINK)
         - k_star: critical density (veh/s/LINK)
-        - *capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)
-        - *Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE) 
+        - capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)+
+        - Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE)+
         """
 
         s.W = W

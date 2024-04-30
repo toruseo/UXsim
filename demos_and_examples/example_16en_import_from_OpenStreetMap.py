@@ -10,7 +10,7 @@ W = World(
 )
 
 #Tokyo highway
-nodes, links = OSMImporter.import_osm_data(north=35.817, south=35.570, east=139.881, west=139.583, custom_filter='["highway"~"motorway"]')
+nodes, links = OSMImporter.import_osm_data(bbox=(35.817, 35.570, 139.881, 139.583), custom_filter='["highway"~"motorway"]')
 nodes, links = OSMImporter.osm_network_postprocessing(nodes, links, node_merge_threshold=0.005, node_merge_iteration=5, enforce_bidirectional=True)  # merge threshold distance: 0.005 degree ~= 500 m. `enforce_bidirectional` makes all links bidirectional, so that network is not fragmented (but the original network topology is not preserved rigorously).
 OSMImporter.osm_network_visualize(nodes, links, show_link_name=0)
 OSMImporter.osm_network_to_World(W, nodes, links, default_jam_density=0.2, coef_degree_to_meter=111000)
