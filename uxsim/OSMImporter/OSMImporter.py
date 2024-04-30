@@ -26,7 +26,7 @@ class OSMImporter:
     OpenStreetMap importer using OSMnx.
     Work in progress. Import from OSM is experimental and may not work as expected. It is functional but may produce inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.
     """
-    def import_osm_data(north, south, east, west, custom_filter='["highway"~"trunk|primary"]', 
+    def import_osm_data(north=None, south=None, east=None, west=None, bbox=None, custom_filter='["highway"~"trunk|primary"]', 
                         default_number_of_lanes_mortorway=3, default_number_of_lanes_trunk=3, 
                         default_number_of_lanes_primary=2, default_number_of_lanes_secondary=2, 
                         default_number_of_lanes_residential=1, default_number_of_lanes_tertiary=1, 
@@ -42,6 +42,8 @@ class OSMImporter:
         ----------
         north, south, east, west: float
             The latitudes and longitudes of the area to be imported.
+        bbox: list
+            The bounding box of the area to be imported. The order is [north, south, east, west]. This is prioritized than north, south, east, west arguments.
         custom_filter: str
             The filter to be used for importing the data. 
             The default is '["highway"~"trunk|primary"]', which means that only trunk and primary roads (usually correspond to major arterial roads) are imported.
@@ -68,7 +70,14 @@ class OSMImporter:
             raise ImportError("Optional module 'osmnx' is not installed. Please install it by 'pip install osmnx' to use this function.")
 
         print("Start downloading OSM data. This may take some time.")
-        G = ox.graph.graph_from_bbox(north=north, south=south, east=east, west=west, network_type="drive", 
+        if bbox is not None:
+            try:
+                G = ox.graph.graph_from_bbox(bbox=bbox, network_type="drive", custom_filter=custom_filter)
+            except TypeError: #version issue?
+                warnings.warn("OSMnx version may be too old. Update is recommended.")
+                G = ox.graph.graph_from_bbox(north=bbox[0], south=bbox[1], east=bbox[2], west=bbox[3], network_type="drive", custom_filter=custom_filter)
+        else:
+            G = ox.graph.graph_from_bbox(north=north, south=south, east=east, west=west, network_type="drive", 
                                     custom_filter=custom_filter)
         print("Download completed")
         """
