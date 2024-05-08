@@ -11,13 +11,24 @@ from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Resampling
 from tqdm.auto import tqdm
 from collections import defaultdict as ddict
-from importlib.resources import read_binary #according to official doc, this is also not recommended
+from importlib.resources import read_binary, files #TODO: according to official doc, `read_binary` is not recommended. To be replaced with `files` in the future after some testing.
 import io
 from scipy.sparse.csgraph import floyd_warshall
 
-from .utils  import *
+from .utils import *
 
 plt.rcParams["font.family"] = get_font_for_matplotlib()
+
+def load_font_data_new():
+    fname = "HackGen-Regular.ttf"
+    font_data_path = files('uxsim.files').joinpath(fname)
+    with font_data_path.open('rb') as file:
+        font_data = file.read()
+    return font_data
+
+def load_font_data():
+    font_data = read_binary("uxsim.files", "HackGen-Regular.ttf")
+    return font_data
 
 class Analyzer:
     """
@@ -287,6 +298,7 @@ class Analyzer:
                 print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
                 print(f" average delay of trips:\t {s.average_delay:.1f} s")
                 print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
+
 
     def comp_route_travel_time(s, t, route):
         pass
@@ -714,7 +726,8 @@ class Analyzer:
 
         img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
         draw = ImageDraw.Draw(img)
-        font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
+        
+        font_data = load_font_data()
         font_file_like = io.BytesIO(font_data)
         if network_font_size > 0:
             font = ImageFont.truetype(font_file_like, int(network_font_size))
@@ -744,7 +757,7 @@ class Analyzer:
                 draw.text(((n.x)*coef-minx, flip((n.y)*coef-miny)), n.name, font=font, fill="green", anchor="mm")
                 draw.text(((n.x)*coef-minx, flip((n.y)*coef-miny)), n.name, font=font, fill="green", anchor="mm")
 
-        font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
+        font_data = load_font_data()
         font_file_like = io.BytesIO(font_data)
         font = ImageFont.truetype(font_file_like, int(30))
         draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
@@ -950,7 +963,7 @@ class Analyzer:
         for t in tqdm(range(int(s.W.TMAX*0), int(s.W.TMAX*1), s.W.DELTAT*speed_coef)):
             img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
             draw = ImageDraw.Draw(img)
-            font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
+            font_data = load_font_data()
             font_file_like = io.BytesIO(font_data)
             if network_font_size > 0:
                 font = ImageFont.truetype(font_file_like, int(network_font_size))
@@ -977,7 +990,7 @@ class Analyzer:
                 draw.ellipse((xs[-1]-size, flip(ys[-1])-size, xs[-1]+size, flip(ys[-1])+size), fill=(int(trace["c"][0]*255), int(trace["c"][1]*255), int(trace["c"][2]*255)))
                 #draw.line([(x1, flip(y1)), (xmid1, flip(ymid1)), (xmid2, flip(ymid2)), (x2, flip(y2))]
 
-            font_data = read_binary('uxsim.files', 'HackGen-Regular.ttf') 
+            font_data = load_font_data()
             font_file_like = io.BytesIO(font_data)
             font = ImageFont.truetype(font_file_like, int(30))
             draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")

@@ -3,15 +3,17 @@ UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.
 This `uxsim.py` is the core of UXsim. It summarizes the classes and methods that are essential for the simulation.
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
 import random, csv, time, math, string, warnings
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
+
+import numpy as np
+import matplotlib.pyplot as plt
 from scipy.sparse.csgraph import floyd_warshall
+import dill as pickle
 
 from .analyzer import *
-from .utils  import *
+from .utils import *
 
 class Node:
     """
@@ -1071,6 +1073,28 @@ class Vehicle:
         else:
             raise ValueError(f"Vehicle {s.name} is not in taxi mode. Cannot add destination.")
     
+    def set_links_prefer(s, links):
+        """
+        Set the links the vehicle prefers.
+
+        Parameters
+        ----------
+        links : list of str
+            The list of link names the vehicle prefers.
+        """
+        s.links_prefer = [s.W.get_link(l) for l in links]
+    
+    def set_links_avoid(s, links):
+        """
+        Set the links the vehicle avoids.
+
+        Parameters
+        ----------
+        links : list of str
+            The list of link names the vehicle avoids.
+        """
+        s.links_avoid = [s.W.get_link(l) for l in links]
+
     def add_dests(s, dests):
         """
         Add multiple destinations to the vehicle's destination list.
@@ -2008,6 +2032,17 @@ class World:
             plt.show()
         else:
             plt.close("all")
+    
+    def copy(W):
+        """
+        Copy the World object.
+
+        Returns
+        -------
+        World object
+            The copied World object.
+        """
+        return pickle.loads(pickle.dumps(W))
 
 
 class Route:
@@ -2026,6 +2061,17 @@ class Route:
             List of name of links. The contents are str.
         trust_input : bool
             True if you trust the `links` in order to reduce the computation cost by omitting verification.
+
+        Examples
+        --------
+        >>> route = Route(W, ["l1", "l2", "l3"])
+        ... vehicle_object.links_prefer = route
+        This will enforce the vehicle to travel the route if the route covers the entire links between the OD nodes of the vehicle.
+
+        >>> route = Route(W, ["l1", "l2", "l3"])
+        ... for link in route:
+        ...     print(link)
+        This will print the links in the route.
         """
         s.W = W
         s.name = name
@@ -2049,6 +2095,15 @@ class Route:
     def __repr__(s):
         return f"<Route {s.name}: {s.links}>"
 
+    def __iter__(s):
+        """
+        Override `iter()` function. Iterate the links of the route.
+        """
+        return iter(s.links)
+    
+    def __len__(s):
+        return len(s.links)
+    
     def __eq__(self, other):
         """
         Override `==` operator. If the links of two route are the same, then the routes are the same.
