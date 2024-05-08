@@ -140,6 +140,7 @@ p*_*.py
 .VSCodeCounter/*
 .vscode/*
 *.prof
+demos_and_examples/uxsim/*
 
 # pre-commit
 .pre-commit-config.yaml
