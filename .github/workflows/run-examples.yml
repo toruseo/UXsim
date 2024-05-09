@@ -24,6 +24,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install .
     - name: Install pytest other dependencies
-      run: pip install pytest pytest-xdist setuptools gymnasium torch osmnx
+      run: pip install pytest pytest-xdist setuptools gymnasium torch osmnx deap
     - name: Run examples with pytest
       run: pytest -n auto tests/test_examples.py --durations=0 -v
