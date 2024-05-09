@@ -766,7 +766,7 @@ class Analyzer:
             print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
 
     @catch_exceptions_and_warn()
-    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24):
+    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24, file_name=None):
         """
         Generates an animation of the entire transportation network and its traffic states over time.
 
@@ -793,6 +793,8 @@ class Analyzer:
             The font size for the network labels in the animation. Default is 20.
         timestep_skip : int, optional
             How many timesteps are skipped per frame. Large value means coarse and lightweight animation. Default is 8.
+        file_name : str, optional
+            The name of the file to which the animation is saved. It overrides the defauld name. Default is None.
 
         Notes
         -----
@@ -812,12 +814,16 @@ class Analyzer:
                 else:
                     s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
-        pics[0].save(f"out{s.W.name}/anim_network{detailed}.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
+        
+        fname = f"out{s.W.name}/anim_network{detailed}.gif"
+        if file_name != None:
+            fname = file_name
+        pics[0].save(fname, save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
         for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
             os.remove(f)
 
     @catch_exceptions_and_warn()
-    def network_fancy(s, animation_speed_inverse=10, figsize=6, sample_ratio=0.3, interval=5, network_font_size=0, trace_length=3, speed_coef=2):
+    def network_fancy(s, animation_speed_inverse=10, figsize=6, sample_ratio=0.3, interval=5, network_font_size=0, trace_length=3, speed_coef=2, file_name=None):
         """
         Generates a visually appealing animation of vehicles' trajectories across the entire transportation network over time.
 
@@ -837,6 +843,8 @@ class Analyzer:
             The length of the vehicles' trajectory trails in the animation. Default is 3.
         speed_coef : int, optional
             A coefficient that adjusts the animation speed. Default is 2.
+        file_name : str, optional
+            The name of the file to which the animation is saved. It overrides the defauld name. Default is None.
 
         Notes
         -----
@@ -976,7 +984,10 @@ class Analyzer:
             img.save(f"out{s.W.name}/tmp_anim_{t}.png")
             pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
 
-        pics[0].save(f"out{s.W.name}/anim_network_fancy.gif", save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*speed_coef, loop=0)
+        fname = f"out{s.W.name}/anim_network_fancy.gif"
+        if file_name != None:
+            fname = file_name
+        pics[0].save(fname, save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*speed_coef, loop=0)
 
         for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
             os.remove(f)

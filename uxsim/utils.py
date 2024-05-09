@@ -132,6 +132,19 @@ def print_columns(*lists):
                 print(" " * 10, end=" ")  # Adjust spacing to match the above width
         print()  # Newline after each row
 
+def display_image_in_notebook(image_path):
+    """
+    Display an image in Jupyter Notebook.
+
+    Parameters
+    ----------
+    image_path : str
+        The path to the image file to display.
+    """
+    from IPython.display import display, Image
+    with open(image_path, "rb") as f:
+        display(Image(data=f.read(), format='png'))
+
 class LoggingWarning(UserWarning):
     """
     This warns that when vehicle_logging_timestep_interval is not 1 but called vehicle logging-related functions.
