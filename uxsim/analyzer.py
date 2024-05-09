@@ -164,6 +164,7 @@ class Analyzer:
                     if l_old != l:
                         l.tss.append([])
                         l.xss.append([])
+                        l.ls.append(veh.log_lane[i])
                         l.cs.append(veh.color)
                         l.names.append(veh.name)
 
@@ -321,8 +322,6 @@ class Analyzer:
         if s.W.vehicle_logging_timestep_interval != 1:
             warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
 
-        #リンク車両軌跡の時空間図
-        s.W.print(" drawing trajectories...")
         s.compute_accurate_traj()
 
         #対象がlistであればOKで，単一な場合にはlistに変換する．未指定であれば全部にする．
@@ -335,35 +334,9 @@ class Analyzer:
         except TypeError:
             links = [links]
 
-        for lll in tqdm(links, disable=(s.W.print_mode==0)):
-            l = s.W.get_link(lll)
-
-            plt.figure(figsize=figsize)
-            plt.title(l)
-            for i in range(len(l.xss)):
-                plt.plot(l.tss[i], l.xss[i], c=l.cs[i], lw=0.5)
-            if plot_signal:
-                signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
-                plt.plot(signal_log, [l.length for i in lange(signal_log)], "r.")
-            plt.xlabel("time (s)")
-            plt.ylabel("space (m)")
-            if xlim == None:
-                plt.xlim([0, s.W.TMAX])
-            else:
-                plt.xlim(xlim)
-            if ylim == None:
-                plt.ylim([0, l.length])
-            else:
-                plt.ylim(ylim)
-            plt.grid()
-            plt.tight_layout()
-            if s.W.save_mode:
-                plt.savefig(f"out{s.W.name}/tsd_traj_{l.name}.png")
-            if s.W.show_mode:
-                plt.show()
-            else:
-                plt.close("all")
-
+        for lll in links:
+            s.time_space_diagram_traj_links(linkslist=[lll], figsize=figsize, plot_signal=plot_signal, xlim=xlim, ylim=ylim)
+    
     @catch_exceptions_and_warn()
     def time_space_diagram_density(s, links=None, figsize=(12,4), plot_signal=True, xlim=None, ylim=None):
         """
@@ -447,7 +420,7 @@ class Analyzer:
             warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
             
         #複数リンクの連続した車両軌跡の時空間図
-        s.W.print(" drawing trajectories in consecutive links...")
+        s.W.print(" drawing trajectories...")
         s.compute_accurate_traj()
 
         #リンクリストのリストであればそのまま，そうでなければリスト化
@@ -470,7 +443,8 @@ class Analyzer:
             for ll in links:
                 l = s.W.get_link(ll)
                 for i in range(len(l.xss)):
-                    plt.plot(l.tss[i], np.array(l.xss[i])+linkdict[l], c=l.cs[i], lw=0.5)
+                    lane_shift = l.ls[i]/l.lanes*s.W.DELTAT/2 #vehicle with the same lane is plotted slightly shifted
+                    plt.plot(np.array(l.tss[i])+lane_shift, np.array(l.xss[i])+linkdict[l], "-", c=l.cs[i], lw=0.5)
                 if plot_signal:
                     signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
                     plt.plot(signal_log, [l.length+linkdict[l] for i in lange(signal_log)], "r.")
@@ -494,7 +468,10 @@ class Analyzer:
             plt.grid()
             plt.tight_layout()
             if s.W.save_mode:
-                plt.savefig(f"out{s.W.name}/tsd_traj_links_{'-'.join([s.W.get_link(l).name for l in links])}.png")
+                if len(links) == 1:
+                    plt.savefig(f"out{s.W.name}/tsd_traj_{s.W.get_link(links[0]).name}.png")
+                else:
+                    plt.savefig(f"out{s.W.name}/tsd_traj_links_{'-'.join([s.W.get_link(l).name for l in links])}.png")
             if s.W.show_mode:
                 plt.show()
             else:
@@ -577,7 +554,7 @@ class Analyzer:
         minwidth : float, optional
             The minimum width of the link visualization. Default is 0.5.
         maxwidth : float, optional
-            The maximum width of the link visualization. Default is 12.
+            The maximum width of the link per lane visualization. Default is 12.
         left_handed : int, optional
             If set to 1, the left-handed traffic system (e.g., Japan, UK) is used. If set to 0, the right-handed one is used. Default is 1.
         tmp_anim : int, optional
@@ -622,7 +599,7 @@ class Analyzer:
                     except:
                         warnings.warn(f"invalid time {t} is specified for network visualization", UserWarning)
                         return -1
-                    lw[i] = k*l.delta*(maxwidth-minwidth)+minwidth
+                    lw[i] = k*l.delta*(maxwidth*l.lanes-minwidth)+minwidth
                     c[i] = plt.colormaps["viridis"](v/l.u)
                 xmid = [((xsize-i)*x1+(i+1)*x2)/(xsize+1)+vx for i in range(xsize)]
                 ymid = [((xsize-i)*y1+(i+1)*y2)/(xsize+1)+vy for i in range(xsize)]
@@ -635,7 +612,7 @@ class Analyzer:
                 #簡略モード
                 k = (l.cum_arrival[int(t/s.W.DELTAT)]-l.cum_departure[int(t/s.W.DELTAT)])/l.length
                 v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
-                width = k*l.delta*(maxwidth-minwidth)+minwidth
+                width = k*l.delta*(maxwidth*l.lanes-minwidth)+minwidth
                 c = plt.colormaps["viridis"](v/l.u)
                 xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
                 xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy

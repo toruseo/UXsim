@@ -525,6 +525,7 @@ class Link:
         s.tss = []
         s.xss = []
         s.cs = []
+        s.ls = []
         s.names = []
 
         if eular_dx == None:
@@ -853,6 +854,7 @@ class Vehicle:
         s.log_x = [] #位置
         s.log_s = [] #車頭距離
         s.log_v = [] #現在速度
+        s.log_lane = [] #車線
         s.color = (random.random(), random.random(), random.random())
 
         s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
@@ -1167,6 +1169,7 @@ class Vehicle:
                     s.log_x.append(-1)
                     s.log_s.append(-1)
                     s.log_v.append(-1)
+                    s.log_lane.append(-1)
 
                     if s.state == "wait":
                         s.W.analyzer.average_speed_count += 1
@@ -1180,6 +1183,7 @@ class Vehicle:
                     s.log_link.append(s.link)
                     s.log_x.append(s.x)
                     s.log_v.append(s.v)
+                    s.log_lane.append(s.lane)
                     if s.leader != None and s.link == s.leader.link:
                         s.log_s.append(s.leader.x-s.x)
                     else:
