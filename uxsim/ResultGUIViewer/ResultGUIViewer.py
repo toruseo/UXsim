@@ -65,7 +65,7 @@ class EdgeItem(QGraphicsItem):
         for i in range(num_segments):
             density = self.density_list[self.t, i]
             speed = self.Link.v_mat[self.t, i]
-            lw = max([density*self.Link.delta])*(maxlw-minlw)+minlw
+            lw = max([density*self.Link.delta*self.Link.lanes])*(maxlw-minlw)+minlw
             
             c = colormaps["viridis"](speed/self.Link.u)
             #color = QColor(int(density/self.Link.jam_density * 255), int(density/self.Link.jam_density * 255), 0, 255)
