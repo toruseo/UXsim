@@ -33,9 +33,10 @@ W_orig = W.copy()
         
 ##############################################################
 # Compute DUO as a reference
+print("####"*20)
 print("Deriving DUO")
 W.exec_simulation()
-display(W.analyzer.basic_to_pandas())
+print(W.analyzer.basic_to_pandas())
 
 W_duo= W.copy()
 
@@ -46,6 +47,7 @@ n_routes = 6
 for od_pair in od_pairs:
     routes[od_pair] = Utilities.enumerate_k_shortest_routes(W, od_pair[0], od_pair[1], n_routes)
 
+print("available routes for each OD pair")
 for key in routes:
     for route in routes[key]:
         print(key, route)
@@ -85,10 +87,11 @@ toolbox.register("select", tools.selTournament, tournsize=3)
 
 ##############################################################
 # Execute genetic algorithm
+print("####"*20)
 print("Deriving DSO using genetic algorithm")
-NPOP = 30
+NPOP = 20
 CXPB, MUTPB = 0.5, 0.2
-NGEN = 30
+NGEN = 20
 
 # Initial population
 pop = toolbox.population(n=NPOP) 
@@ -132,7 +135,7 @@ for g in range(NGEN):
     print("")
     print("Best individual: ", best_ind)
     print("Fitness: ", best_ind.fitness.values[0])
-    display(best_ind.W.analyzer.basic_to_pandas())
+    print(best_ind.W.analyzer.basic_to_pandas())
 
     # Update the population
     pop[:] = offspring
@@ -142,11 +145,14 @@ W_dso = best_ind.W.copy()
 ##############################################################
 # Compare DUO and near-DSO
 
+print("####"*20)
 print("DUO")
+print(W_duo.analyzer.basic_to_pandas())
 W_duo.analyzer.macroscopic_fundamental_diagram()
 W_duo.analyzer.network_anim(file_name="out/grid_duo.gif", detailed=1, network_font_size=0, figsize=(6,6))
 
-print("near-DUO")
+print("near-DSO")
+print(W_dso.analyzer.basic_to_pandas())
 W_dso.analyzer.macroscopic_fundamental_diagram()
 W_dso.analyzer.network_anim(file_name="out/grid_dso.gif", detailed=1, network_font_size=0, figsize=(6,6))
 
