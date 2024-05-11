@@ -15,9 +15,10 @@ Usage:
 import sys
 import numpy as np
 from matplotlib import colormaps
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsItem, QMenu, QSlider, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QInputDialog, QMessageBox, QTableView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsItem, QMenu, QSlider, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QInputDialog, QMessageBox, QTableView, QDialog, QFileDialog
 from PyQt5.QtGui import QPen, QColor, QPainter, QPainterPath
 from PyQt5.QtCore import Qt, QPointF, QRectF, QTimer, QAbstractTableModel
+
 
 class EdgeItem(QGraphicsItem):
     def __init__(self, name, start_node, end_node, density_list, Link):
@@ -68,7 +69,6 @@ class EdgeItem(QGraphicsItem):
             lw = max([density*self.Link.delta*self.Link.lanes])*(maxlw-minlw)+minlw
             
             c = colormaps["viridis"](speed/self.Link.u)
-            #color = QColor(int(density/self.Link.jam_density * 255), int(density/self.Link.jam_density * 255), 0, 255)
             color = QColor(int(c[0]*255), int(c[1]*255), int(c[2]*255), 255)
             pen = QPen(color, lw)
             painter.setPen(pen)
@@ -127,6 +127,7 @@ class EdgeItem(QGraphicsItem):
     def set_show_name(self, show_name):
         self.show_name = show_name
 
+
 class NodeItem(QGraphicsItem):
     def __init__(self, name, x, y, Node):
         super().__init__()
@@ -149,6 +150,7 @@ class NodeItem(QGraphicsItem):
     def set_show_name(self, show_name):
         self.show_name = show_name
 
+
 class VehicleItem(QGraphicsItem):
     def __init__(self, x, y):
         super().__init__()
@@ -161,6 +163,7 @@ class VehicleItem(QGraphicsItem):
     def paint(self, painter, option, widget):
         painter.setBrush(Qt.red)
         painter.drawEllipse(-5, -5, 10, 10)
+
 
 class GraphWidget(QGraphicsView):
     def __init__(self, nodes, edges, vehicle_list):
@@ -309,6 +312,17 @@ class MainWindow(QMainWindow):
         # acrion_save_world = menu_file.addAction("Save World")
         # acrion_save_world.triggered.connect(lambda: self.save_world())
 
+        menu_data = menu_bar.addMenu("Data")
+        action_basic_stats = menu_data.addAction("Basic Statistics")
+        action_basic_stats.triggered.connect(lambda: self.show_dataframe("Basic", self.W.analyzer.basic_to_pandas()))
+        action_basic_stats = menu_data.addAction("Link Statistics")
+        action_basic_stats.triggered.connect(lambda: self.show_dataframe("Link", self.W.analyzer.link_to_pandas()))
+        action_basic_stats = menu_data.addAction("OD Demand Statistics")
+        action_basic_stats.triggered.connect(lambda: self.show_dataframe("OD Demand", self.W.analyzer.od_to_pandas()))
+        action_basic_stats = menu_data.addAction("Vehicle Trip Statistics")
+        action_basic_stats.triggered.connect(lambda: self.show_dataframe("Vehicle Trip", self.W.analyzer.vehicle_trip_to_pandas()))
+        action_basic_stats = menu_data.addAction("Vehicle Detailed Statistics")
+        action_basic_stats.triggered.connect(lambda: self.show_dataframe("Vehicle", self.W.analyzer.vehicles_to_pandas()))
         
         menu_settings = menu_bar.addMenu("Settings")
         option_curve_direction = menu_settings.addMenu("Link Curve Direction")
@@ -343,10 +357,22 @@ class MainWindow(QMainWindow):
 
         self.update_graph()
 
-    def save_world(self):
-        import pickle
-        with open("World.pkl", mode="wb") as f:
-            pickle.dump(self.W, f)
+    def show_dataframe(self, title, df):
+        viewer = DataFrameViewer(df, title, self)
+        viewer.show()
+
+    def save_world(self, default_filename='untitled.pkl_dill'):
+        #TODO: do something about "maximum recursion depth exceeded in comparison" error
+        import dill as pickle
+        filename, _ = QFileDialog.getSaveFileName(None, 'Save the world', default_filename, 'Pickle (by Dill package) Files (*.pkl_dill);;All Files (*)')
+        
+        if filename:
+            try:
+                with open(filename, 'wb') as file:
+                    pickle.dump(self.W, file)
+                print(f'World saved successfully: {filename}')
+            except Exception as e:
+                print(f'Error saving object: {str(e)}')
 
     def update_graph(self):
         t = self.t_slider.value()
@@ -400,6 +426,7 @@ class MainWindow(QMainWindow):
 
             self.graph_widget.set_show_vehicles(True)
 
+
 class PandasModel(QAbstractTableModel):
     def __init__(self, data):
         super(PandasModel, self).__init__()
@@ -423,6 +450,20 @@ class PandasModel(QAbstractTableModel):
             elif orientation == Qt.Vertical:
                 return str(self._data.index[section])
         return None
+
+
+class DataFrameViewer(QDialog):
+    def __init__(self, data, title, parent=None):
+        super(DataFrameViewer, self).__init__(parent)
+        self.setWindowTitle(title)
+        self.setLayout(QVBoxLayout())
+        self.model = PandasModel(data)
+        self.view = QTableView()
+        self.view.setModel(self.model)
+        self.layout().addWidget(self.view)
+        
+        self.resize(1200, 600)
+
 
 def launch_World_viewer(W, return_app_window=False):
     """
@@ -471,10 +512,6 @@ def launch_World_viewer(W, return_app_window=False):
 
     edges = [[l.name, l.start_node.name, l.end_node.name, l.k_mat, l] for l in W.LINKS]
     dt = W.LINKS[0].edie_dt
-
-    veh = list(W.VEHICLES.values())[0]
-    vehicle_list = [(int(veh.log_t[i]/dt), veh.log_link[i].name, veh.log_x[i]/veh.log_link[i].length) for i in range(len(veh.log_t)) if veh.log_link[i] != -1]
-    print(vehicle_list)
 
     app = QApplication(sys.argv)
     window = MainWindow(W, nodes, edges, None, tmax, dt)

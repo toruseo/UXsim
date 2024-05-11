@@ -1191,7 +1191,7 @@ class Analyzer:
         """
         return s.vehicles_to_pandas()
 
-    def vehicle_trip_top_pandas(s):
+    def vehicle_trip_to_pandas(s):
         """
         Converts the vehicle trip top to a pandas DataFrame.
 
@@ -1202,8 +1202,10 @@ class Analyzer:
             - 'name': the name of the vehicle (platoon).
             - 'orig': the origin node of the vehicle's trip.
             - 'dest': the destination node of the vehicle's trip.
-            - 'trip_time': the total trip time of the vehicle.
-            - 'trip_delay': the total delay of the vehicle.
+            - 'departure_time': the departure time of the vehicle.
+            - 'final_state': the final state of the vehicle.
+            - 'travel_time': the travel time of the vehicle.
+            - 'average_speed': the average speed of the vehicle.
         """
         out = [["name", "orig", "dest", "departure_time", "final_state", "travel_time", "average_speed"]]
         for veh in s.W.VEHICLES.values():
