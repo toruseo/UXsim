@@ -9,6 +9,13 @@
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      load_font_data
+      load_font_data_new
+   
    
 
    

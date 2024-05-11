@@ -139,6 +139,8 @@ p*_*.py
 *.code-workspace
 .VSCodeCounter/*
 .vscode/*
+demos_and_examples/uxsim/
+
 *.prof
 
 # pre-commit

@@ -21,6 +21,7 @@
       ~World.adddemand_area2area
       ~World.adddemand_point2point
       ~World.check_simulation_ongoing
+      ~World.copy
       ~World.exec_simulation
       ~World.finalize_scenario
       ~World.generate_Links_from_csv

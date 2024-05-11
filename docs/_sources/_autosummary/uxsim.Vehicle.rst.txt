@@ -22,6 +22,8 @@
       ~Vehicle.record_log
       ~Vehicle.route_next_link_choice
       ~Vehicle.route_pref_update
+      ~Vehicle.set_links_avoid
+      ~Vehicle.set_links_prefer
       ~Vehicle.traveled_route
       ~Vehicle.update
    

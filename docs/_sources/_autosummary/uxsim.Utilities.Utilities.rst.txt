@@ -1,0 +1,30 @@
+﻿uxsim.Utilities.Utilities
+=========================
+
+.. automodule:: uxsim.Utilities.Utilities
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      enumerate_k_shortest_routes
+      generate_grid_network
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

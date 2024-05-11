@@ -42,6 +42,7 @@
       ~Analyzer.time_space_diagram_density
       ~Analyzer.time_space_diagram_traj
       ~Analyzer.time_space_diagram_traj_links
+      ~Analyzer.vehicle_trip_to_pandas
       ~Analyzer.vehicles_to_pandas
    
    
