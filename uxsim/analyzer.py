@@ -414,7 +414,7 @@ class Analyzer:
         figsize : tuple of int, optional
             The size of the figure to be plotted, default is (12,4).
         plot_signal : bool, optional
-            Plot the signal red light.
+            Plot the signal red light. 
         """
         if s.W.vehicle_logging_timestep_interval != 1:
             warnings.warn("vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.", LoggingWarning)
@@ -1190,6 +1190,31 @@ class Analyzer:
         same to `vehicles_to_pandas`, just for backward compatibility
         """
         return s.vehicles_to_pandas()
+
+    def vehicle_trip_top_pandas(s):
+        """
+        Converts the vehicle trip top to a pandas DataFrame.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing the top of the vehicle trip logs, with the columns:
+            - 'name': the name of the vehicle (platoon).
+            - 'orig': the origin node of the vehicle's trip.
+            - 'dest': the destination node of the vehicle's trip.
+            - 'trip_time': the total trip time of the vehicle.
+            - 'trip_delay': the total delay of the vehicle.
+        """
+        out = [["name", "orig", "dest", "departure_time", "final_state", "travel_time", "average_speed"]]
+        for veh in s.W.VEHICLES.values():
+            veh_dest_name = veh.dest.name if veh.dest != None else None
+            veh_state = veh.log_state[-1]
+            veh_ave_speed = np.average([v for v in veh.log_v if v != -1])
+
+            out.append([veh.name, veh.orig.name, veh_dest_name, veh.departure_time*s.W.DELTAT, veh_state, veh.travel_time, veh_ave_speed])
+        
+        s.df_vehicle_trip = pd.DataFrame(out[1:], columns=out[0])
+        return s.df_vehicle_trip
 
     def basic_to_pandas(s):
         """

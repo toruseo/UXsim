@@ -15,9 +15,9 @@ Usage:
 import sys
 import numpy as np
 from matplotlib import colormaps
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsItem, QMenu, QSlider, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsItem, QMenu, QSlider, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QInputDialog, QMessageBox, QTableView
 from PyQt5.QtGui import QPen, QColor, QPainter, QPainterPath
-from PyQt5.QtCore import Qt, QPointF, QRectF, QTimer
+from PyQt5.QtCore import Qt, QPointF, QRectF, QTimer, QAbstractTableModel
 
 class EdgeItem(QGraphicsItem):
     def __init__(self, name, start_node, end_node, density_list, Link):
@@ -44,7 +44,7 @@ class EdgeItem(QGraphicsItem):
         length = (dx**2 + dy**2)**0.5
         offset = length/10
         if dx == 0:
-            offset = QPointF(0, offset if dy > 0 else -offset)
+            offset = QPointF(-offset*self.curve_direction if dy > 0 else offset*self.curve_direction, 0)
         else:
             normal = QPointF(-dy, dx)
             normal /= (normal.x()**2 + normal.y()**2)**0.5
@@ -188,9 +188,12 @@ class GraphWidget(QGraphicsView):
                 edge = EdgeItem(name, start_node, end_node, density_list, Node)
                 self.scene().addItem(edge)
                 self.edges.append(edge)
+        
+        self.set_vehice_items()
 
+    def set_vehice_items(self):
         self.vehicle_items = []
-        if self.show_vehicles and self.vehicle_list != None:
+        if self.vehicle_list != None:
             for t, edge_name, x in self.vehicle_list:
                 edge = self.find_edge(edge_name)
                 if edge:
@@ -253,15 +256,16 @@ class GraphWidget(QGraphicsView):
         self.viewport().update()
 
 class MainWindow(QMainWindow):
-    def __init__(self, W, nodes, edges, vehicle_list, tmax):
+    def __init__(self, W, nodes, edges, vehicle_list, tmax, dt):
         super().__init__()
         self.setWindowTitle("UXsim result viewer")
         self.W = W
         self.tmax = tmax
+        self.dt = dt
         self.playing = False
         self.curve_direction = 1
         self.show_names = True
-        self.show_vehicles = True
+        self.show_vehicles = False
 
         central_widget = QWidget()
         layout = QVBoxLayout()
@@ -304,6 +308,7 @@ class MainWindow(QMainWindow):
         # menu_file = menu_bar.addMenu("File")
         # acrion_save_world = menu_file.addAction("Save World")
         # acrion_save_world.triggered.connect(lambda: self.save_world())
+
         
         menu_settings = menu_bar.addMenu("Settings")
         option_curve_direction = menu_settings.addMenu("Link Curve Direction")
@@ -318,6 +323,14 @@ class MainWindow(QMainWindow):
         show_names_action.setChecked(True)
         show_names_action.triggered.connect(self.toggle_show_names)
 
+        menu_Vehicle = menu_bar.addMenu("Vehicle Analysis")
+        # show_vehicles_action = menu_Vehicle.addAction("Show Vehicle")
+        # show_vehicles_action.setCheckable(True)
+        # show_vehicles_action.setChecked(False)
+        # show_vehicles_action.triggered.connect(self.toggle_show_vehicles)
+        action_show_vehicle = menu_Vehicle.addAction("Highlight Vehicle by ID")
+        action_show_vehicle.triggered.connect(self.show_vehicle_by_id)
+
         menu_Animation = menu_bar.addMenu("Export Results")
         action_csv = menu_Animation.addAction("Export Results to CSV files")
         action_csv.triggered.connect(lambda: self.W.analyzer.output_data())
@@ -327,12 +340,6 @@ class MainWindow(QMainWindow):
         action_network_anim_detailed1.triggered.connect(lambda: self.W.analyzer.network_anim(detailed=1))
         action_network_anim_fancy = menu_Animation.addAction("Export Network Animation (vehicle-level)")
         action_network_anim_fancy.triggered.connect(lambda: self.W.analyzer.network_fancy())
-
-        # menu_Vehicle = menu_bar.addMenu("Vehicle Analysis")
-        # show_vehicles_action = menu_Vehicle.addAction("Show Vehicles")
-        # show_vehicles_action.setCheckable(True)
-        # show_vehicles_action.setChecked(True)
-        # show_vehicles_action.triggered.connect(self.toggle_show_vehicles)
 
         self.update_graph()
 
@@ -377,6 +384,45 @@ class MainWindow(QMainWindow):
     def toggle_show_vehicles(self):
         self.show_vehicles = not self.show_vehicles
         self.graph_widget.set_show_vehicles(self.show_vehicles)
+    
+    def show_vehicle_by_id(self):
+        vehicle_id, ok = QInputDialog.getText(self, "Highlight Vehicle", "<b>Enter Vehicle ID</b><br>Note that fast vehicles will be plotted as multiple dots in the animation.")
+        if ok and vehicle_id:
+            self.vehicle_id = vehicle_id
+            if vehicle_id not in self.W.VEHICLES:
+                QMessageBox.warning(self, "Vehicle ID not found", "The specified Vehicle ID was not found.")
+                return
+            veh = self.W.VEHICLES[vehicle_id]
+            self.graph_widget.vehicle_list = [(int(veh.log_t[i]/self.dt), veh.log_link[i].name, veh.log_x[i]/veh.log_link[i].length) for i in range(len(veh.log_t)) if veh.log_link[i] != -1]
+            print(veh, self.graph_widget.vehicle_list)
+
+            self.graph_widget.set_vehice_items()
+
+            self.graph_widget.set_show_vehicles(True)
+
+class PandasModel(QAbstractTableModel):
+    def __init__(self, data):
+        super(PandasModel, self).__init__()
+        self._data = data
+
+    def rowCount(self, parent=None):
+        return self._data.shape[0]
+
+    def columnCount(self, parent=None):
+        return self._data.shape[1]
+
+    def data(self, index, role=Qt.DisplayRole):
+        if index.isValid() and role == Qt.DisplayRole:
+            return str(self._data.iloc[index.row(), index.column()])
+        return None
+
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return str(self._data.columns[section])
+            elif orientation == Qt.Vertical:
+                return str(self._data.index[section])
+        return None
 
 def launch_World_viewer(W, return_app_window=False):
     """
@@ -424,10 +470,14 @@ def launch_World_viewer(W, return_app_window=False):
             node[2] = (maxy - node[2]) / (maxy - miny) * (xysize - xybuffer*2) + xybuffer
 
     edges = [[l.name, l.start_node.name, l.end_node.name, l.k_mat, l] for l in W.LINKS]
-    vehicle_list = None
+    dt = W.LINKS[0].edie_dt
+
+    veh = list(W.VEHICLES.values())[0]
+    vehicle_list = [(int(veh.log_t[i]/dt), veh.log_link[i].name, veh.log_x[i]/veh.log_link[i].length) for i in range(len(veh.log_t)) if veh.log_link[i] != -1]
+    print(vehicle_list)
 
     app = QApplication(sys.argv)
-    window = MainWindow(W, nodes, edges, vehicle_list, tmax)
+    window = MainWindow(W, nodes, edges, None, tmax, dt)
     window.show()
     if return_app_window:
         return app, window
