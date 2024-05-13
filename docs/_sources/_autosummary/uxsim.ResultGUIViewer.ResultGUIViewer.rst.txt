@@ -1,4 +1,4 @@
-﻿uxsim.ResultGUIViewer.ResultGUIViewer
+uxsim.ResultGUIViewer.ResultGUIViewer
 =====================================
 
 .. automodule:: uxsim.ResultGUIViewer.ResultGUIViewer

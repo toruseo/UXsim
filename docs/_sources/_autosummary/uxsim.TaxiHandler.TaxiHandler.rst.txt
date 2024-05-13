@@ -1,4 +1,4 @@
-﻿uxsim.TaxiHandler.TaxiHandler
+uxsim.TaxiHandler.TaxiHandler
 =============================
 
 .. currentmodule:: uxsim.TaxiHandler

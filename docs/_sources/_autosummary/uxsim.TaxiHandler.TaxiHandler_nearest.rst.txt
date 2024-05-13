@@ -1,0 +1,30 @@
+﻿uxsim.TaxiHandler.TaxiHandler\_nearest
+======================================
+
+.. currentmodule:: uxsim.TaxiHandler
+
+.. autoclass:: TaxiHandler_nearest
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TaxiHandler_nearest.__init__
+      ~TaxiHandler_nearest.add_trip_request
+      ~TaxiHandler_nearest.assign_taxi
+      ~TaxiHandler_nearest.assign_trip_request_to_taxi
+      ~TaxiHandler_nearest.basic_to_pandas
+      ~TaxiHandler_nearest.compute_stats
+      ~TaxiHandler_nearest.get_trip
+      ~TaxiHandler_nearest.print_stats
+      ~TaxiHandler_nearest.trips_to_pandas
+   
+   
+
+   
+   
+   

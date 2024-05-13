@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Advanced example" href="demo_notebook_02en.html" /><link rel="prev" title="Tutorial and Examples" href="../tutorial.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>Step-by-step tutorial - UXsim v1 documentation</title>
+        <title>Step-by-step Tutorial - UXsim v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
@@ -224,7 +224,7 @@ gtag('config', 'UA-111714220-1');
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Step-by-step tutorial</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Step-by-step Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
@@ -246,8 +246,9 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Route.html">uxsim.Route</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 </ul>
@@ -292,8 +293,9 @@ gtag('config', 'UA-111714220-1');
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="Step-by-step-tutorial">
-<h1>Step-by-step tutorial<a class="headerlink" href="#Step-by-step-tutorial" title="Link to this heading">¶</a></h1>
+          <section id="Step-by-step-Tutorial">
+<h1>Step-by-step Tutorial<a class="headerlink" href="#Step-by-step-Tutorial" title="Link to this heading">¶</a></h1>
+<p>This tutorial demonstrates how to use the UXsim package to simulate traffic scenarios and analyze the results using Python in a Jupyter Notebook environment.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -302,32 +304,31 @@ gtag('config', 'UA-111714220-1');
 </pre></div>
 </div>
 </div>
+<section id="Simple-Scenario-Example">
+<h2>Simple Scenario Example<a class="headerlink" href="#Simple-Scenario-Example" title="Link to this heading">¶</a></h2>
+<p>First, import the required module.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
-<span class="o">%</span><span class="k">autoreload</span> 2
-</pre></div>
-</div>
-</div>
-<section id="Simple-Scenario-Example">
-<h2>Simple Scenario Example<a class="headerlink" href="#Simple-Scenario-Example" title="Link to this heading">¶</a></h2>
-<p>Import the required modules.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 </pre></div>
 </div>
 </div>
 <section id="Scenario-Definition">
 <h3>Scenario Definition<a class="headerlink" href="#Scenario-Definition" title="Link to this heading">¶</a></h3>
-<p>First, we will define the main simulation <code class="docutils literal notranslate"><span class="pre">W</span></code>. The unit of time is s (seconds) and the unit of length is m.</p>
+<p>First, we will define the main simulation world <code class="docutils literal notranslate"><span class="pre">W</span></code>. The simulation scenario is defined by creating an object of the <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.World.html">World</a> class, which represents the main simulation environment. The constructor takes several parameters. The unit of time is s (seconds) and the unit of length is m (meters).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A string specifying the name of the scenario. This is used as the folder name for saving results. It can be left blank.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deltan</span></code>: An integer specifying the simulation aggregation unit Δn, which defines how many vehicles are grouped together (i.e., platoon size) for computation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tmax</span></code>: An integer specifying the total simulation time in seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">print_mode</span></code>: An integer (0 or 1) determining whether to print information during the simulation. Usually set to 1, but recommended 0 when running multiple simulations automatically.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save_mode</span></code>: An integer (0 or 1) determining if visualization results are saved.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show_mode</span></code>: An integer (0 or 1) determining if visualization results are displayed. It’s good to set show_mode=1 in Jupyter Notebook, otherwise recommended 0.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">random_seed</span></code>: A random seed for reproducible experiments. Set to None for non-deterministic behavior.</p></li>
+</ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
@@ -335,14 +336,30 @@ gtag('config', 'UA-111714220-1');
     <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>   <span class="c1"># Simulation aggregation unit Δn. Defines how many vehicles are grouped together (i.e., platoon size) for computation. Computation cost is generally inversely proportional to deltan^2.</span>
     <span class="n">tmax</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span>  <span class="c1"># Total simulation time (s)</span>
     <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>    <span class="c1"># Various options. print_mode determines whether to print information. Usually set to 1, but recommended 0 when running multiple simulations automatically. save_mode determines if visualization results are saved. show_mode determines if visualization results are displayed. It&#39;s good to set show_mode=1 on Jupyter Notebook, otherwise recommended 0.</span>
-    <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span>    <span class="c1"># Set the random seed. Specify if you want repeatable experiments. If not, set to None. On Jupyter Notebook, randomness might not always be consistent (requires a fix).</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span>    <span class="c1"># Set the random seed. Specify if you want repeatable experiments. If not, set to None.</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>The simulation scenario (network structure and demand) is defined. First, nodes are added, then links are defined to connect the nodes, and finally the traffic demand between the nodes is specified. In this case, we define a simple Y-shaped merging network.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<p>Next, the nodes and links of the network are defined using the <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.World.html#uxsim.World.addNode">addNode</a> (to add <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.Node.html#uxsim.Node">Node</a> object) and <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.World.html#uxsim.World.addLink">addLink</a> (to add <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.Link.html#uxsim.Link">Link</a> object) methods of the World object. The addNode method
+requires the following parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A string specifying the name of the node.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>: A float specifying the x-coordinate of the node for visualization purposes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y</span></code>: A float specifying the y-coordinate of the node for visualization purposes.</p></li>
+</ul>
+<p>The addNode method requires the following parameters (some of them are optional though):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A string specifying the name of the link.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_node</span></code>: A string specifying the name of the start node. You can also specify Node object instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end_node</span></code>: A string specifying the name of the end node. You can also specify Node object instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">length</span></code>: A float specifying the length of the link.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">free_flow_speed</span></code>: A float specifying the free flow speed of the link.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">number_of_lanes</span></code>: An integer specifying the number of lanes of the link.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">merge_priority</span></code>: A float specifying the merge priority of the link during merging.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;orig1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#Create a node. Parameters: node name, visualization x-coordinate, visualization y-coordinate</span>
@@ -350,25 +367,66 @@ gtag('config', 'UA-111714220-1');
 <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link1&quot;</span><span class="p">,</span> <span class="s2">&quot;orig1&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="c1"># Create a link. Parameters: link name, start node, end node, length, free_flow_speed, jam_density, merge_priority during merging</span>
-<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link2&quot;</span><span class="p">,</span> <span class="s2">&quot;orig2&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link3&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-
-<span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="s2">&quot;orig1&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span> <span class="c1"># Create OD traffic demand. Parameters: origin node, destination node, start time, end time, demand flow rate</span>
+<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link1&quot;</span><span class="p">,</span> <span class="s2">&quot;orig1&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="c1"># Create a link. Parameters: link name, start node, end node, length, free_flow_speed, number of lanes, merge_priority during merging</span>
+<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link2&quot;</span><span class="p">,</span> <span class="s2">&quot;orig2&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link3&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Link link3&gt;
+</pre></div></div>
+</div>
+<p>Finally, the traffic demand between origin-destination (OD) pairs is specified using the <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.World.html#uxsim.World.adddemand">adddemand</a> method, which add a lot <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.Vehicle.html">Vehicle</a> objects appropriately. It requires the following parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">orig</span></code>: A string specifying the name of the origin node. You can also specify Node object instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dest</span></code>: A string specifying the name of the destination node. You can also specify Node object instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t_start</span></code>: A float specifying the start time of the demand in seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t_end</span></code>: A float specifying the end time of the demand in seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flow</span></code>: A float specifying the demand flow rate in vehicles per second.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="s2">&quot;orig1&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">)</span> <span class="c1"># Create OD traffic demand. Parameters: origin node, destination node, start time, end time, demand flow rate</span>
 <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="s2">&quot;orig2&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>Instead of defining scenarios by hard-code, scenarios can be read from a CSV file prepared in advance, as shown below.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">load_scenario_from_csv</span><span class="p">(</span><span class="s2">&quot;dat/siouxfalls_nodes.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;dat/siouxfalls_links.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;dat/siouxfalls_demand.csv&quot;</span><span class="p">)</span>
+<p>You can check the network shape by using <code class="docutils literal notranslate"><span class="pre">W.show_network()</span></code> (Note that the plot uses left-handed traffic rule). This scenario is a simple Y-shaped network. It may cause traffic congestion due to merging.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">show_network</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_01en_11_0.png" src="../_images/notebooks_demo_notebook_01en_11_0.png" />
+</div>
 </div>
 </section>
 <section id="Simulation-Execution">
 <h3>Simulation Execution<a class="headerlink" href="#Simulation-Execution" title="Link to this heading">¶</a></h3>
-<p>After defining the scenario, you can execute the simulation with <code class="docutils literal notranslate"><span class="pre">W.exec_simulation()</span></code>. This time, the simulation is run to the end. The simulation time, the number of vehicles in the network at that time, their average speed, and the computation time are displayed.</p>
+<p>Once the scenario is defined, the simulation can be executed by calling the <code class="docutils literal notranslate"><span class="pre">exec_simulation</span></code> method of the <code class="docutils literal notranslate"><span class="pre">World</span></code> object. It first show the summary of the simulation setting, the following information is printed during the simulation to see the progress:</p>
+<ul class="simple">
+<li><p>Current simulation time</p></li>
+<li><p>Number of vehicles in the network</p></li>
+<li><p>Average speed of vehicles</p></li>
+<li><p>Computation time taken for the simulation steps so far</p></li>
+</ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
@@ -391,17 +449,17 @@ simulation setting:
  number of platoons:     140
  number of links:        3
  number of nodes:        4
- setup time:             0.13 s
+ setup time:             6.26 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|      100 vehs|  17.5 m/s|     0.03 s
-    1195 s|       25 vehs|  20.0 m/s|     0.05 s
+     600 s|      100 vehs|  17.5 m/s|     0.04 s
+    1195 s|       25 vehs|  20.0 m/s|     0.07 s
  simulation finished
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -409,19 +467,19 @@ simulating...
 1
 </pre></div></div>
 </div>
-<p>Instead of running the simulation to the end, it is possible to run it halfway and intervene in the simulation. For example, the following code computes the simulation for 100 seconds at a time and uses the function <code class="docutils literal notranslate"><span class="pre">hoge</span></code> to perform some intervention.</p>
+<p>The simulation can also be run in steps by specifying the <code class="docutils literal notranslate"><span class="pre">duration_t</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">exec_simulation</span></code>. This allows intervening in the simulation at intermediate points. This is for advantage usage. For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">W</span><span class="o">.</span><span class="n">check_simulation_ongoing</span><span class="p">():</span>
     <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">(</span><span class="n">duration_t</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-    <span class="n">hoge</span><span class="p">()</span>
+    <span class="n">your_intervention_method</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
-<section id="Results">
-<h3>Results<a class="headerlink" href="#Results" title="Link to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">W.analyzer</span></code> class is responsible for analyzing the results.</p>
+<section id="Results-Analysis">
+<h3>Results Analysis<a class="headerlink" href="#Results-Analysis" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.analyzer.Analyzer.html">Analyzer</a> class accessible as <code class="docutils literal notranslate"><span class="pre">W.analyzer</span></code> is responsible for analyzing the results.</p>
 <p>A summary of the results can be printed below. Delay ratio is the ratio of delay time to total trip time, with a value close to zero indicating smooth traffic (when the shortest route can be traveled without congestion) and a larger value indicating congestion (when the shortest route is bypassed or congested).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
@@ -441,9 +499,9 @@ results:
  delay ratio:                    0.299
 </pre></div></div>
 </div>
-<p>Simulation results can be output to pandas.DataFrame. Note that the value <code class="docutils literal notranslate"><span class="pre">-1</span></code> basically means undefined (e.g., headway when there is no vehicle in front).</p>
+<p>Simulation results can be output as <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> objects by using the following functions. Note that the value <code class="docutils literal notranslate"><span class="pre">-1</span></code> basically means undefined (e.g., headway when there is no vehicle in front).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#overall</span>
@@ -647,8 +705,8 @@ results:
       <td>400</td>
       <td>0</td>
       <td>50.0</td>
-      <td>117.35426</td>
-      <td>80.833356</td>
+      <td>128.625000</td>
+      <td>81.718425</td>
     </tr>
     <tr>
       <th>1</th>
@@ -656,8 +714,8 @@ results:
       <td>300</td>
       <td>0</td>
       <td>50.0</td>
-      <td>54.95098</td>
-      <td>4.825133</td>
+      <td>55.583333</td>
+      <td>6.129958</td>
     </tr>
     <tr>
       <th>2</th>
@@ -665,8 +723,8 @@ results:
       <td>675</td>
       <td>25</td>
       <td>50.0</td>
-      <td>51.62844</td>
-      <td>2.343157</td>
+      <td>52.166667</td>
+      <td>2.477678</td>
     </tr>
   </tbody>
 </table>
@@ -1002,9 +1060,9 @@ results:
 <p>4212 rows × 9 columns</p>
 </div></div>
 </div>
-<p>You can also save the entire results to CSV.</p>
+<p>You can also save these results to CSV using</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">output_data</span><span class="p">()</span>
@@ -1014,11 +1072,12 @@ results:
 </section>
 <section id="Visualization-of-Results">
 <h3>Visualization of Results<a class="headerlink" href="#Visualization-of-Results" title="Link to this heading">¶</a></h3>
+<p>Several visualization methods are provided to confirm the simulation results.</p>
 <section id="Link-level">
 <h4>Link-level<a class="headerlink" href="#Link-level" title="Link to this heading">¶</a></h4>
 <p>Time-space diagrams (density and trajectories) of a link can be plotted as follows. Ones for consecutive links can also be plotted.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_density</span><span class="p">()</span>
@@ -1040,27 +1099,27 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a84420472a994afa9c8069d177e7d668", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2d9baae936e746b6a19de086373e824e", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_20_2.png" src="../_images/notebooks_demo_notebook_01en_20_2.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_20_3.png" src="../_images/notebooks_demo_notebook_01en_20_3.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_22_2.png" src="../_images/notebooks_demo_notebook_01en_22_2.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_20_4.png" src="../_images/notebooks_demo_notebook_01en_20_4.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_22_3.png" src="../_images/notebooks_demo_notebook_01en_22_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_01en_22_4.png" src="../_images/notebooks_demo_notebook_01en_22_4.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1075,27 +1134,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d8106bd1fe3e4d56987a58e5c0b5e0f3", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_20_7.png" src="../_images/notebooks_demo_notebook_01en_20_7.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_20_8.png" src="../_images/notebooks_demo_notebook_01en_20_8.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_20_9.png" src="../_images/notebooks_demo_notebook_01en_20_9.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_22_6.png" src="../_images/notebooks_demo_notebook_01en_22_6.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1103,26 +1142,56 @@ results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
- drawing trajectories in consecutive links...
+ drawing trajectories...
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_20_11.png" src="../_images/notebooks_demo_notebook_01en_20_11.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_22_8.png" src="../_images/notebooks_demo_notebook_01en_22_8.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ drawing trajectories...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_01en_22_10.png" src="../_images/notebooks_demo_notebook_01en_22_10.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ drawing trajectories...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_01en_22_12.png" src="../_images/notebooks_demo_notebook_01en_22_12.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_20_12.png" src="../_images/notebooks_demo_notebook_01en_20_12.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_22_13.png" src="../_images/notebooks_demo_notebook_01en_22_13.png" />
 </div>
 </div>
-<p>Cumulative curves, actual/instantanious travel times</p>
+<p>Cumulative curves (with actual/instantaneous travel times) can be plotted by using</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">cumulative_curves</span><span class="p">()</span>
@@ -1133,51 +1202,43 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_22_0.png" src="../_images/notebooks_demo_notebook_01en_22_0.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_24_0.png" src="../_images/notebooks_demo_notebook_01en_24_0.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_22_1.png" src="../_images/notebooks_demo_notebook_01en_22_1.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_24_1.png" src="../_images/notebooks_demo_notebook_01en_24_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_22_2.png" src="../_images/notebooks_demo_notebook_01en_22_2.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_24_2.png" src="../_images/notebooks_demo_notebook_01en_24_2.png" />
 </div>
 </div>
 </section>
-<section id="Area/Network-level">
-<h4>Area/Network-level<a class="headerlink" href="#Area/Network-level" title="Link to this heading">¶</a></h4>
-<p>MFD</p>
+<section id="Network/Area-level">
+<h4>Network/Area-level<a class="headerlink" href="#Network/Area-level" title="Link to this heading">¶</a></h4>
+<p>Network traffic states can be visualized by number of ways:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">W.analyzer.network(t,</span> <span class="pre">detailed=0)</span></code>: Snapshots of link-average traffic states</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">W.analyzer.network(t,</span> <span class="pre">detailed=1)</span></code>: Snapshots of segment-level traffic states</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">W.analyzer.network_anim</span></code>: Dynamic animation of network traffic states</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">W.analyzer.network_fancy</span></code>: Dynamic animation of vehicle trajectories in network</p></li>
+</ul>
+<p>By default, you can visualize the traffic situation per link, the traffic situation per segment within a link (not very clear depending on the network geometry), and the movement trajectory of some vehicles. The thicker the width of the link, the greater the number and density of vehicles, and the darker the color, the lower the speed. Note that the animation generation speed for large scenarios could take some time.</p>
+<p>Note also that this example uses left-handed traffic rule (e.g., Japan, UK). If you want to use right-handed one, you need to specify option <code class="docutils literal notranslate"><span class="pre">left_handed=0</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_24_0.png" src="../_images/notebooks_demo_notebook_01en_24_0.png" />
-</div>
-</div>
-<p>Snapshots of network traffic situation</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="o">/</span><span class="mi">6</span><span class="p">))):</span>
-    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="o">/</span><span class="mi">6</span><span class="p">))):</span>
-    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -1265,20 +1326,22 @@ results:
 <img alt="../_images/notebooks_demo_notebook_01en_26_11.png" src="../_images/notebooks_demo_notebook_01en_26_11.png" />
 </div>
 </div>
-<p>You can also create a gif animation of the traffic situation of the entire network. By default, you can visualize the traffic situation per link, the traffic situation per section within a link (not very clear depending on the network geometry), and the movement trajectory of some vehicles. The thicker the width of the link, the greater the number and density of vehicles, and the darker the color, the lower the speed. Note that the creation speed for large scenarios is very slow.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
-<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;outsimple_demo/anim_network0.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;outsimple_demo/anim_network1.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;outsimple_demo/anim_network_fancy.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
 </pre></div>
@@ -1296,7 +1359,14 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f32f565236034020832a891d1a023ba8", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6a16dc7c5fc0418ea904ed3ec3b71627", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_01en_27_2.png" src="../_images/notebooks_demo_notebook_01en_27_2.png" />
+</div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1310,7 +1380,14 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b0e090a90d854fa4925976d65b5f63ee", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5fd56bb9b8544a3f81cfbb1fee68bebd", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_01en_27_5.png" src="../_images/notebooks_demo_notebook_01en_27_5.png" />
+</div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1324,38 +1401,21 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1dc7ad2692024564adcaf0246c213824", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_28_6.png" src="../_images/notebooks_demo_notebook_01en_28_6.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_28_7.png" src="../_images/notebooks_demo_notebook_01en_28_7.png" />
-</div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "cca3874f67f7433f8b879121005e17a6", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_28_8.png" src="../_images/notebooks_demo_notebook_01en_28_8.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_27_8.png" src="../_images/notebooks_demo_notebook_01en_27_8.png" />
 </div>
 </div>
-</section>
-<section id="Vehicle-level">
-<h4>Vehicle-level<a class="headerlink" href="#Vehicle-level" title="Link to this heading">¶</a></h4>
-<p>The driving log of a single vehicle can also be visualized. The links traveled and the speed at that time.</p>
+<p>MFD (Macroscopic fundamental diagram), which summarizes the whole network states, can also be plotted by using</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">plot_vehicle_log</span><span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">macroscopic_fundamental_diagram</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1363,17 +1423,31 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_30_0.png" src="../_images/notebooks_demo_notebook_01en_30_0.png" />
+<img alt="../_images/notebooks_demo_notebook_01en_29_0.png" src="../_images/notebooks_demo_notebook_01en_29_0.png" />
 </div>
 </div>
 </section>
+</section>
+<section id="GUI-for-interactive-exploration">
+<h3>GUI for interactive exploration<a class="headerlink" href="#GUI-for-interactive-exploration" title="Link to this heading">¶</a></h3>
+<p>You can also launch GUI viewer for interactive exploration. It can play and pause network traffic animation, show time-space diagrams of selected links, track specific vehicles, see some statistics, and export these results to CSVs.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim.ResultGUIViewer</span> <span class="kn">import</span> <span class="n">ResultGUIViewer</span>
+<span class="n">ResultGUIViewer</span><span class="o">.</span><span class="n">launch_World_viewer</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 <section id="Sioux-Falls-Network">
 <h2>Sioux Falls Network<a class="headerlink" href="#Sioux-Falls-Network" title="Link to this heading">¶</a></h2>
-<p>An example with Sioux Falls network, a famous scenario for benchmarking in transportation research</p>
+<p>The tutorial concludes with a larger example applying the package to simulate the well-known Sioux Falls network, often used as a benchmark in transportation research.</p>
+<p>The most frequently used functions would be those of <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.World.html">World</a> (to define simulation scenarios) and <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.analyzer.Analyzer.html">Analyzer</a> (to analyze simulation results). For the details, please refer to the technical reference: <a class="reference external" href="https://toruseo.jp/UXsim/docs/tech_ref.html">https://toruseo.jp/UXsim/docs/tech_ref.html</a>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation main</span>
@@ -1394,12 +1468,10 @@ results:
 
 <span class="c1"># Results analysis</span>
 <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
-
-<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -1415,60 +1487,69 @@ simulation setting:
  number of platoons:     6938
  number of links:        76
  number of nodes:        24
- setup time:             1.48 s
+ setup time:             3.83 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|     2460 vehs|   7.3 m/s|     1.21 s
-    1200 s|     5655 vehs|   6.9 m/s|     2.74 s
-    1800 s|     8455 vehs|   6.6 m/s|     4.53 s
-    2400 s|     9980 vehs|   6.1 m/s|     6.22 s
-    3000 s|    10425 vehs|   5.6 m/s|     7.90 s
-    3600 s|    12580 vehs|   5.2 m/s|     9.54 s
-    4200 s|    13225 vehs|   5.0 m/s|    11.12 s
-    4800 s|    13710 vehs|   5.0 m/s|    12.58 s
-    5400 s|    10470 vehs|   5.3 m/s|    14.16 s
-    6000 s|     6975 vehs|   5.7 m/s|    15.31 s
-    6600 s|     3835 vehs|   6.4 m/s|    15.94 s
-    7195 s|     1485 vehs|   7.1 m/s|    16.23 s
+     600 s|     2550 vehs|   7.3 m/s|     1.67 s
+    1200 s|     5820 vehs|   6.9 m/s|     3.64 s
+    1800 s|     8700 vehs|   6.5 m/s|     5.84 s
+    2400 s|    10425 vehs|   5.8 m/s|     8.13 s
+    3000 s|    11030 vehs|   5.2 m/s|    10.42 s
+    3600 s|    13450 vehs|   4.9 m/s|    12.62 s
+    4200 s|    14375 vehs|   4.7 m/s|    14.68 s
+    4800 s|    14845 vehs|   4.8 m/s|    16.75 s
+    5400 s|    10540 vehs|   5.5 m/s|    18.49 s
+    6000 s|     6400 vehs|   6.0 m/s|    19.56 s
+    6600 s|     3190 vehs|   6.6 m/s|    20.28 s
+    7195 s|     1165 vehs|   7.1 m/s|    20.62 s
  simulation finished
 results:
- average speed:  5.7 m/s
- number of completed trips:      33205 / 34690
- average travel time of trips:   1742.8 s
- average delay of trips:         371.8 s
- delay ratio:                    0.213
- generating animation...
+ average speed:  5.5 m/s
+ number of completed trips:      33525 / 34690
+ average travel time of trips:   1742.9 s
+ average delay of trips:         368.8 s
+ delay ratio:                    0.212
 </pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9ea8dfc633fe4cf4a440529d01e1c9c7", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;outsimple_demo/anim_network0.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_01en_33_0.png" src="../_images/notebooks_demo_notebook_01en_33_0.png" />
-</div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim.ResultGUIViewer</span> <span class="kn">import</span> <span class="n">ResultGUIViewer</span>
+<span class="n">ResultGUIViewer</span><span class="o">.</span><span class="n">launch_World_viewer</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;outsimple_demo/anim_network0.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ generating animation...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "31815281a48a43ecb76630b6d6cd7c39", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_01en_35_2.png" src="../_images/notebooks_demo_notebook_01en_35_2.png" />
 </div>
 </div>
 </section>
@@ -1529,17 +1610,17 @@ results:
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Step-by-step tutorial</a><ul>
+<li><a class="reference internal" href="#">Step-by-step Tutorial</a><ul>
 <li><a class="reference internal" href="#Simple-Scenario-Example">Simple Scenario Example</a><ul>
 <li><a class="reference internal" href="#Scenario-Definition">Scenario Definition</a></li>
 <li><a class="reference internal" href="#Simulation-Execution">Simulation Execution</a></li>
-<li><a class="reference internal" href="#Results">Results</a></li>
+<li><a class="reference internal" href="#Results-Analysis">Results Analysis</a></li>
 <li><a class="reference internal" href="#Visualization-of-Results">Visualization of Results</a><ul>
 <li><a class="reference internal" href="#Link-level">Link-level</a></li>
-<li><a class="reference internal" href="#Area/Network-level">Area/Network-level</a></li>
-<li><a class="reference internal" href="#Vehicle-level">Vehicle-level</a></li>
+<li><a class="reference internal" href="#Network/Area-level">Network/Area-level</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#GUI-for-interactive-exploration">GUI for interactive exploration</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#Sioux-Falls-Network">Sioux Falls Network</a></li>

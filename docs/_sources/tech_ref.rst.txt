@@ -42,8 +42,9 @@ Classes (support)
    :nosignatures:
 
    uxsim.Route
-   uxsim.TaxiHandler.TaxiHandler
    uxsim.TaxiHandler.TripRequest
+   uxsim.TaxiHandler.TaxiHandler
+   uxsim.TaxiHandler.TaxiHandler_nearest
    uxsim.OSMImporter.OSMImporter
    uxsim.ResultGUIViewer.ResultGUIViewer
 

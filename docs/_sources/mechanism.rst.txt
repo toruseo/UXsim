@@ -11,7 +11,7 @@ UXsim computes network traffic flow dynamics by combining following models:
 * The `mesoscopic version of the incremental node model <https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/>`_ for inter-link transfer at nodes.
 * `Dynamic user optimum <https://doi.org/10.1016/S0191-2615(00)00005-9>`_ (aka. reactive assignment) with stochasticity and delay for route choice of travelers.
 
-For the details, please refer to the original articles or, `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_, or `Japanese textbook on traffic simulation <https://www.coronasha.co.jp/np/isbn/9784339052794/>`_.
+For the details, please refer to the original articles, `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_, or `Japanese textbook on traffic simulation <https://www.coronasha.co.jp/np/isbn/9784339052794/>`_.
 
 Key Inputs
 ----------
@@ -46,7 +46,7 @@ Activity diagram of a specific vehicle in UXsim: the computation procedure for e
 
 
 The Details on Traffic Flow Model on Link
----------------------------------
+-----------------------------------------
 
 Traffic Flow Model
 ^^^^^^^^^^^^^^^^^^
@@ -55,10 +55,10 @@ Traffic Flow Model
 - Fundamental diagram parameters such as ``free_flow_speed``, ``jam_density`` (or ``jam_density_per_lane``), and ``number_of_lanes`` determine the link's flow characteristics. Reaction time of drivers ``REACTION_TIME`` is a global parameter.
 - Real-time link status for external reference is maintained with attributes ``speed``, ``density``, ``flow``, ``num_vehicles``, and ``num_vehicles_queue``.
 
-Traffic Flow Model Parameters (\*: input, \*\*: alternative input)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Traffic Flow Model Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- The following parameters are used in UXsim, defined through `Link`, `World`, and `Node`.
+- The following parameters are used in UXsim, defined through `Link`, `World`, and `Node` (\*: input, \*\*: alternative input).
 	- \* ``free_flow_speed`` (m/s)
 	- \* ``jam_density`` (veh/m/LINK)
 	- \*\* ``jam_density_per_lane`` (veh/m/lane)

@@ -223,7 +223,7 @@ gtag('config', 'UA-111714220-1');
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_01en.html">Step-by-step tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_01en.html">Step-by-step Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
@@ -245,8 +245,9 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Route.html">uxsim.Route</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 </ul>
@@ -358,16 +359,19 @@ This was prepared with the intention of “better than nothing.”</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.Route.html#uxsim.Route" title="uxsim.Route"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.Route</span></code></a></p></td>
 <td><p>Class for a route that store concective links.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler" title="uxsim.TaxiHandler.TaxiHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.TaxiHandler.TaxiHandler</span></code></a></p></td>
-<td><p>A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest" title="uxsim.TaxiHandler.TripRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.TaxiHandler.TripRequest</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest" title="uxsim.TaxiHandler.TripRequest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.TaxiHandler.TripRequest</span></code></a></p></td>
 <td><p>A class representing a trip request (or travelers, passengers, cargo, etc.)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html#uxsim.OSMImporter.OSMImporter" title="uxsim.OSMImporter.OSMImporter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.OSMImporter.OSMImporter</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler" title="uxsim.TaxiHandler.TaxiHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.TaxiHandler.TaxiHandler</span></code></a></p></td>
+<td><p>A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html#uxsim.TaxiHandler.TaxiHandler_nearest" title="uxsim.TaxiHandler.TaxiHandler_nearest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.TaxiHandler.TaxiHandler_nearest</span></code></a></p></td>
+<td><p>A taxi handler that assigns trip requests to nearest taxis (based on Euclidean distance).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html#uxsim.OSMImporter.OSMImporter" title="uxsim.OSMImporter.OSMImporter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.OSMImporter.OSMImporter</span></code></a></p></td>
 <td><p>OpenStreetMap importer using OSMnx.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#module-uxsim.ResultGUIViewer.ResultGUIViewer" title="uxsim.ResultGUIViewer.ResultGUIViewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.ResultGUIViewer.ResultGUIViewer</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#module-uxsim.ResultGUIViewer.ResultGUIViewer" title="uxsim.ResultGUIViewer.ResultGUIViewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.ResultGUIViewer.ResultGUIViewer</span></code></a></p></td>
 <td><p>Interactive viewer for UXsim simulation results using PyQt5.</p></td>
 </tr>
 </tbody>

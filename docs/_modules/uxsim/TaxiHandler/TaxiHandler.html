@@ -222,7 +222,7 @@ gtag('config', 'UA-111714220-1');
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_01en.html">Step-by-step tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_01en.html">Step-by-step Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
@@ -244,8 +244,9 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.Route.html">uxsim.Route</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 </ul>
@@ -367,13 +368,13 @@ gtag('config', 'UA-111714220-1');
 
 
 <div class="viewcode-block" id="TaxiHandler">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler">[docs]</a>
 <span class="k">class</span> <span class="nc">TaxiHandler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TaxiHandler.__init__">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.__init__">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a taxi handler.</span>
@@ -390,7 +391,7 @@ gtag('config', 'UA-111714220-1');
 
 
 <div class="viewcode-block" id="TaxiHandler.add_trip_request">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.add_trip_request">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.add_trip_request">[docs]</a>
     <span class="k">def</span> <span class="nf">add_trip_request</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">depart_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a trip request to this handler.</span>
@@ -415,7 +416,7 @@ gtag('config', 'UA-111714220-1');
 
     
 <div class="viewcode-block" id="TaxiHandler.assign_taxi">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.assign_taxi">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.assign_taxi">[docs]</a>
     <span class="k">def</span> <span class="nf">assign_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assigns a trip request to a vehicle.</span>
@@ -437,7 +438,7 @@ gtag('config', 'UA-111714220-1');
 
     
 <div class="viewcode-block" id="TaxiHandler.get_trip">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.get_trip">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.get_trip">[docs]</a>
     <span class="k">def</span> <span class="nf">get_trip</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">tr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a TripRequest instance by name or object.</span>
@@ -459,7 +460,7 @@ gtag('config', 'UA-111714220-1');
 
 
 <div class="viewcode-block" id="TaxiHandler.compute_stats">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.compute_stats">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.compute_stats">[docs]</a>
     <span class="k">def</span> <span class="nf">compute_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes basic statistics of the taxi travels.</span>
@@ -481,7 +482,7 @@ gtag('config', 'UA-111714220-1');
 
     
 <div class="viewcode-block" id="TaxiHandler.basic_to_pandas">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.basic_to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.basic_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">basic_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the basic statistics on taxi travels to a pandas DataFrame.</span>
@@ -498,7 +499,7 @@ gtag('config', 'UA-111714220-1');
 
     
 <div class="viewcode-block" id="TaxiHandler.print_stats">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.print_stats">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.print_stats">[docs]</a>
     <span class="k">def</span> <span class="nf">print_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prints the basic statistics.</span>
@@ -515,7 +516,7 @@ gtag('config', 'UA-111714220-1');
 
     
 <div class="viewcode-block" id="TaxiHandler.trips_to_pandas">
-<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.trips_to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler.trips_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">trips_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the trips and their travel records to a pandas DataFrame.</span>
@@ -557,13 +558,20 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">s</span><span class="o">.</span><span class="n">assign_taxi</span><span class="p">(</span><span class="n">taxi</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="TaxiHandler_nearest">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html#uxsim.TaxiHandler.TaxiHandler_nearest">[docs]</a>
 <span class="k">class</span> <span class="nc">TaxiHandler_nearest</span><span class="p">(</span><span class="n">TaxiHandler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A taxi handler that assigns trip requests to nearest taxis (based on Euclidean distance). </span>
 <span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TaxiHandler_nearest.__init__">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html#uxsim.TaxiHandler.TaxiHandler_nearest.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">)</span></div>
+
     
+<div class="viewcode-block" id="TaxiHandler_nearest.assign_trip_request_to_taxi">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html#uxsim.TaxiHandler.TaxiHandler_nearest.assign_trip_request_to_taxi">[docs]</a>
     <span class="k">def</span> <span class="nf">assign_trip_request_to_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assigns trip request to nearest available taxi.</span>
@@ -584,7 +592,9 @@ gtag('config', 'UA-111714220-1');
                         <span class="n">taxi_tmp</span> <span class="o">=</span> <span class="n">taxi</span>
                 <span class="k">if</span> <span class="n">taxi_tmp</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">vacant_taxis</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">)</span>
-                    <span class="n">s</span><span class="o">.</span><span class="n">assign_taxi</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">)</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">assign_taxi</span><span class="p">(</span><span class="n">taxi_tmp</span><span class="p">,</span> <span class="n">trip_request</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">class</span> <span class="nc">TaxiHandler_nearest_matching_radious</span><span class="p">(</span><span class="n">TaxiHandler</span><span class="p">):</span>

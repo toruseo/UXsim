@@ -1,4 +1,4 @@
-﻿uxsim.Utilities.Utilities
+uxsim.Utilities.Utilities
 =========================
 
 .. automodule:: uxsim.Utilities.Utilities

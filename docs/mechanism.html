@@ -223,7 +223,7 @@ gtag('config', 'UA-111714220-1');
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_01en.html">Step-by-step tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_01en.html">Step-by-step Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
@@ -245,8 +245,9 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Route.html">uxsim.Route</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 </ul>
@@ -301,7 +302,7 @@ gtag('config', 'UA-111714220-1');
 <li><p>The <a class="reference external" href="https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/">mesoscopic version of the incremental node model</a> for inter-link transfer at nodes.</p></li>
 <li><p><a class="reference external" href="https://doi.org/10.1016/S0191-2615(00)00005-9">Dynamic user optimum</a> (aka. reactive assignment) with stochasticity and delay for route choice of travelers.</p></li>
 </ul>
-<p>For the details, please refer to the original articles or, <a class="reference external" href="https://arxiv.org/pdf/2309.17114.pdf">arXiv preprint on UXsim</a>, or <a class="reference external" href="https://www.coronasha.co.jp/np/isbn/9784339052794/">Japanese textbook on traffic simulation</a>.</p>
+<p>For the details, please refer to the original articles, <a class="reference external" href="https://arxiv.org/pdf/2309.17114.pdf">arXiv preprint on UXsim</a>, or <a class="reference external" href="https://www.coronasha.co.jp/np/isbn/9784339052794/">Japanese textbook on traffic simulation</a>.</p>
 </section>
 <section id="key-inputs">
 <h2>Key Inputs<a class="headerlink" href="#key-inputs" title="Link to this heading">¶</a></h2>
@@ -338,11 +339,11 @@ gtag('config', 'UA-111714220-1');
 <li><p>Real-time link status for external reference is maintained with attributes <code class="docutils literal notranslate"><span class="pre">speed</span></code>, <code class="docutils literal notranslate"><span class="pre">density</span></code>, <code class="docutils literal notranslate"><span class="pre">flow</span></code>, <code class="docutils literal notranslate"><span class="pre">num_vehicles</span></code>, and <code class="docutils literal notranslate"><span class="pre">num_vehicles_queue</span></code>.</p></li>
 </ul>
 </section>
-<section id="traffic-flow-model-parameters-input-alternative-input">
-<h3>Traffic Flow Model Parameters (*: input, **: alternative input)<a class="headerlink" href="#traffic-flow-model-parameters-input-alternative-input" title="Link to this heading">¶</a></h3>
+<section id="traffic-flow-model-parameters">
+<h3>Traffic Flow Model Parameters<a class="headerlink" href="#traffic-flow-model-parameters" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><dl class="simple">
-<dt>The following parameters are used in UXsim, defined through <cite>Link</cite>, <cite>World</cite>, and <cite>Node</cite>.</dt><dd><ul>
+<dt>The following parameters are used in UXsim, defined through <cite>Link</cite>, <cite>World</cite>, and <cite>Node</cite> (*: input, **: alternative input).</dt><dd><ul>
 <li><p>* <code class="docutils literal notranslate"><span class="pre">free_flow_speed</span></code> (m/s)</p></li>
 <li><p>* <code class="docutils literal notranslate"><span class="pre">jam_density</span></code> (veh/m/LINK)</p></li>
 <li><p>** <code class="docutils literal notranslate"><span class="pre">jam_density_per_lane</span></code> (veh/m/lane)</p></li>
@@ -489,7 +490,7 @@ gtag('config', 'UA-111714220-1');
 <li><a class="reference internal" href="#computation-procedure">Computation Procedure</a></li>
 <li><a class="reference internal" href="#the-details-on-traffic-flow-model-on-link">The Details on Traffic Flow Model on Link</a><ul>
 <li><a class="reference internal" href="#traffic-flow-model">Traffic Flow Model</a></li>
-<li><a class="reference internal" href="#traffic-flow-model-parameters-input-alternative-input">Traffic Flow Model Parameters (*: input, **: alternative input)</a></li>
+<li><a class="reference internal" href="#traffic-flow-model-parameters">Traffic Flow Model Parameters</a></li>
 <li><a class="reference internal" href="#capacity-and-bottlenecks">Capacity and Bottlenecks</a></li>
 <li><a class="reference internal" href="#connection-to-node-model">Connection to Node Model</a></li>
 <li><a class="reference internal" href="#parameter-adjustments">Parameter Adjustments</a></li>
