@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-UXsim: Traffic simulation in Python
+UXsim: Traffic Simulation in Python
 ===================================
 
 About
@@ -41,4 +41,4 @@ Links
 
 * `Github repo of UXsim <https://github.com/toruseo/UXsim>`_
 * `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_
-* `Author (Toru Seo) <https://toruseo.jp/index_en.html>`_
+* `Author (Toru Seo) <https://toruseo.jp/>`_

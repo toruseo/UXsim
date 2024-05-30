@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tutorial and Examples" href="tutorial.html" /><link rel="prev" title="UXsim: Traffic simulation in Python" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Tutorial and Examples" href="tutorial.html" /><link rel="prev" title="UXsim: Traffic Simulation in Python" href="index.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>Getting started - UXsim v1 documentation</title>
+        <title>Getting started - UXsim: Traffic Simulation in Python v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -188,7 +188,7 @@ gtag('config', 'UA-111714220-1');
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">UXsim v1 documentation</div></a>
+      <a href="index.html"><div class="brand">UXsim: Traffic Simulation in Python v1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -212,7 +212,7 @@ gtag('config', 'UA-111714220-1');
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">UXsim v1 documentation</span>
+  <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -300,8 +300,6 @@ gtag('config', 'UA-111714220-1');
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">uxsim</span>
 </pre></div>
 </div>
-<p>or download the uxsim directory from <a class="reference external" href="https://github.com/toruseo/UXsim">Github repo</a> and place it to your local directory.
-The former is required if you want to customize UXsim’s internal logic.</p>
 <p>Then import the module using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
@@ -346,7 +344,8 @@ The former is required if you want to customize UXsim’s internal logic.</p>
 </pre></div>
 </div>
 <p>It simulates traffic flow in Y-shaped simple network.
-It will output simple statistics of the simulation results as follows (the details may vary depending on the environment):</p>
+It will print simple statistics of the simulation results as follows (the details may vary depending on the environment).
+It will also save visualizations of network traffic states to <cite>out</cite> directory.</p>
 <div class="highlight-node notranslate"><div class="highlight"><pre><span></span>simulation setting:
  scenario name:
  simulation duration:    1200 s

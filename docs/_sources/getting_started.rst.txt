@@ -9,8 +9,6 @@ First, install UXsim package using pip::
 
    pip install uxsim
 
-or download the uxsim directory from `Github repo <https://github.com/toruseo/UXsim>`_ and place it to your local directory.
-The former is required if you want to customize UXsim's internal logic.
 
 Then import the module using::
 
@@ -56,7 +54,8 @@ The following code can be used to test UXsim in simple setting::
 	W.analyzer.network(800, detailed=1, network_font_size=12)
 
 It simulates traffic flow in Y-shaped simple network.
-It will output simple statistics of the simulation results as follows (the details may vary depending on the environment):
+It will print simple statistics of the simulation results as follows (the details may vary depending on the environment).
+It will also save visualizations of network traffic states to `out` directory. 
 
 .. code-block:: node
 
