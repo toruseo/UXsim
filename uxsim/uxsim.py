@@ -761,7 +761,7 @@ class Vehicle:
         dest : str | Node
             The destination node.
         departure_time : int
-            The departure time step of the vehicle.
+            The departure time of the vehicle.
         name : str, optional
             The name of the vehicle, default is the id of the vehicle.
         route_pref : dict, optional
@@ -771,7 +771,7 @@ class Vehicle:
         mode : str, optional
             The mode of the vehicle. Available options are "single_trip" and "taxi", default is "single_trip".
             "single_trip": The vehicle makes a single trip from the origin to the destination.
-            "taxi": The vehicle serves multiple trips by specifying sequence of destinations. The destination list `Vehicle.dest_list` can be dynamically updated externaly. (TODO: to be implemented next)
+            "taxi": The vehicle serves multiple trips by specifying sequence of destinations. The destination list `Vehicle.dest_list` can be dynamically updated externaly.
         links_prefer : list of str, optional
             The names of the links the vehicle prefers, default is empty list.
         links_avoid : list of str, optional
@@ -1402,6 +1402,8 @@ class World:
             The maximum flow capacity of the node. Default is None, meaning infinite capacity.
         auto_rename : bool, optional
             Whether to automatically rename the node if the name is already used. Default is False.
+        number_of_lanes : int, optional
+            The number of lanes that can be green simultaniously at the node. Default is None.
 
         Returns
         -------
@@ -1424,29 +1426,34 @@ class World:
         name : str
             The name of the link.
         start_node : str | Node
-            The name or object of the start node of the link.
+            The name of the start node of the link.
         end_node : str | Node
-            The name or object of the end node of the link.
+            The name of the end node of the link.
         length : float
             The length of the link.
-        free_flow_speed : float
-            The free flow speed on the link.
-        jam_density : float
-            The jam density on the link.
+        free_flow_speed : float, optional
+            The free flow speed on the link, default is 20.
+        jam_density : float, optional  
+            The jam density on the link, default is 0.2. If jam_density_per_lane is specified, this value is ignored.
+        jam_density_per_lane : float, optional
+            The jam density per lane on the link. If specified, it overrides the jam_density value.
+        number_of_lanes : int, optional
+            The number of lanes on the link, default is 1.
         merge_priority : float, optional
             The priority of the link when merging at the downstream node, default is 1.
         signal_group : int or list, optional
-            The signal group to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0.  the If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.
+            The signal group(s) to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0. If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.
         capacity_out : float, optional
             The capacity out of the link, default is calculated based on other parameters.
         capacity_in : float, optional
             The capacity into the link, default is calculated based on other parameters.
         eular_dx : float, optional
-            The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.
-        attribute : any, optinonal
+            The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         auto_rename : bool, optional
-            Whether to automatically rename the link if the name is already used. Default is False.
+            Whether to automatically rename the link if the name is already used. Default is False (raise an exception).
+
 
         Returns
         -------
@@ -1478,6 +1485,10 @@ class World:
             The preference weights for links, default is 0 for all links.
         route_choice_principle : str, optional
             The route choice principle of the vehicle, default is the network's route choice principle.
+        mode : str, optional
+            The mode of the vehicle. Available options are "single_trip" and "taxi", default is "single_trip".
+            "single_trip": The vehicle makes a single trip from the origin to the destination.
+            "taxi": The vehicle serves multiple trips by specifying sequence of destinations. The destination list `Vehicle.dest_list` can be dynamically updated externaly.
         links_prefer : list of str, optional
             The names of the links the vehicle prefers, default is empty list.
         links_avoid : list of str, optional
