@@ -1,7 +1,5 @@
 from uxsim import *
 import random
-import pandas as pd
-
 
 # world definition
 seed = 0

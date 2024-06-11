@@ -1,4 +1,3 @@
-import pandas as pd
 from uxsim import *
 import pickle
 

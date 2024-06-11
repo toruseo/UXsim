@@ -1,6 +1,7 @@
 # UXsim: Network traffic flow simulator in pure Python
 
 [![PyPi](https://img.shields.io/pypi/v/uxsim.svg)](https://pypi.python.org/pypi/uxsim)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/uxsim.svg)](https://anaconda.org/conda-forge/uxsim)
 [![Demo in Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb)
 [![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
 [![Static Badge](https://img.shields.io/badge/readme-English%20%F0%9F%87%BA%F0%9F%87%B8%20-%20darkblue)](https://github.com/toruseo/UXsim/blob/main/README.md)
@@ -63,11 +64,21 @@ https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127
 
 ### Using pip
 
-The simplest way is to use pip to install from PyPI:
+The simplest way is to use `pip` to install from PyPI:
 
 ```
 pip install uxsim
 ```
+
+### Using conda
+
+You can also install with `conda` from `conda-forge` channel:
+
+```
+conda install uxsim
+```
+
+For the details, please see [here](https://github.com/conda-forge/uxsim-feedstock?tab=readme-ov-file#installing-uxsim).
 
 <details>
 <summary>Alternative methods for advanced users (click to see)</summary>
@@ -120,14 +131,18 @@ W = World(
 )
 
 # Define the scenario
-W.addNode("orig1", 0, 0) # Create a node
+## Create nodes
+W.addNode(name="orig1", x=0, y=0)
 W.addNode("orig2", 0, 2)
 W.addNode("merge", 1, 1)
 W.addNode("dest", 2, 1)
-W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20) # Create a link
-W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20)
-W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20)
-W.adddemand("orig1", "dest", 0, 1000, 0.45) # Create OD traffic demand
+## Create links between nodes
+W.addLink(name="link1", start_node="orig1", end_node="merge",
+          length=1000, free_flow_speed=20, number_of_lanes=1)
+W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+## Create OD traffic demand between nodes
+W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
 W.adddemand("orig2", "dest", 400, 1000, 0.6)
 
 # Run the simulation to the end
