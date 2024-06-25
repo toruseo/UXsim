@@ -1,6 +1,6 @@
 """
 Submodule for general utilities.
-This (will) contains functions that are not essential for simulation but useful to specific analysis.
+This contains functions that are not essential for simulation but useful to specific analysis.
 """
 import networkx as nx
 
@@ -82,3 +82,4 @@ def enumerate_k_shortest_routes(W, source, target, k, cost_function=lambda l: l.
             print(f"Route: {route}, Cost: {path_weight}")
     
     return routes
+

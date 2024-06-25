@@ -1330,25 +1330,25 @@ class World:
         A World object must be defined firstly to initiate simulation.
         """
 
-        ## パラメータ設定
+        ## parameter setting
         random.seed(random_seed)
         np.random.seed(random_seed)
         W.random_seed = random_seed
 
-        W.TMAX = tmax   #シミュレーション時間（s）
+        W.TMAX = tmax   #simulation time (s)
 
-        W.DELTAN = deltan         #車群サイズ（veh）
-        W.REACTION_TIME = reaction_time         #反応時間（s）
+        W.DELTAN = deltan         #platoon size (veh)
+        W.REACTION_TIME = reaction_time         #reaction time = simulation time step size (s)
 
-        W.DUO_UPDATE_TIME = duo_update_time     #経路選択時間間隔（s）
-        W.DUO_UPDATE_WEIGHT = duo_update_weight    #経路選択の更新重み
-        W.DUO_NOISE = duo_noise    #経路選択時のノイズ（完全に対称なネットワークで極端な経路選択になるのを防ぐ）
-        W.EULAR_DT = eular_dt     #Eular型データのデフォルト時間離散化幅
+        W.DUO_UPDATE_TIME = duo_update_time     #time interval for route choice update (s)
+        W.DUO_UPDATE_WEIGHT = duo_update_weight    #weight for route choice update
+        W.DUO_NOISE = duo_noise    #very small noise for route choice to avoid singular results
+        W.EULAR_DT = eular_dt     #time discretization size for Eular-type data (aggregated traffic state)
 
         W.DELTAT = W.REACTION_TIME*W.DELTAN
         W.DELTAT_ROUTE = int(W.DUO_UPDATE_TIME/W.DELTAT)
 
-        ## データ格納先定義
+        ## data storage
         W.VEHICLES = OrderedDict()            #home, wait, run, end
         W.VEHICLES_LIVING = OrderedDict()     #home, wait, run
         W.VEHICLES_RUNNING = OrderedDict()    #run
@@ -1359,11 +1359,11 @@ class World:
 
         W.route_choice_principle = route_choice_principle
 
-        ## リアルタイム経過表示
+        ## progress print setting
         W.show_progress = show_progress
         W.show_progress_deltat_timestep = int(show_progress_deltat/W.DELTAT)
 
-        ## システム設定
+        ## system setting
         W.name = name
 
         W.finalized = 0
@@ -1659,7 +1659,7 @@ class World:
         for l in W.LINKS:
             l.init_after_tmax_fix()
 
-        #隣接行列の生成
+        #generate adjacency matrix
         W.ROUTECHOICE = RouteChoice(W)
         W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)])
         W.ADJ_MAT_LINKS = {} #リンクオブジェクトが入った隣接行列（的な辞書）
@@ -1718,14 +1718,11 @@ class World:
         The nodes, links, and vehicles must be defined before calling this function.
         """
 
-        #シミュレーションのメインループを回す
-
-
-        #シナリオ未確定であればここで確定
+        #finalize the scenario if it has not been done
         if W.finalized == 0:
             W.finalize_scenario()
 
-        #時間決定
+        #determine the simulation time
         start_ts = W.T
         if until_t != None:
             end_ts = int(until_t/W.DELTAT)
@@ -1742,11 +1739,11 @@ class World:
             if W.print_mode and W.show_progress:
                 W.analyzer.show_simulation_progress()
             W.simulation_terminated()
-            return 1 #シミュレーション終わり
+            return 1 #end of simulation
         if end_ts < start_ts:
             raise Exception("exec_simulation error: Simulation duration is negative. Check until_t or duration_t")
 
-        #メインループ
+        #the main loop
         for W.T in range(start_ts, end_ts):
             if W.T == 0:
                 W.print("      time| # of vehicles| ave speed| computation time", flush=True)
@@ -1786,7 +1783,7 @@ class World:
             return 1
 
         W.T += 1
-        return 0 #まだ終わってない
+        return 0 #simulation not yet finished
 
     def check_simulation_ongoing(W):
         """
@@ -1797,7 +1794,6 @@ class World:
         int
             Returns 1 if the simulation is ongoing and has not reached its final time.
         """
-        #シミュレーションが進行中か判定
         if W.finalized == 0:
             return 1
         return W.T < W.TSIZE-1
