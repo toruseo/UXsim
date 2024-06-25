@@ -1104,7 +1104,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        dest : str | Node</span>
 <span class="sd">            The destination node.</span>
 <span class="sd">        departure_time : int</span>
-<span class="sd">            The departure time of the vehicle.</span>
+<span class="sd">            The departure time step of the vehicle.</span>
 <span class="sd">        name : str, optional</span>
 <span class="sd">            The name of the vehicle, default is the id of the vehicle.</span>
 <span class="sd">        route_pref : dict, optional</span>
@@ -1114,7 +1114,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        mode : str, optional</span>
 <span class="sd">            The mode of the vehicle. Available options are &quot;single_trip&quot; and &quot;taxi&quot;, default is &quot;single_trip&quot;.</span>
 <span class="sd">            &quot;single_trip&quot;: The vehicle makes a single trip from the origin to the destination.</span>
-<span class="sd">            &quot;taxi&quot;: The vehicle serves multiple trips by specifying sequence of destinations. The destination list `Vehicle.dest_list` can be dynamically updated externaly.</span>
+<span class="sd">            &quot;taxi&quot;: The vehicle serves multiple trips by specifying sequence of destinations. The destination list `Vehicle.dest_list` can be dynamically updated externaly. (TODO: to be implemented next)</span>
 <span class="sd">        links_prefer : list of str, optional</span>
 <span class="sd">            The names of the links the vehicle prefers, default is empty list.</span>
 <span class="sd">        links_avoid : list of str, optional</span>
@@ -1802,8 +1802,6 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The maximum flow capacity of the node. Default is None, meaning infinite capacity.</span>
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the node if the name is already used. Default is False.</span>
-<span class="sd">        number_of_lanes : int, optional</span>
-<span class="sd">            The number of lanes that can be green simultaniously at the node. Default is None.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1829,34 +1827,29 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        name : str</span>
 <span class="sd">            The name of the link.</span>
 <span class="sd">        start_node : str | Node</span>
-<span class="sd">            The name of the start node of the link.</span>
+<span class="sd">            The name or object of the start node of the link.</span>
 <span class="sd">        end_node : str | Node</span>
-<span class="sd">            The name of the end node of the link.</span>
+<span class="sd">            The name or object of the end node of the link.</span>
 <span class="sd">        length : float</span>
 <span class="sd">            The length of the link.</span>
-<span class="sd">        free_flow_speed : float, optional</span>
-<span class="sd">            The free flow speed on the link, default is 20.</span>
-<span class="sd">        jam_density : float, optional  </span>
-<span class="sd">            The jam density on the link, default is 0.2. If jam_density_per_lane is specified, this value is ignored.</span>
-<span class="sd">        jam_density_per_lane : float, optional</span>
-<span class="sd">            The jam density per lane on the link. If specified, it overrides the jam_density value.</span>
-<span class="sd">        number_of_lanes : int, optional</span>
-<span class="sd">            The number of lanes on the link, default is 1.</span>
+<span class="sd">        free_flow_speed : float</span>
+<span class="sd">            The free flow speed on the link.</span>
+<span class="sd">        jam_density : float</span>
+<span class="sd">            The jam density on the link.</span>
 <span class="sd">        merge_priority : float, optional</span>
 <span class="sd">            The priority of the link when merging at the downstream node, default is 1.</span>
 <span class="sd">        signal_group : int or list, optional</span>
-<span class="sd">            The signal group(s) to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0. If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.</span>
+<span class="sd">            The signal group to which the link belongs, default is 0. If `signal_group` is int, say 0, it becomes green if `end_node.signal_phase` is 0.  the If `signal_group` is list, say [0,1], it becomes green if the `end_node.signal_phase` is 0 or 1.</span>
 <span class="sd">        capacity_out : float, optional</span>
 <span class="sd">            The capacity out of the link, default is calculated based on other parameters.</span>
 <span class="sd">        capacity_in : float, optional</span>
 <span class="sd">            The capacity into the link, default is calculated based on other parameters.</span>
 <span class="sd">        eular_dx : float, optional</span>
-<span class="sd">            The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.</span>
-<span class="sd">        attribute : any, optional</span>
+<span class="sd">            The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</span>
+<span class="sd">        attribute : any, optinonal</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        auto_rename : bool, optional</span>
-<span class="sd">            Whether to automatically rename the link if the name is already used. Default is False (raise an exception).</span>
-
+<span class="sd">            Whether to automatically rename the link if the name is already used. Default is False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1891,10 +1884,6 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The preference weights for links, default is 0 for all links.</span>
 <span class="sd">        route_choice_principle : str, optional</span>
 <span class="sd">            The route choice principle of the vehicle, default is the network&#39;s route choice principle.</span>
-<span class="sd">        mode : str, optional</span>
-<span class="sd">            The mode of the vehicle. Available options are &quot;single_trip&quot; and &quot;taxi&quot;, default is &quot;single_trip&quot;.</span>
-<span class="sd">            &quot;single_trip&quot;: The vehicle makes a single trip from the origin to the destination.</span>
-<span class="sd">            &quot;taxi&quot;: The vehicle serves multiple trips by specifying sequence of destinations. The destination list `Vehicle.dest_list` can be dynamically updated externaly.</span>
 <span class="sd">        links_prefer : list of str, optional</span>
 <span class="sd">            The names of the links the vehicle prefers, default is empty list.</span>
 <span class="sd">        links_avoid : list of str, optional</span>
@@ -2666,6 +2655,6 @@ gtag('config', 'UA-111714220-1');
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>

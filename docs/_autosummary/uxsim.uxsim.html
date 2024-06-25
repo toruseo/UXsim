@@ -2,7 +2,7 @@
 <html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="uxsim.utils" href="uxsim.utils.html" /><link rel="prev" title="Technical Reference" href="../tech_ref.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
@@ -832,13 +832,13 @@ A vehicle is eligible for transfer if:
 <li><p><strong>W</strong> (<em>object</em>) – The world to which the vehicle belongs.</p></li>
 <li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The origin node.</p></li>
 <li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The destination node.</p></li>
-<li><p><strong>departure_time</strong> (<em>int</em>) – The departure time of the vehicle.</p></li>
+<li><p><strong>departure_time</strong> (<em>int</em>) – The departure time step of the vehicle.</p></li>
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the vehicle, default is the id of the vehicle.</p></li>
 <li><p><strong>route_pref</strong> (<em>dict</em><em>, </em><em>optional</em>) – The preference weights for links, default is 0 for all links.</p></li>
 <li><p><strong>route_choice_principle</strong> (<em>str</em><em>, </em><em>optional</em>) – The route choice principle of the vehicle, default is the network’s route choice principle.</p></li>
 <li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode of the vehicle. Available options are “single_trip” and “taxi”, default is “single_trip”.
 “single_trip”: The vehicle makes a single trip from the origin to the destination.
-“taxi”: The vehicle serves multiple trips by specifying sequence of destinations. The destination list <cite>Vehicle.dest_list</cite> can be dynamically updated externaly.</p></li>
+“taxi”: The vehicle serves multiple trips by specifying sequence of destinations. The destination list <cite>Vehicle.dest_list</cite> can be dynamically updated externaly. (TODO: to be implemented next)</p></li>
 <li><p><strong>links_prefer</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The names of the links the vehicle prefers, default is empty list.</p></li>
 <li><p><strong>links_avoid</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The names of the links the vehicle avoids, default is empty list.</p></li>
 <li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
@@ -1013,20 +1013,18 @@ Setting large intervel (2 or more) or turn off the logging makes the simulation 
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – The name of the link.</p></li>
-<li><p><strong>start_node</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The name of the start node of the link.</p></li>
-<li><p><strong>end_node</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The name of the end node of the link.</p></li>
+<li><p><strong>start_node</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The name or object of the start node of the link.</p></li>
+<li><p><strong>end_node</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The name or object of the end node of the link.</p></li>
 <li><p><strong>length</strong> (<em>float</em>) – The length of the link.</p></li>
-<li><p><strong>free_flow_speed</strong> (<em>float</em><em>, </em><em>optional</em>) – The free flow speed on the link, default is 20.</p></li>
-<li><p><strong>jam_density</strong> (<em>float</em><em>, </em><em>optional</em>) – The jam density on the link, default is 0.2. If jam_density_per_lane is specified, this value is ignored.</p></li>
-<li><p><strong>jam_density_per_lane</strong> (<em>float</em><em>, </em><em>optional</em>) – The jam density per lane on the link. If specified, it overrides the jam_density value.</p></li>
-<li><p><strong>number_of_lanes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of lanes on the link, default is 1.</p></li>
+<li><p><strong>free_flow_speed</strong> (<em>float</em>) – The free flow speed on the link.</p></li>
+<li><p><strong>jam_density</strong> (<em>float</em>) – The jam density on the link.</p></li>
 <li><p><strong>merge_priority</strong> (<em>float</em><em>, </em><em>optional</em>) – The priority of the link when merging at the downstream node, default is 1.</p></li>
-<li><p><strong>signal_group</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The signal group(s) to which the link belongs, default is 0. If <cite>signal_group</cite> is int, say 0, it becomes green if <cite>end_node.signal_phase</cite> is 0. If <cite>signal_group</cite> is list, say [0,1], it becomes green if the <cite>end_node.signal_phase</cite> is 0 or 1.</p></li>
+<li><p><strong>signal_group</strong> (<em>int</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The signal group to which the link belongs, default is 0. If <cite>signal_group</cite> is int, say 0, it becomes green if <cite>end_node.signal_phase</cite> is 0.  the If <cite>signal_group</cite> is list, say [0,1], it becomes green if the <cite>end_node.signal_phase</cite> is 0 or 1.</p></li>
 <li><p><strong>capacity_out</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity out of the link, default is calculated based on other parameters.</p></li>
 <li><p><strong>capacity_in</strong> (<em>float</em><em>, </em><em>optional</em>) – The capacity into the link, default is calculated based on other parameters.</p></li>
-<li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users.</p></li>
-<li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the link if the name is already used. Default is False (raise an exception).</p></li>
+<li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The default space aggregation size for link traffic state computation, default is None. If None, the global eular_dx value is used.</p></li>
+<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
+<li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the link if the name is already used. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1057,7 +1055,6 @@ For example, <a href="#id3"><span class="problematic" id="id4">`</span></a>signa
 <li><p><strong>signal_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – The offset of the signal. Default is 0.</p></li>
 <li><p><strong>flow_capacity</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum flow capacity of the node. Default is None, meaning infinite capacity.</p></li>
 <li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the node if the name is already used. Default is False.</p></li>
-<li><p><strong>number_of_lanes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of lanes that can be green simultaniously at the node. Default is None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1085,9 +1082,6 @@ It passes all given arguments and keyword arguments to the Node class initializa
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the vehicle, default is the id of the vehicle.</p></li>
 <li><p><strong>route_pref</strong> (<em>dict</em><em>, </em><em>optional</em>) – The preference weights for links, default is 0 for all links.</p></li>
 <li><p><strong>route_choice_principle</strong> (<em>str</em><em>, </em><em>optional</em>) – The route choice principle of the vehicle, default is the network’s route choice principle.</p></li>
-<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode of the vehicle. Available options are “single_trip” and “taxi”, default is “single_trip”.
-“single_trip”: The vehicle makes a single trip from the origin to the destination.
-“taxi”: The vehicle serves multiple trips by specifying sequence of destinations. The destination list <cite>Vehicle.dest_list</cite> can be dynamically updated externaly.</p></li>
 <li><p><strong>links_prefer</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The names of the links the vehicle prefers, default is empty list.</p></li>
 <li><p><strong>links_avoid</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The names of the links the vehicle avoids, default is empty list.</p></li>
 <li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
@@ -1546,6 +1540,6 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>
