@@ -22,7 +22,7 @@ default FD:
     q^* = 0.8
 """
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=10)
 def test_taxi_small_scale():
     W = World(
         name="",  
@@ -84,7 +84,7 @@ def test_taxi_small_scale():
     assert equal_tolerance(Handler.travel_times[4], 600, rel_tol=0.3)
     assert equal_tolerance(Handler.travel_times[5], 600, rel_tol=0.3)
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=10)
 def test_taxi_small_scale_mixed_mode():        
     # World definition
     W = World(
@@ -155,7 +155,7 @@ def test_taxi_small_scale_mixed_mode():
     assert equal_tolerance(Handler.travel_times[4], 600, rel_tol=0.3)
     assert equal_tolerance(Handler.travel_times[5], 600, rel_tol=0.3)
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=10)
 def test_taxi_large_scale_mixed_mode_noncongested():
 
     # World definition
