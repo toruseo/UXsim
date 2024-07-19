@@ -6,6 +6,7 @@ Note that it uses random numbers for rouce choice behavior, so the results may v
 import pytest
 from uxsim import *
 import pandas as pd
+from collections import defaultdict
 
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     if check == 0 and abs_tol == 0:
@@ -666,3 +667,194 @@ def test_route_multiple_links_between_same_nodes():
     assert equal_tolerance(np.average(vol11s), np.average(vol12s), rel_tol=0.2)
     assert equal_tolerance(np.average(vol21s), np.average(vol22s), rel_tol=0.2)
     assert equal_tolerance(np.average(vol11s)+np.average(vol12s), np.average(vol21s)+np.average(vol22s), rel_tol=0.2)
+
+
+@pytest.mark.flaky(reruns=5)
+def test_route_choice_update_gradual():
+    res = defaultdict(list)
+
+    for i in range(10):
+        W = World(
+            name="",
+            deltan=5, 
+            tmax=2000, 
+            print_mode=1, save_mode=0, show_mode=1,
+            random_seed=None,
+            duo_update_time=300,
+            duo_update_weight=1,
+            route_choice_update_gradual=True
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("mid1", 1, 1)
+        W.addNode("mid2", -1, 1)
+        W.addNode("dest", 0, 2)
+        link11 = W.addLink("link11", "orig", "mid1", length=2000, free_flow_speed=30, jam_density=0.2, capacity_out=0.4)
+        link12 = W.addLink("link12", "mid1", "dest", length=500, free_flow_speed=30, jam_density=0.2)
+        link21 = W.addLink("link21", "orig", "mid2", length=2000, free_flow_speed=20, jam_density=0.2)
+        link22 = W.addLink("link22", "mid2", "dest", length=500, free_flow_speed=20, jam_density=0.2)
+        W.adddemand("orig", "dest", 0, 1500, 0.8)
+
+        W.exec_simulation()
+
+        W.analyzer.print_simple_stats()
+
+        W.analyzer.basic_analysis()
+
+        df = W.analyzer.link_cumulative_to_pandas()
+
+        for link, t in [("link11", 250), ("link11", 500), ("link11", 750), ("link11", 1000), ("link21", 250), ("link21", 500), ("link21", 750), ("link21", 1000)]:
+            res[link, t].append(df.loc[(df["link"] == link) & (df["t"] == t), "arrival_count"].item())
+
+    for key in res:
+        res[key] = np.mean(res[key])
+
+    assert equal_tolerance(res["link11", 250], 200, rel_tol=0.1)
+    assert equal_tolerance(res["link11", 500], 360, rel_tol=0.1)
+    assert equal_tolerance(res["link11", 750], 430, rel_tol=0.1)
+    assert equal_tolerance(res["link11",1000], 460, rel_tol=0.1)
+    assert equal_tolerance(res["link21", 250], 0, abs_tol=20)
+    assert equal_tolerance(res["link21", 500], 40, abs_tol=20, rel_tol=0.2)
+    assert equal_tolerance(res["link21", 750], 170, rel_tol=0.1)
+    assert equal_tolerance(res["link21",1000], 340, rel_tol=0.1)
+
+    
+@pytest.mark.flaky(reruns=5)
+def test_route_choice_update_instant():
+    res = defaultdict(list)
+
+    for i in range(10):
+        W = World(
+            name="",
+            deltan=5, 
+            tmax=2000, 
+            print_mode=1, save_mode=0, show_mode=1,
+            random_seed=None,
+            duo_update_time=300,
+            duo_update_weight=1,
+            route_choice_update_gradual=False
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("mid1", 1, 1)
+        W.addNode("mid2", -1, 1)
+        W.addNode("dest", 0, 2)
+        link11 = W.addLink("link11", "orig", "mid1", length=2000, free_flow_speed=30, jam_density=0.2, capacity_out=0.4)
+        link12 = W.addLink("link12", "mid1", "dest", length=500, free_flow_speed=30, jam_density=0.2)
+        link21 = W.addLink("link21", "orig", "mid2", length=2000, free_flow_speed=20, jam_density=0.2)
+        link22 = W.addLink("link22", "mid2", "dest", length=500, free_flow_speed=20, jam_density=0.2)
+        W.adddemand("orig", "dest", 0, 1500, 0.8)
+
+        W.exec_simulation()
+
+        W.analyzer.print_simple_stats()
+
+        W.analyzer.basic_analysis()
+
+        df = W.analyzer.link_cumulative_to_pandas()
+
+        for link, t in [("link11", 250), ("link11", 500), ("link11", 750), ("link11", 1000), ("link21", 250), ("link21", 500), ("link21", 750), ("link21", 1000)]:
+            res[link, t].append(df.loc[(df["link"] == link) & (df["t"] == t), "arrival_count"].item())
+
+    for key in res:
+        res[key] = np.mean(res[key])
+
+    assert equal_tolerance(res["link11", 250], 200, rel_tol=0.1)
+    assert equal_tolerance(res["link11", 500], 240, rel_tol=0.1)
+    assert equal_tolerance(res["link11", 750], 240, rel_tol=0.1)
+    assert equal_tolerance(res["link11",1000], 320, rel_tol=0.1)
+    assert equal_tolerance(res["link21", 250], 0, abs_tol=20)
+    assert equal_tolerance(res["link21", 500], 160, abs_tol=20, rel_tol=0.2)
+    assert equal_tolerance(res["link21", 750], 360, rel_tol=0.1)
+    assert equal_tolerance(res["link21",1000], 480, rel_tol=0.1)
+
+
+@pytest.mark.flaky(reruns=5)
+def test_route_choice_4route_congestion_avoidance_gradual():
+    
+    tt1s = []
+    tt2s = []
+    tt3s = []
+    tt4s = []
+    vol1s = []
+    vol2s = []
+    vol3s = []
+    vol4s = []
+    ttas = []
+
+    for i in range(20):
+        W = World(
+            name="",
+            deltan=5, 
+            tmax=3000, 
+            print_mode=1, save_mode=1, show_mode=1,
+            random_seed=None,
+            duo_update_time=100,
+            duo_update_weight=0.5,
+            route_choice_update_gradual=True
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("mid1", 1, 1)
+        W.addNode("mid2", 2, 1)
+        W.addNode("mid3", 3, 1)
+        W.addNode("mid4", 4, 1)
+        W.addNode("dest", 0, 2)
+        link11 = W.addLink("link11", "orig", "mid1", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.3)
+        link12 = W.addLink("link12", "mid1", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+        link21 = W.addLink("link21", "orig", "mid2", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.3)
+        link22 = W.addLink("link22", "mid2", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+        link31 = W.addLink("link31", "orig", "mid3", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.3)
+        link32 = W.addLink("link32", "mid3", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+        link41 = W.addLink("link41", "orig", "mid4", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.3)
+        link42 = W.addLink("link42", "mid4", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+        W.adddemand("orig", "dest", 0, 2000, 0.8)
+
+        W.exec_simulation() 
+
+        W.analyzer.print_simple_stats()
+
+        # W.analyzer.time_space_diagram_traj_links([link11, link12])
+        # W.analyzer.time_space_diagram_traj_links([link21, link22])
+        # W.analyzer.time_space_diagram_traj_links([link31, link32])
+        # W.analyzer.time_space_diagram_traj_links([link41, link42])
+        W.analyzer.basic_analysis()
+
+        df = W.analyzer.link_to_pandas()
+
+        tt1 = df[df["link"].isin(("link11", "link12"))]["average_travel_time"].sum()
+        tt2 = df[df["link"].isin(("link21", "link22"))]["average_travel_time"].sum()
+        tt3 = df[df["link"].isin(("link31", "link32"))]["average_travel_time"].sum()
+        tt4 = df[df["link"].isin(("link41", "link42"))]["average_travel_time"].sum()
+        vol1 = df[df["link"].isin(["link11"])]["traffic_volume"].values[0]
+        vol2 = df[df["link"].isin(["link21"])]["traffic_volume"].values[0]
+        vol3 = df[df["link"].isin(["link31"])]["traffic_volume"].values[0]
+        vol4 = df[df["link"].isin(["link41"])]["traffic_volume"].values[0]
+
+        df2 = W.analyzer.od_to_pandas()
+        tta = df2["average_travel_time"].values[0]
+
+        tt1s.append(tt1)
+        tt2s.append(tt2)
+        tt3s.append(tt3)
+        tt4s.append(tt4)
+        vol1s.append(vol1)
+        vol2s.append(vol2)
+        vol3s.append(vol3)
+        vol4s.append(vol4)
+            
+        ttas.append(tta)
+
+    print(f"{np.average(tt1s) = }\n{np.average(tt2s) = }\n{np.average(tt3s) = }\n{np.average(tt4s) = }\n{np.average(vol1s) = }\n{np.average(vol2s) = }\n{np.average(vol3s) = }\n{np.average(vol4s) = }\n{np.average(np.concatenate((tt1s, tt2s, tt3s, tt4s))) = }\n{np.average(np.concatenate((vol1s, vol2s, vol3s, vol4s))) = }")
+    ttave = np.average(np.concatenate((tt1s, tt2s, tt3s, tt4s)))
+    volave = np.average(np.concatenate((vol1s, vol2s, vol3s, vol4s)))
+
+    assert equal_tolerance(np.average(tt1s), ttave, rel_tol=0.1)
+    assert equal_tolerance(np.average(tt2s), ttave, rel_tol=0.1)
+    assert equal_tolerance(np.average(tt3s), ttave, rel_tol=0.1)
+    assert equal_tolerance(np.average(tt4s), ttave, rel_tol=0.1)
+    assert equal_tolerance(np.average(vol1s), volave, rel_tol=0.1)
+    assert equal_tolerance(np.average(vol2s), volave, rel_tol=0.1)
+    assert equal_tolerance(np.average(vol3s), volave, rel_tol=0.1)
+    assert equal_tolerance(np.average(vol4s), volave, rel_tol=0.1)
+    assert equal_tolerance(volave*4, 2000*0.8)

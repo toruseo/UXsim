@@ -45,7 +45,7 @@ def generate_grid_network(W, imax, jmax, **kwargs):
     return nodes, links
 
 def enumerate_k_shortest_routes(W, source, target, k, cost_function=lambda l: l.length/l.u, print_stats=0):
-    """"
+    """
     Enumerate the k shortest routes between two nodes in a network.
 
     Parameters
@@ -59,9 +59,14 @@ def enumerate_k_shortest_routes(W, source, target, k, cost_function=lambda l: l.
     k : int
         The number of shortest routes to enumerate.
     cost_function : function
-        A link cost function to compute shortest path. Default is the free-flow travel time.
+        A link cost function to compute shortest path. The argument is Link object. Default is the free-flow travel time, `lambda l: l.length/l.u`.
     print_stats : bool
         Print the statistics of the paths.
+    
+    Returns
+    -------
+    routes : list
+        A list of k shortest routes. Each route is a list of link names.
     """
     G = nx.DiGraph()
     for l in W.LINKS:

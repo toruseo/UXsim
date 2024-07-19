@@ -900,6 +900,8 @@ class Vehicle:
                 s.orig.generation_queue.append(s)
         if s.state == "wait":
             #wait at the vertical queue at the origin node
+            if s.W.route_choice_update_gradual:
+                s.route_pref_update()
             pass
         if s.state == "run":
             #drive within the link
@@ -911,6 +913,9 @@ class Vehicle:
             if s.x == s.link.length:
                 if s.link.end_node in s.node_event.keys():
                     s.node_event[s.link.end_node]()
+                
+                if s.W.route_choice_update_gradual:
+                    s.route_pref_update()
                 
                 if s.link.end_node == s.dest:
                     if s.mode == "single_trip":
@@ -989,7 +994,7 @@ class Vehicle:
             s.move_remain = s.x_next - s.link.length
             s.x_next = s.link.length
 
-    def route_pref_update(s, weight):
+    def route_pref_update(s, weight=1):
         """
         Updates the vehicle's link preferences for route choice.
 
@@ -997,7 +1002,7 @@ class Vehicle:
         ----------
         weight : float
             The weight for updating the link preferences based on the recent travel time.
-            Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated.
+            Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated. THIS IS DISABLED FOR NOW.
 
         Notes
         -----
@@ -1265,18 +1270,25 @@ class RouteChoice:
         """
         Update link preference of all homogeneous travelers based on DUO principle.
         """
+        if s.W.route_choice_update_gradual == True:
+            weight0 = s.W.DUO_UPDATE_WEIGHT*(s.W.DELTAT/s.W.DUO_UPDATE_TIME)
+        else:
+            weight0 = s.W.DUO_UPDATE_WEIGHT
+        
         for dest in s.W.NODES:
             k = dest.id
-            weight = s.W.DUO_UPDATE_WEIGHT
+            weight = weight0
             if sum(list(s.route_pref[k].values())) == 0:
-                #最初にpreferenceが空なら確定的に初期化
+                #set 1 if prefernce is empty (i.e., the initial stage of simulation)
                 weight = 1
             for l in s.W.LINKS:
                 i = l.start_node.id
                 j = l.end_node.id
                 if j == s.W.ROUTECHOICE.next[i,k]:
+                    #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l] + weight)
                     s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight
                 else:
+                    #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l])
                     s.route_pref[k][l] = (1-weight)*s.route_pref[k][l]
 
 
@@ -1285,7 +1297,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1):
         """
         Create a World.
 
@@ -1303,6 +1315,8 @@ class World:
             The update weight for route choice, default is 0.5.
         duo_noise : float, optional
             The noise in route choice, default is 0.01.
+        route_choice_update_gradual : bool, optional
+            Whether to update route choice ratio gradually or not. True is recommended. Default is False for backward compatibility.
         eular_dt : float, optional
             The time aggregation size for eularian traffic state computation, default is 120.
         random_seed : int or None, optional
@@ -1358,6 +1372,8 @@ class World:
         W.vehicle_logging_timestep_interval = vehicle_logging_timestep_interval
 
         W.route_choice_principle = route_choice_principle
+
+        W.route_choice_update_gradual = route_choice_update_gradual
 
         ## progress print setting
         W.show_progress = show_progress
@@ -1765,11 +1781,18 @@ class World:
             for name in list(W.VEHICLES_LIVING.keys()):
                 W.VEHICLES_LIVING[name].update()
 
-            if W.T % W.DELTAT_ROUTE == 0:
-                W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
+            if W.route_choice_update_gradual == True:
+                if W.T % W.DELTAT_ROUTE == 0:
+                    W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
                 W.ROUTECHOICE.homogeneous_DUO_update()
-                for veh in W.VEHICLES_LIVING.values():
-                    veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
+            else:
+                # old rule, keeping for compatibility
+                if W.T % W.DELTAT_ROUTE == 0:
+                    W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
+                    W.ROUTECHOICE.homogeneous_DUO_update()
+                    for veh in W.VEHICLES_LIVING.values():
+                        veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
+
 
             W.TIME = W.T*W.DELTAT
 
@@ -1892,6 +1915,7 @@ class World:
     def get_nodes_in_area(W, x, y, r):
         """
         Get the nodes in the area defined by the center coordinates and radius.
+        
         Parameters
         ----------
         x : float
