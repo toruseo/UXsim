@@ -9,7 +9,8 @@ from collections import defaultdict as ddict
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.sparse.csgraph import floyd_warshall
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import floyd_warshall, dijkstra
 import dill as pickle
 
 from .analyzer import *
@@ -1219,7 +1220,7 @@ class RouteChoice:
         s.dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
         #iからjに行くために次に進むべきノード
         s.next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        #iからjに行くために来たノード
+        #iからjに行くために来たノード. This is not used anymore
         s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
 
         #homogeneous DUO用．kに行くための最短経路的上にあれば1
@@ -1228,6 +1229,39 @@ class RouteChoice:
     def route_search_all(s, infty=np.inf, noise=0):
         """
         Compute the current shortest path based on instantanious travel time.
+
+        Parameters
+        ----------
+        infty : float
+            value representing infinity.
+        noise : float
+            very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
+        """
+        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+
+        for link in s.W.LINKS:
+            i = link.start_node.id
+            j = link.end_node.id
+            if s.W.ADJ_MAT[i,j]:
+                new_link_tt = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
+                n = adj_mat_link_count[i,j]
+                s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
+                # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
+                adj_mat_link_count[i,j] += 1
+                if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
+                    s.adj_mat_time[i,j] = np.inf
+            else:
+                s.adj_mat_time[i,j] = np.inf
+        
+        dist, next_ = dijkstra(csr_matrix(s.adj_mat_time).T, return_predecessors=True)
+        s.dist = dist.T
+        s.next = next_.T
+
+    def route_search_all_old(s, infty=np.inf, noise=0):
+        """
+        Compute the current shortest path based on instantanious travel time. 
+        OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
 
         Parameters
         ----------
@@ -2028,6 +2062,21 @@ class World:
     def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6):
         """
         Visualizes the entire transportation network shape.
+
+        Parameters
+        ----------
+        W : Network
+            The transportation network object.
+        width : int, optional
+            The width of the links in the visualization. Default is 1.
+        left_handed : int, optional
+            Determines the direction of the links. If 1, the links drawn with left-handed traffic rule. If 0, the links are right-handed. Default is 1.
+        figsize : tuple, optional
+            The size of the figure in inches. Default is (6, 6).
+        network_font_size : int, optional
+            The font size of the node and link labels. If 0, no labels will be displayed. Default is 10.
+        node_size : int, optional
+            The size of the nodes in the visualization. Default is 6.
         """
         plt.rcParams["font.family"] = get_font_for_matplotlib()
 
@@ -2036,7 +2085,7 @@ class World:
         for n in W.NODES:
             plt.plot(n.x, n.y, "o", c="gray", ms=node_size, zorder=10)
             if network_font_size > 0:
-                plt.text(n.x, n.y, n.name, c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
+                plt.text(n.x, n.y, f"{n.id}: {n.name}", c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
         for l in W.LINKS:
             x1, y1 = l.start_node.x, l.start_node.y
             x2, y2 = l.end_node.x, l.end_node.y
@@ -2048,7 +2097,7 @@ class World:
             xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
             plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "gray", lw=width, zorder=6, solid_capstyle="butt")
             if network_font_size > 0:
-                plt.text(xmid1, ymid1, l.name, c="b", zorder=20, fontsize=network_font_size)
+                plt.text(xmid1, ymid1, f"{l.id}: {l.name}", c="b", zorder=20, fontsize=network_font_size)
         maxx = max([n.x for n in W.NODES])
         minx = min([n.x for n in W.NODES])
         maxy = max([n.y for n in W.NODES])
