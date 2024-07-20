@@ -1149,6 +1149,7 @@ class Analyzer:
         -------
         pd.DataFrame
             A DataFrame containing the travel logs of vehicles, with the columns:
+            
             - 'name': the name of the vehicle (platoon).
             - 'dn': the platoon size.
             - 'orig': the origin node of the vehicle's trip.
@@ -1199,6 +1200,7 @@ class Analyzer:
         -------
         pd.DataFrame
             A DataFrame containing the top of the vehicle trip logs, with the columns:
+            
             - 'name': the name of the vehicle (platoon).
             - 'orig': the origin node of the vehicle's trip.
             - 'dest': the destination node of the vehicle's trip.

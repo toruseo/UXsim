@@ -9,7 +9,8 @@ from collections import defaultdict as ddict
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.sparse.csgraph import floyd_warshall
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import floyd_warshall, dijkstra
 import dill as pickle
 
 from .analyzer import *
@@ -900,6 +901,8 @@ class Vehicle:
                 s.orig.generation_queue.append(s)
         if s.state == "wait":
             #wait at the vertical queue at the origin node
+            if s.W.route_choice_update_gradual:
+                s.route_pref_update()
             pass
         if s.state == "run":
             #drive within the link
@@ -911,6 +914,9 @@ class Vehicle:
             if s.x == s.link.length:
                 if s.link.end_node in s.node_event.keys():
                     s.node_event[s.link.end_node]()
+                
+                if s.W.route_choice_update_gradual:
+                    s.route_pref_update()
                 
                 if s.link.end_node == s.dest:
                     if s.mode == "single_trip":
@@ -989,7 +995,7 @@ class Vehicle:
             s.move_remain = s.x_next - s.link.length
             s.x_next = s.link.length
 
-    def route_pref_update(s, weight):
+    def route_pref_update(s, weight=1):
         """
         Updates the vehicle's link preferences for route choice.
 
@@ -997,7 +1003,7 @@ class Vehicle:
         ----------
         weight : float
             The weight for updating the link preferences based on the recent travel time.
-            Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated.
+            Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated. THIS IS DISABLED FOR NOW.
 
         Notes
         -----
@@ -1214,7 +1220,7 @@ class RouteChoice:
         s.dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
         #iからjに行くために次に進むべきノード
         s.next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        #iからjに行くために来たノード
+        #iからjに行くために来たノード. This is not used anymore
         s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
 
         #homogeneous DUO用．kに行くための最短経路的上にあれば1
@@ -1223,6 +1229,39 @@ class RouteChoice:
     def route_search_all(s, infty=np.inf, noise=0):
         """
         Compute the current shortest path based on instantanious travel time.
+
+        Parameters
+        ----------
+        infty : float
+            value representing infinity.
+        noise : float
+            very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
+        """
+        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+
+        for link in s.W.LINKS:
+            i = link.start_node.id
+            j = link.end_node.id
+            if s.W.ADJ_MAT[i,j]:
+                new_link_tt = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
+                n = adj_mat_link_count[i,j]
+                s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
+                # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
+                adj_mat_link_count[i,j] += 1
+                if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
+                    s.adj_mat_time[i,j] = np.inf
+            else:
+                s.adj_mat_time[i,j] = np.inf
+        
+        dist, next_ = dijkstra(csr_matrix(s.adj_mat_time).T, return_predecessors=True)
+        s.dist = dist.T
+        s.next = next_.T
+
+    def route_search_all_old(s, infty=np.inf, noise=0):
+        """
+        Compute the current shortest path based on instantanious travel time. 
+        OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
 
         Parameters
         ----------
@@ -1265,18 +1304,25 @@ class RouteChoice:
         """
         Update link preference of all homogeneous travelers based on DUO principle.
         """
+        if s.W.route_choice_update_gradual == True:
+            weight0 = s.W.DUO_UPDATE_WEIGHT*(s.W.DELTAT/s.W.DUO_UPDATE_TIME)
+        else:
+            weight0 = s.W.DUO_UPDATE_WEIGHT
+        
         for dest in s.W.NODES:
             k = dest.id
-            weight = s.W.DUO_UPDATE_WEIGHT
+            weight = weight0
             if sum(list(s.route_pref[k].values())) == 0:
-                #最初にpreferenceが空なら確定的に初期化
+                #set 1 if prefernce is empty (i.e., the initial stage of simulation)
                 weight = 1
             for l in s.W.LINKS:
                 i = l.start_node.id
                 j = l.end_node.id
                 if j == s.W.ROUTECHOICE.next[i,k]:
+                    #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l] + weight)
                     s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight
                 else:
+                    #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l])
                     s.route_pref[k][l] = (1-weight)*s.route_pref[k][l]
 
 
@@ -1285,7 +1331,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1):
         """
         Create a World.
 
@@ -1303,6 +1349,8 @@ class World:
             The update weight for route choice, default is 0.5.
         duo_noise : float, optional
             The noise in route choice, default is 0.01.
+        route_choice_update_gradual : bool, optional
+            Whether to update route choice ratio gradually or not. True is recommended. Default is False for backward compatibility.
         eular_dt : float, optional
             The time aggregation size for eularian traffic state computation, default is 120.
         random_seed : int or None, optional
@@ -1358,6 +1406,8 @@ class World:
         W.vehicle_logging_timestep_interval = vehicle_logging_timestep_interval
 
         W.route_choice_principle = route_choice_principle
+
+        W.route_choice_update_gradual = route_choice_update_gradual
 
         ## progress print setting
         W.show_progress = show_progress
@@ -1765,11 +1815,18 @@ class World:
             for name in list(W.VEHICLES_LIVING.keys()):
                 W.VEHICLES_LIVING[name].update()
 
-            if W.T % W.DELTAT_ROUTE == 0:
-                W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
+            if W.route_choice_update_gradual == True:
+                if W.T % W.DELTAT_ROUTE == 0:
+                    W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
                 W.ROUTECHOICE.homogeneous_DUO_update()
-                for veh in W.VEHICLES_LIVING.values():
-                    veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
+            else:
+                # old rule, keeping for compatibility
+                if W.T % W.DELTAT_ROUTE == 0:
+                    W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
+                    W.ROUTECHOICE.homogeneous_DUO_update()
+                    for veh in W.VEHICLES_LIVING.values():
+                        veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
+
 
             W.TIME = W.T*W.DELTAT
 
@@ -1892,6 +1949,7 @@ class World:
     def get_nodes_in_area(W, x, y, r):
         """
         Get the nodes in the area defined by the center coordinates and radius.
+        
         Parameters
         ----------
         x : float
@@ -2004,6 +2062,21 @@ class World:
     def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6):
         """
         Visualizes the entire transportation network shape.
+
+        Parameters
+        ----------
+        W : Network
+            The transportation network object.
+        width : int, optional
+            The width of the links in the visualization. Default is 1.
+        left_handed : int, optional
+            Determines the direction of the links. If 1, the links drawn with left-handed traffic rule. If 0, the links are right-handed. Default is 1.
+        figsize : tuple, optional
+            The size of the figure in inches. Default is (6, 6).
+        network_font_size : int, optional
+            The font size of the node and link labels. If 0, no labels will be displayed. Default is 10.
+        node_size : int, optional
+            The size of the nodes in the visualization. Default is 6.
         """
         plt.rcParams["font.family"] = get_font_for_matplotlib()
 
@@ -2012,7 +2085,7 @@ class World:
         for n in W.NODES:
             plt.plot(n.x, n.y, "o", c="gray", ms=node_size, zorder=10)
             if network_font_size > 0:
-                plt.text(n.x, n.y, n.name, c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
+                plt.text(n.x, n.y, f"{n.id}: {n.name}", c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
         for l in W.LINKS:
             x1, y1 = l.start_node.x, l.start_node.y
             x2, y2 = l.end_node.x, l.end_node.y
@@ -2024,7 +2097,7 @@ class World:
             xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
             plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "gray", lw=width, zorder=6, solid_capstyle="butt")
             if network_font_size > 0:
-                plt.text(xmid1, ymid1, l.name, c="b", zorder=20, fontsize=network_font_size)
+                plt.text(xmid1, ymid1, f"{l.id}: {l.name}", c="b", zorder=20, fontsize=network_font_size)
         maxx = max([n.x for n in W.NODES])
         minx = min([n.x for n in W.NODES])
         maxy = max([n.y for n in W.NODES])
