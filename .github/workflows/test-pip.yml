@@ -3,6 +3,7 @@ name: Test pip
 on:
   release:
     types: [published]
+  workflow_dispatch:
   schedule:
     - cron: '0 6 * * 1'
 
