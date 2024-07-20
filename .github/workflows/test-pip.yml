@@ -21,6 +21,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install .
     - name: Install pytest other dependencies
-      run: pip install usxim
+      run: pip install uxsim
     - name: Run tests with pytest
       run: pytest -n auto tests/test_verification_sioux_falls.py --durations=0 -v
