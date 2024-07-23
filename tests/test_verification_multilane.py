@@ -4,6 +4,7 @@ Some of the tests are probablistic.
 """
 
 import pytest
+import random
 from uxsim import *
 import numpy as np
 
