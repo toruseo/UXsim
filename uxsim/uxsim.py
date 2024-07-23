@@ -3,7 +3,7 @@ UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.
 This `uxsim.py` is the core of UXsim. It summarizes the classes and methods that are essential for the simulation.
 """
 
-import random, csv, time, math, string, warnings
+import csv, time, math, string, warnings
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
 
@@ -112,7 +112,7 @@ class Node:
         s.name = name
         if s.name in [n.name for n in s.W.NODES]:
             if auto_rename:
-                s.name = s.name+"_renamed"+"".join(random.choices(string.ascii_letters + string.digits, k=8))
+                s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
                 raise ValueError(f"Node name {s.name} already used by another node. Please specify a unique name.")
         s.W.NODES.append(s)
@@ -167,9 +167,9 @@ class Node:
                     
                     preference = [veh.route_pref[l] for l in outlinks]
                     if sum(preference) > 0:
-                        outlink = random.choices(outlinks, preference)[0]
+                        outlink = s.W.rng.choice(outlinks, p=np.array(preference)/sum(preference))
                     else:
-                        outlink = random.choices(outlinks)[0]
+                        outlink = s.W.rng.choice(outlinks)
 
                     if (len(outlink.vehicles) < outlink.lanes or outlink.vehicles[-outlink.lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
                         #受け入れ可能な場合，リンク優先度に応じて選択
@@ -221,7 +221,7 @@ class Node:
         for outlink in {veh.route_next_link for veh in s.incoming_vehicles if veh.route_next_link != None}:
             for i in range(outlink.lanes):#車線の数だけ受け入れ試行回数あり
                 outlinks.append(outlink)
-        random.shuffle(outlinks)
+        s.W.rng.shuffle(outlinks)
 
         for outlink in outlinks: 
             if (len(outlink.vehicles) < outlink.lanes or outlink.vehicles[-outlink.lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN and s.flow_capacity_remain >= s.W.DELTAN:
@@ -235,7 +235,10 @@ class Node:
                 ] 
                 if len(vehs) == 0:
                     continue
-                veh = random.choices(vehs, [veh.link.merge_priority for veh in vehs])[0] #車線の少ないリンクは，車線の多いリンクの試行回数の恩恵を受けて少し有利になる．大きな差はでないので許容する
+                merge_priorities = np.array([veh.link.merge_priority for veh in vehs])
+                if sum(merge_priorities) == 0:
+                    merge_priorities = np.ones(len(merge_priorities))
+                veh = s.W.rng.choice(vehs, p=merge_priorities/sum(merge_priorities)) #車線の少ないリンクは，車線の多いリンクの試行回数の恩恵を受けて少し有利になる．大きな差はでないので許容する
                 
                 inlink = veh.link
 
@@ -506,7 +509,7 @@ class Link:
         s.name = name
         if s.name in [l.name for l in s.W.LINKS]:
             if auto_rename:
-                s.name = s.name+"_renamed"+"".join(random.choices(string.ascii_letters + string.digits, k=8))
+                s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
                 raise ValueError(f"Link name {s.name} already used by another link. Please specify a unique name.")
         s.W.LINKS.append(s)
@@ -856,7 +859,7 @@ class Vehicle:
         s.log_s = [] #車頭距離
         s.log_v = [] #現在速度
         s.log_lane = [] #車線
-        s.color = (random.random(), random.random(), random.random())
+        s.color = (s.W.rng.random(), s.W.rng.random(), s.W.rng.random())
 
         s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
 
@@ -869,7 +872,7 @@ class Vehicle:
             s.name = str(s.id)
         if s.name in [veh.name for veh in s.W.VEHICLES.values()]:
             if auto_rename:
-                s.name = s.name+"_renamed"+"".join(random.choices(string.ascii_letters + string.digits, k=8))
+                s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
                 raise ValueError(f"Vehicle name {s.name} already used by another vehicle. Please specify a unique name.")
         s.W.VEHICLES[s.name] = s
@@ -1052,9 +1055,9 @@ class Vehicle:
                 preference = [s.route_pref[l] for l in outlinks]
 
                 if sum(preference) > 0:
-                    s.route_next_link = random.choices(outlinks, preference)[0]
+                    s.route_next_link = s.W.rng.choice(outlinks, p=np.array(preference)/sum(preference))
                 else:
-                    s.route_next_link = random.choices(outlinks)[0]
+                    s.route_next_link = s.W.rng.choice(outlinks)
             else:
                 s.route_next_link = None
 
@@ -1244,7 +1247,7 @@ class RouteChoice:
             i = link.start_node.id
             j = link.end_node.id
             if s.W.ADJ_MAT[i,j]:
-                new_link_tt = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
+                new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.route_choice_penalty
                 n = adj_mat_link_count[i,j]
                 s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
                 # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
@@ -1278,7 +1281,7 @@ class RouteChoice:
             i = link.start_node.id
             j = link.end_node.id
             if s.W.ADJ_MAT[i,j]:
-                new_link_tt = link.traveltime_instant[-1]*random.uniform(1, 1+noise) + link.route_choice_penalty
+                new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.route_choice_penalty
                 n = adj_mat_link_count[i,j]
                 s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
                 # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
@@ -1380,8 +1383,8 @@ class World:
         """
 
         ## parameter setting
-        random.seed(random_seed)
-        np.random.seed(random_seed)
+        
+        W.rng = np.random.default_rng(seed=random_seed)
         W.random_seed = random_seed
 
         W.TMAX = tmax   #simulation time (s)

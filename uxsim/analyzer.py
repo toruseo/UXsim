@@ -5,7 +5,7 @@ This module is automatically loaded when you import the `uxsim` module.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import random, glob, os, csv, time
+import glob, os, csv, time
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Resampling
@@ -870,14 +870,14 @@ class Analyzer:
         dcoef = (maxx-minx)/20
 
         for veh in s.W.VEHICLES.values():
-            if random.random() > sample_ratio:
+            if s.W.rng.random() > sample_ratio:
                 continue
             ts = []
             xs = []
             ys = []
             vs = []
-            dx = (random.random()-0.5)*dcoef
-            dy = (random.random()-0.5)*dcoef
+            dx = (s.W.rng.random()-0.5)*dcoef
+            dy = (s.W.rng.random()-0.5)*dcoef
             for i in range(0, len(veh.log_t), interval):
                 if veh.log_state[i] == "run":
                     link = veh.log_link[i]
