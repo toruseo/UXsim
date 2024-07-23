@@ -1214,16 +1214,16 @@ class RouteChoice:
             The world to which this belongs.
         """
         s.W = W
-        #リンク旅行時間行列
+        #リンク旅行時間行列: adjacency matrix whose cost is link travel cost
         s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        #ij間最短距離
+        #ij間最短距離: the shortest path cost from node i to j
         s.dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        #iからjに行くために次に進むべきノード
+        #iからjに行くために次に進むべきノード: the node to proceed from i when the destination is j
         s.next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
         #iからjに行くために来たノード. This is not used anymore
         s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
 
-        #homogeneous DUO用．kに行くための最短経路的上にあれば1
+        #homogeneous DUO用．kに行くための最短経路的上にあれば1: {node_id: {link: preference}. preference of link is 1 if it is on the shortest path to node_id
         s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES}
 
     def route_search_all(s, infty=np.inf, noise=0):
@@ -1254,9 +1254,10 @@ class RouteChoice:
             else:
                 s.adj_mat_time[i,j] = np.inf
         
-        dist, next_ = dijkstra(csr_matrix(s.adj_mat_time).T, return_predecessors=True)
+        #computes the shortest path from *destination* to *origin*, so that the pred_matrix becomes the next_matrix in the original problem. It is simply achieved by tranposing the matrices twice.
+        dist, pred = dijkstra(csr_matrix(s.adj_mat_time).T, return_predecessors=True)
         s.dist = dist.T
-        s.next = next_.T
+        s.next = pred.T
 
     def route_search_all_old(s, infty=np.inf, noise=0):
         """
@@ -1293,7 +1294,7 @@ class RouteChoice:
         s.next = -np.ones((n_vertices, n_vertices), dtype=int)
         for i in range(n_vertices):
             for j in range(n_vertices):
-                # iからjへの最短経路を逆にたどる．．． -> todo: 起終点を逆にした最短経路探索にすればよい
+                # iからjへの最短経路を逆にたどる．．． -> todo: 起終点を逆にした最短経路探索にすればよい -> done
                 if i != j:
                     prev = j
                     while s.pred[i, prev] != i and s.pred[i, prev] != -9999:
@@ -1308,7 +1309,7 @@ class RouteChoice:
             weight0 = s.W.DUO_UPDATE_WEIGHT*(s.W.DELTAT/s.W.DUO_UPDATE_TIME)
         else:
             weight0 = s.W.DUO_UPDATE_WEIGHT
-        
+                
         for dest in s.W.NODES:
             k = dest.id
             weight = weight0
@@ -1318,7 +1319,7 @@ class RouteChoice:
             for l in s.W.LINKS:
                 i = l.start_node.id
                 j = l.end_node.id
-                if j == s.W.ROUTECHOICE.next[i,k]:
+                if j == s.next[i,k]:
                     #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l] + weight)
                     s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight
                 else:
@@ -2127,6 +2128,17 @@ class World:
             The copied World object.
         """
         return pickle.loads(pickle.dumps(W))
+
+    def save(W, fname):
+        """
+        Save the World object.
+
+        Notes
+        -----
+        The World object is saved as a pickle file.
+        """
+        with open(f"{fname}.pkl", "wb") as f:
+            pickle.dump(W, f)
 
 
 class Route:
