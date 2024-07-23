@@ -141,6 +141,7 @@ p*_*.py
 .vscode/*
 *.prof
 demos_and_examples/uxsim/*
+/*.pkl
 
 # pre-commit
 .pre-commit-config.yaml

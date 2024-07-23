@@ -22,8 +22,6 @@ def generate_grid_network(W, imax, jmax, **kwargs):
     
     # Define the scenario
     #deploy nodes as an imax x jmax grid
-    imax = 3
-    jmax = 3
     nodes = {}
     for i in range(imax):
         for j in range(jmax):
