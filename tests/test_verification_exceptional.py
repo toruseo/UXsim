@@ -1,6 +1,8 @@
 """
 This script verifies whether UXsim outputs plausible solutions for exceptional or uncommon situations.
 The behavior of UXsim may be updated in the future.
+
+It also tests other functions that are difficult to categorize to the other scripts.
 """
 
 import pytest
@@ -94,3 +96,51 @@ def test_too_many_vehicles_in_vertical_queue():
     assert equal_tolerance(sum([W.DELTAN for veh in W.VEHICLES.values() if veh.state=="run"]), 1000*0.04)
     assert equal_tolerance(sum([W.DELTAN for veh in W.VEHICLES.values() if veh.state=="wait"]), 1000-(500*0.8-1000/20)-(1000*0.04))
     assert equal_tolerance(df["total_travel_time"].values[0], 67050)
+
+def test_random_numbers_are_reproducible_by_fixing_random_seeds():
+    ttt = {}
+    for itr in range(2):
+        print(itr, "========="*3)
+        W = World(
+            name="",
+            deltan=10,
+            tmax=3600,
+            print_mode=1, save_mode=1, show_mode=0,
+            random_seed=42
+        )
+
+        n_nodes = 5
+        imax = n_nodes
+        jmax = n_nodes
+        nodes = {}
+        for i in range(imax):
+            for j in range(jmax):
+                nodes[i,j] = W.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
+
+        links = {}
+        for i in range(imax):
+            for j in range(jmax):
+                if i != imax-1:
+                    links[i,j,i+1,j] = W.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000)
+                if i != 0:
+                    links[i,j,i-1,j] = W.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000)
+                if j != jmax-1:
+                    links[i,j,i,j+1] = W.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000)
+                if j != 0:
+                    links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000)
+
+        od_pairs = [
+            (f"n(0, 0)", f"n({n_nodes-1}, {n_nodes-1})"),
+            (f"n({n_nodes-1}, 0)", f"n(0, {n_nodes-1})"),
+            (f"n(0, {n_nodes-1})", f"n({n_nodes-1}, 0)"),
+            (f"n({n_nodes-1}, {n_nodes-1})", f"n(0, 0)"),
+        ]
+        for od_pair in od_pairs:
+            W.adddemand(od_pair[0], od_pair[1], 0, 3000, 0.6+W.rng.random()*0.2)
+
+        W.exec_simulation()
+        W.analyzer.print_simple_stats()
+
+        ttt[itr] = W.analyzer.basic_to_pandas()["total_travel_time"][0]
+
+    assert ttt[0] == ttt[1]

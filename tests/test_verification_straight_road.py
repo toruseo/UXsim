@@ -3,6 +3,7 @@ This script verifies whether UXsim outputs reasonable solutions for a straight r
 """
 
 import pytest
+import random
 from uxsim import *
 
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):

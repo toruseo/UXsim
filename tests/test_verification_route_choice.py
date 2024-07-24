@@ -4,9 +4,10 @@ Note that it uses random numbers for rouce choice behavior, so the results may v
 """
 
 import pytest
+import random
+from collections import defaultdict
 from uxsim import *
 import pandas as pd
-from collections import defaultdict
 
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     if check == 0 and abs_tol == 0:

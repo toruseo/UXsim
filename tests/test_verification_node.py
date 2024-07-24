@@ -4,6 +4,7 @@ Note that it uses random numbers for node traffic behavior, so the results may v
 """
 
 import pytest
+import random
 from uxsim import *
 import pandas as pd
 
