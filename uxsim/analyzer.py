@@ -432,7 +432,7 @@ class Analyzer:
             linkslist = [linkslist]
 
         for links in linkslist:
-            linkdict = {}
+            linkdict = dict()
             d = 0
             for ll in links:
                 l = s.W.get_link(ll)

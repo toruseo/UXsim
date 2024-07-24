@@ -61,8 +61,8 @@ class Node:
         s.y = y
         
         #流入・流出リンク
-        s.inlinks = {}
-        s.outlinks = {}
+        s.inlinks = dict()
+        s.outlinks = dict()
 
         #リンク間遷移リクエスト（デマンド）
         s.incoming_vehicles = []
@@ -161,13 +161,13 @@ class Node:
                     #consider the link preferences
                     outlinks = list(s.outlinks.values())
                     if set(outlinks) & set(veh.links_prefer): 
-                        outlinks = list(set(outlinks) & set(veh.links_prefer))
+                        outlinks = sorted(set(outlinks) & set(veh.links_prefer))
                     if set(outlinks) & set(veh.links_avoid):
-                        outlinks = list(set(outlinks) - set(veh.links_avoid))
+                        outlinks = sorted(set(outlinks) - set(veh.links_avoid))
                     
-                    preference = [veh.route_pref[l] for l in outlinks]
+                    preference = np.array([veh.route_pref[l] for l in outlinks], dtype=float)
                     if sum(preference) > 0:
-                        outlink = s.W.rng.choice(outlinks, p=np.array(preference)/sum(preference))
+                        outlink = s.W.rng.choice(outlinks, p=preference/sum(preference))
                     else:
                         outlink = s.W.rng.choice(outlinks)
 
@@ -218,7 +218,8 @@ class Node:
         - The node capacity is not exceeded.
         """
         outlinks = []
-        for outlink in {veh.route_next_link for veh in s.incoming_vehicles if veh.route_next_link != None}:
+        outlink_candidates = {veh.route_next_link:0 for veh in s.incoming_vehicles if veh.route_next_link != None}
+        for outlink in outlink_candidates.keys():
             for i in range(outlink.lanes):#車線の数だけ受け入れ試行回数あり
                 outlinks.append(outlink)
         s.W.rng.shuffle(outlinks)
@@ -235,7 +236,7 @@ class Node:
                 ] 
                 if len(vehs) == 0:
                     continue
-                merge_priorities = np.array([veh.link.merge_priority for veh in vehs])
+                merge_priorities = np.array([veh.link.merge_priority for veh in vehs], dtype=float)
                 if sum(merge_priorities) == 0:
                     merge_priorities = np.ones(len(merge_priorities))
                 veh = s.W.rng.choice(vehs, p=merge_priorities/sum(merge_priorities)) #車線の少ないリンクは，車線の多いリンクの試行回数の恩恵を受けて少し有利になる．大きな差はでないので許容する
@@ -836,7 +837,7 @@ class Vehicle:
         s.dest_list = []
 
         #dict of events that are triggered when this vehicle reaches a certain node {Node: func}
-        s.node_event = {}
+        s.node_event = dict()
 
         #希望リンク重み：{link:重み}
         s.route_pref = route_pref
@@ -1048,14 +1049,13 @@ class Vehicle:
 
                 #if links_prefer is given and available at the node, select only from the links in the list. if links_avoid is given, select links not in the list.
                 if set(outlinks) & set(s.links_prefer):
-                    outlinks = list(set(outlinks) & set(s.links_prefer))
+                    outlinks = sorted(set(outlinks) & set(s.links_prefer))
                 if set(outlinks) & set(s.links_avoid):
-                    outlinks = list(set(outlinks) - set(s.links_avoid))
+                    outlinks = sorted(set(outlinks) - set(s.links_avoid))
 
-                preference = [s.route_pref[l] for l in outlinks]
-
+                preference = np.array([s.route_pref[l] for l in outlinks], dtype=float)
                 if sum(preference) > 0:
-                    s.route_next_link = s.W.rng.choice(outlinks, p=np.array(preference)/sum(preference))
+                    s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
                 else:
                     s.route_next_link = s.W.rng.choice(outlinks)
             else:
@@ -1716,7 +1716,7 @@ class World:
         #generate adjacency matrix
         W.ROUTECHOICE = RouteChoice(W)
         W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)])
-        W.ADJ_MAT_LINKS = {} #リンクオブジェクトが入った隣接行列（的な辞書）
+        W.ADJ_MAT_LINKS = dict() #リンクオブジェクトが入った隣接行列（的な辞書）
         for link in W.LINKS:
             for i,node in enumerate(W.NODES):
                 if node == link.start_node:
@@ -1809,7 +1809,7 @@ class World:
             for node in W.NODES:
                 node.generate()
                 node.update()
-
+                
             for node in W.NODES:
                 node.transfer()
 
@@ -1830,7 +1830,6 @@ class World:
                     W.ROUTECHOICE.homogeneous_DUO_update()
                     for veh in W.VEHICLES_LIVING.values():
                         veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
-
 
             W.TIME = W.T*W.DELTAT
 

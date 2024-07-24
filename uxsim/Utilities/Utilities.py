@@ -22,13 +22,13 @@ def generate_grid_network(W, imax, jmax, **kwargs):
     
     # Define the scenario
     #deploy nodes as an imax x jmax grid
-    nodes = {}
+    nodes = dict()
     for i in range(imax):
         for j in range(jmax):
             nodes[i,j] = W.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
 
     #create links between neighborhood nodes
-    links = {}
+    links = dict()
     for i in range(imax):
         for j in range(jmax):
             if i != imax-1:
