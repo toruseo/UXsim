@@ -165,7 +165,7 @@ class Node:
                     if set(outlinks) & set(veh.links_avoid):
                         outlinks = sorted(set(outlinks) - set(veh.links_avoid))
                     
-                    preference = np.array([veh.route_pref[l] for l in outlinks], dtype=float)
+                    preference = np.array([veh.route_pref[l.id] for l in outlinks], dtype=float)
                     if sum(preference) > 0:
                         outlink = s.W.rng.choice(outlinks, p=preference/sum(preference))
                     else:
@@ -847,7 +847,7 @@ class Vehicle:
         s.route_pref = route_pref
         if s.route_pref == None:
             if s.W.route_pref_for_vehs == None:
-                s.W.route_pref_for_vehs = {l:0 for l in s.W.LINKS}
+                s.W.route_pref_for_vehs = {l.id:0 for l in s.W.LINKS}
             s.route_pref = copy.copy(s.W.route_pref_for_vehs)
 
         #好むリンクと避けるリンク（近視眼的）
@@ -1028,15 +1028,15 @@ class Vehicle:
             if s.dest != None:
                 s.route_pref = s.W.ROUTECHOICE.route_pref[s.dest.id]
             else:
-                s.route_pref = {l:0 for l in s.W.LINKS}
+                s.route_pref = {l.id:0 for l in s.W.LINKS}
         elif s.route_choice_principle == "heterogeneous_DUO":
-            route_pref_new = {l:0 for l in s.W.LINKS}
+            route_pref_new = {l.id:0 for l in s.W.LINKS}
             k = s.dest.id
             for l in s.W.LINKS:
                 i = l.start_node.id
                 j = l.end_node.id
                 if j == s.W.ROUTECHOICE.next[i,k]:
-                    route_pref_new[l] = 1
+                    route_pref_new[l.id] = 1
 
             if sum(list(s.route_pref.values())) == 0:
                 #最初にpreferenceが空なら確定的に初期化
@@ -1059,7 +1059,7 @@ class Vehicle:
                 if set(outlinks) & set(s.links_avoid):
                     outlinks = sorted(set(outlinks) - set(s.links_avoid))
 
-                preference = np.array([s.route_pref[l] for l in outlinks], dtype=float)
+                preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=float)
                 if sum(preference) > 0:
                     s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
                 else:
@@ -1232,8 +1232,9 @@ class RouteChoice:
         #iからjに行くために来たノード. This is not used anymore
         s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
 
-        #homogeneous DUO用．kに行くための最短経路的上にあれば1: {node_id: {link: preference}. preference of link is 1 if it is on the shortest path to node_id
-        s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES}
+        #homogeneous DUO用．kに行くための最短経路的上にあれば1: array[dest,link]==1 if link is on the shortest path to dest
+        #s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES} #old definition, {node_id: {link: preference}. preference of link is 1 if it is on the shortest path to node_id
+        s.route_pref = np.zeros([len(W.NODES), len(W.LINKS)])
 
     def route_search_all(s, infty=np.inf, noise=0):
         """
@@ -1267,6 +1268,40 @@ class RouteChoice:
         dist, pred = dijkstra(csr_matrix(s.adj_mat_time).T, return_predecessors=True)
         s.dist = dist.T
         s.next = pred.T
+
+    def homogeneous_DUO_update(s):
+        """
+        Update link preference of all homogeneous travelers based on DUO principle.
+        Vectorized by Claude 3.5 Sonnet.
+        """
+        if s.W.route_choice_update_gradual:
+            weight0 = s.W.DUO_UPDATE_WEIGHT * (s.W.DELTAT / s.W.DUO_UPDATE_TIME)
+        else:
+            weight0 = s.W.DUO_UPDATE_WEIGHT
+
+        num_nodes = len(s.W.NODES)
+        num_links = len(s.W.LINKS)
+
+        # Create a mask for empty preferences
+        empty_pref_mask = np.sum(s.route_pref, axis=1) == 0
+
+        # Initialize weight array
+        weights = np.full(num_nodes, weight0)
+        weights[empty_pref_mask] = 1
+
+        # Create arrays for start and end nodes of links
+        start_nodes = np.array([l.start_node.id for l in s.W.LINKS])
+        end_nodes = np.array([l.end_node.id for l in s.W.LINKS])
+
+        # Create the next_node_mask
+        next_node_mask = np.zeros((num_nodes, num_links), dtype=bool)
+        for k in range(num_nodes):
+            next_node_mask[k] = end_nodes == s.next[start_nodes, k]
+
+        # Update route preferences
+        s.route_pref = np.where(next_node_mask,
+                                (1 - weights[:, np.newaxis]) * s.route_pref + weights[:, np.newaxis],
+                                (1 - weights[:, np.newaxis]) * s.route_pref)
 
     def route_search_all_old(s, infty=np.inf, noise=0):
         """
@@ -1310,9 +1345,10 @@ class RouteChoice:
                         prev = s.pred[i, prev]
                     s.next[i, j] = prev
 
-    def homogeneous_DUO_update(s):
+    def homogeneous_DUO_update_old(s):
         """
         Update link preference of all homogeneous travelers based on DUO principle.
+        OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
         """
         if s.W.route_choice_update_gradual == True:
             weight0 = s.W.DUO_UPDATE_WEIGHT*(s.W.DELTAT/s.W.DUO_UPDATE_TIME)
