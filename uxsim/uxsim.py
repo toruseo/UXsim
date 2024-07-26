@@ -3,7 +3,7 @@ UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.
 This `uxsim.py` is the core of UXsim. It summarizes the classes and methods that are essential for the simulation.
 """
 
-import csv, time, math, string, warnings
+import csv, time, math, string, warnings, copy
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
 
@@ -595,12 +595,16 @@ class Link:
 
     def set_traveltime_instant(s):
         """
-        Compute instantanious travel time.
+        Compute instantaneous travel time.
         """
-        if s.speed > 0:
-            s.traveltime_instant.append(s.length/s.speed)
+        if s.W.T%s.W.instantaneous_TT_timestep_interval == 0:
+            if s.speed > 0:
+                s.traveltime_instant.append(s.length/s.speed)
+            else:
+                s.traveltime_instant.append(s.length/(s.u/100))
         else:
-            s.traveltime_instant.append(s.length/(s.u/100))
+            s.traveltime_instant.append(s.traveltime_instant[-1])
+
 
     def arrival_count(s, t):
         """
@@ -646,7 +650,7 @@ class Link:
 
     def instant_travel_time(s, t):
         """
-        Get instantanious travel time of this link on time t
+        Get instantaneous travel time of this link on time t
 
         Parameters
         ----------
@@ -656,7 +660,7 @@ class Link:
         Returns
         -------
         float
-            The instantanious travel time.
+            The instantaneous travel time.
         """
         tt = int(t//s.W.DELTAT)
         if tt >= len(s.traveltime_instant):
@@ -842,7 +846,9 @@ class Vehicle:
         #希望リンク重み：{link:重み}
         s.route_pref = route_pref
         if s.route_pref == None:
-            s.route_pref = {l:0 for l in s.W.LINKS}
+            if s.W.route_pref_for_vehs == None:
+                s.W.route_pref_for_vehs = {l:0 for l in s.W.LINKS}
+            s.route_pref = copy.copy(s.W.route_pref_for_vehs)
 
         #好むリンクと避けるリンク（近視眼的）
         s.links_prefer = [s.W.get_link(l) for l in links_prefer]
@@ -871,7 +877,7 @@ class Vehicle:
             s.name = name
         else:
             s.name = str(s.id)
-        if s.name in [veh.name for veh in s.W.VEHICLES.values()]:
+        if s.name in s.W.VEHICLES.keys():
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
@@ -1231,7 +1237,7 @@ class RouteChoice:
 
     def route_search_all(s, infty=np.inf, noise=0):
         """
-        Compute the current shortest path based on instantanious travel time.
+        Compute the current shortest path based on instantaneous travel time.
 
         Parameters
         ----------
@@ -1264,7 +1270,7 @@ class RouteChoice:
 
     def route_search_all_old(s, infty=np.inf, noise=0):
         """
-        Compute the current shortest path based on instantanious travel time. 
+        Compute the current shortest path based on instantaneous travel time. 
         OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
 
         Parameters
@@ -1335,7 +1341,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5):
         """
         Create a World.
 
@@ -1376,6 +1382,12 @@ class World:
         vehicle_logging_timestep_interval : int, optional
             The interval for logging vehicle data, default is 1. Logging is off if set to -1.
             Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
+        vehicle_logging_timestep_interval : int, optional
+            The interval for logging vehicle data, default is 1. Logging is off if set to -1.
+            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
+        instantaneous_TT_timestep_interval : int, optional
+            The interval for computing instantaneous travel time of each link. Default is 5.
+            If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
 
         Notes
         -----
@@ -1412,6 +1424,12 @@ class World:
         W.route_choice_principle = route_choice_principle
 
         W.route_choice_update_gradual = route_choice_update_gradual
+
+        W.instantaneous_TT_timestep_interval = int(instantaneous_TT_timestep_interval)
+        if W.DELTAT_ROUTE < W.instantaneous_TT_timestep_interval:
+            W.instantaneous_TT_timestep_interval = W.DELTAT_ROUTE
+
+        W.route_pref_for_vehs = None
 
         ## progress print setting
         W.show_progress = show_progress

@@ -62,6 +62,10 @@ class Analyzer:
         s.flag_pandas_convert = 0
         s.flag_od_analysis = 0
 
+        # visualization data
+        s.font_data = load_font_data()
+        s.font_file_like = io.BytesIO(s.font_data)
+
     def basic_analysis(s):
         """
         Analyze basic stats.
@@ -823,7 +827,7 @@ class Analyzer:
             os.remove(f)
 
     @catch_exceptions_and_warn()
-    def network_fancy(s, animation_speed_inverse=10, figsize=6, sample_ratio=0.3, interval=5, network_font_size=0, trace_length=3, speed_coef=2, file_name=None):
+    def network_fancy(s, animation_speed_inverse=10, figsize=6, sample_ratio=0.3, interval=5, network_font_size=0, trace_length=3, speed_coef=2, file_name=None, antialiasing=True):
         """
         Generates a visually appealing animation of vehicles' trajectories across the entire transportation network over time.
 
@@ -845,6 +849,8 @@ class Analyzer:
             A coefficient that adjusts the animation speed. Default is 2.
         file_name : str, optional
             The name of the file to which the animation is saved. It overrides the defauld name. Default is None.
+        antialiasing : bool, optional
+            If set to True, antialiasing is applied to the animation. Default is True.
 
         Notes
         -----
@@ -928,7 +934,10 @@ class Analyzer:
         maxy = max([n.y for n in s.W.NODES])
         miny = min([n.y for n in s.W.NODES])
 
-        scale = 2
+        if antialiasing:
+            scale = 2
+        else:
+            scale = 1
         try:
             coef = figsize*100*scale/(maxx-minx)
         except:
@@ -948,10 +957,9 @@ class Analyzer:
         for t in tqdm(range(int(s.W.TMAX*0), int(s.W.TMAX*1), s.W.DELTAT*speed_coef)):
             img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
             draw = ImageDraw.Draw(img)
-            font_data = load_font_data()
-            font_file_like = io.BytesIO(font_data)
+                
             if network_font_size > 0:
-                font = ImageFont.truetype(font_file_like, int(network_font_size))
+                font = ImageFont.truetype(s.font_file_like, int(network_font_size))
 
             def flip(y):
                 return img.size[1]-y
@@ -959,7 +967,8 @@ class Analyzer:
             for l in s.W.LINKS:
                 x1, y1 = l.start_node.x*coef-minx, l.start_node.y*coef-miny
                 x2, y2 = l.end_node.x*coef-minx, l.end_node.y*coef-miny
-                draw.line([(x1, flip(y1)), (x2, flip(y2))], fill=(200,200,200), width=int(1), joint="curve")
+                n_lane = l.lanes
+                draw.line([(x1, flip(y1)), (x2, flip(y2))], fill=(200,200,200), width=int(n_lane*scale), joint="curve")
 
                 if network_font_size > 0:
                     draw.text(((x1+x2)/2, flip((y1+y2)/2)), l.name, font=font, fill="blue", anchor="mm")
@@ -968,29 +977,39 @@ class Analyzer:
             for trace in traces:
                 xs = trace["xs"]*coef-minx
                 ys = trace["ys"]*coef-miny
-                size = 3*(1-trace["v"])
+                size = 1.5*(1-trace["v"])*scale
                 coords = [(l[0], flip(l[1])) for l in list(np.vstack([xs, ys]).T)]
-                draw.line(coords,
-                          fill=(int(trace["c"][0]*255), int(trace["c"][1]*255), int(trace["c"][2]*255)), width=2, joint="curve")
-                draw.ellipse((xs[-1]-size, flip(ys[-1])-size, xs[-1]+size, flip(ys[-1])+size), fill=(int(trace["c"][0]*255), int(trace["c"][1]*255), int(trace["c"][2]*255)))
+                try:
+                    draw.line(coords,
+                            fill=(int(trace["c"][0]*255), int(trace["c"][1]*255), int(trace["c"][2]*255)), width=scale, joint="curve")
+                    draw.ellipse((xs[-1]-size, flip(ys[-1])-size, xs[-1]+size, flip(ys[-1])+size), 
+                            fill=(int(trace["c"][0]*255), int(trace["c"][1]*255), int(trace["c"][2]*255)))
+                except:
+                    pass
                 #draw.line([(x1, flip(y1)), (xmid1, flip(ymid1)), (xmid2, flip(ymid2)), (x2, flip(y2))]
 
-            font_data = load_font_data()
-            font_file_like = io.BytesIO(font_data)
+            font_file_like = io.BytesIO(s.font_data) #for unknown reason, s.font_file_like cannot be resued
             font = ImageFont.truetype(font_file_like, int(30))
             draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
 
-            img = img.resize((int((maxx-minx)/scale), int((maxy-miny)/scale)), resample=Resampling.LANCZOS)
-            img.save(f"out{s.W.name}/tmp_anim_{t}.png")
-            pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
+            if antialiasing:
+                img = img.resize((int((maxx-minx)/scale), int((maxy-miny)/scale)), resample=Resampling.LANCZOS)
+                
+            byte_stream = io.BytesIO()
+            img.save(byte_stream, format='PNG')
+            byte_stream.seek(0)
+            pics.append(Image.open(byte_stream))
+
+            #img.save(f"out{s.W.name}/tmp_anim_{t}.png")
+            #pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
 
         fname = f"out{s.W.name}/anim_network_fancy.gif"
         if file_name != None:
             fname = file_name
         pics[0].save(fname, save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*speed_coef, loop=0)
 
-        for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
-            os.remove(f)
+        # for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
+        #     os.remove(f)
 
     def compute_mfd(s, links=None):
         """
@@ -1281,9 +1300,9 @@ class Analyzer:
         """
         s.link_analysis_coarse()
 
-        out = [["link", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time"]]
+        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time"]]
         for l in s.W.LINKS:
-            out.append([l.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l]])
+            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l]])
         s.df_linkc = pd.DataFrame(out[1:], columns=out[0])
         return s.df_linkc
 
