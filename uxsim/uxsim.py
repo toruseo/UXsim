@@ -844,7 +844,7 @@ class Vehicle:
         s.node_event = dict()
 
         #希望リンク重み：{link.id:重み}
-        if s.route_pref == None:
+        if route_pref == None:
             if s.W.route_pref_for_vehs == None:
                 s.W.route_pref_for_vehs = {l.id:0 for l in s.W.LINKS}
             s.route_pref = copy.copy(s.W.route_pref_for_vehs)
