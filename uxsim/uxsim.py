@@ -843,12 +843,13 @@ class Vehicle:
         #dict of events that are triggered when this vehicle reaches a certain node {Node: func}
         s.node_event = dict()
 
-        #希望リンク重み：{link:重み}
-        s.route_pref = route_pref
+        #希望リンク重み：{link.id:重み}
         if s.route_pref == None:
             if s.W.route_pref_for_vehs == None:
                 s.W.route_pref_for_vehs = {l.id:0 for l in s.W.LINKS}
             s.route_pref = copy.copy(s.W.route_pref_for_vehs)
+        else:
+            s.route_pref = {l.id:route_pref[l] for l in route_pref.keys()}
 
         #好むリンクと避けるリンク（近視眼的）
         s.links_prefer = [s.W.get_link(l) for l in links_prefer]
