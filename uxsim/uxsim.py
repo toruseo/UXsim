@@ -3,7 +3,7 @@ UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.
 This `uxsim.py` is the core of UXsim. It summarizes the classes and methods that are essential for the simulation.
 """
 
-import csv, time, math, string, warnings
+import csv, time, math, string, warnings, copy
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
 
@@ -165,7 +165,7 @@ class Node:
                     if set(outlinks) & set(veh.links_avoid):
                         outlinks = sorted(set(outlinks) - set(veh.links_avoid))
                     
-                    preference = np.array([veh.route_pref[l] for l in outlinks], dtype=float)
+                    preference = np.array([veh.route_pref[l.id] for l in outlinks], dtype=float)
                     if sum(preference) > 0:
                         outlink = s.W.rng.choice(outlinks, p=preference/sum(preference))
                     else:
@@ -595,12 +595,16 @@ class Link:
 
     def set_traveltime_instant(s):
         """
-        Compute instantanious travel time.
+        Compute instantaneous travel time.
         """
-        if s.speed > 0:
-            s.traveltime_instant.append(s.length/s.speed)
+        if s.W.T%s.W.instantaneous_TT_timestep_interval == 0:
+            if s.speed > 0:
+                s.traveltime_instant.append(s.length/s.speed)
+            else:
+                s.traveltime_instant.append(s.length/(s.u/100))
         else:
-            s.traveltime_instant.append(s.length/(s.u/100))
+            s.traveltime_instant.append(s.traveltime_instant[-1])
+
 
     def arrival_count(s, t):
         """
@@ -646,7 +650,7 @@ class Link:
 
     def instant_travel_time(s, t):
         """
-        Get instantanious travel time of this link on time t
+        Get instantaneous travel time of this link on time t
 
         Parameters
         ----------
@@ -656,7 +660,7 @@ class Link:
         Returns
         -------
         float
-            The instantanious travel time.
+            The instantaneous travel time.
         """
         tt = int(t//s.W.DELTAT)
         if tt >= len(s.traveltime_instant):
@@ -839,10 +843,13 @@ class Vehicle:
         #dict of events that are triggered when this vehicle reaches a certain node {Node: func}
         s.node_event = dict()
 
-        #希望リンク重み：{link:重み}
-        s.route_pref = route_pref
-        if s.route_pref == None:
-            s.route_pref = {l:0 for l in s.W.LINKS}
+        #希望リンク重み：{link.id:重み}
+        if route_pref == None:
+            if s.W.route_pref_for_vehs == None:
+                s.W.route_pref_for_vehs = {l.id:0 for l in s.W.LINKS}
+            s.route_pref = copy.copy(s.W.route_pref_for_vehs)
+        else:
+            s.route_pref = {l.id:route_pref[l] for l in route_pref.keys()}
 
         #好むリンクと避けるリンク（近視眼的）
         s.links_prefer = [s.W.get_link(l) for l in links_prefer]
@@ -871,7 +878,7 @@ class Vehicle:
             s.name = name
         else:
             s.name = str(s.id)
-        if s.name in [veh.name for veh in s.W.VEHICLES.values()]:
+        if s.name in s.W.VEHICLES.keys():
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
@@ -1022,15 +1029,15 @@ class Vehicle:
             if s.dest != None:
                 s.route_pref = s.W.ROUTECHOICE.route_pref[s.dest.id]
             else:
-                s.route_pref = {l:0 for l in s.W.LINKS}
+                s.route_pref = {l.id:0 for l in s.W.LINKS}
         elif s.route_choice_principle == "heterogeneous_DUO":
-            route_pref_new = {l:0 for l in s.W.LINKS}
+            route_pref_new = {l.id:0 for l in s.W.LINKS}
             k = s.dest.id
             for l in s.W.LINKS:
                 i = l.start_node.id
                 j = l.end_node.id
                 if j == s.W.ROUTECHOICE.next[i,k]:
-                    route_pref_new[l] = 1
+                    route_pref_new[l.id] = 1
 
             if sum(list(s.route_pref.values())) == 0:
                 #最初にpreferenceが空なら確定的に初期化
@@ -1053,7 +1060,7 @@ class Vehicle:
                 if set(outlinks) & set(s.links_avoid):
                     outlinks = sorted(set(outlinks) - set(s.links_avoid))
 
-                preference = np.array([s.route_pref[l] for l in outlinks], dtype=float)
+                preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=float)
                 if sum(preference) > 0:
                     s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
                 else:
@@ -1226,12 +1233,13 @@ class RouteChoice:
         #iからjに行くために来たノード. This is not used anymore
         s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
 
-        #homogeneous DUO用．kに行くための最短経路的上にあれば1: {node_id: {link: preference}. preference of link is 1 if it is on the shortest path to node_id
-        s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES}
+        #homogeneous DUO用．kに行くための最短経路的上にあれば1: array[dest,link]==1 if link is on the shortest path to dest
+        #s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES} #old definition, {node_id: {link: preference}. preference of link is 1 if it is on the shortest path to node_id
+        s.route_pref = np.zeros([len(W.NODES), len(W.LINKS)])
 
     def route_search_all(s, infty=np.inf, noise=0):
         """
-        Compute the current shortest path based on instantanious travel time.
+        Compute the current shortest path based on instantaneous travel time.
 
         Parameters
         ----------
@@ -1262,72 +1270,107 @@ class RouteChoice:
         s.dist = dist.T
         s.next = pred.T
 
-    def route_search_all_old(s, infty=np.inf, noise=0):
-        """
-        Compute the current shortest path based on instantanious travel time. 
-        OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
-
-        Parameters
-        ----------
-        infty : float
-            value representing infinity.
-        noise : float
-            very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
-        """
-        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-
-        for link in s.W.LINKS:
-            i = link.start_node.id
-            j = link.end_node.id
-            if s.W.ADJ_MAT[i,j]:
-                new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.route_choice_penalty
-                n = adj_mat_link_count[i,j]
-                s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
-                # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
-                adj_mat_link_count[i,j] += 1
-                if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
-                    s.adj_mat_time[i,j] = np.inf
-            else:
-                s.adj_mat_time[i,j] = np.inf
-
-        s.dist, s.pred = floyd_warshall(s.adj_mat_time, return_predecessors=True)
-
-        n_vertices = s.pred.shape[0]
-        s.next = -np.ones((n_vertices, n_vertices), dtype=int)
-        for i in range(n_vertices):
-            for j in range(n_vertices):
-                # iからjへの最短経路を逆にたどる．．． -> todo: 起終点を逆にした最短経路探索にすればよい -> done
-                if i != j:
-                    prev = j
-                    while s.pred[i, prev] != i and s.pred[i, prev] != -9999:
-                        prev = s.pred[i, prev]
-                    s.next[i, j] = prev
-
     def homogeneous_DUO_update(s):
         """
         Update link preference of all homogeneous travelers based on DUO principle.
+        Vectorized by Claude 3.5 Sonnet.
         """
-        if s.W.route_choice_update_gradual == True:
-            weight0 = s.W.DUO_UPDATE_WEIGHT*(s.W.DELTAT/s.W.DUO_UPDATE_TIME)
+        if s.W.route_choice_update_gradual:
+            weight0 = s.W.DUO_UPDATE_WEIGHT * (s.W.DELTAT / s.W.DUO_UPDATE_TIME)
         else:
             weight0 = s.W.DUO_UPDATE_WEIGHT
+
+        num_nodes = len(s.W.NODES)
+        num_links = len(s.W.LINKS)
+
+        # Create a mask for empty preferences
+        empty_pref_mask = np.sum(s.route_pref, axis=1) == 0
+
+        # Initialize weight array
+        weights = np.full(num_nodes, weight0)
+        weights[empty_pref_mask] = 1
+
+        # Create arrays for start and end nodes of links
+        start_nodes = np.array([l.start_node.id for l in s.W.LINKS])
+        end_nodes = np.array([l.end_node.id for l in s.W.LINKS])
+
+        # Create the next_node_mask
+        next_node_mask = np.zeros((num_nodes, num_links), dtype=bool)
+        for k in range(num_nodes):
+            next_node_mask[k] = end_nodes == s.next[start_nodes, k]
+
+        # Update route preferences
+        s.route_pref = np.where(next_node_mask,
+                                (1 - weights[:, np.newaxis]) * s.route_pref + weights[:, np.newaxis],
+                                (1 - weights[:, np.newaxis]) * s.route_pref)
+
+    # def route_search_all_old(s, infty=np.inf, noise=0):
+    #     """
+    #     Compute the current shortest path based on instantaneous travel time. 
+    #     OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
+
+    #     Parameters
+    #     ----------
+    #     infty : float
+    #         value representing infinity.
+    #     noise : float
+    #         very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
+    #     """
+    #     s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+    #     adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+
+    #     for link in s.W.LINKS:
+    #         i = link.start_node.id
+    #         j = link.end_node.id
+    #         if s.W.ADJ_MAT[i,j]:
+    #             new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.route_choice_penalty
+    #             n = adj_mat_link_count[i,j]
+    #             s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
+    #             # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
+    #             adj_mat_link_count[i,j] += 1
+    #             if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
+    #                 s.adj_mat_time[i,j] = np.inf
+    #         else:
+    #             s.adj_mat_time[i,j] = np.inf
+
+    #     s.dist, s.pred = floyd_warshall(s.adj_mat_time, return_predecessors=True)
+
+    #     n_vertices = s.pred.shape[0]
+    #     s.next = -np.ones((n_vertices, n_vertices), dtype=int)
+    #     for i in range(n_vertices):
+    #         for j in range(n_vertices):
+    #             # iからjへの最短経路を逆にたどる．．． -> todo: 起終点を逆にした最短経路探索にすればよい -> done
+    #             if i != j:
+    #                 prev = j
+    #                 while s.pred[i, prev] != i and s.pred[i, prev] != -9999:
+    #                     prev = s.pred[i, prev]
+    #                 s.next[i, j] = prev
+
+    # def homogeneous_DUO_update_old(s):
+    #     """
+    #     Update link preference of all homogeneous travelers based on DUO principle.
+    #     OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
+    #     """
+    #     if s.W.route_choice_update_gradual == True:
+    #         weight0 = s.W.DUO_UPDATE_WEIGHT*(s.W.DELTAT/s.W.DUO_UPDATE_TIME)
+    #     else:
+    #         weight0 = s.W.DUO_UPDATE_WEIGHT
                 
-        for dest in s.W.NODES:
-            k = dest.id
-            weight = weight0
-            if sum(list(s.route_pref[k].values())) == 0:
-                #set 1 if prefernce is empty (i.e., the initial stage of simulation)
-                weight = 1
-            for l in s.W.LINKS:
-                i = l.start_node.id
-                j = l.end_node.id
-                if j == s.next[i,k]:
-                    #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l] + weight)
-                    s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight
-                else:
-                    #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l])
-                    s.route_pref[k][l] = (1-weight)*s.route_pref[k][l]
+    #     for dest in s.W.NODES:
+    #         k = dest.id
+    #         weight = weight0
+    #         if sum(list(s.route_pref[k].values())) == 0:
+    #             #set 1 if prefernce is empty (i.e., the initial stage of simulation)
+    #             weight = 1
+    #         for l in s.W.LINKS:
+    #             i = l.start_node.id
+    #             j = l.end_node.id
+    #             if j == s.next[i,k]:
+    #                 #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l] + weight)
+    #                 s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight
+    #             else:
+    #                 #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l])
+    #                 s.route_pref[k][l] = (1-weight)*s.route_pref[k][l]
 
 
 class World:
@@ -1335,7 +1378,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5):
         """
         Create a World.
 
@@ -1376,6 +1419,12 @@ class World:
         vehicle_logging_timestep_interval : int, optional
             The interval for logging vehicle data, default is 1. Logging is off if set to -1.
             Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
+        vehicle_logging_timestep_interval : int, optional
+            The interval for logging vehicle data, default is 1. Logging is off if set to -1.
+            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
+        instantaneous_TT_timestep_interval : int, optional
+            The interval for computing instantaneous travel time of each link. Default is 5.
+            If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
 
         Notes
         -----
@@ -1412,6 +1461,12 @@ class World:
         W.route_choice_principle = route_choice_principle
 
         W.route_choice_update_gradual = route_choice_update_gradual
+
+        W.instantaneous_TT_timestep_interval = int(instantaneous_TT_timestep_interval)
+        if W.DELTAT_ROUTE < W.instantaneous_TT_timestep_interval:
+            W.instantaneous_TT_timestep_interval = W.DELTAT_ROUTE
+
+        W.route_pref_for_vehs = None
 
         ## progress print setting
         W.show_progress = show_progress
