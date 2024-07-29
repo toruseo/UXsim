@@ -4,6 +4,7 @@ This script tests various other functions in UXsim.
 
 import pytest
 from uxsim import *
+from uxsim.Utilities import generate_grid_network
 
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     if check == 0 and abs_tol == 0:
@@ -126,3 +127,64 @@ def test_readme():
 
     assert True
 
+
+def test_toml_write_and_read():
+    ##################################
+    # Iter 1
+    ##################################
+
+    W = World(
+        name="",
+        deltan=10,
+        tmax=3600,
+        print_mode=1, save_mode=1, show_mode=0,
+        random_seed=42
+    )
+
+    imax = 4
+    jmax = 4
+    nodes, links = generate_grid_network(W, imax, jmax, length=1000)
+
+    demand_flow = 0.035
+    demand_duration = 31800
+    for n1 in [(0,j) for j in range(jmax)]:
+        for n2 in [(imax-1,j) for j in range(jmax)]:
+            W.adddemand(nodes[n2], nodes[n1], 0, demand_duration, demand_flow)
+            W.adddemand(nodes[n1], nodes[n2], 0, demand_duration, demand_flow)
+    for n1 in [(i,0) for i in range(imax)]:
+        for n2 in [(i,jmax-1) for i in range(imax)]:
+            W.adddemand(nodes[n2], nodes[n1], 0, demand_duration, demand_flow)
+            W.adddemand(nodes[n1], nodes[n2], 0, demand_duration, demand_flow)
+    W.adddemand_point2point(0.5, 0.5, 2.5, 2.5, 0, 1800, volume=100)
+    W.adddemand_area2area(0.5, 0.5, 2, 2.5, 2.5, 2, 0, 1800, volume=100)
+
+    W.save_scenario_as_toml("out/test_grid.toml")
+
+    W.exec_simulation()
+    W.analyzer.print_simple_stats()
+
+    df1 = W.analyzer.basic_to_pandas()
+    print(df1)
+
+    ##################################
+    # Iter 2
+    ##################################
+
+    W2 = World(
+        name="",
+        deltan=10,
+        tmax=3600,
+        print_mode=1, save_mode=1, show_mode=0,
+        random_seed=42
+    )
+
+    W2.load_scenario_from_toml("out/test_grid.toml")
+
+    W2.exec_simulation()
+
+    W2.analyzer.print_simple_stats()
+
+    df2 = W2.analyzer.basic_to_pandas()
+    print(df2)
+    
+    assert df1["total_travel_time"][0] == df2["total_travel_time"][0]

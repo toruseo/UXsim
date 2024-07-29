@@ -28,7 +28,8 @@ dependencies = [
     "scipy>=1.9.1",
     "pandas>=1.4.4",
     "PyQt5>=5.15.7",
-    "dill>=0.3.8"
+    "dill>=0.3.8",
+    "tomlkit>=0.12.4" 
 ]
 dynamic = ["version"] # Version is read from uxsim/__init__.py
 

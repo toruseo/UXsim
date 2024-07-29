@@ -15,6 +15,7 @@ import dill as pickle
 
 from .analyzer import *
 from .utils import *
+from .scenario_reader_writer import *
 
 class Node:
     """
@@ -95,6 +96,7 @@ class Node:
 
         #流量制限（マクロ信号）
         s.flag_lanes_automatically_determined = False
+        s.number_of_lanes = number_of_lanes
         if flow_capacity != None:
             s.flow_capacity = flow_capacity
             s.flow_capacity_remain = flow_capacity*s.W.DELTAT
@@ -110,6 +112,7 @@ class Node:
 
         s.id = len(s.W.NODES)
         s.name = name
+        s.auto_rename = auto_rename
         if s.name in [n.name for n in s.W.NODES]:
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
@@ -316,7 +319,7 @@ class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=[0], capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False):
         """
         Create a link
 
@@ -447,6 +450,7 @@ class Link:
         s.length = length
 
         #車線数
+        s.number_of_lanes = number_of_lanes
         s.lanes = int(number_of_lanes)
         if s.lanes != number_of_lanes:
             raise ValueError(f"number_of_lanes must be an integer. Got {number_of_lanes} at {s}.")
@@ -455,6 +459,7 @@ class Link:
         #フローモデルパラメータ:per link
         s.u = free_flow_speed
         s.kappa = jam_density
+        s.jam_density_per_lane = jam_density_per_lane
         if jam_density == 0.2 and jam_density_per_lane != None:
             s.kappa = jam_density_per_lane*number_of_lanes
         if jam_density != 0.2 and jam_density_per_lane != None:
@@ -501,13 +506,14 @@ class Link:
         #流入容量
         s.capacity_in = capacity_in
         if capacity_in == None:
-            s.capacity_in = 10e10
-            s.capacity_in_remain = 10e10
+            s.capacity_in = s.capacity*2
+            s.capacity_in_remain = s.capacity*2
         else:
             s.capacity_in_remain = s.capacity_in*s.W.DELTAT
 
         s.id = len(s.W.LINKS)
         s.name = name
+        s.auto_rename = auto_rename
         if s.name in [l.name for l in s.W.LINKS]:
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
@@ -533,10 +539,11 @@ class Link:
         s.ls = []
         s.names = []
 
+        s.eular_dx = eular_dx
         if eular_dx == None:
-            s.eular_dx = s.length/10
-            if s.eular_dx < s.u*s.W.DELTAT:
-                s.eular_dx = s.u*s.W.DELTAT
+            s.edie_dx = s.length/10
+            if s.edie_dx < s.u*s.W.DELTAT:
+                s.edie_dx = s.u*s.W.DELTAT
 
     def __repr__(s):
         return f"<Link {s.name}>"
@@ -548,7 +555,7 @@ class Link:
 
         #Euler型交通状態
         s.edie_dt = s.W.EULAR_DT
-        s.edie_dx = s.eular_dx
+        s.edie_dx = s.edie_dx
         s.k_mat = np.zeros([int(s.W.TMAX/s.edie_dt)+1, int(s.length/s.edie_dx)])
         s.q_mat = np.zeros(s.k_mat.shape)
         s.v_mat = np.zeros(s.k_mat.shape)
@@ -1378,7 +1385,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, meta_data={}):
         """
         Create a World.
 
@@ -1425,6 +1432,8 @@ class World:
         instantaneous_TT_timestep_interval : int, optional
             The interval for computing instantaneous travel time of each link. Default is 5.
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
+        meta_data : dict, optinal
+            Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.
 
         Notes
         -----
@@ -1474,6 +1483,8 @@ class World:
 
         ## system setting
         W.name = name
+
+        W.meta_data = meta_data
 
         W.finalized = 0
         W.world_start_time = time.time()
@@ -1576,7 +1587,7 @@ class World:
         """
         return Link(W, *args, **kwargs)
 
-    def addVehicle(W, *args, **kwargs):
+    def addVehicle(W, *args, direct_call=True, **kwargs):
         """
         add a vehicle to world
 
@@ -1621,7 +1632,8 @@ class World:
         """
         return Vehicle(W, *args, **kwargs)
 
-    def adddemand(W, orig, dest, t_start, t_end, flow=-1, volume=-1, attribute=None):
+    @demand_info_record
+    def adddemand(W, orig, dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
         """
         Generate vehicles by specifying time-dependent origin-destination demand.
 
@@ -1642,6 +1654,7 @@ class World:
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
         """
+
         if volume > 0:
             flow = volume/(t_end-t_start)
 
@@ -1649,10 +1662,11 @@ class World:
         for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
             f += flow*W.DELTAT
             while f >= W.DELTAN:
-                W.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute)
+                W.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute, direct_call=False)
                 f -= W.DELTAN
 
-    def adddemand_point2point(W, x_orig, y_orig, x_dest, y_dest, t_start, t_end, flow=-1, volume=-1, attribute=None):
+    @demand_info_record
+    def adddemand_point2point(W, x_orig, y_orig, x_dest, y_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
         """
         Generate vehicles by specifying time-dependent origin-destination demand using coordinates.
 
@@ -1679,9 +1693,10 @@ class World:
         """
         orig = W.get_nearest_node(x_orig, y_orig)
         dest = W.get_nearest_node(x_dest, y_dest)
-        W.adddemand(orig, dest, t_start, t_end, flow, volume, attribute)
+        W.adddemand(orig, dest, t_start, t_end, flow, volume, attribute, direct_call=False)
 
-    def adddemand_area2area(W, x_orig, y_orig,  radious_orig, x_dest, y_dest, radious_dest, t_start, t_end, flow=-1, volume=-1, attribute=None):
+    @demand_info_record
+    def adddemand_area2area(W, x_orig, y_orig,  radious_orig, x_dest, y_dest, radious_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
         """
         Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas.
 
@@ -1734,7 +1749,7 @@ class World:
             volume = volume/(len(origs)*len(dests))
         for o in origs:
             for d in dests:
-                W.adddemand(o, d, t_start, t_end, flow, volume, attribute)
+                W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=False)
     
     def finalize_scenario(W, tmax=None):
         """
@@ -2096,6 +2111,73 @@ class World:
                         W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]), float(r[5]))
                     except:
                         W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]))
+
+    def save_network_as_toml(W, fname):
+        """
+        Save the network data (node and link) as a TOML file.
+        
+        Parameters
+        ----------
+        fname : str
+            The file name of the TOML file.
+        """
+        save_network_as_toml(W, fname)
+
+    def save_demand_as_toml(W, fname):
+        """
+        Save the demand data (adddemand and others) as a TOML file. Warning: This does not save Vehicle added by directly calling `addVehicle()`.
+        
+        Parameters
+        ----------
+        fname : str
+            The file name of the TOML file.
+        """
+        save_demand_as_toml(W, fname)
+
+    def save_scenario_as_toml(W, fname):
+        """
+        Save the scenario data (network and demand) as a TOML file.
+        
+        Parameters
+        ----------
+        fname : str
+            The file name of the TOML file.
+        """
+        save_scenario_as_toml(W, fname)
+
+    def load_network_from_toml(W, fname):
+        """
+        Load the network data (node and link) from a TOML file.
+        
+        Parameters
+        ----------
+        fname : str
+            The file name of the TOML file.
+        """
+        load_network_from_toml(W, fname)
+    
+    def load_demand_from_toml(W, fname):
+        """
+        Load the demand data (adddemand and others) from a TOML file.
+        
+        Parameters
+        ----------
+        fname : str
+            The file name of the TOML file.
+        """
+        load_demand_from_toml(W, fname)
+    
+    def load_scenario_from_toml(W, fname):
+        """
+        Load the scenario data (network and demand) from a TOML file.
+        
+        Parameters
+        ----------
+        fname : str
+            The file name of the TOML file.
+        """
+        load_scenario_from_toml(W, fname)
+
 
     def on_time(W, time):
         """

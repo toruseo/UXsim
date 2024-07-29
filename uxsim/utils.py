@@ -7,6 +7,7 @@ import functools
 import traceback
 import sys
 
+
 def catch_exceptions_and_warn(warning_msg=""):
     """
     A decorator that catches exceptions in the decorated function and raises a warning with the specified message.
