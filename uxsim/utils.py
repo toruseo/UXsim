@@ -7,8 +7,6 @@ import functools
 import traceback
 import sys
 
-# 汎用関数
-
 def catch_exceptions_and_warn(warning_msg=""):
     """
     A decorator that catches exceptions in the decorated function and raises a warning with the specified message.
@@ -86,7 +84,7 @@ def printtry(*args, **kwargs):
         print("EXCEPTION:", e)
     
 
-def get_font_for_matplotlib():
+def get_font_for_matplotlib(fname=None):
     """
     Get a multi-language (currently Japanese only) font for matplotlib.
     TODO: check if it works on different OS. It is only checked on Japanese Windows. 
@@ -101,16 +99,16 @@ def get_font_for_matplotlib():
 
     font_list = font_manager.findSystemFonts()
 
-    japanese_font = None
-
-    if any("Noto Sans Mono CJK JP" in font.lower() for font in font_list):
-        japanese_font = "Noto Sans Mono CJK JP"
+    if fname is not None:
+        font = fname
+    elif any("Noto Sans Mono CJK JP" in font.lower() for font in font_list):
+        font = "Noto Sans Mono CJK JP"
     elif any("msgothic" in font.lower() for font in font_list):
-        japanese_font = "MS Gothic"
+        font = "MS Gothic"
     else:
-        japanese_font = "monospace"
+        font = "monospace"
         
-    return japanese_font
+    return font
 
 def print_columns(*lists):
     """

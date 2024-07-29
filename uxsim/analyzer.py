@@ -11,31 +11,35 @@ from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Resampling
 from tqdm.auto import tqdm
 from collections import defaultdict as ddict
-from importlib.resources import read_binary, files #TODO: according to official doc, `read_binary` is not recommended. To be replaced with `files` in the future after some testing.
+from importlib.resources import files
+from pathlib import Path
 import io
 from scipy.sparse.csgraph import floyd_warshall
 
 from .utils import *
 
-plt.rcParams["font.family"] = get_font_for_matplotlib()
-
-def load_font_data_new():
-    fname = "HackGen-Regular.ttf"
-    font_data_path = files('uxsim.files').joinpath(fname)
-    with font_data_path.open('rb') as file:
-        font_data = file.read()
+def load_font_data(font_path=None):
+    if font_path is None:
+        font_resource = files('uxsim.files').joinpath('HackGen-Regular.ttf')
+        with font_resource.open('rb') as f:
+            font_data = f.read()
+    else:
+        font_file = Path(font_path)
+        with font_file.open('rb') as f:
+            font_data = f.read()
+    
     return font_data
 
-def load_font_data():
-    font_data = read_binary("uxsim.files", "HackGen-Regular.ttf")
-    return font_data
+# def load_font_data():
+#     font_data = read_binary("uxsim.files", "HackGen-Regular.ttf")
+#     return font_data
 
 class Analyzer:
     """
     Class for analyzing and visualizing a simulation result.
     """
 
-    def __init__(s, W):
+    def __init__(s, W, font_pillow=None, font_matplotlib=None):
         """
         Create result analysis object.
 
@@ -43,6 +47,10 @@ class Analyzer:
         ----------
         W : object
             The world to which this belongs.
+        font_pillow : str, optional
+            The path to the font file for Pillow. If not provided, the default font for English and Japanese is used.
+        font_matplotlib : str, optional
+            The font name for Matplotlib. If not provided, the default font for English and Japanese is used.
         """
         s.W = W
 
@@ -63,8 +71,10 @@ class Analyzer:
         s.flag_od_analysis = 0
 
         # visualization data
-        s.font_data = load_font_data()
+        s.font_data = load_font_data(font_pillow)
         s.font_file_like = io.BytesIO(s.font_data)
+        
+        plt.rcParams["font.family"] = get_font_for_matplotlib(font_matplotlib)
 
     def basic_analysis(s):
         """

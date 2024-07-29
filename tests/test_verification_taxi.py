@@ -232,6 +232,8 @@ def test_taxi_large_scale_mixed_mode_noncongested():
     df_vehi = W.analyzer.basic_to_pandas()
 
     df_taxi = Handler.basic_to_pandas()
+    
+    df_trips = Handler.trips_to_pandas()
 
     assert equal_tolerance(df_vehi["average_travel_time"][0], df_taxi["average_invehicle_time"][0])
     assert equal_tolerance(df_vehi["completed_trips"][0], 10000)
