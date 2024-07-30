@@ -6,6 +6,7 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
 [![Static Badge](https://img.shields.io/badge/readme-English%20%F0%9F%87%BA%F0%9F%87%B8%20-%20darkblue)](https://github.com/toruseo/UXsim/blob/main/README.md)
 [![Static Badge](https://img.shields.io/badge/readme-%E6%97%A5%E6%9C%AC%E8%AA%9E%20%F0%9F%87%AF%F0%9F%87%B5%20-pink)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
+[![codecov](https://codecov.io/gh/toruseo/UXsim/graph/badge.svg?token=DK77Y1Y5AT)](https://codecov.io/gh/toruseo/UXsim)
 
 *UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator written in Python.
 It simulates the movements of car travelers and traffic congestion in road networks.
