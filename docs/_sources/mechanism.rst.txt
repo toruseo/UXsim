@@ -2,6 +2,9 @@
 Simulation Mechanism
 ====================
 
+In this page, we briefly explain the models and logics behind UXsim.
+If you want to know the details, please refer to `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_, the code, the original articles, or  `Japanese textbook on traffic simulation <https://www.coronasha.co.jp/np/isbn/9784339052794/>`_.
+
 Models
 ------
 
@@ -10,8 +13,6 @@ UXsim computes network traffic flow dynamics by combining following models:
 * The mesoscopic version of `Newell's simplified car-following model <https://doi.org/10.1016/S0191-2615(00)00044-8>`_ (aka. `X-model <https://doi.org/10.1016/j.trb.2013.02.008>`_) for link and vehicle dynamics.
 * The `mesoscopic version of the incremental node model <https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/>`_ for inter-link transfer at nodes.
 * `Dynamic user optimum <https://doi.org/10.1016/S0191-2615(00)00005-9>`_ (aka. reactive assignment) with stochasticity and delay for route choice of travelers.
-
-For the details, please refer to the original articles, `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_, or `Japanese textbook on traffic simulation <https://www.coronasha.co.jp/np/isbn/9784339052794/>`_.
 
 Key Inputs
 ----------

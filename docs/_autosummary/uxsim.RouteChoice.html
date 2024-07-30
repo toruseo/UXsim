@@ -229,6 +229,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
@@ -326,7 +327,7 @@ gtag('config', 'UA-111714220-1');
 <td><p>Update link preference of all homogeneous travelers based on DUO principle.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.RouteChoice.route_search_all" title="uxsim.RouteChoice.route_search_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_search_all</span></code></a>([infty, noise])</p></td>
-<td><p>Compute the current shortest path based on instantanious travel time.</p></td>
+<td><p>Compute the current shortest path based on instantaneous travel time.</p></td>
 </tr>
 </tbody>
 </table>
@@ -334,13 +335,14 @@ gtag('config', 'UA-111714220-1');
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.RouteChoice.homogeneous_DUO_update">
 <span class="sig-name descname"><span class="pre">homogeneous_DUO_update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#RouteChoice.homogeneous_DUO_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.homogeneous_DUO_update" title="Link to this definition">¶</a></dt>
-<dd><p>Update link preference of all homogeneous travelers based on DUO principle.</p>
+<dd><p>Update link preference of all homogeneous travelers based on DUO principle.
+Vectorized by Claude 3.5 Sonnet.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.RouteChoice.route_search_all">
 <span class="sig-name descname"><span class="pre">route_search_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#RouteChoice.route_search_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.route_search_all" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the current shortest path based on instantanious travel time.</p>
+<dd><p>Compute the current shortest path based on instantaneous travel time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

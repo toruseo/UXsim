@@ -1,0 +1,933 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Simulation Mechanism" href="../mechanism.html" /><link rel="prev" title="Vehicle routing and its optimization" href="demo_notebook_07en_optimal_routing.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>Huge-scale simulation using Chicago-Sketch dataset - UXsim: Traffic Simulation in Python v1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+  
+</head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">UXsim: Traffic Simulation in Python v1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_01en.html">Step-by-step Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_02en.html">Advanced example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Huge-scale simulation using Chicago-Sketch dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.World.html">uxsim.World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Link.html">uxsim.Link</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Vehicle.html">uxsim.Vehicle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Route.html">uxsim.Route</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/notebooks/demo_notebook_08en_chicago.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+<section id="Huge-scale-simulation-using-Chicago-Sketch-dataset">
+<h1>Huge-scale simulation using Chicago-Sketch dataset<a class="headerlink" href="#Huge-scale-simulation-using-Chicago-Sketch-dataset" title="Link to this heading">¶</a></h1>
+<p>In this example, we demonstrate how UXsim can be used for huge-scale simulation in metropolitan area. We use <a class="reference external" href="https://github.com/bstabler/TransportationNetworks/tree/master/Chicago-Sketch">Chicago-Sketch</a> dataset provided by Transportation Networks for Research. The scenario data for UXsim is derived from the original TNTP dataset and provided as <a class="reference external" href="https://github.com/toruseo/UXsim/blob/main/dat/chicago_sketch.uxsim_scenario">chicago_sketch.uxsim_scenario</a> at UXsim repo. The code generated
+UXsim scenario file is attached to the end of this notebook.</p>
+<p>The dataset contains an abstract road network of Chicago metropolitan area with 546 nodes and 2176 links. The traffic demand is almost 1 million vehicles for 1 hour in the peak period. Note that the data is modified from the original dataset in order to make them suitable for UXsim.</p>
+<p>With this scale, we cannot simulate each individual vehicle one by one due to extremely high computational cost. Instead, by leveraging the mesoscopic nature of UXsim, we aggregate some vehicles into 1 platoon and simulate their behavior. This is achieved by changing <code class="docutils literal notranslate"><span class="pre">deltan</span></code> argument of <code class="docutils literal notranslate"><span class="pre">World</span></code>. This is very efficient approach as it does not only reduce the number of agents, but also reduce the number of time steps for the same time duration. It is known that the underlying traffic flow
+model output the equivalent results for within-link traffic dynamics regardless of <code class="docutils literal notranslate"><span class="pre">deltan</span></code> value. The network-scale dynamics will change as this setting alters inter-link traffic behavior, but this can be considered as an acceptable cost for the efficiency.</p>
+<section id="Simulation">
+<h2>Simulation<a class="headerlink" href="#Simulation" title="Link to this heading">¶</a></h2>
+<p>By loading the pre-defined scenario file <code class="docutils literal notranslate"><span class="pre">dat/chicago_sketch.uxsim_scenario</span></code>, this simulation can be done easily as follows.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">deltan</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="c1">#for huge scale simulation (e.g., 100000+ vehicles or 1000+ links), large deltan is recommended.</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+    <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">W</span><span class="o">.</span><span class="n">load_scenario</span><span class="p">(</span><span class="s2">&quot;dat/chicago_sketch.uxsim_scenario&quot;</span><span class="p">)</span>
+
+<span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+loading scenario from &#39;dat/chicago_sketch.uxsim_scenario&#39;
+ DATA SOURCE AND LICENCE : Chicago-Sketch network. This is based on https://github.com/bstabler/TransportationNetworks/tree/master/Chicago-Sketch by Transportation Networks for Research Core Team. Users need to follow their licence. Especially, this data is for academic research purposes only, and users must indicate the source of any dataset they are using in any publication that relies on any of the datasets provided in this web site.
+ Number of loaded nodes: 546
+ Number of loaded links: 2176
+ Number of loaded `adddemand`s: 8406
+simulation setting:
+ scenario name:
+ simulation duration:    10000 s
+ number of vehicles:     968520 veh
+ total road length:      12115219.047323605 m
+ time discret. width:    30 s
+ platoon size:           30 veh
+ number of timesteps:    333
+ number of platoons:     32284
+ number of links:        2176
+ number of nodes:        546
+ setup time:             3.93 s
+simulating...
+      time| # of vehicles| ave speed| computation time
+       0 s|        0 vehs|   0.0 m/s|     0.01 s
+     600 s|    61170 vehs|  17.0 m/s|     2.54 s
+    1200 s|   125430 vehs|  15.6 m/s|     5.21 s
+    1800 s|   173760 vehs|  14.2 m/s|     8.57 s
+    2400 s|   220560 vehs|  12.3 m/s|    12.09 s
+    3000 s|   267330 vehs|  10.4 m/s|    15.69 s
+    3600 s|   322110 vehs|   8.5 m/s|    19.42 s
+    4200 s|   249960 vehs|   7.7 m/s|    22.84 s
+    4800 s|   190860 vehs|   8.0 m/s|    25.55 s
+    5400 s|   156390 vehs|   8.5 m/s|    27.73 s
+    6000 s|   120330 vehs|   9.6 m/s|    29.55 s
+    6600 s|    93360 vehs|  10.0 m/s|    30.98 s
+    7200 s|    70560 vehs|  11.1 m/s|    32.20 s
+    7800 s|    46410 vehs|  12.6 m/s|    33.12 s
+    8400 s|    26340 vehs|  15.4 m/s|    33.83 s
+    9000 s|    11850 vehs|  17.9 m/s|    34.35 s
+    9600 s|     5400 vehs|  20.8 m/s|    34.75 s
+    9960 s|     3870 vehs|  22.3 m/s|    34.90 s
+ simulation finished
+results:
+ average speed:  11.3 m/s
+ number of completed trips:      964650 / 968520
+ average travel time of trips:   1581.4 s
+ average delay of trips:         953.2 s
+ delay ratio:                    0.603
+</pre></div></div>
+</div>
+<p>You can see that the simulation finishes in about 40 seconds. Now let’s visualize the results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">display_image_in_notebook</span><span class="p">(</span><span class="s2">&quot;out/anim_network_fancy.gif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ generating animation...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "44c676e0048241a7be397c847d2a6553", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_08en_chicago_4_2.png" src="../_images/notebooks_demo_notebook_08en_chicago_4_2.png" />
+</div>
+</div>
+<p>You can see a peak hour traffic congestion at the downtown area.</p>
+</section>
+<section id="Validation">
+<h2>Validation<a class="headerlink" href="#Validation" title="Link to this heading">¶</a></h2>
+<p>The original TNTP dataset includes traffic volumes and travel time of every links based on static static assignment. Since <em>static</em> traffic assignment and <em>dynamic</em> traffic assignment of UXsim is substantially different, these results will not match exactly. Nevertheless, it would be worth comparing these results to see whether UXsim outputs plausible results or not.</p>
+<p>First, read the link traffic states of UXsim.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_res_link</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">()</span>
+<span class="n">df_res_link</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>link</th>
+      <th>start_node</th>
+      <th>end_node</th>
+      <th>traffic_volume</th>
+      <th>vehicles_remain</th>
+      <th>free_travel_time</th>
+      <th>average_travel_time</th>
+      <th>stddiv_travel_time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>387</td>
+      <td>388</td>
+      <td>390</td>
+      <td>120</td>
+      <td>90</td>
+      <td>665.400000</td>
+      <td>662.627027</td>
+      <td>2.699014</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>388</td>
+      <td>388</td>
+      <td>391</td>
+      <td>420</td>
+      <td>0</td>
+      <td>358.800000</td>
+      <td>334.594595</td>
+      <td>10.561172</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>389</td>
+      <td>388</td>
+      <td>708</td>
+      <td>90</td>
+      <td>0</td>
+      <td>174.000000</td>
+      <td>161.099099</td>
+      <td>12.496454</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>390</td>
+      <td>388</td>
+      <td>802</td>
+      <td>0</td>
+      <td>0</td>
+      <td>286.800000</td>
+      <td>-1.000000</td>
+      <td>-1.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>391</td>
+      <td>389</td>
+      <td>390</td>
+      <td>30</td>
+      <td>0</td>
+      <td>260.400000</td>
+      <td>266.655856</td>
+      <td>4.573892</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2171</th>
+      <td>2941</td>
+      <td>929</td>
+      <td>442</td>
+      <td>300</td>
+      <td>0</td>
+      <td>1322.949900</td>
+      <td>1347.969212</td>
+      <td>7.128038</td>
+    </tr>
+    <tr>
+      <th>2172</th>
+      <td>2943</td>
+      <td>930</td>
+      <td>518</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1543.188079</td>
+      <td>-1.000000</td>
+      <td>-1.000000</td>
+    </tr>
+    <tr>
+      <th>2173</th>
+      <td>2945</td>
+      <td>931</td>
+      <td>906</td>
+      <td>30</td>
+      <td>0</td>
+      <td>911.461779</td>
+      <td>923.653582</td>
+      <td>8.796265</td>
+    </tr>
+    <tr>
+      <th>2174</th>
+      <td>2947</td>
+      <td>932</td>
+      <td>515</td>
+      <td>0</td>
+      <td>0</td>
+      <td>420.142347</td>
+      <td>-1.000000</td>
+      <td>-1.000000</td>
+    </tr>
+    <tr>
+      <th>2175</th>
+      <td>2949</td>
+      <td>933</td>
+      <td>534</td>
+      <td>4980</td>
+      <td>0</td>
+      <td>357.600000</td>
+      <td>407.704505</td>
+      <td>23.938101</td>
+    </tr>
+  </tbody>
+</table>
+<p>2176 rows × 8 columns</p>
+</div></div>
+</div>
+<p>And then TNTP data.</p>
+<p>NOTE: If you want to execute this notebook, please obtain <code class="docutils literal notranslate"><span class="pre">ChicagoSketch_flow.tntp</span></code> and place it to an appropriate path.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_tntp_flow</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;out/ChicagoSketch_flow.tntp&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">df_tntp_flow</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">,</span> <span class="s2">&quot;vol&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">]</span>
+<span class="n">df_tntp_flow</span><span class="p">[</span><span class="s2">&quot;sec&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_tntp_flow</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span><span class="o">*</span><span class="mi">60</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">df_tntp_flow</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>from</th>
+      <th>to</th>
+      <th>vol</th>
+      <th>min</th>
+      <th>sec</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>547</td>
+      <td>4989.13</td>
+      <td>0.034507</td>
+      <td>2.070408</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>548</td>
+      <td>6719.41</td>
+      <td>0.034507</td>
+      <td>2.070408</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>549</td>
+      <td>10095.53</td>
+      <td>0.034507</td>
+      <td>2.070408</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>550</td>
+      <td>9444.62</td>
+      <td>0.034507</td>
+      <td>2.070408</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>551</td>
+      <td>17223.82</td>
+      <td>0.034507</td>
+      <td>2.070408</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2945</th>
+      <td>931</td>
+      <td>906</td>
+      <td>157.00</td>
+      <td>15.707724</td>
+      <td>942.463430</td>
+    </tr>
+    <tr>
+      <th>2946</th>
+      <td>932</td>
+      <td>386</td>
+      <td>25.00</td>
+      <td>0.034507</td>
+      <td>2.070408</td>
+    </tr>
+    <tr>
+      <th>2947</th>
+      <td>932</td>
+      <td>515</td>
+      <td>22.00</td>
+      <td>6.347704</td>
+      <td>380.862240</td>
+    </tr>
+    <tr>
+      <th>2948</th>
+      <td>933</td>
+      <td>387</td>
+      <td>5468.00</td>
+      <td>0.034507</td>
+      <td>2.070408</td>
+    </tr>
+    <tr>
+      <th>2949</th>
+      <td>933</td>
+      <td>534</td>
+      <td>5837.00</td>
+      <td>13.119813</td>
+      <td>787.188793</td>
+    </tr>
+  </tbody>
+</table>
+<p>2950 rows × 5 columns</p>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">res_tntp</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1">#{(start_node, end_node): {}}</span>
+<span class="n">res_uxsim</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1">#{(start_node, end_node): {}}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lange</span><span class="p">(</span><span class="n">df_tntp_flow</span><span class="p">):</span>
+    <span class="n">res_tntp</span><span class="p">[</span><span class="n">df_tntp_flow</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">df_tntp_flow</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;vol&quot;</span><span class="p">:</span> <span class="n">df_tntp_flow</span><span class="p">[</span><span class="s2">&quot;vol&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;sec&quot;</span><span class="p">:</span> <span class="n">df_tntp_flow</span><span class="p">[</span><span class="s2">&quot;sec&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]}</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lange</span><span class="p">(</span><span class="n">df_res_link</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">df_res_link</span><span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">res_uxsim</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">df_res_link</span><span class="p">[</span><span class="s2">&quot;start_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">df_res_link</span><span class="p">[</span><span class="s2">&quot;end_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;vol&quot;</span><span class="p">:</span> <span class="n">df_res_link</span><span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;sec&quot;</span><span class="p">:</span> <span class="n">df_res_link</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]}</span>
+
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">res_tntp</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res_uxsim</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">del</span> <span class="n">res_tntp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="c1">#print(key, end=&quot;, &quot;)</span>
+<span class="c1">#print(&quot;&quot;)</span>
+
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">res_uxsim</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res_tntp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">del</span> <span class="n">res_tntp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="c1">#print(key, end=&quot;, &quot;)</span>
+
+<span class="n">res_tntp_vol</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">res_tntp</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;vol&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">res_uxsim</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+<span class="n">res_uxsim_vol</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">res_uxsim</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;vol&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">res_uxsim</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+<span class="n">res_tntp_sec</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">res_tntp</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;sec&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">res_uxsim</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+<span class="n">res_uxsim_sec</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">res_uxsim</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;sec&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">res_uxsim</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_vol</span><span class="p">,</span> <span class="n">res_uxsim_vol</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
+<span class="n">colorbar</span><span class="p">()</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link traffic volume&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;UXsim link traffic volume&quot;</span><span class="p">)</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_vol</span><span class="p">,</span> <span class="n">res_uxsim_vol</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">10000</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">10000</span><span class="p">]],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
+<span class="n">colorbar</span><span class="p">()</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link traffic volume&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;UXsim link traffic volume&quot;</span><span class="p">)</span>
+
+
+<span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_08en_chicago_12_0.png" src="../_images/notebooks_demo_notebook_08en_chicago_12_0.png" />
+</div>
+</div>
+<p>The above figures show the comparison of link traffic volume. Roughly speaking, they are mostly correlated.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">subplot</span><span class="p">(</span><span class="mi">131</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_sec</span><span class="p">,</span> <span class="n">res_uxsim_sec</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;UXsim link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">132</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_sec</span><span class="p">,</span> <span class="n">res_uxsim_sec</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">]],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;UXsim link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">133</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_sec</span><span class="p">,</span> <span class="n">res_uxsim_sec</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">600</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">600</span><span class="p">]],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;UXsim link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_08en_chicago_14_0.png" src="../_images/notebooks_demo_notebook_08en_chicago_14_0.png" />
+</div>
+</div>
+<p>The above figures show the comparison of link traffic travel time. You can see a clear 45-degree line. But this would not be an interesting result: in both of UXsim and TNTP, most of the links have very small number of users, so free-flow travel time is output.</p>
+<p>Another noticeable feature is that many links in UXsim experienced substantially longer travel time than TNTP. This is a reasonable result, because in dynamic traffic assignment with hard traffic capacity, traffic congestion can grow significantly if the demand was large.</p>
+<p>Now we compare the total travel time in the entire network. As shown in below, the results are not so different. From these results, we can say that UXsim output a plausible result for this scenario.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total travel time (h)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TNTP:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">res_tntp_sec</span><span class="o">*</span><span class="n">res_tntp_vol</span><span class="p">)</span><span class="o">/</span><span class="mi">3600</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UXsim:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">res_uxsim_sec</span><span class="o">*</span><span class="n">res_uxsim_vol</span><span class="p">)</span><span class="o">/</span><span class="mi">3600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+total travel time (h)
+TNTP:    311681.3229930834
+UXsim:   347367.7123302059
+</pre></div></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../mechanism.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Simulation Mechanism</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="demo_notebook_07en_optimal_routing.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Vehicle routing and its optimization</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023 Toru Seo
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Huge-scale simulation using Chicago-Sketch dataset</a><ul>
+<li><a class="reference internal" href="#Simulation">Simulation</a></li>
+<li><a class="reference internal" href="#Validation">Validation</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5cb08e4e"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

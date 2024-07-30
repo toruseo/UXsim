@@ -229,6 +229,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
@@ -295,14 +296,13 @@ gtag('config', 'UA-111714220-1');
           <section id="module-uxsim.Utilities.Utilities">
 <span id="uxsim-utilities-utilities"></span><h1>uxsim.Utilities.Utilities<a class="headerlink" href="#module-uxsim.Utilities.Utilities" title="Link to this heading">¶</a></h1>
 <p>Submodule for general utilities.
-This (will) contains functions that are not essential for simulation but useful to specific analysis.</p>
+This contains functions that are not essential for simulation but useful to specific analysis.</p>
 <p class="rubric">Functions</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes" title="uxsim.Utilities.Utilities.enumerate_k_shortest_routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes</span></code></a>(W, source, target, k)</p></td>
-<td><p><p>&quot;</p>
-</p></td>
+<td><p>Enumerate the k shortest routes between two nodes in a network.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network" title="uxsim.Utilities.Utilities.generate_grid_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_grid_network</span></code></a>(W, imax, jmax, **kwargs)</p></td>
 <td><p>Generate a grid network with imax x jmax nodes.</p></td>
@@ -313,8 +313,7 @@ This (will) contains functions that are not essential for simulation but useful 
 <dl class="py function">
 <dt class="sig sig-object py" id="uxsim.Utilities.Utilities.enumerate_k_shortest_routes">
 <span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">enumerate_k_shortest_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_function=&lt;function</span> <span class="pre">&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_stats=0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#enumerate_k_shortest_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes" title="Link to this definition">¶</a></dt>
-<dd><p>”
-Enumerate the k shortest routes between two nodes in a network.</p>
+<dd><p>Enumerate the k shortest routes between two nodes in a network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -322,9 +321,15 @@ Enumerate the k shortest routes between two nodes in a network.</p>
 <li><p><strong>source</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The source node.</p></li>
 <li><p><strong>target</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The target node.</p></li>
 <li><p><strong>k</strong> (<em>int</em>) – The number of shortest routes to enumerate.</p></li>
-<li><p><strong>cost_function</strong> (<em>function</em>) – A link cost function to compute shortest path. Default is the free-flow travel time.</p></li>
+<li><p><strong>cost_function</strong> (<em>function</em>) – A link cost function to compute shortest path. The argument is Link object. Default is the free-flow travel time, <cite>lambda l: l.length/l.u</cite>.</p></li>
 <li><p><strong>print_stats</strong> (<em>bool</em>) – Print the statistics of the paths.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>routes</strong> – A list of k shortest routes. Each route is a list of link names.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>

@@ -31,8 +31,11 @@
       ~World.get_nearest_node
       ~World.get_node
       ~World.get_nodes_in_area
+      ~World.load_scenario
       ~World.load_scenario_from_csv
       ~World.on_time
+      ~World.save
+      ~World.save_scenario
       ~World.show_network
       ~World.simulation_terminated
    

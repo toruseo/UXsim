@@ -228,6 +228,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism</a></li>
@@ -295,7 +296,6 @@ gtag('config', 'UA-111714220-1');
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="c1"># 汎用関数</span>
 
 <div class="viewcode-block" id="catch_exceptions_and_warn">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.catch_exceptions_and_warn">[docs]</a>
@@ -385,7 +385,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="get_font_for_matplotlib">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.get_font_for_matplotlib">[docs]</a>
-<span class="k">def</span> <span class="nf">get_font_for_matplotlib</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">get_font_for_matplotlib</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a multi-language (currently Japanese only) font for matplotlib.</span>
 <span class="sd">    TODO: check if it works on different OS. It is only checked on Japanese Windows. </span>
@@ -400,16 +400,16 @@ gtag('config', 'UA-111714220-1');
 
     <span class="n">font_list</span> <span class="o">=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">()</span>
 
-    <span class="n">japanese_font</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;Noto Sans Mono CJK JP&quot;</span> <span class="ow">in</span> <span class="n">font</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">font_list</span><span class="p">):</span>
-        <span class="n">japanese_font</span> <span class="o">=</span> <span class="s2">&quot;Noto Sans Mono CJK JP&quot;</span>
+    <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">fname</span>
+    <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;Noto Sans Mono CJK JP&quot;</span> <span class="ow">in</span> <span class="n">font</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">font_list</span><span class="p">):</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;Noto Sans Mono CJK JP&quot;</span>
     <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;msgothic&quot;</span> <span class="ow">in</span> <span class="n">font</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">font_list</span><span class="p">):</span>
-        <span class="n">japanese_font</span> <span class="o">=</span> <span class="s2">&quot;MS Gothic&quot;</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;MS Gothic&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">japanese_font</span> <span class="o">=</span> <span class="s2">&quot;monospace&quot;</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;monospace&quot;</span>
         
-    <span class="k">return</span> <span class="n">japanese_font</span></div>
+    <span class="k">return</span> <span class="n">font</span></div>
 
 
 <div class="viewcode-block" id="print_columns">

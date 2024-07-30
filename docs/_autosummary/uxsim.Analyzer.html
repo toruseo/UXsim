@@ -229,6 +229,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
@@ -300,10 +301,7 @@ This module is automatically loaded when you import the <cite>uxsim</cite> modul
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_font_data</span></code>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_font_data_new</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_font_data</span></code>([font_path])</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -313,7 +311,7 @@ This module is automatically loaded when you import the <cite>uxsim</cite> modul
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer" title="uxsim.analyzer.Analyzer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Analyzer</span></code></a>(W)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer" title="uxsim.analyzer.Analyzer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Analyzer</span></code></a>(W[, font_pillow, font_matplotlib])</p></td>
 <td><p>Class for analyzing and visualizing a simulation result.</p></td>
 </tr>
 </tbody>
@@ -321,12 +319,16 @@ This module is automatically loaded when you import the <cite>uxsim</cite> modul
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.analyzer.</span></span><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.analyzer.</span></span><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_pillow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_matplotlib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer" title="Link to this definition">¶</a></dt>
 <dd><p>Class for analyzing and visualizing a simulation result.</p>
 <p>Create result analysis object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>W</strong> (<em>object</em>) – The world to which this belongs.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<em>object</em>) – The world to which this belongs.</p></li>
+<li><p><strong>font_pillow</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to the font file for Pillow. If not provided, the default font for English and Japanese is used.</p></li>
+<li><p><strong>font_matplotlib</strong> (<em>str</em><em>, </em><em>optional</em>) – The font name for Matplotlib. If not provided, the default font for English and Japanese is used.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -380,6 +382,17 @@ If not provided, the cumulative curves and travel times for all the links in the
 <p class="rubric">Notes</p>
 <p>This method plots the cumulative curves for vehicle arrivals and departures, as well as the instantaneous and actual travel times.
 The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with the filename format <cite>cumulative_curves_&lt;link.name&gt;.png</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.gps_like_log_to_pandas">
+<span class="sig-name descname"><span class="pre">gps_like_log_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.gps_like_log_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.gps_like_log_to_pandas" title="Link to this definition">¶</a></dt>
+<dd><p>Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -519,7 +532,7 @@ The generated animation is saved to the directory <cite>out&lt;W.name&gt;</cite>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.network_fancy">
-<span class="sig-name descname"><span class="pre">network_fancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animation_speed_inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.network_fancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.network_fancy" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">network_fancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animation_speed_inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">antialiasing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.network_fancy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.network_fancy" title="Link to this definition">¶</a></dt>
 <dd><p>Generates a visually appealing animation of vehicles’ trajectories across the entire transportation network over time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -532,6 +545,7 @@ The generated animation is saved to the directory <cite>out&lt;W.name&gt;</cite>
 <li><p><strong>trace_length</strong> (<em>int</em><em>, </em><em>optional</em>) – The length of the vehicles’ trajectory trails in the animation. Default is 3.</p></li>
 <li><p><strong>speed_coef</strong> (<em>int</em><em>, </em><em>optional</em>) – A coefficient that adjusts the animation speed. Default is 2.</p></li>
 <li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the file to which the animation is saved. It overrides the defauld name. Default is None.</p></li>
+<li><p><strong>antialiasing</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set to True, antialiasing is applied to the animation. Default is True.</p></li>
 </ul>
 </dd>
 </dl>
@@ -692,14 +706,17 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <dd><p>Converts the vehicle trip top to a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A DataFrame containing the top of the vehicle trip logs, with the columns:
-- ‘name’: the name of the vehicle (platoon).
-- ‘orig’: the origin node of the vehicle’s trip.
-- ‘dest’: the destination node of the vehicle’s trip.
-- ‘departure_time’: the departure time of the vehicle.
-- ‘final_state’: the final state of the vehicle.
-- ‘travel_time’: the travel time of the vehicle.
-- ‘average_speed’: the average speed of the vehicle.</p>
+<dd class="field-odd"><p><p>A DataFrame containing the top of the vehicle trip logs, with the columns:</p>
+<ul class="simple">
+<li><p>’name’: the name of the vehicle (platoon).</p></li>
+<li><p>’orig’: the origin node of the vehicle’s trip.</p></li>
+<li><p>’dest’: the destination node of the vehicle’s trip.</p></li>
+<li><p>’departure_time’: the departure time of the vehicle.</p></li>
+<li><p>’final_state’: the final state of the vehicle.</p></li>
+<li><p>’travel_time’: the travel time of the vehicle.</p></li>
+<li><p>’average_speed’: the average speed of the vehicle.</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>pd.DataFrame</p>
@@ -713,16 +730,19 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <dd><p>Converts the vehicle travel logs to a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A DataFrame containing the travel logs of vehicles, with the columns:
-- ‘name’: the name of the vehicle (platoon).
-- ‘dn’: the platoon size.
-- ‘orig’: the origin node of the vehicle’s trip.
-- ‘dest’: the destination node of the vehicle’s trip.
-- ‘t’: the timestep.
-- ‘link’: the link the vehicle is on (or relevant status).
-- ‘x’: the position of the vehicle on the link.
-- ‘s’: the spacing of the vehicle.
-- ‘v’: the speed of the vehicle.</p>
+<dd class="field-odd"><p><p>A DataFrame containing the travel logs of vehicles, with the columns:</p>
+<ul class="simple">
+<li><p>’name’: the name of the vehicle (platoon).</p></li>
+<li><p>’dn’: the platoon size.</p></li>
+<li><p>’orig’: the origin node of the vehicle’s trip.</p></li>
+<li><p>’dest’: the destination node of the vehicle’s trip.</p></li>
+<li><p>’t’: the timestep.</p></li>
+<li><p>’link’: the link the vehicle is on (or relevant status).</p></li>
+<li><p>’x’: the position of the vehicle on the link.</p></li>
+<li><p>’s’: the spacing of the vehicle.</p></li>
+<li><p>’v’: the speed of the vehicle.</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>pd.DataFrame</p>
@@ -779,6 +799,7 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.compute_edie_state"><code class="docutils literal notranslate"><span class="pre">Analyzer.compute_edie_state()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.compute_mfd"><code class="docutils literal notranslate"><span class="pre">Analyzer.compute_mfd()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.cumulative_curves"><code class="docutils literal notranslate"><span class="pre">Analyzer.cumulative_curves()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.analyzer.Analyzer.gps_like_log_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.gps_like_log_to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_analysis_coarse"><code class="docutils literal notranslate"><span class="pre">Analyzer.link_analysis_coarse()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_cumulative_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.link_cumulative_to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.link_to_pandas()</span></code></a></li>

@@ -18,4 +18,5 @@ The original Jupyter Notebook can be obtained from https://github.com/toruseo/UX
    ../notebooks/demo_notebook_04en_OpenStreetMap.ipynb
    ../notebooks/demo_notebook_06en_taxi_or_shared_mobility.ipynb
    ../notebooks/demo_notebook_07en_optimal_routing.ipynb
+   ../notebooks/demo_notebook_08en_chicago.ipynb
    

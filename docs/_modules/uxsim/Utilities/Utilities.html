@@ -228,6 +228,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mechanism.html">Simulation Mechanism</a></li>
@@ -288,7 +289,7 @@ gtag('config', 'UA-111714220-1');
           <h1>Source code for uxsim.Utilities.Utilities</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Submodule for general utilities.</span>
-<span class="sd">This (will) contains functions that are not essential for simulation but useful to specific analysis.</span>
+<span class="sd">This contains functions that are not essential for simulation but useful to specific analysis.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 
@@ -312,15 +313,13 @@ gtag('config', 'UA-111714220-1');
     
     <span class="c1"># Define the scenario</span>
     <span class="c1">#deploy nodes as an imax x jmax grid</span>
-    <span class="n">imax</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">jmax</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
             <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
 
     <span class="c1">#create links between neighborhood nodes</span>
-    <span class="n">links</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
@@ -338,7 +337,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="enumerate_k_shortest_routes">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.enumerate_k_shortest_routes">[docs]</a>
 <span class="k">def</span> <span class="nf">enumerate_k_shortest_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">l</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">print_stats</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enumerate the k shortest routes between two nodes in a network.</span>
 
 <span class="sd">    Parameters</span>
@@ -352,9 +351,14 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    k : int</span>
 <span class="sd">        The number of shortest routes to enumerate.</span>
 <span class="sd">    cost_function : function</span>
-<span class="sd">        A link cost function to compute shortest path. Default is the free-flow travel time.</span>
+<span class="sd">        A link cost function to compute shortest path. The argument is Link object. Default is the free-flow travel time, `lambda l: l.length/l.u`.</span>
 <span class="sd">    print_stats : bool</span>
 <span class="sd">        Print the statistics of the paths.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    routes : list</span>
+<span class="sd">        A list of k shortest routes. Each route is a list of link names.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
@@ -375,6 +379,7 @@ gtag('config', 'UA-111714220-1');
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route: </span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2">, Cost: </span><span class="si">{</span><span class="n">path_weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">routes</span></div>
+
 
 </pre></div>
         </article>

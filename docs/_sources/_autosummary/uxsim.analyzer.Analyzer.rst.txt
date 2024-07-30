@@ -21,6 +21,7 @@
       ~Analyzer.compute_edie_state
       ~Analyzer.compute_mfd
       ~Analyzer.cumulative_curves
+      ~Analyzer.gps_like_log_to_pandas
       ~Analyzer.link_analysis_coarse
       ~Analyzer.link_cumulative_to_pandas
       ~Analyzer.link_to_pandas

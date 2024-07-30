@@ -229,6 +229,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
@@ -305,13 +306,13 @@ gtag('config', 'UA-111714220-1');
 <li><p><strong>W</strong> (<em>object</em>) – The world to which the vehicle belongs.</p></li>
 <li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The origin node.</p></li>
 <li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node.</p></li>
-<li><p><strong>departure_time</strong> (<em>int</em>) – The departure time step of the vehicle.</p></li>
+<li><p><strong>departure_time</strong> (<em>int</em>) – The departure time of the vehicle.</p></li>
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the vehicle, default is the id of the vehicle.</p></li>
 <li><p><strong>route_pref</strong> (<em>dict</em><em>, </em><em>optional</em>) – The preference weights for links, default is 0 for all links.</p></li>
 <li><p><strong>route_choice_principle</strong> (<em>str</em><em>, </em><em>optional</em>) – The route choice principle of the vehicle, default is the network’s route choice principle.</p></li>
 <li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode of the vehicle. Available options are “single_trip” and “taxi”, default is “single_trip”.
 “single_trip”: The vehicle makes a single trip from the origin to the destination.
-“taxi”: The vehicle serves multiple trips by specifying sequence of destinations. The destination list <cite>Vehicle.dest_list</cite> can be dynamically updated externaly. (TODO: to be implemented next)</p></li>
+“taxi”: The vehicle serves multiple trips by specifying sequence of destinations. The destination list <cite>Vehicle.dest_list</cite> can be dynamically updated externaly.</p></li>
 <li><p><strong>links_prefer</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The names of the links the vehicle prefers, default is empty list.</p></li>
 <li><p><strong>links_avoid</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The names of the links the vehicle avoids, default is empty list.</p></li>
 <li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
@@ -330,13 +331,13 @@ gtag('config', 'UA-111714220-1');
 <li><p><strong>W</strong> (<em>object</em>) – The world to which the vehicle belongs.</p></li>
 <li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The origin node.</p></li>
 <li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node.</p></li>
-<li><p><strong>departure_time</strong> (<em>int</em>) – The departure time step of the vehicle.</p></li>
+<li><p><strong>departure_time</strong> (<em>int</em>) – The departure time of the vehicle.</p></li>
 <li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the vehicle, default is the id of the vehicle.</p></li>
 <li><p><strong>route_pref</strong> (<em>dict</em><em>, </em><em>optional</em>) – The preference weights for links, default is 0 for all links.</p></li>
 <li><p><strong>route_choice_principle</strong> (<em>str</em><em>, </em><em>optional</em>) – The route choice principle of the vehicle, default is the network’s route choice principle.</p></li>
 <li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode of the vehicle. Available options are “single_trip” and “taxi”, default is “single_trip”.
 “single_trip”: The vehicle makes a single trip from the origin to the destination.
-“taxi”: The vehicle serves multiple trips by specifying sequence of destinations. The destination list <cite>Vehicle.dest_list</cite> can be dynamically updated externaly. (TODO: to be implemented next)</p></li>
+“taxi”: The vehicle serves multiple trips by specifying sequence of destinations. The destination list <cite>Vehicle.dest_list</cite> can be dynamically updated externaly.</p></li>
 <li><p><strong>links_prefer</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The names of the links the vehicle prefers, default is empty list.</p></li>
 <li><p><strong>links_avoid</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The names of the links the vehicle avoids, default is empty list.</p></li>
 <li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
@@ -375,7 +376,7 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Vehicle.route_next_link_choice" title="uxsim.Vehicle.route_next_link_choice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_next_link_choice</span></code></a>()</p></td>
 <td><p>Select a next link from the current link.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.route_pref_update" title="uxsim.Vehicle.route_pref_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_pref_update</span></code></a>(weight)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Vehicle.route_pref_update" title="uxsim.Vehicle.route_pref_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_pref_update</span></code></a>([weight])</p></td>
 <td><p>Updates the vehicle's link preferences for route choice.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Vehicle.set_links_avoid" title="uxsim.Vehicle.set_links_avoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_links_avoid</span></code></a>(links)</p></td>
@@ -460,12 +461,12 @@ gtag('config', 'UA-111714220-1');
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Vehicle.route_pref_update">
-<span class="sig-name descname"><span class="pre">route_pref_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.route_pref_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.route_pref_update" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">route_pref_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.route_pref_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Vehicle.route_pref_update" title="Link to this definition">¶</a></dt>
 <dd><p>Updates the vehicle’s link preferences for route choice.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>weight</strong> (<em>float</em>) – The weight for updating the link preferences based on the recent travel time.
-Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated.</p>
+Should be in the range [0, 1], where 0 means the old preferences are fully retained and 1 means the preferences are completely updated. THIS IS DISABLED FOR NOW.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

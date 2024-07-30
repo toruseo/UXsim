@@ -16,6 +16,8 @@
       ~Link.__init__
       ~Link.actual_travel_time
       ~Link.arrival_count
+      ~Link.change_free_flow_speed
+      ~Link.change_jam_density
       ~Link.departure_count
       ~Link.in_out_flow_constraint
       ~Link.init_after_tmax_fix
@@ -33,8 +35,6 @@
    
       ~Link.density
       ~Link.flow
-      ~Link.free_flow_speed
-      ~Link.jam_density
       ~Link.num_vehicles
       ~Link.num_vehicles_queue
       ~Link.speed
