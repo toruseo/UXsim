@@ -15,6 +15,7 @@ import dill as pickle
 
 from .analyzer import *
 from .utils import *
+from .scenario_reader_writer import *
 
 class Node:
     """
@@ -95,21 +96,23 @@ class Node:
 
         #流量制限（マクロ信号）
         s.flag_lanes_automatically_determined = False
+        s.number_of_lanes = number_of_lanes
         if flow_capacity != None:
             s.flow_capacity = flow_capacity
             s.flow_capacity_remain = flow_capacity*s.W.DELTAT
             if number_of_lanes != None:
-                s.lanes = number_of_lanes
+                s.number_of_lanes = number_of_lanes
             else:
-                s.lanes = math.ceil(flow_capacity/0.8) #TODO: 要調整．現状は1車線0.8 veh/sと見なし，車線数を決定している
+                s.number_of_lanes = math.ceil(flow_capacity/0.8) #TODO: 要調整．現状は1車線0.8 veh/sと見なし，車線数を決定している
                 s.flag_lanes_automatically_determined = True
         else:
             s.flow_capacity = None
             s.flow_capacity_remain = 10e10
-            s.lanes = None
+            s.number_of_lanes = None
 
         s.id = len(s.W.NODES)
         s.name = name
+        s.auto_rename = auto_rename
         if s.name in [n.name for n in s.W.NODES]:
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
@@ -138,7 +141,7 @@ class Node:
         flow capacity updates.
         """
         if s.flow_capacity != None:
-            if s.flow_capacity_remain < s.W.DELTAN*s.lanes:
+            if s.flow_capacity_remain < s.W.DELTAN*s.number_of_lanes:
                 s.flow_capacity_remain += s.flow_capacity*s.W.DELTAT
         else:
             s.flow_capacity_remain = 10e10
@@ -154,7 +157,7 @@ class Node:
         """
         outlinks0 = list(s.outlinks.values())
         if len(outlinks0):
-            for i in range(sum([l.lanes for l in outlinks0])):
+            for i in range(sum([l.number_of_lanes for l in outlinks0])):
                 if len(s.generation_queue) > 0:                    
                     veh = s.generation_queue[0]
 
@@ -171,7 +174,7 @@ class Node:
                     else:
                         outlink = s.W.rng.choice(outlinks)
 
-                    if (len(outlink.vehicles) < outlink.lanes or outlink.vehicles[-outlink.lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
+                    if (len(outlink.vehicles) < outlink.number_of_lanes or outlink.vehicles[-outlink.number_of_lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
                         #受け入れ可能な場合，リンク優先度に応じて選択
                         veh = s.generation_queue.popleft()
 
@@ -182,13 +185,13 @@ class Node:
                         s.W.VEHICLES_RUNNING[veh.name] = veh
 
                         if len(outlink.vehicles) > 0:
-                            veh.lane = (outlink.vehicles[-1].lane + 1)%outlink.lanes
+                            veh.lane = (outlink.vehicles[-1].lane + 1)%outlink.number_of_lanes
                         else:
                             veh.lane = 0
 
                         veh.leader = None
-                        if len(outlink.vehicles) >= outlink.lanes:
-                            veh.leader = outlink.vehicles[-outlink.lanes]
+                        if len(outlink.vehicles) >= outlink.number_of_lanes:
+                            veh.leader = outlink.vehicles[-outlink.number_of_lanes]
                             veh.leader.follower = veh
                             assert veh.leader.lane == veh.lane
 
@@ -220,12 +223,12 @@ class Node:
         outlinks = []
         outlink_candidates = {veh.route_next_link:0 for veh in s.incoming_vehicles if veh.route_next_link != None}
         for outlink in outlink_candidates.keys():
-            for i in range(outlink.lanes):#車線の数だけ受け入れ試行回数あり
+            for i in range(outlink.number_of_lanes):#車線の数だけ受け入れ試行回数あり
                 outlinks.append(outlink)
         s.W.rng.shuffle(outlinks)
 
         for outlink in outlinks: 
-            if (len(outlink.vehicles) < outlink.lanes or outlink.vehicles[-outlink.lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN and s.flow_capacity_remain >= s.W.DELTAN:
+            if (len(outlink.vehicles) < outlink.number_of_lanes or outlink.vehicles[-outlink.number_of_lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN and s.flow_capacity_remain >= s.W.DELTAN:
                 #受け入れ可能かつ流出可能の場合，リンク優先度に応じて選択
                 vehs = [
                     veh for veh in s.incoming_vehicles 
@@ -265,13 +268,13 @@ class Node:
                     veh.follower = None
 
                 if len(outlink.vehicles) > 0:
-                    veh.lane = (outlink.vehicles[-1].lane + 1)%outlink.lanes
+                    veh.lane = (outlink.vehicles[-1].lane + 1)%outlink.number_of_lanes
                 else:
                     veh.lane = 0
                 
                 veh.leader = None
-                if len(outlink.vehicles) >= outlink.lanes:
-                    veh.leader = outlink.vehicles[-outlink.lanes]
+                if len(outlink.vehicles) >= outlink.number_of_lanes:
+                    veh.leader = outlink.vehicles[-outlink.number_of_lanes]
                     veh.leader.follower = veh
                     assert veh.leader.lane == veh.lane
 
@@ -296,7 +299,7 @@ class Node:
 
         #各リンクの先頭のトリップ終了待ち車両をトリップ終了させる
         for link in s.inlinks.values():
-            for lane in range(link.lanes):
+            for lane in range(link.number_of_lanes):
                 if len(link.vehicles) and link.vehicles[0].flag_waiting_for_trip_end:
                     link.vehicles[0].end_trip()
                 else:
@@ -316,7 +319,7 @@ class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=0, capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=[0], capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False):
         """
         Create a link
 
@@ -447,12 +450,13 @@ class Link:
         s.length = length
 
         #車線数
-        s.lanes = int(number_of_lanes)
-        if s.lanes != number_of_lanes:
+        s.number_of_lanes = int(number_of_lanes)
+        if s.number_of_lanes != number_of_lanes:
             raise ValueError(f"number_of_lanes must be an integer. Got {number_of_lanes} at {s}.")
         
 
         #フローモデルパラメータ:per link
+
         s.u = free_flow_speed
         s.kappa = jam_density
         if jam_density == 0.2 and jam_density_per_lane != None:
@@ -460,13 +464,17 @@ class Link:
         if jam_density != 0.2 and jam_density_per_lane != None:
             s.kappa = jam_density_per_lane*number_of_lanes
             warnings.warn(f"{s}: jam_density is ignored because jam_density_per_lane is set.", UserWarning)
-        s.tau = s.W.REACTION_TIME/s.lanes
+        s.tau = s.W.REACTION_TIME/s.number_of_lanes
         s.w = 1/s.tau/s.kappa
         s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
         s.delta = 1/s.kappa
-        s.delta_per_lane = s.delta*s.lanes #m/veh for each lane. used for car-following model per lane
+        s.delta_per_lane = s.delta*s.number_of_lanes #m/veh for each lane. used for car-following model per lane
         s.q_star = s.capacity   #flow capacity
         s.k_star = s.capacity/s.u   #critical density
+        
+        s.free_flow_speed = free_flow_speed
+        s.jam_density = jam_density
+        s.jam_density_per_lane = jam_density_per_lane
 
 
         #合流時優先度
@@ -501,13 +509,14 @@ class Link:
         #流入容量
         s.capacity_in = capacity_in
         if capacity_in == None:
-            s.capacity_in = 10e10
-            s.capacity_in_remain = 10e10
+            s.capacity_in = s.capacity*2
+            s.capacity_in_remain = s.capacity*2
         else:
             s.capacity_in_remain = s.capacity_in*s.W.DELTAT
 
         s.id = len(s.W.LINKS)
         s.name = name
+        s.auto_rename = auto_rename
         if s.name in [l.name for l in s.W.LINKS]:
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
@@ -533,10 +542,11 @@ class Link:
         s.ls = []
         s.names = []
 
+        s.eular_dx = eular_dx
         if eular_dx == None:
-            s.eular_dx = s.length/10
-            if s.eular_dx < s.u*s.W.DELTAT:
-                s.eular_dx = s.u*s.W.DELTAT
+            s.edie_dx = s.length/10
+            if s.edie_dx < s.u*s.W.DELTAT:
+                s.edie_dx = s.u*s.W.DELTAT
 
     def __repr__(s):
         return f"<Link {s.name}>"
@@ -548,7 +558,7 @@ class Link:
 
         #Euler型交通状態
         s.edie_dt = s.W.EULAR_DT
-        s.edie_dx = s.eular_dx
+        s.edie_dx = s.edie_dx
         s.k_mat = np.zeros([int(s.W.TMAX/s.edie_dt)+1, int(s.length/s.edie_dx)])
         s.q_mat = np.zeros(s.k_mat.shape)
         s.v_mat = np.zeros(s.k_mat.shape)
@@ -585,9 +595,9 @@ class Link:
         """
         #リンク流入出率を流出容量以下にするための処理．一タイムステップ当りに通り抜ける最大数を確保する
         if s.capacity_in != None:
-            if s.capacity_out_remain < s.W.DELTAN*s.lanes:
+            if s.capacity_out_remain < s.W.DELTAN*s.number_of_lanes:
                 s.capacity_out_remain += s.capacity_out*s.W.DELTAT
-            if s.capacity_in_remain < s.W.DELTAN*s.lanes:
+            if s.capacity_in_remain < s.W.DELTAN*s.number_of_lanes:
                 s.capacity_in_remain += s.capacity_in*s.W.DELTAT
         else:
             s.capacity_out_remain = 10e10
@@ -724,13 +734,38 @@ class Link:
             s._num_vehicles_queue = sum([veh.v < s.u for veh in s.vehicles])*s.W.DELTAN
         return s._num_vehicles_queue
 
-    @property
-    def free_flow_speed(s):
-        return s.u
+    #Disabled temporally to avoid cirtical bugs related to scenario writer/reader. Instead, change_*() are added
+    # @property
+    # def free_flow_speed(s):
+    #     return s.u
 
-    @free_flow_speed.setter
-    def free_flow_speed(s, new_value):
+    # @free_flow_speed.setter
+    # def free_flow_speed(s, new_value):
+    #     if new_value >= 0:
+    #         s.u = new_value
+    #         s.w = 1/s.tau/s.kappa
+    #         s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
+    #         s.delta = 1/s.kappa
+    #     else:
+    #         warnings.warn(f"ignored negative free_flow_speed at {s}", UserWarning)
+
+    # @property
+    # def jam_density(s):
+    #     return s.kappa
+
+    # @jam_density.setter
+    # def jam_density(s, new_value):
+    #     if new_value >= 0:
+    #         s.kappa = new_value
+    #         s.w = 1/s.tau/s.kappa
+    #         s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
+    #         s.delta = 1/s.kappa
+    #     else:
+    #         warnings.warn(f"ignored negative jam_density at {s}", UserWarning)
+
+    def change_free_flow_speed(s, new_value):
         if new_value >= 0:
+            s.free_flow_speed = new_value
             s.u = new_value
             s.w = 1/s.tau/s.kappa
             s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
@@ -738,19 +773,17 @@ class Link:
         else:
             warnings.warn(f"ignored negative free_flow_speed at {s}", UserWarning)
 
-    @property
-    def jam_density(s):
-        return s.kappa
-
-    @jam_density.setter
-    def jam_density(s, new_value):
+    def change_jam_density(s, new_value):
         if new_value >= 0:
+            s.free_jam_density = new_value
             s.kappa = new_value
             s.w = 1/s.tau/s.kappa
             s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
             s.delta = 1/s.kappa
         else:
             warnings.warn(f"ignored negative jam_density at {s}", UserWarning)
+
+
 
 
 class Vehicle:
@@ -1378,7 +1411,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, meta_data={}):
         """
         Create a World.
 
@@ -1425,6 +1458,8 @@ class World:
         instantaneous_TT_timestep_interval : int, optional
             The interval for computing instantaneous travel time of each link. Default is 5.
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
+        meta_data : dict, optinal
+            Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.
 
         Notes
         -----
@@ -1475,6 +1510,10 @@ class World:
         ## system setting
         W.name = name
 
+        W.meta_data = meta_data
+        W.network_info = ddict(list)
+        W.demand_info = ddict(list)
+
         W.finalized = 0
         W.world_start_time = time.time()
 
@@ -1487,7 +1526,6 @@ class World:
             W.print = noprint
         W.save_mode = save_mode
         W.show_mode = show_mode
-
 
     def addNode(W, *args, **kwargs):
         """
@@ -1576,7 +1614,7 @@ class World:
         """
         return Link(W, *args, **kwargs)
 
-    def addVehicle(W, *args, **kwargs):
+    def addVehicle(W, *args, direct_call=True, **kwargs):
         """
         add a vehicle to world
 
@@ -1621,7 +1659,8 @@ class World:
         """
         return Vehicle(W, *args, **kwargs)
 
-    def adddemand(W, orig, dest, t_start, t_end, flow=-1, volume=-1, attribute=None):
+    @demand_info_record
+    def adddemand(W, orig, dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
         """
         Generate vehicles by specifying time-dependent origin-destination demand.
 
@@ -1642,6 +1681,7 @@ class World:
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
         """
+
         if volume > 0:
             flow = volume/(t_end-t_start)
 
@@ -1649,10 +1689,11 @@ class World:
         for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
             f += flow*W.DELTAT
             while f >= W.DELTAN:
-                W.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute)
+                W.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute, direct_call=False)
                 f -= W.DELTAN
 
-    def adddemand_point2point(W, x_orig, y_orig, x_dest, y_dest, t_start, t_end, flow=-1, volume=-1, attribute=None):
+    @demand_info_record
+    def adddemand_point2point(W, x_orig, y_orig, x_dest, y_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
         """
         Generate vehicles by specifying time-dependent origin-destination demand using coordinates.
 
@@ -1679,9 +1720,10 @@ class World:
         """
         orig = W.get_nearest_node(x_orig, y_orig)
         dest = W.get_nearest_node(x_dest, y_dest)
-        W.adddemand(orig, dest, t_start, t_end, flow, volume, attribute)
+        W.adddemand(orig, dest, t_start, t_end, flow, volume, attribute, direct_call=False)
 
-    def adddemand_area2area(W, x_orig, y_orig,  radious_orig, x_dest, y_dest, radious_dest, t_start, t_end, flow=-1, volume=-1, attribute=None):
+    @demand_info_record
+    def adddemand_area2area(W, x_orig, y_orig,  radious_orig, x_dest, y_dest, radious_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
         """
         Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas.
 
@@ -1734,7 +1776,7 @@ class World:
             volume = volume/(len(origs)*len(dests))
         for o in origs:
             for d in dests:
-                W.adddemand(o, d, t_start, t_end, flow, volume, attribute)
+                W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=False)
     
     def finalize_scenario(W, tmax=None):
         """
@@ -2096,6 +2138,36 @@ class World:
                         W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]), float(r[5]))
                     except:
                         W.adddemand(r[0], r[1], float(r[2]), float(r[3]), float(r[4]))
+
+    def save_scenario(W, fname, network=True, demand=True):
+        """
+        Save the scenario (Node, Link, demand) to a file.
+
+        Parameters
+        ----------
+        fname : str
+            The file name to save the scenario.
+        network : bool, optional
+            Whether to save the network (Node, Link) data, default is True.
+        demand : bool, optional
+            Whether to save the demand (adddemand, etc.) data, default is True.
+        """
+        save_scenario(W, fname, network, demand)
+
+    def load_scenario(W, fname, network=True, demand=True):
+        """
+        Load a scenario from a file.
+
+        Parameters
+        ----------
+        fname : str
+            The file name to load the scenario.
+        network : bool, optional
+            Whether to load the network data, default is True.
+        demand : bool, optional
+            Whether to load the demand data, default is True.
+        """
+        load_scenario(W, fname, network, demand)
 
     def on_time(W, time):
         """
