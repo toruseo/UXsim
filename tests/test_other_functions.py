@@ -49,6 +49,7 @@ def test_analyzer():
     W.analyzer.time_space_diagram_traj_links([["link1", "link3"], ["link2", "link3"]])
     W.analyzer.cumulative_curves()
     W.analyzer.plot_vehicle_log("110")
+    W.analyzer.plot_vehicles_log(["100", "110"])
     W.analyzer.macroscopic_fundamental_diagram()
     for t in list(range(0,W.TMAX,int(W.TMAX/6))):
         W.analyzer.network(t, detailed=0, network_font_size=0, figsize=(4,4))
@@ -66,6 +67,8 @@ def test_analyzer():
     print(W.analyzer.link_traffic_state_to_pandas())    # Traffic state inside the link
     print(W.analyzer.vehicles_to_pandas())  # Information per vehicle
     print(W.analyzer.link_cumulative_to_pandas())
+    print(W.analyzer.gps_like_log_to_pandas())
+    print(W.analyzer.vehicle_trip_to_pandas())
 
     # Save the results to CSV
     W.analyzer.output_data()
