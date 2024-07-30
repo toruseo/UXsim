@@ -8,8 +8,11 @@ W = World(
     random_seed=0
 )
 
-# you can read CSV files like this.
-W.load_scenario_from_csv("dat/siouxfalls_nodes.csv", "dat/siouxfalls_links.csv", "dat/siouxfalls_demand.csv")
+# You can load pre-defined scenario files like this.
+W.load_scenario("dat/sfnetwork.uxsim_scenario")
+
+# You can save as well
+#W.save_scenario("dat/sfnetwork.uxsim_scenario")
 
 W.exec_simulation()
 
