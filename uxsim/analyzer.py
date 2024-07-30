@@ -1249,6 +1249,26 @@ class Analyzer:
         s.df_vehicle_trip = pd.DataFrame(out[1:], columns=out[0])
         return s.df_vehicle_trip
 
+    def gps_like_log_to_pandas(s):
+        """
+        Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles.
+
+        Returns
+        -------
+        pd.DataFrame
+        """
+        out = [["name", "t", "x", "y", "v"]]
+        for veh in s.W.VEHICLES.values():
+            for i,t in enumerate(veh.log_t):
+                x, y = veh.get_xy_coords(t)
+                if (x, y) == (-1, -1):
+                    continue
+                v = veh.log_v[i]
+                out.append([veh.name, t, x, y, v])
+        s.df_gps_like_log = pd.DataFrame(out[1:], columns=out[0])
+        return s.df_gps_like_log
+
+
     def basic_to_pandas(s):
         """
         Converts the basic stats to a pandas DataFrame.

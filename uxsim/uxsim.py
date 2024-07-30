@@ -1184,11 +1184,14 @@ class Vehicle:
             Time in seconds. If it is -1, the latest position is returned.
         """
         if t != -1:
-            link = s.log_link[int(t/s.W.DELTAT/s.W.logging_timestep_interval)]
-            xx = s.log_x[int(t/s.W.DELTAT/s.W.logging_timestep_interval)]
+            link = s.log_link[int(t/s.W.DELTAT/s.W.vehicle_logging_timestep_interval)]
+            xx = s.log_x[int(t/s.W.DELTAT/s.W.vehicle_logging_timestep_interval)]
         else:
             link = s.link
             xx = s.x
+        if link == -1:
+            return (-1, -1)
+        link = s.W.get_link(link)
         x0 = link.start_node.x
         y0 = link.start_node.y
         x1 = link.end_node.x
