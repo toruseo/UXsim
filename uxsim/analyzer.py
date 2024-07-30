@@ -457,7 +457,7 @@ class Analyzer:
             for ll in links:
                 l = s.W.get_link(ll)
                 for i in range(len(l.xss)):
-                    lane_shift = l.ls[i]/l.lanes*s.W.DELTAT/2 #vehicle with the same lane is plotted slightly shifted
+                    lane_shift = l.ls[i]/l.number_of_lanes*s.W.DELTAT/2 #vehicle with the same lane is plotted slightly shifted
                     plt.plot(np.array(l.tss[i])+lane_shift, np.array(l.xss[i])+linkdict[l], "-", c=l.cs[i], lw=0.5)
                 if plot_signal:
                     signal_log = [i*s.W.DELTAT for i in lange(l.end_node.signal_log) if (l.end_node.signal_log[i] not in l.signal_group and len(l.end_node.signal)>1)]
@@ -613,7 +613,7 @@ class Analyzer:
                     except:
                         warnings.warn(f"invalid time {t} is specified for network visualization", UserWarning)
                         return -1
-                    lw[i] = k*l.delta*(maxwidth*l.lanes-minwidth)+minwidth
+                    lw[i] = k*l.delta*(maxwidth*l.number_of_lanes-minwidth)+minwidth
                     c[i] = plt.colormaps["viridis"](v/l.u)
                 xmid = [((xsize-i)*x1+(i+1)*x2)/(xsize+1)+vx for i in range(xsize)]
                 ymid = [((xsize-i)*y1+(i+1)*y2)/(xsize+1)+vy for i in range(xsize)]
@@ -626,7 +626,7 @@ class Analyzer:
                 #簡略モード
                 k = (l.cum_arrival[int(t/s.W.DELTAT)]-l.cum_departure[int(t/s.W.DELTAT)])/l.length
                 v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
-                width = k*l.delta*(maxwidth*l.lanes-minwidth)+minwidth
+                width = k*l.delta*(maxwidth*l.number_of_lanes-minwidth)+minwidth
                 c = plt.colormaps["viridis"](v/l.u)
                 xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
                 xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
@@ -977,7 +977,7 @@ class Analyzer:
             for l in s.W.LINKS:
                 x1, y1 = l.start_node.x*coef-minx, l.start_node.y*coef-miny
                 x2, y2 = l.end_node.x*coef-minx, l.end_node.y*coef-miny
-                n_lane = l.lanes
+                n_lane = l.number_of_lanes
                 draw.line([(x1, flip(y1)), (x2, flip(y2))], fill=(200,200,200), width=int(n_lane*scale), joint="curve")
 
                 if network_font_size > 0:

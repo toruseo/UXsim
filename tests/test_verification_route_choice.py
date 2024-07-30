@@ -342,8 +342,8 @@ def test_2route_one_is_too_long_but_u_changes_during_simulation():
         W.adddemand("orig", "dest", 0, 1500, 0.8)
 
         W.exec_simulation(duration_t=500)
-        link11.free_flow_speed = 5
-        link12.free_flow_speed = 5
+        link11.change_free_flow_speed(5)
+        link12.change_free_flow_speed(5)
         W.exec_simulation()
         
 

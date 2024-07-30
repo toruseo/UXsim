@@ -128,7 +128,7 @@ def test_readme():
     assert True
 
 
-def test_toml_write_and_read():
+def test_scenario_write_and_read():
     ##################################
     # Iter 1
     ##################################
@@ -146,7 +146,7 @@ def test_toml_write_and_read():
     nodes, links = generate_grid_network(W, imax, jmax, length=1000)
 
     demand_flow = 0.035
-    demand_duration = 31800
+    demand_duration = 1800
     for n1 in [(0,j) for j in range(jmax)]:
         for n2 in [(imax-1,j) for j in range(jmax)]:
             W.adddemand(nodes[n2], nodes[n1], 0, demand_duration, demand_flow)
@@ -158,7 +158,7 @@ def test_toml_write_and_read():
     W.adddemand_point2point(0.5, 0.5, 2.5, 2.5, 0, 1800, volume=100)
     W.adddemand_area2area(0.5, 0.5, 2, 2.5, 2.5, 2, 0, 1800, volume=100)
 
-    W.save_scenario_as_toml("out/test_grid.toml")
+    W.save_scenario("out/test_grid.pkl")
 
     W.exec_simulation()
     W.analyzer.print_simple_stats()
@@ -178,7 +178,7 @@ def test_toml_write_and_read():
         random_seed=42
     )
 
-    W2.load_scenario_from_toml("out/test_grid.toml")
+    W2.load_scenario("out/test_grid.pkl")
 
     W2.exec_simulation()
 
