@@ -21,6 +21,16 @@ jobs:
         python -m pip install --upgrade pip
         pip install .
     - name: Install pytest other dependencies
-      run: pip install pytest pytest-rerunfailures pytest-xdist setuptools osmnx requests
+      run: pip install pytest pytest-rerunfailures pytest-xdist pytest-cov setuptools osmnx requests
     - name: Run tests with pytest
-      run: pytest -n auto tests/test_other_functions.py --durations=0 -v
+      run: pytest -n auto tests/test_other_functions.py --durations=0 -v --cov=uxsim --cov-report=xml
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.0.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.xml
+        name: codecov-umbrella
+        fail_ci_if_error: true
+        verbose: true
+
+
