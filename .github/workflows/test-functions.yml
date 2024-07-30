@@ -23,7 +23,7 @@ jobs:
     - name: Install pytest other dependencies
       run: pip install pytest pytest-rerunfailures pytest-xdist pytest-cov setuptools osmnx requests
     - name: Run tests with pytest
-      run: pytest -n auto tests/test_other_functions.py --durations=0 -v --cov=uxsim --cov-report=xml
+      run: pytest -n auto tests/test_other_functions.py --durations=0 -v --cov=uxsim --cov-report=xml --cov-config=.github/.coveragerc
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4.0.1
       with:
