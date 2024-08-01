@@ -192,8 +192,6 @@ def test_scenario_write_and_read():
     
     assert df1["total_travel_time"][0] == df2["total_travel_time"][0]
 
-
-
 def test_k_shortest_path():
     W = World(
         name="",    # Scenario name
