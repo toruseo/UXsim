@@ -4,7 +4,7 @@ This script tests various other functions in UXsim.
 
 import pytest
 from uxsim import *
-from uxsim.Utilities import generate_grid_network
+from uxsim.Utilities import *
 
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     if check == 0 and abs_tol == 0:
@@ -191,3 +191,196 @@ def test_scenario_write_and_read():
     print(df2)
     
     assert df1["total_travel_time"][0] == df2["total_travel_time"][0]
+
+
+
+def test_k_shortest_path():
+    W = World(
+        name="",    # Scenario name
+        deltan=5,   # Simulation aggregation unit delta n
+        tmax=1200,  # Total simulation time (s)
+        print_mode=1, save_mode=1, show_mode=1,    # Various options
+        random_seed=0    # Set the random seed
+    )
+
+    # Define the scenario
+
+    # 2 - D
+    # | \ |
+    # O - 1
+    #free flow travel time: 
+    #   O1D = 2000/20 = 100
+    #   O2D = 4000/20 = 200
+    #   O12D= 1600/20 = 80
+
+
+    W.addNode(name="O", x=0, y=0)
+    W.addNode(name="1", x=1, y=0)
+    W.addNode(name="2", x=0, y=1)
+    W.addNode(name="D", x=1, y=1)
+    W.addLink("O1", "O", "1", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("1D", "1", "D", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("O2", "O", "2", length=3500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("2D", "2", "D", length=500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("12", "1", "2", length=100, free_flow_speed=20, number_of_lanes=1)
+    W.adddemand(orig="O", dest="D", t_start=0, t_end=1000, flow=0.6)
+
+    # Run the simulation to the end
+    W.exec_simulation()
+
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
+
+    df = W.analyzer.link_to_pandas()
+
+    assert df[df["link"]=="O1"]["traffic_volume"].values[0] == 600
+    assert df[df["link"]=="O2"]["traffic_volume"].values[0] == 0
+    assert df[df["link"]=="12"]["traffic_volume"].values[0] == 600
+
+    assert enumerate_k_shortest_routes(W, "O", "D") == [['O1', '12', '2D']]
+    assert enumerate_k_shortest_routes(W, "O", "D", k=3) == [['O1', '12', '2D'], ['O1', '1D'], ['O2', '2D']]
+    assert enumerate_k_shortest_routes(W, "O", "D", k=3, return_cost=True) == ([['O1', '12', '2D'], ['O1', '1D'], ['O2', '2D']], [80.0, 100.0, 200.0])
+
+@pytest.mark.flaky(reruns=10)
+def test_k_shortest_path_on_t():
+
+    W = World(
+        name="",    # Scenario name
+        deltan=5,   # Simulation aggregation unit delta n
+        tmax=1200,  # Total simulation time (s)
+        print_mode=1, save_mode=1, show_mode=1,    # Various options
+        random_seed=None    # Set the random seed
+    )
+
+    # Define the scenario
+
+    # 2 - D
+    # | \ |
+    # O - 1
+    #free flow travel time: 
+    #   O1D = 2000/20 = 100
+    #   O2D = 4000/20 = 200
+    #   O12D= 1600/20 = 80
+
+
+    W.addNode(name="O", x=0, y=0)
+    W.addNode(name="1", x=1, y=0)
+    W.addNode(name="2", x=0, y=1)
+    W.addNode(name="D", x=1, y=1)
+    W.addLink("O1", "O", "1", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("1D", "1", "D", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("O2", "O", "2", length=3500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("2D", "2", "D", length=500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("12", "1", "2", length=100, free_flow_speed=20, number_of_lanes=1, capacity_out=0.4)
+    W.adddemand(orig="O", dest="D", t_start=0, t_end=1000, flow=0.6)
+
+    # Run the simulation to the end
+    W.exec_simulation()
+
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
+
+    df = W.analyzer.link_to_pandas()
+    
+    assert equal_tolerance(df[df["link"]=="O1"]["traffic_volume"].values[0], 460, rel_tol=0.2)
+    assert equal_tolerance(df[df["link"]=="O2"]["traffic_volume"].values[0], 140, rel_tol=0.2)
+    assert equal_tolerance(df[df["link"]=="12"]["traffic_volume"].values[0], 325, rel_tol=0.2)
+
+    t = 0
+    assert enumerate_k_shortest_routes_on_t(W, "O", "D", t=t) == [['O1', '12', '2D']]
+    assert enumerate_k_shortest_routes_on_t(W, "O", "D", t=t, k=3) == [['O1', '12', '2D'], ['O1', '1D'], ['O2', '2D']]
+    routes, costs = enumerate_k_shortest_routes_on_t(W, "O", "D", t=t, k=3, return_cost=True)
+    assert routes[0] == ['O1', '12', '2D']
+    assert equal_tolerance(costs[0], 80.0)
+
+    t = 200
+    assert enumerate_k_shortest_routes_on_t(W, "O", "D", t=t) == [['O1', '1D']]
+    assert enumerate_k_shortest_routes_on_t(W, "O", "D", t=t, k=3) == [['O1', '1D'], ['O1', '12', '2D'], ['O2', '2D']]
+    routes, costs = enumerate_k_shortest_routes_on_t(W, "O", "D", t=t, k=3, return_cost=True)
+    assert routes[0] == ['O1', '1D']
+    assert equal_tolerance(costs[0], 131.8181818181818)
+
+    t = 400
+    assert enumerate_k_shortest_routes_on_t(W, "O", "D", t=t) == [['O2', '2D']]
+    assert enumerate_k_shortest_routes_on_t(W, "O", "D", t=t, k=3) == [['O2', '2D'], ['O1', '1D'], ['O1', '12', '2D']]
+    routes, costs = enumerate_k_shortest_routes_on_t(W, "O", "D", t=t, k=3, return_cost=True)
+    assert routes[0] == ['O2', '2D']
+    assert equal_tolerance(costs[0], 200.0)
+
+
+def test_util_catch_exceptions_and_warn():
+    with pytest.warns(UserWarning, match=r".*network().*"):
+        W = World(
+            name="",    # Scenario name
+            deltan=5,   # Simulation aggregation unit delta n
+            tmax=1200,  # Total simulation time (s)
+            print_mode=1, save_mode=1, show_mode=0,    # Various options
+            random_seed=0    # Set the random seed
+        )
+
+        # Define the scenario
+        ## Create nodes
+        W.addNode(name="orig1", x=0, y=0)
+        W.addNode("orig2", 0, 2)
+        W.addNode("merge", 1, 1)
+        W.addNode("dest", 2, 1)
+        ## Create links between nodes
+        W.addLink(name="link1", start_node="orig1", end_node="merge",
+                length=1000, free_flow_speed=20, number_of_lanes=1)
+        W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+        W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+        ## Create OD traffic demand between nodes
+        W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
+        W.adddemand("orig2", "dest", 400, 1000, 0.6)
+
+        # Run the simulation to the end
+        W.exec_simulation()
+
+        # Print summary of simulation result
+        W.analyzer.print_simple_stats()
+
+        # Visualize snapshots of network traffic state for several timesteps
+        W.analyzer.network()
+
+    assert True
+
+def test_util_print_columns():
+    W = World(
+        name="",    # Scenario name
+        deltan=5,   # Simulation aggregation unit delta n
+        tmax=1200,  # Total simulation time (s)
+        print_mode=1, save_mode=1, show_mode=0,    # Various options
+        random_seed=0    # Set the random seed
+    )
+
+    # Define the scenario
+    ## Create nodes
+    W.addNode(name="orig1", x=0, y=0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("merge", 1, 1)
+    W.addNode("dest", 2, 1)
+    ## Create links between nodes
+    W.addLink(name="link1", start_node="orig1", end_node="merge",
+            length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+    ## Create OD traffic demand between nodes
+    W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
+    W.adddemand("orig2", "dest", 400, 1000, 0.6)
+
+    # Run the simulation to the end
+    W.exec_simulation()
+
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
+
+    print_columns(W.VEHICLES["0"].log_t, W.VEHICLES["0"].log_x, W.VEHICLES["0"].log_v)
+    print_columns(W.VEHICLES["0"].log_t, W.VEHICLES["0"].log_x, W.VEHICLES["0"].log_v, W.VEHICLES["1"].log_t, W.VEHICLES["1"].log_x, W.VEHICLES["1"].log_v)
+
+    assert True
+    
+def test_printtry():
+    lis = [1,2,3]
+    printtry(lambda: (lis[0]))
+    printtry(lambda: (lis[10]))
+    assert True

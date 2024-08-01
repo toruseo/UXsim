@@ -1,6 +1,6 @@
 Test scripts. 
 
-For development purposes only. Users can ignore these files.
+For development purposes only. Users can ignore these files, but they may be informative as use cases of UXsim.
 
 `test_examples.py` tests whether the example scripts in `demos_and_examples` can run without errors.
 
