@@ -50,6 +50,7 @@ def catch_exceptions_and_warn(warning_msg=""):
         return wrapper
     return decorator
 
+
 def lange(l):
     """
     Super lazy function for abbreviating range(len(l))
