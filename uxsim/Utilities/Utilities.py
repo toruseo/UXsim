@@ -67,7 +67,7 @@ def enumerate_k_shortest_routes(W, source, target, k=1, cost_function=lambda l: 
     Returns
     -------
     routes : list
-        A list of k shortest routes. Each route is a tuple of link names. 
+        A list of k shortest routes. Each route is a list of link names. 
     costs : list
         A list of costs of the routes if return_cost is True.
     """
@@ -115,7 +115,7 @@ def enumerate_k_shortest_routes_on_t(W, source, target, t, k=1, cost_function=la
     k : int
         The number of shortest routes to enumerate. Default is 1.
     cost_function : function
-        A link cost function to compute shortest path. The argument is Link object and time tx. Default is the instantaneous travel time, `lambda l, t: l.instant_travel_time(t)`.
+        A link cost function to compute shortest path. The argument is Link object and time t. Default is the instantaneous travel time, `lambda l, t: l.instant_travel_time(t)`.
     print_stats : bool
         Print the statistics of the paths.
     return_cost : bool
@@ -124,7 +124,7 @@ def enumerate_k_shortest_routes_on_t(W, source, target, t, k=1, cost_function=la
     Returns
     -------
     routes : list
-        A list of k shortest routes. Each route is a tuple of link names. 
+        A list of k shortest routes. Each route is a list of link names. 
     costs : list
         A list of costs of the routes if return_cost is True.
     """
