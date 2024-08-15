@@ -144,3 +144,132 @@ def test_random_numbers_are_reproducible_by_fixing_random_seeds():
         ttt[itr] = W.analyzer.basic_to_pandas()["total_travel_time"][0]
 
     assert ttt[0] == ttt[1]
+
+def test_hard_deterministic_mode_merge():
+
+    ########################### ITER 1 ###########################
+
+    W = World(
+        name="",    # Scenario name
+        deltan=5,   # Simulation aggregation unit delta n
+        tmax=1200,  # Total simulation time (s)
+        print_mode=1, save_mode=1, show_mode=1,    # Various options
+        random_seed=None,    # Set the random seed
+        hard_deterministic_mode=True
+    )
+
+    # Define the scenario
+    ## Create nodes
+    W.addNode(name="orig1", x=0, y=0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("merge", 1, 1)
+    W.addNode("dest", 2, 1)
+    ## Create links between nodes
+    W.addLink(name="link1", start_node="orig1", end_node="merge",
+            length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+    ## Create OD traffic demand between nodes
+    W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
+    W.adddemand("orig2", "dest", 400, 1000, 0.6)
+
+    # Run the simulation to the end
+    W.exec_simulation()
+
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
+
+
+    df = W.analyzer.link_to_pandas()
+
+    average_tt_link1 = df["average_travel_time"][df["link"]=="link1"].values[0]
+    average_tt_link2 = df["average_travel_time"][df["link"]=="link2"].values[0]
+
+    assert equal_tolerance(average_tt_link1, 50)
+    assert equal_tolerance(average_tt_link2, 150)
+
+
+    ########################### ITER 2 ###########################
+
+    W = World(
+        name="",    # Scenario name
+        deltan=5,   # Simulation aggregation unit delta n
+        tmax=1200,  # Total simulation time (s)
+        print_mode=1, save_mode=1, show_mode=1,    # Various options
+        random_seed=None,    # Set the random seed
+        hard_deterministic_mode=True
+    )
+
+    # Define the scenario
+    ## Create nodes
+    W.addNode(name="orig1", x=0, y=0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("merge", 1, 1)
+    W.addNode("dest", 2, 1)
+    ## Create links between nodes
+    W.addLink(name="link1", start_node="orig1", end_node="merge",
+            length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+    ## Create OD traffic demand between nodes
+    W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
+    W.adddemand("orig2", "dest", 400, 1000, 0.6)
+
+    # Run the simulation to the end
+    W.exec_simulation()
+
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
+
+    assert average_tt_link1 == df["average_travel_time"][df["link"]=="link1"].values[0]
+    assert average_tt_link2 == df["average_travel_time"][df["link"]=="link2"].values[0]
+
+
+def test_hard_deterministic_mode_grid_network():
+    ttt = {}
+    for itr in range(2):
+        print(itr, "========="*3)
+        W = World(
+            name="",
+            deltan=10,
+            tmax=3600,
+            print_mode=1, save_mode=1, show_mode=0,
+            random_seed=None,
+            hard_deterministic_mode=True
+        )
+
+        n_nodes = 5
+        imax = n_nodes
+        jmax = n_nodes
+        nodes = {}
+        for i in range(imax):
+            for j in range(jmax):
+                nodes[i,j] = W.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
+
+        links = {}
+        for i in range(imax):
+            for j in range(jmax):
+                if i != imax-1:
+                    links[i,j,i+1,j] = W.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000)
+                if i != 0:
+                    links[i,j,i-1,j] = W.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000)
+                if j != jmax-1:
+                    links[i,j,i,j+1] = W.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000)
+                if j != 0:
+                    links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000)
+
+        od_pairs = [
+            (f"n(0, 0)", f"n({n_nodes-1}, {n_nodes-1})"),
+            (f"n({n_nodes-1}, 0)", f"n(0, {n_nodes-1})"),
+            (f"n(0, {n_nodes-1})", f"n({n_nodes-1}, 0)"),
+            (f"n({n_nodes-1}, {n_nodes-1})", f"n(0, 0)"),
+        ]
+        for od_pair in od_pairs:
+            W.adddemand(od_pair[0], od_pair[1], 0, 3000, 0.6)
+
+        W.exec_simulation()
+        W.analyzer.print_simple_stats()
+
+        ttt[itr] = W.analyzer.basic_to_pandas()["total_travel_time"][0]
+
+    assert ttt[0] == ttt[1]

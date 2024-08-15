@@ -169,10 +169,13 @@ class Node:
                         outlinks = sorted(set(outlinks) - set(veh.links_avoid))
                     
                     preference = np.array([veh.route_pref[l.id] for l in outlinks], dtype=float)
-                    if sum(preference) > 0:
-                        outlink = s.W.rng.choice(outlinks, p=preference/sum(preference))
+                    if s.W.hard_deterministic_mode == False:
+                        if sum(preference) > 0:
+                            outlink = s.W.rng.choice(outlinks, p=preference/sum(preference))
+                        else:
+                            outlink = s.W.rng.choice(outlinks)
                     else:
-                        outlink = s.W.rng.choice(outlinks)
+                        outlink = max(zip(preference, outlinks), key=lambda x:x[0])[1]
 
                     if (len(outlink.vehicles) < outlink.number_of_lanes or outlink.vehicles[-outlink.number_of_lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN:
                         #受け入れ可能な場合，リンク優先度に応じて選択
@@ -225,7 +228,9 @@ class Node:
         for outlink in outlink_candidates.keys():
             for i in range(outlink.number_of_lanes):#車線の数だけ受け入れ試行回数あり
                 outlinks.append(outlink)
-        s.W.rng.shuffle(outlinks)
+        
+        if s.W.hard_deterministic_mode == False:
+            s.W.rng.shuffle(outlinks)
 
         for outlink in outlinks: 
             if (len(outlink.vehicles) < outlink.number_of_lanes or outlink.vehicles[-outlink.number_of_lanes].x > outlink.delta_per_lane*s.W.DELTAN) and outlink.capacity_in_remain >= s.W.DELTAN and s.flow_capacity_remain >= s.W.DELTAN:
@@ -242,7 +247,10 @@ class Node:
                 merge_priorities = np.array([veh.link.merge_priority for veh in vehs], dtype=float)
                 if sum(merge_priorities) == 0:
                     merge_priorities = np.ones(len(merge_priorities))
-                veh = s.W.rng.choice(vehs, p=merge_priorities/sum(merge_priorities)) #車線の少ないリンクは，車線の多いリンクの試行回数の恩恵を受けて少し有利になる．大きな差はでないので許容する
+                if s.W.hard_deterministic_mode == False:
+                    veh = s.W.rng.choice(vehs, p=merge_priorities/sum(merge_priorities)) #車線の少ないリンクは，車線の多いリンクの試行回数の恩恵を受けて少し有利になる．大きな差はでないので許容する
+                else:
+                    veh = max(zip(merge_priorities, vehs), key=lambda x:x[0])[1]
                 
                 inlink = veh.link
 
@@ -884,7 +892,7 @@ class Vehicle:
         else:
             s.route_pref = {l.id:route_pref[l] for l in route_pref.keys()}
 
-        #好むリンクと避けるリンク（近視眼的）
+        #好むリンクと避けるリンク（近視眼的）1
         s.links_prefer = [s.W.get_link(l) for l in links_prefer]
         s.links_avoid = [s.W.get_link(l) for l in links_avoid]
 
@@ -1094,10 +1102,14 @@ class Vehicle:
                     outlinks = sorted(set(outlinks) - set(s.links_avoid))
 
                 preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=float)
-                if sum(preference) > 0:
-                    s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
+                if s.W.hard_deterministic_mode == False:
+                    if sum(preference) > 0:
+                        s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
+                    else:
+                        s.route_next_link = s.W.rng.choice(outlinks)
                 else:
-                    s.route_next_link = s.W.rng.choice(outlinks)
+                    s.route_next_link = max(zip(preference, outlinks), key=lambda x:x[0])[1]
+
             else:
                 s.route_next_link = None
 
@@ -1291,7 +1303,10 @@ class RouteChoice:
             i = link.start_node.id
             j = link.end_node.id
             if s.W.ADJ_MAT[i,j]:
-                new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.route_choice_penalty
+                if s.W.hard_deterministic_mode == False:
+                    new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.route_choice_penalty
+                else:
+                    new_link_tt = link.traveltime_instant[-1] + link.route_choice_penalty
                 n = adj_mat_link_count[i,j]
                 s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
                 # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
@@ -1414,7 +1429,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, meta_data={}):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, hard_deterministic_mode=False, meta_data={}):
         """
         Create a World.
 
@@ -1461,6 +1476,8 @@ class World:
         instantaneous_TT_timestep_interval : int, optional
             The interval for computing instantaneous travel time of each link. Default is 5.
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
+        hard_deterministic_mode : bool, optional
+            If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
         meta_data : dict, optinal
             Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.
 
@@ -1512,6 +1529,8 @@ class World:
 
         ## system setting
         W.name = name
+
+        W.hard_deterministic_mode = hard_deterministic_mode
 
         W.meta_data = meta_data
         W.network_info = ddict(list)
