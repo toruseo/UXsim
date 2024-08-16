@@ -84,6 +84,8 @@ class Analyzer:
 
         s.trip_completed = np.sum(df["completed_trips"])
         s.trip_all = np.sum(df["total_trips"])
+        
+        s.total_distance_traveled = np.sum(df["average_distance_traveled_per_veh"]*df["total_trips"])
 
         if s.trip_completed:
             s.total_travel_time = np.sum(df["completed_trips"]*df["average_travel_time"])
@@ -99,7 +101,7 @@ class Analyzer:
 
     def od_analysis(s):
         """
-        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std
+        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled
         """
         if s.flag_od_analysis:
             return 0
@@ -112,33 +114,55 @@ class Analyzer:
         s.od_tt = ddict(lambda: [])
         s.od_tt_ave = ddict(lambda: 0)
         s.od_tt_std = ddict(lambda: 0)
+        s.od_dist = ddict(lambda: [])
+        s.od_dist_total = ddict(lambda: 0)
+        s.od_dist_ave = ddict(lambda: 0)
+        s.od_dist_std = ddict(lambda: 0)
+        s.od_dist_min = ddict(lambda: 0)
         dn = s.W.DELTAN
 
-        #自由旅行時間
+        #自由旅行時間と最短距離
         adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        adj_mat_dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
         for link in s.W.LINKS:
             i = link.start_node.id
             j = link.end_node.id
             if s.W.ADJ_MAT[i,j]:
                 adj_mat_time[i,j] = link.length/link.u
+                adj_mat_dist[i,j] = link.length
                 if link.capacity_in == 0: #流入禁止の場合は通行不可
                     adj_mat_time[i,j] = np.inf
+                    adj_mat_dist[i,j] = np.inf
             else:
                 adj_mat_time[i,j] = np.inf
-        dist = floyd_warshall(adj_mat_time)
+                adj_mat_dist[i,j] = np.inf
+        dist_time = floyd_warshall(adj_mat_time)
+        dist_space = floyd_warshall(adj_mat_dist)
 
         for veh in s.W.VEHICLES.values():
             o = veh.orig
             d = veh.dest
             if d != None:
                 s.od_trips[o,d] += dn
+
+                veh_links = [rec[1] for rec in veh.log_t_link if hasattr(rec[1], "length")]
+                veh_dist_traveled = sum([l.length for l in veh_links])
+                if veh.state == "run":
+                    veh_dist_traveled += veh.x
+                veh.distance_traveled = veh_dist_traveled
+                s.od_dist[o,d].append(veh.distance_traveled)
+
                 if veh.travel_time != -1:
                     s.od_trips_comp[o,d] += dn
                     s.od_tt[o,d].append(veh.travel_time)
         for o,d in s.od_tt.keys():
             s.od_tt_ave[o,d] = np.average(s.od_tt[o,d])
             s.od_tt_std[o,d] = np.std(s.od_tt[o,d])
-            s.od_tt_free[o,d] = dist[o.id, d.id]
+            s.od_tt_free[o,d] = dist_time[o.id, d.id]
+            s.od_dist_total[o,d] = np.sum(s.od_dist[o,d])
+            s.od_dist_min[o,d] = dist_space[o.id, d.id]
+            s.od_dist_ave[o,d] = np.average(s.od_dist[o,d])
+            s.od_dist_std[o,d] = np.std(s.od_dist[o,d])
 
     def link_analysis_coarse(s):
         """
@@ -303,6 +327,7 @@ class Analyzer:
             s.W.print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
             s.W.print(f" average delay of trips:\t {s.average_delay:.1f} s")
             s.W.print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
+        s.W.print(f" total distance traveled:\t {s.total_distance_traveled:.1f} m")
 
         if force_print == 1 and s.W.print_mode == 0:
             print("results:")
@@ -313,6 +338,7 @@ class Analyzer:
                 print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
                 print(f" average delay of trips:\t {s.average_delay:.1f} s")
                 print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
+            print(f" total distance traveled:\t {s.total_distance_traveled:.1f} m")
 
 
     def comp_route_travel_time(s, t, route):
@@ -1237,14 +1263,16 @@ class Analyzer:
             - 'final_state': the final state of the vehicle.
             - 'travel_time': the travel time of the vehicle.
             - 'average_speed': the average speed of the vehicle.
+            - 'distance_traveled': the distance traveled by the vehicle.
         """
-        out = [["name", "orig", "dest", "departure_time", "final_state", "travel_time", "average_speed"]]
+        out = [["name", "orig", "dest", "departure_time", "final_state", "travel_time", "average_speed", "distance_traveled"]]
         for veh in s.W.VEHICLES.values():
             veh_dest_name = veh.dest.name if veh.dest != None else None
             veh_state = veh.log_state[-1]
             veh_ave_speed = np.average([v for v in veh.log_v if v != -1])
+            veh_dist_traveled = veh.distance_traveled
 
-            out.append([veh.name, veh.orig.name, veh_dest_name, veh.departure_time*s.W.DELTAT, veh_state, veh.travel_time, veh_ave_speed])
+            out.append([veh.name, veh.orig.name, veh_dest_name, veh.departure_time*s.W.DELTAT, veh_state, veh.travel_time, veh_ave_speed, veh_dist_traveled])
         
         s.df_vehicle_trip = pd.DataFrame(out[1:], columns=out[0])
         return s.df_vehicle_trip
@@ -1267,7 +1295,6 @@ class Analyzer:
                 out.append([veh.name, t, x, y, v])
         s.df_gps_like_log = pd.DataFrame(out[1:], columns=out[0])
         return s.df_gps_like_log
-
 
     def basic_to_pandas(s):
         """
@@ -1293,12 +1320,124 @@ class Analyzer:
 
         s.od_analysis()
 
-        out = [["orig", "dest", "total_trips", "completed_trips", "free_travel_time", "average_travel_time", "stddiv_travel_time"]]
+        out = [["orig", "dest", "total_trips", "completed_trips", "free_travel_time", "average_travel_time", "stddiv_travel_time",  "shortest_distance", "average_distance_traveled_per_veh", "stddiv_distance_traveled_per_veh"]]
         for o,d in s.od_trips.keys():
-            out.append([o.name, d.name, s.od_trips[o,d], s.od_trips_comp[o,d], s.od_tt_free[o,d], s.od_tt_ave[o,d], s.od_tt_std[o,d]])
+            out.append([o.name, d.name, s.od_trips[o,d], s.od_trips_comp[o,d], s.od_tt_free[o,d], s.od_tt_ave[o,d], s.od_tt_std[o,d], s.od_dist_min[o,d], s.od_dist_ave[o,d], s.od_dist_std[o,d]])
 
         s.df_od = pd.DataFrame(out[1:], columns=out[0])
         return s.df_od
+    
+    def areas2areas_to_pandas(s, areas, area_names=None):
+        """
+        Converts the OD-specific analysis results to a pandas DataFrame. It analyzes travel stats between areas (set of nodes).
+        
+        Parameters
+        ----------
+        areas : list
+            The list of areas. Each area is defined as a list of nodes. The items of area can be Node objects or names of Nodes.
+        area_names : list, optional
+            The list of names of areas.
+            
+        Returns
+        -------
+        pd.DataFrame
+        """
+        df = s.od_to_pandas()
+
+        o_name_rec = []
+        d_name_rec = []
+        total_trips_rec = []
+        completed_trips_rec = []
+        average_travel_time_rec = []
+        stddiv_travel_time_rec = []
+        average_distance_traveled_rec = []
+        stddiv_distance_traveled_rec = []
+
+        average_free_travel_time_rec = []
+        average_shortest_distance_rec = []
+
+        areas = [[s.W.get_node(n).name for n in area] for area in areas]
+        if area_names == None: 
+            area_names = [f"area {i} including {areas[i][0]}" for i in range(len(areas))]
+
+        for i, origs in enumerate(areas):
+            for j, dests in enumerate(areas):
+                o_name = area_names[i]
+                d_name = area_names[j]
+
+                # print(o_name, d_name)
+
+                # group by area: average travel time from origs to dests
+                rows = df["orig"].isin(origs) & df["dest"].isin(dests)
+                total_tripss = np.array(df["total_trips"][rows])
+                average_travel_times = np.array(df["average_travel_time"][rows])
+                completed_tripss = np.array(df["completed_trips"][rows])
+                var_travel_times = np.array(df["stddiv_travel_time"][rows])**2
+                distance_traveleds = np.array(df["average_distance_traveled_per_veh"][rows])
+                var_distance_traveleds = np.array(df["stddiv_distance_traveled_per_veh"][rows])**2
+
+                free_travel_time_times = np.array(df["free_travel_time"][rows])
+                shortest_distances = np.array(df["shortest_distance"][rows])
+
+                # print(f"{total_tripss = }")
+                # print(f"{average_travel_times = }")
+                # print(f"{completed_tripss = }")
+                # print(f"{var_travel_times = }")
+                # print(f"{distance_traveleds = }")
+                # print(f"{var_distance_traveleds = }")
+
+                total_trips = total_tripss.sum()
+                completed_trips = completed_tripss.sum()
+
+                if total_trips:
+                    average_travel_time = (completed_tripss*average_travel_times).sum()/completed_trips
+                    var_travel_time = (completed_tripss*var_travel_times).sum()/completed_trips    #wrong! there is a correct formula. TODO: implement
+                    stddiv_travel_time = np.sqrt(var_travel_time)
+
+                    average_shortest_distance = (total_tripss*shortest_distances).sum()/total_trips
+                else:
+                    continue
+                    # average_travel_time = np.nan
+                    # var_travel_time = np.nan
+                    # stddiv_travel_time = np.nan
+                    # average_shortest_distance = np.nan
+
+                if completed_trips:
+                    average_distance_traveled = (total_tripss*distance_traveleds).sum()/total_trips
+                    var_distance_traveled = (total_tripss*distance_traveleds).sum()/total_trips    #wrong!
+                    stddiv_distance_traveled = np.sqrt(var_distance_traveled)
+
+                    average_free_travel_time = (completed_tripss*free_travel_time_times).sum()/completed_trips
+                else:
+                    average_distance_traveled = np.nan
+                    var_distance_traveled = np.nan
+                    stddiv_distance_traveled = np.nan
+                    average_free_travel_time = np.nan
+
+                # print(f"{total_trips = }")
+                # print(f"{completed_trips = }")
+                # print(f"{average_travel_time = }")
+                # print(f"{stddiv_travel_time = }")
+                # print(f"{average_distance_traveled = }")
+                # print(f"{stddiv_distance_traveled = }")
+
+                o_name_rec.append(o_name)
+                d_name_rec.append(d_name)
+                total_trips_rec.append(total_trips)
+                completed_trips_rec.append(completed_trips)
+                average_travel_time_rec.append(average_travel_time)
+                stddiv_travel_time_rec.append(stddiv_travel_time)
+                average_distance_traveled_rec.append(average_distance_traveled)
+                stddiv_distance_traveled_rec.append(stddiv_distance_traveled)
+                average_free_travel_time_rec.append(average_free_travel_time)
+                average_shortest_distance_rec.append(average_shortest_distance)
+
+        out = [["origin_area", "destination_area", "total_trips", "completed_trips", "average_travel_time", "average_free_travel_time", "average_distance_traveled", "average_shortest_distance"]]
+        out += [[o_name_rec[i], d_name_rec[i], total_trips_rec[i], completed_trips_rec[i], average_travel_time_rec[i], average_free_travel_time_rec[i], average_distance_traveled_rec[i], average_shortest_distance_rec[i]] for i in range(len(o_name_rec))]
+        
+        s.df_areas2areas = pd.DataFrame(out[1:], columns=out[0])
+        return s.df_areas2areas
+
 
     def mfd_to_pandas(s, links=None):
         """
