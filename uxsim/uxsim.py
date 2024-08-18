@@ -21,7 +21,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None):
+    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None, area=None):
         """
         Create a node
 
@@ -47,6 +47,8 @@ class Node:
             Whether to automatically rename the node if the name is already used. Default is False.
         number_of_lanes : int, optional
             The number of lanes that can be green simultaniously at the node. Default is None.
+        area : int, optional
+            The area of the node. Default is None.
 
         Attributes
         ----------
@@ -112,6 +114,7 @@ class Node:
 
         s.id = len(s.W.NODES)
         s.name = name
+        s.area = area
         s.auto_rename = auto_rename
         if s.name in [n.name for n in s.W.NODES]:
             if auto_rename:
@@ -1509,6 +1512,7 @@ class World:
         W.VEHICLES_LIVING = OrderedDict()     #home, wait, run
         W.VEHICLES_RUNNING = OrderedDict()    #run
         W.NODES = []
+        W.NODES_AREA_DICT = ddict(list)
         W.LINKS = []
 
         W.vehicle_logging_timestep_interval = vehicle_logging_timestep_interval
@@ -1573,6 +1577,8 @@ class World:
             Whether to automatically rename the node if the name is already used. Default is False.
         number_of_lanes : int, optional
             The number of lanes that can be green simultaniously at the node. Default is None.
+        area : int, optional
+            The number of area the node belongs to. Default is None.
 
         Returns
         -------
@@ -1846,6 +1852,8 @@ class World:
             W.ADJ_MAT[i,j] = 1
             W.ADJ_MAT_LINKS[i,j] = link
 
+        W.update_nodes_area_dict()
+
         W.analyzer = Analyzer(W)
 
         W.finalized = 1
@@ -2012,6 +2020,19 @@ class World:
                 if n.name == node:
                     return n
         raise Exception(f"'{node}' is not Node in this World")
+
+    def update_nodes_area_dict(W):
+        """Update the dictionary of nodes by area."""
+        for node in W.NODES:
+            W.NODES_AREA_DICT[node.area].append(node)
+
+    def get_random_node_in_area(W, area):
+        """Get a random node in the area."""
+        try:
+            return W.rng.choice(W.NODES_AREA_DICT[area])
+        # Except NODES_AREA_DICT[area] is empty, throw an exception
+        except:
+            raise Exception(f"No nodes in area {area}")
 
     def get_link(W, link):
         """
