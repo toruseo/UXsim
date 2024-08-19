@@ -21,7 +21,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None):
+    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None):
         """
         Create a node
 
@@ -47,6 +47,8 @@ class Node:
             Whether to automatically rename the node if the name is already used. Default is False.
         number_of_lanes : int, optional
             The number of lanes that can be green simultaniously at the node. Default is None.
+        attribute : any, optional
+            Additional (meta) attributes defined by users.
 
         Attributes
         ----------
