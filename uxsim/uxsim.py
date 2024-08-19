@@ -844,6 +844,7 @@ class Vehicle:
             s.departure_time = departure_time
         else:
             s.departure_time = int(departure_time/s.W.DELTAT)
+        s.departure_time_in_second = departure_time*s.W.DELTAT  #TODO: temporal workaround
         s.arrival_time = -1
         s.link_arrival_time = -1
         s.travel_time = -1
@@ -911,6 +912,8 @@ class Vehicle:
         s.color = (s.W.rng.random(), s.W.rng.random(), s.W.rng.random())
 
         s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
+        
+        s.distance_traveled = 0
 
         s.attribute = attribute
 
@@ -1800,6 +1803,49 @@ class World:
             for d in dests:
                 W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=False)
     
+    def adddemand_areas2areas(W, origs, dests, t_start, t_end, flow=-1, volume=-1, attribute=None):
+        """
+        Generate vehicles by specifying time-dependent origin-destination demand by specifying areas (i.e., sets of nodes).
+
+        Parameters
+        ----------
+        origs : list
+            The list of origin nodes. The items can be Node objects or names of Nodes.
+        dests : list
+            The list of destination nodes. The items can be Node objects or names of Nodes.
+        t_start : float
+            The start time for the demand in seconds.
+        t_end : float
+            The end time for the demand in seconds.
+        flow : float, optional
+            The flow rate from the origin to the destination in vehicles per second.
+        volume: float, optional
+            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
+        """
+
+        origs_new = []
+        dests_new = []
+        for oo in origs:
+            o = W.get_node(oo)
+            if len(o.outlinks) != 0:
+                origs_new.append(o)
+        for dd in dests:
+            d = W.get_node(dd)
+            if len(d.inlinks) != 0:
+                dests_new.append(d)
+        origs = origs_new
+        dests = dests_new
+        
+        if flow != -1:
+            flow = flow/(len(origs)*len(dests))
+        if volume != -1:
+            volume = volume/(len(origs)*len(dests))
+        for o in origs:
+            for d in dests:
+                W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=True)
+
     def finalize_scenario(W, tmax=None):
         """
         Finalizes the settings and preparations for the simulation scenario execution.
