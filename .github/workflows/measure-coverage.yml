@@ -1,13 +1,17 @@
 name: Measure coverage
-
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   measure-coverage:
     runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'push' && github.repository == 'toruseo/UXsim') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.repository == 'toruseo/UXsim')
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.12
