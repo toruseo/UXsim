@@ -1437,6 +1437,105 @@ class Analyzer:
         
         s.df_areas2areas = pd.DataFrame(out[1:], columns=out[0])
         return s.df_areas2areas
+    
+    def vehicle_groups_to_pandas(s, groups, group_names=None):
+        """
+        Converts the vehicle group analysis results to a pandas DataFrame.
+
+        Parameters
+        ----------
+        groups : list
+            The list of vehicle groups. Each group is defined as a list of vehicle object.
+        group_names : list, optional
+            The list of names of vehicle groups.
+        
+        Returns
+        -------
+        pd.DataFrame
+        """
+        df_od = s.W.analyzer.od_to_pandas()
+
+        if group_names == None: 
+            group_names = [f"group {i} including {groups[0].name}" for i in range(len(groups))]
+
+        total_trip_rec = []
+        completed_trip_rec = []
+        average_travel_time_rec = []
+        average_delay_rec = []
+        std_delay_rec = []
+        average_traveled_distance_rec = []
+        average_detour_rec = []
+        std_detour_rec = []
+        averae_speed_rec = []
+        std_speed_rec = []
+        for i, group in enumerate(groups):
+            total_trips = 0
+            completed_trips = 0
+            travel_times = []
+            delays = []
+            traveled_distances = []
+            detours = []
+            speeds = []
+
+
+            for veh in group:
+
+                total_trips += 1
+                if veh.state == "end":
+                    completed_trips += 1
+                    travel_times.append(veh.travel_time)
+                    traveled_distances.append(veh.distance_traveled)
+                    
+                    free_travel_time = df_od["free_travel_time"][(df_od["orig"]==veh.orig.name) & (df_od["dest"]==veh.dest.name)].values[0]
+                    shortest_distance = df_od["shortest_distance"][(df_od["orig"]==veh.orig.name) & (df_od["dest"]==veh.dest.name)].values[0]
+
+                    delays.append(veh.travel_time/free_travel_time)
+                    detours.append(veh.distance_traveled/shortest_distance)
+
+                    speeds.append(veh.distance_traveled/veh.travel_time)
+
+                #print(f"{group_names[i]=}, {np.average(travel_times)=}, {np.average(traveled_distances)=}, {np.average(delays)=}, {np.average(detours)=}, {np.std(delays)=}, {np.std(detours)=}, {np.average(speeds)}, {np.std(speeds)}")
+
+            total_trip_rec.append(total_trips)
+            completed_trip_rec.append(completed_trips)
+            if completed_trips > 0:
+                average_travel_time_rec.append(np.average(travel_times))
+                average_delay_rec.append(np.average(delays))
+                std_delay_rec.append(np.std(delays))
+                average_traveled_distance_rec.append(np.average(traveled_distances))
+                average_detour_rec.append(np.average(detours))
+                std_detour_rec.append(np.std(detours))
+                averae_speed_rec.append(np.average(speeds))
+                std_speed_rec.append(np.std(speeds))
+            else:
+                average_travel_time_rec.append(np.nan)
+                average_delay_rec.append(np.nan)
+                std_delay_rec.append(np.nan)
+                average_traveled_distance_rec.append(np.nan)
+                average_detour_rec.append(np.nan)
+                std_detour_rec.append(np.nan)
+                averae_speed_rec.append(np.nan)
+                std_speed_rec.append(np.nan)
+
+        df = pd.DataFrame({
+            "group": group_names,
+            "total_trips": total_trip_rec,
+            "completed_trips": completed_trip_rec,
+            "average_travel_time": average_travel_time_rec,
+            "average_delay_ratio": average_delay_rec,
+            "std_delay_ratio": std_delay_rec,
+            "average_traveled_distance": average_traveled_distance_rec,
+            "average_detour_ratio": average_detour_rec,
+            "std_detour_ratio": std_detour_rec,
+            "average_speed": averae_speed_rec,
+            "std_speed": std_speed_rec,
+        })
+
+        s.df_vehicle_groups = df
+        
+        return s.df_vehicle_groups
+
+
 
 
     def mfd_to_pandas(s, links=None):

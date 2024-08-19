@@ -844,6 +844,7 @@ class Vehicle:
             s.departure_time = departure_time
         else:
             s.departure_time = int(departure_time/s.W.DELTAT)
+        s.departure_time_in_second = departure_time*s.W.DELTAT  #TODO: temporal workaround
         s.arrival_time = -1
         s.link_arrival_time = -1
         s.travel_time = -1
