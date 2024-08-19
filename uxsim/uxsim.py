@@ -59,23 +59,26 @@ class Node:
         """
 
         s.W = W
-        #ノード位置（可視化用）
+        #node position (for visualization)
         s.x = x
         s.y = y
+
+        #custom attibutes
+        s.attribute = attribute
         
-        #流入・流出リンク
+        #incoming/outgoing links
         s.inlinks = dict()
         s.outlinks = dict()
 
-        #リンク間遷移リクエスト（デマンド）
+        #request for inter-link transfer (demand for node model)
         s.incoming_vehicles = []
 
-        #発生車両流入待ち行列（vertical queue）
+        #vertical queue for vehicle generation
         s.generation_queue = deque()
 
-        #信号交差点
-        #signal=[0]であれば信号無し
-        #信号ありにするときはsignal=[group0の青時間，group1の青時間，...]とする
+        #signal settings
+        #If this node does not have a signal, set `signal=[0]`
+        #If this node has a signal, set `signal=[green time for group0, green time for group1. ...]`
         s.signal = signal
         s.signal_phase = 0
         s.signal_t = 0
@@ -96,7 +99,7 @@ class Node:
 
         s.signal_log = []
 
-        #流量制限（マクロ信号）
+        #flow capacity (macroscopic/continious representation for signal)
         s.flag_lanes_automatically_determined = False
         s.number_of_lanes = number_of_lanes
         if flow_capacity != None:
@@ -105,7 +108,7 @@ class Node:
             if number_of_lanes != None:
                 s.number_of_lanes = number_of_lanes
             else:
-                s.number_of_lanes = math.ceil(flow_capacity/0.8) #TODO: 要調整．現状は1車線0.8 veh/sと見なし，車線数を決定している
+                s.number_of_lanes = math.ceil(flow_capacity/0.8) #the number of lanes is determined by assuming 0.8 veh/s capacity per lane
                 s.flag_lanes_automatically_determined = True
         else:
             s.flow_capacity = None
