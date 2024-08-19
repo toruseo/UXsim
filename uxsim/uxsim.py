@@ -1808,7 +1808,7 @@ class World:
             for d in dests:
                 W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=False)
     
-    def adddemand_area2area(W, origs, dests, t_start, t_end, flow=-1, volume=-1, attribute=None):
+    def adddemand_nodes2nodes(W, origs, dests, t_start, t_end, flow=-1, volume=-1, attribute=None):
         """
         Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one.
 

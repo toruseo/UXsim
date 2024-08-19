@@ -233,7 +233,7 @@ def test_scenario_write_and_read_areas():
         "areaSE": [nodes[n_nodes-1, n_nodes-1]]
     }
 
-    W.adddemand_area2area(areas["areaN"], areas["areaS"], 0, 3000, volume=7000)
+    W.adddemand_nodes2nodes(areas["areaN"], areas["areaS"], 0, 3000, volume=7000)
 
     W.save_scenario("out/test_area.uxsim_scenario")
 
@@ -493,7 +493,7 @@ def test_area2area_demand_and_stats():
         "areaSE": [nodes[n_nodes-1, n_nodes-1]]
     }
 
-    W.adddemand_area2area(areas["areaN"], areas["areaS"], 0, 3000, volume=7000)
+    W.adddemand_nodes2nodes(areas["areaN"], areas["areaS"], 0, 3000, volume=7000)
 
     W.exec_simulation()
     W.analyzer.print_simple_stats()
@@ -550,7 +550,7 @@ def test_area_stats():
         "areaSE": [nodes[n_nodes-1, n_nodes-1]]
     }
 
-    W.adddemand_area2area(area_dict["areaN"], area_dict["areaS"], 0, 3000, volume=7000)
+    W.adddemand_nodes2nodes(area_dict["areaN"], area_dict["areaS"], 0, 3000, volume=7000)
 
     W.exec_simulation()
     W.analyzer.print_simple_stats()
@@ -602,7 +602,7 @@ def test_vehicle_group_stats():
         "areaSE": [nodes[n_nodes-1, n_nodes-1]]
     }
 
-    W.adddemand_area2area(areas["areaN"], areas["areaS"], 0, 3000, volume=7000)
+    W.adddemand_nodes2nodes(areas["areaN"], areas["areaS"], 0, 3000, volume=7000)
 
     W.exec_simulation()
     W.analyzer.print_simple_stats()
