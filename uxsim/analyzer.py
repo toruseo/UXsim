@@ -1198,7 +1198,7 @@ class Analyzer:
 
     def vehicles_to_pandas(s):
         """
-        Converts the vehicle travel logs to a pandas DataFrame.
+        Compute the detailed vehicle travel logs and return as a pandas DataFrame.
 
         Returns
         -------
@@ -1249,12 +1249,12 @@ class Analyzer:
 
     def vehicle_trip_to_pandas(s):
         """
-        Converts the vehicle trip top to a pandas DataFrame.
+        Compute the vehicle trip summary and return as a pandas DataFrame.
 
         Returns
         -------
         pd.DataFrame
-            A DataFrame containing the top of the vehicle trip logs, with the columns:
+            A DataFrame containing the trip summary of the vehicle trip logs, with the columns:
             
             - 'name': the name of the vehicle (platoon).
             - 'orig': the origin node of the vehicle's trip.
@@ -1279,7 +1279,7 @@ class Analyzer:
 
     def gps_like_log_to_pandas(s):
         """
-        Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles.
+        Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles and return as a pandas DataFrame.
 
         Returns
         -------
@@ -1298,7 +1298,7 @@ class Analyzer:
 
     def basic_to_pandas(s):
         """
-        Converts the basic stats to a pandas DataFrame.
+        Comutes the basic stats and return as a pandas DataFrame.
 
         Returns
         -------
@@ -1311,7 +1311,7 @@ class Analyzer:
 
     def od_to_pandas(s):
         """
-        Converts the OD-specific analysis results to a pandas DataFrame.
+        Compute the OD-specific stats and return as a pandas DataFrame.
 
         Returns
         -------
@@ -1329,7 +1329,7 @@ class Analyzer:
     
     def areas2areas_to_pandas(s, areas, area_names=None):
         """
-        Converts the OD-specific analysis results to a pandas DataFrame. It analyzes travel stats between areas (set of nodes).
+        Compute the area-wise OD-specific stats and return a pandas DataFrame. It analyzes travel stats between areas (set of nodes).
         
         Parameters
         ----------
@@ -1438,9 +1438,86 @@ class Analyzer:
         s.df_areas2areas = pd.DataFrame(out[1:], columns=out[0])
         return s.df_areas2areas
     
+    def area_to_pandas(s, areas, area_names=None, border_include=True):
+        """
+        Compute traffic stats in area and return as pandas.DataFrame.
+        
+        Parameters
+        ----------
+        areas : list
+            The list of areas. Each area is defined as a list of nodes. The items of area can be Node objects or names of Nodes.
+        area_names : list, optional
+            The list of names of areas.
+        border_include : bool, optional
+            If set to True, the links on the border of the area are included in the analysis. Default is True.
+            
+        Returns
+        -------
+        pd.DataFrame
+        """
+        n_links_rec = []
+        traffic_volume_rec = []
+        vehicles_remain_rec = []
+        total_travel_time_rec = []
+        average_delay_rec = []
+
+
+        for i,area in enumerate(areas):
+            area = {s.W.get_node(n).name:0 for n in area}
+
+            df = s.W.analyzer.link_to_pandas()
+            df_veh_link = s.W.analyzer.vehicles_to_pandas().drop_duplicates(subset=['name', 'link'])
+
+            n_links = 0
+            traffic_volume = 0
+            vehicles_remain = 0
+            total_travel_time = 0
+            total_free_time = 0
+            average_delay = 0
+
+            if border_include:
+                rows = df["start_node"].isin(area) | df["end_node"].isin(area)
+            else:
+                rows = df["start_node"].isin(area) & df["end_node"].isin(area)
+            links = {l:0 for l in df["link"][rows].values}
+
+            n_links = sum(rows)
+            traffic_volume = df_veh_link[df_veh_link["link"].isin(links)].drop_duplicates(subset="name").shape[0]*s.W.DELTAN
+            vehicles_remain = df["vehicles_remain"][rows].sum()
+            if traffic_volume > 0:
+                total_travel_time = (df["average_travel_time"][rows] * (df["traffic_volume"][rows]-df["vehicles_remain"][rows])).values.sum()
+                total_free_time = (df["free_travel_time"][rows] * (df["traffic_volume"][rows]-df["vehicles_remain"][rows])).values.sum()
+                average_delay = total_travel_time/total_free_time - 1
+                if average_delay < 0:
+                    average_delay = 0
+            else:
+                total_travel_time = 0
+                total_free_time = 0
+                average_delay = np.nan
+
+            #print(f"{n_links=}, {traffic_volume=}, {vehicles_remain=}, {total_travel_time=}, {total_free_time=}, {average_delay=}")
+
+            n_links_rec.append(n_links)
+            traffic_volume_rec.append(traffic_volume)
+            vehicles_remain_rec.append(vehicles_remain)
+            total_travel_time_rec.append(total_travel_time)
+            average_delay_rec.append(average_delay)
+
+        df = pd.DataFrame({
+            "area": area_names,
+            "n_links": n_links_rec,
+            "traffic_volume": traffic_volume_rec,
+            "vehicles_remain": vehicles_remain_rec,
+            "total_travel_time": total_travel_time_rec,
+            "average_delay": average_delay_rec
+        })
+        s.df_area = df
+        
+        return s.df_area
+                       
     def vehicle_groups_to_pandas(s, groups, group_names=None):
         """
-        Converts the vehicle group analysis results to a pandas DataFrame.
+        Computes the stats of vehicle group and return as a pandas DataFrame.
 
         Parameters
         ----------
@@ -1535,12 +1612,9 @@ class Analyzer:
         
         return s.df_vehicle_groups
 
-
-
-
     def mfd_to_pandas(s, links=None):
         """
-        Converts the MFD to a pandas DataFrame.
+        Compute the MFD-like stats and return as a pandas DataFrame.
 
         Returns
         -------
@@ -1576,7 +1650,7 @@ class Analyzer:
 
     def link_traffic_state_to_pandas(s):
         """
-        Converts the traffic states in links to a pandas DataFrame.
+        Compute the traffic states in links and return as a pandas DataFrame.
 
         Returns
         -------
@@ -1594,7 +1668,7 @@ class Analyzer:
 
     def link_cumulative_to_pandas(s):
         """
-        Converts the cumulative counts etc. in links to a pandas DataFrame.
+        Compute the cumulative counts etc. in links and return as a pandas DataFrame.
 
         Returns
         -------
@@ -1610,7 +1684,7 @@ class Analyzer:
     @catch_exceptions_and_warn()
     def output_data(s, fname=None):
         """
-        Save all results to CSV files
+        Save all results to CSV files. This is obsolute; not all functions are implemented.
         """
         if fname == None:
             fname = f"out{s.W.name}/data"
