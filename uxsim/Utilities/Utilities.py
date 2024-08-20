@@ -45,7 +45,7 @@ def generate_grid_network(W, imax, jmax, **kwargs):
 
 def enumerate_k_shortest_routes(W, source, target, k=1, cost_function=lambda l: l.length/l.u, print_stats=0, return_cost=False):
     """
-    Enumerate the k shortest routes between two nodes in a network.
+    Enumerate the k shortest routes between two nodes in a network. By default, `enumerate_k_shortest_routes(W, "O", "D")` returns the shortest path from node "O" to "D" based on the free-flow travel time. 
 
     Parameters
     ----------
@@ -100,7 +100,7 @@ def enumerate_k_shortest_routes(W, source, target, k=1, cost_function=lambda l: 
 
 def enumerate_k_shortest_routes_on_t(W, source, target, t, k=1, cost_function=lambda l, t: l.instant_travel_time(t), print_stats=0, return_cost=False):
     """
-    Enumerate the k shortest routes between two nodes in a network.
+    Enumerate the k shortest routes between two nodes in a network. By default, `enumerate_k_shortest_routes_on_t(W, "O", "D", t=t)` returns the shortest path from node "O" to "D" based on instantanious travel time on time t.
 
     Parameters
     ----------
