@@ -39,6 +39,34 @@ def demand_info_record(func):
     return wrapper
 
 def instance_to_arg_dict(instance):
+    """
+    Convert an instance's attributes to a dictionary of constructor arguments.
+
+    This function inspects an object instance and creates a dictionary of
+    arguments that could be used to recreate the instance. It uses the
+    signature of the class's __init__ method to determine which attributes
+    to include.
+
+    Parameters
+    ----------
+    instance : object
+        The instance to convert to a dictionary of arguments.
+
+    Returns
+    -------
+    dict
+        A dictionary where keys are parameter names and values are the 
+        corresponding attribute values from the instance.
+
+    Notes
+    -----
+    - Parameters with default values are omitted if the instance's value
+      matches the default.
+    - The 'self' parameter is always ignored.
+    - The 'W' parameter, if present, is removed from the resulting dictionary.
+    - Attributes of type 'Node' or 'Link' are replaced with their 'name' attribute.
+    """
+    
     # クラスの__init__メソッドのシグネチャを取得
     signature = inspect.signature(instance.__class__.__init__)
     
@@ -68,6 +96,35 @@ def instance_to_arg_dict(instance):
     return args
 
 def save_scenario(W, fname, network=True, demand=True):
+    """
+    Save scenario data to a file.
+
+    This function saves various components of a scenario, including meta data,
+    network information (nodes and links), and demand information, to a file 
+    using pickle serialization.
+
+    Parameters
+    ----------
+    W : World
+        The world to be saved
+    fname : str
+        The file name or path where the scenario data will be saved.
+    network : bool, optional
+        If True, save network information (nodes and links). Default is True.
+    demand : bool, optional
+        If True, save demand information. Default is True.
+
+    Notes
+    -----
+    The function uses the pickle module to serialize the data. The saved file
+    will be in binary format.
+
+    The saved data structure is a dictionary containing:
+    - 'meta_data': Meta data from W.meta_data
+    - 'Nodes' and 'Links': Network information (if network=True)
+    - Demand information from W.demand_info (if demand=True)
+    """
+
     out = {"meta_data": W.meta_data}
 
     if network:
@@ -93,6 +150,25 @@ def save_scenario(W, fname, network=True, demand=True):
     
 
 def load_scenario(W, fname, network=True, demand=True):
+    """
+    Load scenario data from a file.
+
+    This function loads various components of a scenario, including meta data,
+    network information (nodes and links), and demand information, from a file 
+    created by the save_scenario function.
+
+    Parameters
+    ----------
+    W : World
+        The world to which the scenario data will be loaded.
+    fname : str
+        The file name or path from which the scenario data will be loaded.
+    network : bool, optional
+        If True, load network information (nodes and links). Default is True.
+    demand : bool, optional
+        If True, load demand information. Default is True.
+    """
+
     import pickle
     with open(fname, "rb") as f:
         dat = pickle.load(f)
