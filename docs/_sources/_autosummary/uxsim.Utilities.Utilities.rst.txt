@@ -1,4 +1,4 @@
-uxsim.Utilities.Utilities
+﻿uxsim.Utilities.Utilities
 =========================
 
 .. automodule:: uxsim.Utilities.Utilities
@@ -14,6 +14,7 @@ uxsim.Utilities.Utilities
    .. autosummary::
    
       enumerate_k_shortest_routes
+      enumerate_k_shortest_routes_on_t
       generate_grid_network
    
    

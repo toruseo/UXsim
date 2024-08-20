@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="uxsim.World" href="uxsim.World.html" /><link rel="prev" title="uxsim.TaxiHandler.TaxiHandler" href="uxsim.TaxiHandler.TaxiHandler.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="uxsim.scenario_reader_writer" href="uxsim.scenario_reader_writer.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>uxsim.Utilities.Utilities - UXsim: Traffic Simulation in Python v1 documentation</title>
@@ -234,11 +234,6 @@ gtag('config', 'UA-111714220-1');
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">uxsim.Utilities.Utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
@@ -251,6 +246,12 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.scenario_reader_writer.html">uxsim.scenario_reader_writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">uxsim.Utilities.Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -301,10 +302,13 @@ This contains functions that are not essential for simulation but useful to spec
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes" title="uxsim.Utilities.Utilities.enumerate_k_shortest_routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes</span></code></a>(W, source, target, k)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes" title="uxsim.Utilities.Utilities.enumerate_k_shortest_routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes</span></code></a>(W, source, target)</p></td>
 <td><p>Enumerate the k shortest routes between two nodes in a network.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network" title="uxsim.Utilities.Utilities.generate_grid_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_grid_network</span></code></a>(W, imax, jmax, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t" title="uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes_on_t</span></code></a>(W, source, ...)</p></td>
+<td><p>Enumerate the k shortest routes between two nodes in a network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network" title="uxsim.Utilities.Utilities.generate_grid_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_grid_network</span></code></a>(W, imax, jmax, **kwargs)</p></td>
 <td><p>Generate a grid network with imax x jmax nodes.</p></td>
 </tr>
 </tbody>
@@ -312,24 +316,53 @@ This contains functions that are not essential for simulation but useful to spec
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="uxsim.Utilities.Utilities.enumerate_k_shortest_routes">
-<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">enumerate_k_shortest_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_function=&lt;function</span> <span class="pre">&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_stats=0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#enumerate_k_shortest_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes" title="Link to this definition">¶</a></dt>
-<dd><p>Enumerate the k shortest routes between two nodes in a network.</p>
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">enumerate_k_shortest_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_function=&lt;function</span> <span class="pre">&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_stats=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_cost=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#enumerate_k_shortest_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes" title="Link to this definition">¶</a></dt>
+<dd><p>Enumerate the k shortest routes between two nodes in a network. By default, <cite>enumerate_k_shortest_routes(W, “O”, “D”)</cite> returns the shortest path from node “O” to “D” based on the free-flow travel time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
 <li><p><strong>source</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The source node.</p></li>
 <li><p><strong>target</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The target node.</p></li>
-<li><p><strong>k</strong> (<em>int</em>) – The number of shortest routes to enumerate.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The number of shortest routes to enumerate. Default is 1.</p></li>
 <li><p><strong>cost_function</strong> (<em>function</em>) – A link cost function to compute shortest path. The argument is Link object. Default is the free-flow travel time, <cite>lambda l: l.length/l.u</cite>.</p></li>
 <li><p><strong>print_stats</strong> (<em>bool</em>) – Print the statistics of the paths.</p></li>
+<li><p><strong>return_cost</strong> (<em>bool</em>) – Return the cost of the paths.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>routes</strong> – A list of k shortest routes. Each route is a list of link names.</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>routes</strong> (<em>list</em>) – A list of k shortest routes. Each route is a list of link names.</p></li>
+<li><p><strong>costs</strong> (<em>list</em>) – A list of costs of the routes if return_cost is True.</p></li>
+</ul>
+</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t">
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">enumerate_k_shortest_routes_on_t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_function=&lt;function</span> <span class="pre">&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_stats=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_cost=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#enumerate_k_shortest_routes_on_t"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t" title="Link to this definition">¶</a></dt>
+<dd><p>Enumerate the k shortest routes between two nodes in a network. By default, <cite>enumerate_k_shortest_routes_on_t(W, “O”, “D”, t=t)</cite> returns the shortest path from node “O” to “D” based on instantanious travel time on time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
+<li><p><strong>source</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The source node.</p></li>
+<li><p><strong>target</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The target node.</p></li>
+<li><p><strong>t</strong> (<em>float</em>) – The time point to compute shortest routes.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The number of shortest routes to enumerate. Default is 1.</p></li>
+<li><p><strong>cost_function</strong> (<em>function</em>) – A link cost function to compute shortest path. The argument is Link object and time t. Default is the instantaneous travel time, <cite>lambda l, t: l.instant_travel_time(t)</cite>.</p></li>
+<li><p><strong>print_stats</strong> (<em>bool</em>) – Print the statistics of the paths.</p></li>
+<li><p><strong>return_cost</strong> (<em>bool</em>) – Return the cost of the paths.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>routes</strong> (<em>list</em>) – A list of k shortest routes. Each route is a list of link names.</p></li>
+<li><p><strong>costs</strong> (<em>list</em>) – A list of costs of the routes if return_cost is True.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -357,23 +390,15 @@ This contains functions that are not essential for simulation but useful to spec
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="uxsim.World.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">uxsim.World</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="uxsim.TaxiHandler.TaxiHandler.html">
+          
+          <a class="prev-page" href="uxsim.scenario_reader_writer.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">uxsim.TaxiHandler.TaxiHandler</div>
+                <div class="title">uxsim.scenario_reader_writer</div>
                 
               </div>
             </a>
@@ -409,6 +434,7 @@ This contains functions that are not essential for simulation but useful to spec
             <ul>
 <li><a class="reference internal" href="#">uxsim.Utilities.Utilities</a><ul>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes"><code class="docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t"><code class="docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes_on_t()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network"><code class="docutils literal notranslate"><span class="pre">generate_grid_network()</span></code></a></li>
 </ul>
 </li>

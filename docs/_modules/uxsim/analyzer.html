@@ -233,11 +233,6 @@ gtag('config', 'UA-111714220-1');
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.utils.html">uxsim.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.Link.html">uxsim.Link</a></li>
@@ -250,6 +245,12 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.scenario_reader_writer.html">uxsim.scenario_reader_writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -380,6 +381,8 @@ gtag('config', 'UA-111714220-1');
 
         <span class="n">s</span><span class="o">.</span><span class="n">trip_completed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;completed_trips&quot;</span><span class="p">])</span>
         <span class="n">s</span><span class="o">.</span><span class="n">trip_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_trips&quot;</span><span class="p">])</span>
+        
+        <span class="n">s</span><span class="o">.</span><span class="n">total_distance_traveled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_distance_traveled_per_veh&quot;</span><span class="p">]</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_trips&quot;</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_completed</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">total_travel_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;completed_trips&quot;</span><span class="p">]</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">])</span>
@@ -398,7 +401,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.od_analysis">[docs]</a>
     <span class="k">def</span> <span class="nf">od_analysis</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std</span>
+<span class="sd">        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">flag_od_analysis</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -411,33 +414,55 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">od_tt</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
         <span class="n">s</span><span class="o">.</span><span class="n">od_tt_ave</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">od_tt_std</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">od_dist</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">od_dist_total</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">od_dist_ave</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">od_dist_std</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">od_dist_min</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">dn</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
 
-        <span class="c1">#自由旅行時間</span>
+        <span class="c1">#自由旅行時間と最短距離</span>
         <span class="n">adj_mat_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">)])</span>
+        <span class="n">adj_mat_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">)])</span>
         <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">id</span>
             <span class="n">j</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">id</span>
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">ADJ_MAT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]:</span>
                 <span class="n">adj_mat_time</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">link</span><span class="o">.</span><span class="n">u</span>
+                <span class="n">adj_mat_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">length</span>
                 <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">capacity_in</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1">#流入禁止の場合は通行不可</span>
                     <span class="n">adj_mat_time</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                    <span class="n">adj_mat_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">adj_mat_time</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="n">dist</span> <span class="o">=</span> <span class="n">floyd_warshall</span><span class="p">(</span><span class="n">adj_mat_time</span><span class="p">)</span>
+                <span class="n">adj_mat_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">dist_time</span> <span class="o">=</span> <span class="n">floyd_warshall</span><span class="p">(</span><span class="n">adj_mat_time</span><span class="p">)</span>
+        <span class="n">dist_space</span> <span class="o">=</span> <span class="n">floyd_warshall</span><span class="p">(</span><span class="n">adj_mat_dist</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">o</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">orig</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span>
             <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">od_trips</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dn</span>
+
+                <span class="n">veh_links</span> <span class="o">=</span> <span class="p">[</span><span class="n">rec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_t_link</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;length&quot;</span><span class="p">)]</span>
+                <span class="n">veh_dist_traveled</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">length</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">veh_links</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span>
+                    <span class="n">veh_dist_traveled</span> <span class="o">+=</span> <span class="n">veh</span><span class="o">.</span><span class="n">x</span>
+                <span class="n">veh</span><span class="o">.</span><span class="n">distance_traveled</span> <span class="o">=</span> <span class="n">veh_dist_traveled</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">od_dist</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">distance_traveled</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">od_trips_comp</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dn</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">od_tt</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">o</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">od_tt</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">s</span><span class="o">.</span><span class="n">od_tt_ave</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">od_tt</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">])</span>
             <span class="n">s</span><span class="o">.</span><span class="n">od_tt_std</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">od_tt</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">])</span>
-            <span class="n">s</span><span class="o">.</span><span class="n">od_tt_free</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span><span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span><span class="p">]</span></div>
+            <span class="n">s</span><span class="o">.</span><span class="n">od_tt_free</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist_time</span><span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">od_dist_total</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">od_dist</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">])</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">od_dist_min</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist_space</span><span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">od_dist_ave</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">od_dist</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">])</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">od_dist_std</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">od_dist</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="Analyzer.link_analysis_coarse">
@@ -614,6 +639,7 @@ gtag('config', 'UA-111714220-1');
             <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average travel time of trips:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average delay of trips:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; delay ratio:</span><span class="se">\t\t\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total distance traveled:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">total_distance_traveled</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">force_print</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print_mode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;results:&quot;</span><span class="p">)</span>
@@ -623,7 +649,8 @@ gtag('config', 'UA-111714220-1');
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_completed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average travel time of trips:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average delay of trips:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; delay ratio:</span><span class="se">\t\t\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; delay ratio:</span><span class="se">\t\t\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total distance traveled:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">total_distance_traveled</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span></div>
 
 
 
@@ -1525,7 +1552,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.vehicles_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">vehicles_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts the vehicle travel logs to a pandas DataFrame.</span>
+<span class="sd">        Compute the detailed vehicle travel logs and return as a pandas DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1582,12 +1609,12 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.vehicle_trip_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">vehicle_trip_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts the vehicle trip top to a pandas DataFrame.</span>
+<span class="sd">        Compute the vehicle trip summary and return as a pandas DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pd.DataFrame</span>
-<span class="sd">            A DataFrame containing the top of the vehicle trip logs, with the columns:</span>
+<span class="sd">            A DataFrame containing the trip summary of the vehicle trip logs, with the columns:</span>
 <span class="sd">            </span>
 <span class="sd">            - &#39;name&#39;: the name of the vehicle (platoon).</span>
 <span class="sd">            - &#39;orig&#39;: the origin node of the vehicle&#39;s trip.</span>
@@ -1596,14 +1623,16 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            - &#39;final_state&#39;: the final state of the vehicle.</span>
 <span class="sd">            - &#39;travel_time&#39;: the travel time of the vehicle.</span>
 <span class="sd">            - &#39;average_speed&#39;: the average speed of the vehicle.</span>
+<span class="sd">            - &#39;distance_traveled&#39;: the distance traveled by the vehicle.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;orig&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="s2">&quot;departure_time&quot;</span><span class="p">,</span> <span class="s2">&quot;final_state&quot;</span><span class="p">,</span> <span class="s2">&quot;travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_speed&quot;</span><span class="p">]]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;orig&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="s2">&quot;departure_time&quot;</span><span class="p">,</span> <span class="s2">&quot;final_state&quot;</span><span class="p">,</span> <span class="s2">&quot;travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_speed&quot;</span><span class="p">,</span> <span class="s2">&quot;distance_traveled&quot;</span><span class="p">]]</span>
         <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">veh_dest_name</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span> <span class="o">!=</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="n">veh_state</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_state</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">veh_ave_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">veh</span><span class="o">.</span><span class="n">log_v</span> <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">veh_dist_traveled</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">distance_traveled</span>
 
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">veh</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh_dest_name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">departure_time</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">,</span> <span class="n">veh_state</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span><span class="p">,</span> <span class="n">veh_ave_speed</span><span class="p">])</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">veh</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh_dest_name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">departure_time</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">,</span> <span class="n">veh_state</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span><span class="p">,</span> <span class="n">veh_ave_speed</span><span class="p">,</span> <span class="n">veh_dist_traveled</span><span class="p">])</span>
         
         <span class="n">s</span><span class="o">.</span><span class="n">df_vehicle_trip</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_vehicle_trip</span></div>
@@ -1613,7 +1642,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.gps_like_log_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">gps_like_log_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles.</span>
+<span class="sd">        Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles and return as a pandas DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1631,12 +1660,11 @@ gtag('config', 'UA-111714220-1');
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_gps_like_log</span></div>
 
 
-
 <div class="viewcode-block" id="Analyzer.basic_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.basic_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">basic_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts the basic stats to a pandas DataFrame.</span>
+<span class="sd">        Comutes the basic stats and return as a pandas DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1652,7 +1680,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.od_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">od_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts the OD-specific analysis results to a pandas DataFrame.</span>
+<span class="sd">        Compute the OD-specific stats and return as a pandas DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1661,19 +1689,313 @@ gtag('config', 'UA-111714220-1');
 
         <span class="n">s</span><span class="o">.</span><span class="n">od_analysis</span><span class="p">()</span>
 
-        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;orig&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="s2">&quot;total_trips&quot;</span><span class="p">,</span> <span class="s2">&quot;completed_trips&quot;</span><span class="p">,</span> <span class="s2">&quot;free_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;stddiv_travel_time&quot;</span><span class="p">]]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;orig&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="s2">&quot;total_trips&quot;</span><span class="p">,</span> <span class="s2">&quot;completed_trips&quot;</span><span class="p">,</span> <span class="s2">&quot;free_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;stddiv_travel_time&quot;</span><span class="p">,</span>  <span class="s2">&quot;shortest_distance&quot;</span><span class="p">,</span> <span class="s2">&quot;average_distance_traveled_per_veh&quot;</span><span class="p">,</span> <span class="s2">&quot;stddiv_distance_traveled_per_veh&quot;</span><span class="p">]]</span>
         <span class="k">for</span> <span class="n">o</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">od_trips</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">od_trips</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_trips_comp</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_tt_free</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_tt_ave</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_tt_std</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]])</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">od_trips</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_trips_comp</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_tt_free</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_tt_ave</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_tt_std</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_dist_min</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_dist_ave</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">od_dist_std</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]])</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">df_od</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_od</span></div>
+
+    
+<div class="viewcode-block" id="Analyzer.areas2areas_to_pandas">
+<a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.areas2areas_to_pandas">[docs]</a>
+    <span class="k">def</span> <span class="nf">areas2areas_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">areas</span><span class="p">,</span> <span class="n">area_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the area-wise OD-specific stats and return a pandas DataFrame. It analyzes travel stats between areas (set of nodes).</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        areas : list</span>
+<span class="sd">            The list of areas. Each area is defined as a list of nodes. The items of area can be Node objects or names of Nodes.</span>
+<span class="sd">        area_names : list, optional</span>
+<span class="sd">            The list of names of areas.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">od_to_pandas</span><span class="p">()</span>
+
+        <span class="n">o_name_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">d_name_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">total_trips_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">completed_trips_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_travel_time_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">stddiv_travel_time_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_distance_traveled_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">stddiv_distance_traveled_rec</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">average_free_travel_time_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_shortest_distance_rec</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">areas</span> <span class="o">=</span> <span class="p">[[</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">area</span><span class="p">]</span> <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">area_names</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="n">area_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;area </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> including </span><span class="si">{</span><span class="n">areas</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">areas</span><span class="p">))]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">origs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">areas</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">dests</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">areas</span><span class="p">):</span>
+                <span class="n">o_name</span> <span class="o">=</span> <span class="n">area_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">d_name</span> <span class="o">=</span> <span class="n">area_names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+                <span class="c1"># print(o_name, d_name)</span>
+
+                <span class="c1"># group by area: average travel time from origs to dests</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;orig&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">origs</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">dests</span><span class="p">)</span>
+                <span class="n">total_tripss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;total_trips&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">])</span>
+                <span class="n">average_travel_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">])</span>
+                <span class="n">completed_tripss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;completed_trips&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">])</span>
+                <span class="n">var_travel_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;stddiv_travel_time&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">distance_traveleds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_distance_traveled_per_veh&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">])</span>
+                <span class="n">var_distance_traveleds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;stddiv_distance_traveled_per_veh&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span>
+
+                <span class="n">free_travel_time_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;free_travel_time&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">])</span>
+                <span class="n">shortest_distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;shortest_distance&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">])</span>
+
+                <span class="c1"># print(f&quot;{total_tripss = }&quot;)</span>
+                <span class="c1"># print(f&quot;{average_travel_times = }&quot;)</span>
+                <span class="c1"># print(f&quot;{completed_tripss = }&quot;)</span>
+                <span class="c1"># print(f&quot;{var_travel_times = }&quot;)</span>
+                <span class="c1"># print(f&quot;{distance_traveleds = }&quot;)</span>
+                <span class="c1"># print(f&quot;{var_distance_traveleds = }&quot;)</span>
+
+                <span class="n">total_trips</span> <span class="o">=</span> <span class="n">total_tripss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">completed_trips</span> <span class="o">=</span> <span class="n">completed_tripss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">total_trips</span><span class="p">:</span>
+                    <span class="n">average_travel_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">completed_tripss</span><span class="o">*</span><span class="n">average_travel_times</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">completed_trips</span>
+                    <span class="n">var_travel_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">completed_tripss</span><span class="o">*</span><span class="n">var_travel_times</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">completed_trips</span>    <span class="c1">#wrong! there is a correct formula. TODO: implement</span>
+                    <span class="n">stddiv_travel_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_travel_time</span><span class="p">)</span>
+
+                    <span class="n">average_shortest_distance</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tripss</span><span class="o">*</span><span class="n">shortest_distances</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">total_trips</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                    <span class="c1"># average_travel_time = np.nan</span>
+                    <span class="c1"># var_travel_time = np.nan</span>
+                    <span class="c1"># stddiv_travel_time = np.nan</span>
+                    <span class="c1"># average_shortest_distance = np.nan</span>
+
+                <span class="k">if</span> <span class="n">completed_trips</span><span class="p">:</span>
+                    <span class="n">average_distance_traveled</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tripss</span><span class="o">*</span><span class="n">distance_traveleds</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">total_trips</span>
+                    <span class="n">var_distance_traveled</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_tripss</span><span class="o">*</span><span class="n">distance_traveleds</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">total_trips</span>    <span class="c1">#wrong!</span>
+                    <span class="n">stddiv_distance_traveled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_distance_traveled</span><span class="p">)</span>
+
+                    <span class="n">average_free_travel_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">completed_tripss</span><span class="o">*</span><span class="n">free_travel_time_times</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">completed_trips</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">average_distance_traveled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="n">var_distance_traveled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="n">stddiv_distance_traveled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="n">average_free_travel_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+                <span class="c1"># print(f&quot;{total_trips = }&quot;)</span>
+                <span class="c1"># print(f&quot;{completed_trips = }&quot;)</span>
+                <span class="c1"># print(f&quot;{average_travel_time = }&quot;)</span>
+                <span class="c1"># print(f&quot;{stddiv_travel_time = }&quot;)</span>
+                <span class="c1"># print(f&quot;{average_distance_traveled = }&quot;)</span>
+                <span class="c1"># print(f&quot;{stddiv_distance_traveled = }&quot;)</span>
+
+                <span class="n">o_name_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o_name</span><span class="p">)</span>
+                <span class="n">d_name_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_name</span><span class="p">)</span>
+                <span class="n">total_trips_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_trips</span><span class="p">)</span>
+                <span class="n">completed_trips_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">completed_trips</span><span class="p">)</span>
+                <span class="n">average_travel_time_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">average_travel_time</span><span class="p">)</span>
+                <span class="n">stddiv_travel_time_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stddiv_travel_time</span><span class="p">)</span>
+                <span class="n">average_distance_traveled_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">average_distance_traveled</span><span class="p">)</span>
+                <span class="n">stddiv_distance_traveled_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stddiv_distance_traveled</span><span class="p">)</span>
+                <span class="n">average_free_travel_time_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">average_free_travel_time</span><span class="p">)</span>
+                <span class="n">average_shortest_distance_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">average_shortest_distance</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;origin_area&quot;</span><span class="p">,</span> <span class="s2">&quot;destination_area&quot;</span><span class="p">,</span> <span class="s2">&quot;total_trips&quot;</span><span class="p">,</span> <span class="s2">&quot;completed_trips&quot;</span><span class="p">,</span> <span class="s2">&quot;average_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_free_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_distance_traveled&quot;</span><span class="p">,</span> <span class="s2">&quot;average_shortest_distance&quot;</span><span class="p">]]</span>
+        <span class="n">out</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">o_name_rec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">d_name_rec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">total_trips_rec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">completed_trips_rec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">average_travel_time_rec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">average_free_travel_time_rec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">average_distance_traveled_rec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">average_shortest_distance_rec</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">o_name_rec</span><span class="p">))]</span>
+        
+        <span class="n">s</span><span class="o">.</span><span class="n">df_areas2areas</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_areas2areas</span></div>
+
+    
+<div class="viewcode-block" id="Analyzer.area_to_pandas">
+<a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.area_to_pandas">[docs]</a>
+    <span class="k">def</span> <span class="nf">area_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">areas</span><span class="p">,</span> <span class="n">area_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">border_include</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute traffic stats in area and return as pandas.DataFrame.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        areas : list</span>
+<span class="sd">            The list of areas. Each area is defined as a list of nodes. The items of area can be Node objects or names of Nodes.</span>
+<span class="sd">        area_names : list, optional</span>
+<span class="sd">            The list of names of areas.</span>
+<span class="sd">        border_include : bool, optional</span>
+<span class="sd">            If set to True, the links on the border of the area are included in the analysis. Default is True.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_links_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">traffic_volume_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vehicles_remain_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">total_travel_time_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_delay_rec</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">area</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">areas</span><span class="p">):</span>
+            <span class="n">area</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">:</span><span class="mi">0</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">area</span><span class="p">}</span>
+
+            <span class="n">df</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">()</span>
+            <span class="n">df_veh_link</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">vehicles_to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">])</span>
+
+            <span class="n">n_links</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">traffic_volume</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">vehicles_remain</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">total_travel_time</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">total_free_time</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">average_delay</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">if</span> <span class="n">border_include</span><span class="p">:</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;start_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="o">|</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;end_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;start_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;end_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+            <span class="n">links</span> <span class="o">=</span> <span class="p">{</span><span class="n">l</span><span class="p">:</span><span class="mi">0</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">}</span>
+
+            <span class="n">n_links</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+            <span class="n">traffic_volume</span> <span class="o">=</span> <span class="n">df_veh_link</span><span class="p">[</span><span class="n">df_veh_link</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">links</span><span class="p">)]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
+            <span class="n">vehicles_remain</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;vehicles_remain&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">traffic_volume</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">total_travel_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;vehicles_remain&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]))</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">total_free_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;free_travel_time&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;vehicles_remain&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]))</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">average_delay</span> <span class="o">=</span> <span class="n">total_travel_time</span><span class="o">/</span><span class="n">total_free_time</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">average_delay</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">average_delay</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">total_travel_time</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">total_free_time</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">average_delay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+            <span class="c1">#print(f&quot;{n_links=}, {traffic_volume=}, {vehicles_remain=}, {total_travel_time=}, {total_free_time=}, {average_delay=}&quot;)</span>
+
+            <span class="n">n_links_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_links</span><span class="p">)</span>
+            <span class="n">traffic_volume_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">traffic_volume</span><span class="p">)</span>
+            <span class="n">vehicles_remain_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vehicles_remain</span><span class="p">)</span>
+            <span class="n">total_travel_time_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_travel_time</span><span class="p">)</span>
+            <span class="n">average_delay_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">average_delay</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s2">&quot;area&quot;</span><span class="p">:</span> <span class="n">area_names</span><span class="p">,</span>
+            <span class="s2">&quot;n_links&quot;</span><span class="p">:</span> <span class="n">n_links_rec</span><span class="p">,</span>
+            <span class="s2">&quot;traffic_volume&quot;</span><span class="p">:</span> <span class="n">traffic_volume_rec</span><span class="p">,</span>
+            <span class="s2">&quot;vehicles_remain&quot;</span><span class="p">:</span> <span class="n">vehicles_remain_rec</span><span class="p">,</span>
+            <span class="s2">&quot;total_travel_time&quot;</span><span class="p">:</span> <span class="n">total_travel_time_rec</span><span class="p">,</span>
+            <span class="s2">&quot;average_delay&quot;</span><span class="p">:</span> <span class="n">average_delay_rec</span>
+        <span class="p">})</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">df_area</span> <span class="o">=</span> <span class="n">df</span>
+        
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_area</span></div>
+
+                       
+<div class="viewcode-block" id="Analyzer.vehicle_groups_to_pandas">
+<a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.vehicle_groups_to_pandas">[docs]</a>
+    <span class="k">def</span> <span class="nf">vehicle_groups_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">group_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the stats of vehicle group and return as a pandas DataFrame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        groups : list</span>
+<span class="sd">            The list of vehicle groups. Each group is defined as a list of vehicle object.</span>
+<span class="sd">        group_names : list, optional</span>
+<span class="sd">            The list of names of vehicle groups.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df_od</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">od_to_pandas</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">group_names</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="n">group_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;group </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> including </span><span class="si">{</span><span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">))]</span>
+
+        <span class="n">total_trip_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">completed_trip_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_travel_time_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_delay_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">std_delay_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_traveled_distance_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_detour_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">std_detour_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">averae_speed_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">std_speed_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">groups</span><span class="p">):</span>
+            <span class="n">total_trips</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">completed_trips</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">travel_times</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">delays</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">traveled_distances</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">detours</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">speeds</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+            <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+
+                <span class="n">total_trips</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
+                    <span class="n">completed_trips</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">travel_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span><span class="p">)</span>
+                    <span class="n">traveled_distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">distance_traveled</span><span class="p">)</span>
+                    
+                    <span class="n">free_travel_time</span> <span class="o">=</span> <span class="n">df_od</span><span class="p">[</span><span class="s2">&quot;free_travel_time&quot;</span><span class="p">][(</span><span class="n">df_od</span><span class="p">[</span><span class="s2">&quot;orig&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_od</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">shortest_distance</span> <span class="o">=</span> <span class="n">df_od</span><span class="p">[</span><span class="s2">&quot;shortest_distance&quot;</span><span class="p">][(</span><span class="n">df_od</span><span class="p">[</span><span class="s2">&quot;orig&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_od</span><span class="p">[</span><span class="s2">&quot;dest&quot;</span><span class="p">]</span><span class="o">==</span><span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="n">delays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span><span class="o">/</span><span class="n">free_travel_time</span><span class="p">)</span>
+                    <span class="n">detours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">distance_traveled</span><span class="o">/</span><span class="n">shortest_distance</span><span class="p">)</span>
+
+                    <span class="n">speeds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">distance_traveled</span><span class="o">/</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span><span class="p">)</span>
+
+                <span class="c1">#print(f&quot;{group_names[i]=}, {np.average(travel_times)=}, {np.average(traveled_distances)=}, {np.average(delays)=}, {np.average(detours)=}, {np.std(delays)=}, {np.std(detours)=}, {np.average(speeds)}, {np.std(speeds)}&quot;)</span>
+
+            <span class="n">total_trip_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_trips</span><span class="p">)</span>
+            <span class="n">completed_trip_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">completed_trips</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">completed_trips</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">average_travel_time_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">travel_times</span><span class="p">))</span>
+                <span class="n">average_delay_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">delays</span><span class="p">))</span>
+                <span class="n">std_delay_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">delays</span><span class="p">))</span>
+                <span class="n">average_traveled_distance_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">traveled_distances</span><span class="p">))</span>
+                <span class="n">average_detour_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">detours</span><span class="p">))</span>
+                <span class="n">std_detour_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">detours</span><span class="p">))</span>
+                <span class="n">averae_speed_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">speeds</span><span class="p">))</span>
+                <span class="n">std_speed_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">speeds</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">average_travel_time_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">average_delay_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">std_delay_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">average_traveled_distance_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">average_detour_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">std_detour_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">averae_speed_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">std_speed_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="n">group_names</span><span class="p">,</span>
+            <span class="s2">&quot;total_trips&quot;</span><span class="p">:</span> <span class="n">total_trip_rec</span><span class="p">,</span>
+            <span class="s2">&quot;completed_trips&quot;</span><span class="p">:</span> <span class="n">completed_trip_rec</span><span class="p">,</span>
+            <span class="s2">&quot;average_travel_time&quot;</span><span class="p">:</span> <span class="n">average_travel_time_rec</span><span class="p">,</span>
+            <span class="s2">&quot;average_delay_ratio&quot;</span><span class="p">:</span> <span class="n">average_delay_rec</span><span class="p">,</span>
+            <span class="s2">&quot;std_delay_ratio&quot;</span><span class="p">:</span> <span class="n">std_delay_rec</span><span class="p">,</span>
+            <span class="s2">&quot;average_traveled_distance&quot;</span><span class="p">:</span> <span class="n">average_traveled_distance_rec</span><span class="p">,</span>
+            <span class="s2">&quot;average_detour_ratio&quot;</span><span class="p">:</span> <span class="n">average_detour_rec</span><span class="p">,</span>
+            <span class="s2">&quot;std_detour_ratio&quot;</span><span class="p">:</span> <span class="n">std_detour_rec</span><span class="p">,</span>
+            <span class="s2">&quot;average_speed&quot;</span><span class="p">:</span> <span class="n">averae_speed_rec</span><span class="p">,</span>
+            <span class="s2">&quot;std_speed&quot;</span><span class="p">:</span> <span class="n">std_speed_rec</span><span class="p">,</span>
+        <span class="p">})</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">df_vehicle_groups</span> <span class="o">=</span> <span class="n">df</span>
+        
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_vehicle_groups</span></div>
 
 
 <div class="viewcode-block" id="Analyzer.mfd_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.mfd_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">mfd_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts the MFD to a pandas DataFrame.</span>
+<span class="sd">        Compute the MFD-like stats and return as a pandas DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1715,7 +2037,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.link_traffic_state_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">link_traffic_state_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts the traffic states in links to a pandas DataFrame.</span>
+<span class="sd">        Compute the traffic states in links and return as a pandas DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1736,7 +2058,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.link_cumulative_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">link_cumulative_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts the cumulative counts etc. in links to a pandas DataFrame.</span>
+<span class="sd">        Compute the cumulative counts etc. in links and return as a pandas DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1755,7 +2077,7 @@ gtag('config', 'UA-111714220-1');
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Save all results to CSV files</span>
+<span class="sd">        Save all results to CSV files. This is obsolute; not all functions are implemented.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">fname</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;out</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/data&quot;</span>

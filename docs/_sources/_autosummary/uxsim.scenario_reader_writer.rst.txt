@@ -1,0 +1,32 @@
+﻿uxsim.scenario\_reader\_writer
+==============================
+
+.. automodule:: uxsim.scenario_reader_writer
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      demand_info_record
+      instance_to_arg_dict
+      load_scenario
+      save_scenario
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

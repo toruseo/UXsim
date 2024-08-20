@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="uxsim.uxsim" href="_autosummary/uxsim.uxsim.html" /><link rel="prev" title="Simulation Mechanism" href="mechanism.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="uxsim.World" href="_autosummary/uxsim.World.html" /><link rel="prev" title="Simulation Mechanism" href="mechanism.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>Technical Reference - UXsim: Traffic Simulation in Python v1 documentation</title>
@@ -234,11 +234,6 @@ gtag('config', 'UA-111714220-1');
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Technical Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.utils.html">uxsim.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Node.html">uxsim.Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Link.html">uxsim.Link</a></li>
@@ -251,6 +246,12 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.scenario_reader_writer.html">uxsim.scenario_reader_writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -295,38 +296,16 @@ gtag('config', 'UA-111714220-1');
         <article role="main" id="furo-main-content">
           <section id="technical-reference">
 <h1>Technical Reference<a class="headerlink" href="#technical-reference" title="Link to this heading">¶</a></h1>
-<p>Please note that this document is automatically generated from docstring, and some of the docstrings are automatically written by ChatGPT.
-Thus, they are not completely perfect.
-This was prepared with the intention of “better than nothing.”</p>
-<section id="modules">
-<h2>Modules<a class="headerlink" href="#modules" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="uxsim.html#module-uxsim.uxsim" title="uxsim.uxsim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.uxsim</span></code></a></p></td>
-<td><p>UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="utils.html#module-uxsim.utils" title="uxsim.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.utils</span></code></a></p></td>
-<td><p>General utilities for UXsim.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.Analyzer.html#module-uxsim.analyzer" title="uxsim.analyzer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.analyzer</span></code></a></p></td>
-<td><p>Analyzer for a UXsim simulation result.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#module-uxsim.ResultGUIViewer.ResultGUIViewer" title="uxsim.ResultGUIViewer.ResultGUIViewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.ResultGUIViewer.ResultGUIViewer</span></code></a></p></td>
-<td><p>Interactive viewer for UXsim simulation results using PyQt5.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler" title="uxsim.TaxiHandler.TaxiHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.TaxiHandler.TaxiHandler</span></code></a></p></td>
-<td><p>A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.Utilities.Utilities.html#module-uxsim.Utilities.Utilities" title="uxsim.Utilities.Utilities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.Utilities.Utilities</span></code></a></p></td>
-<td><p>Submodule for general utilities.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
+<p>This page summarizes the detailed specifications of the modules, classes, and their functions in UXsim.
+This is highly technical; for the basic introduction, please see the <a class="reference internal" href="getting_started.html"><span class="doc">getting started page</span></a> and <a class="reference internal" href="mechanism.html"><span class="doc">mechanism page</span></a> first.</p>
 <section id="classes-essential">
 <h2>Classes (essential)<a class="headerlink" href="#classes-essential" title="Link to this heading">¶</a></h2>
+<p>These classes are essential for UXsim.
+<code class="docutils literal notranslate"><span class="pre">World</span></code> is the simulation environment and accessed by users directly.
+<code class="docutils literal notranslate"><span class="pre">Node</span></code>, <code class="docutils literal notranslate"><span class="pre">Link</span></code>, and <code class="docutils literal notranslate"><span class="pre">Vehicle</span></code> objects should be added to a <code class="docutils literal notranslate"><span class="pre">World</span></code> object by <code class="docutils literal notranslate"><span class="pre">World.addNode</span></code>, <code class="docutils literal notranslate"><span class="pre">World.addLink</span></code>, <code class="docutils literal notranslate"><span class="pre">World.adddemand</span></code> methods, and access to them is provided by <code class="docutils literal notranslate"><span class="pre">World</span></code>.
+Thus, for basic usage, users do not need to access them directly.
+<code class="docutils literal notranslate"><span class="pre">RouteChoice</span></code> is for vehicles’ route choice behaviors, and basically it is not required to be directly accessed by users.
+<code class="docutils literal notranslate"><span class="pre">Analyzer</span></code> is for analysis of simulation results and it is basically accessible as <code class="docutils literal notranslate"><span class="pre">World.analyzer</span></code>.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -354,6 +333,7 @@ This was prepared with the intention of “better than nothing.”</p>
 </section>
 <section id="classes-support">
 <h2>Classes (support)<a class="headerlink" href="#classes-support" title="Link to this heading">¶</a></h2>
+<p>These classes are not necessary for the basic usage of UXsim, but useful for specific or advanced analyses.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -378,6 +358,42 @@ This was prepared with the intention of “better than nothing.”</p>
 </tbody>
 </table>
 </div>
+</section>
+<section id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Link to this heading">¶</a></h2>
+<p>These are the module and sub-module of UXsim.
+For basic usage, only <code class="docutils literal notranslate"><span class="pre">uxsim</span></code> is required to imported.
+<code class="docutils literal notranslate"><span class="pre">analyzer</span></code>, <code class="docutils literal notranslate"><span class="pre">utils</span></code>, and <code class="docutils literal notranslate"><span class="pre">scenario_reader_writer</span></code> are automatically imported along with <code class="docutils literal notranslate"><span class="pre">uxsim</span></code>, and access to them is provided by classes in <code class="docutils literal notranslate"><span class="pre">uxsim</span></code>.
+<code class="docutils literal notranslate"><span class="pre">analyzer</span></code> is for analysis of simulation results and it is basically accessible via <code class="docutils literal notranslate"><span class="pre">World.analyzer</span></code>.
+For <code class="docutils literal notranslate"><span class="pre">utils</span></code> and <code class="docutils literal notranslate"><span class="pre">scenario_reader_writer</span></code>, users will not use them directly.
+The other sub-modules may be useful for specific or advanced analyses.</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="uxsim.html#module-uxsim.uxsim" title="uxsim.uxsim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.uxsim</span></code></a></p></td>
+<td><p>UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="utils.html#module-uxsim.utils" title="uxsim.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.utils</span></code></a></p></td>
+<td><p>General utilities for UXsim.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.Analyzer.html#module-uxsim.analyzer" title="uxsim.analyzer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.analyzer</span></code></a></p></td>
+<td><p>Analyzer for a UXsim simulation result.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.scenario_reader_writer.html#module-uxsim.scenario_reader_writer" title="uxsim.scenario_reader_writer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.scenario_reader_writer</span></code></a></p></td>
+<td><p>Scenario reader and writer using toml.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#module-uxsim.ResultGUIViewer.ResultGUIViewer" title="uxsim.ResultGUIViewer.ResultGUIViewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.ResultGUIViewer.ResultGUIViewer</span></code></a></p></td>
+<td><p>Interactive viewer for UXsim simulation results using PyQt5.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html#uxsim.TaxiHandler.TaxiHandler" title="uxsim.TaxiHandler.TaxiHandler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.TaxiHandler.TaxiHandler</span></code></a></p></td>
+<td><p>A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.Utilities.Utilities.html#module-uxsim.Utilities.Utilities" title="uxsim.Utilities.Utilities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.Utilities.Utilities</span></code></a></p></td>
+<td><p>Submodule for general utilities.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 </ul>
@@ -389,12 +405,12 @@ This was prepared with the intention of “better than nothing.”</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="_autosummary/uxsim.uxsim.html">
+          <a class="next-page" href="_autosummary/uxsim.World.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">uxsim.uxsim</div>
+                <div class="title">uxsim.World</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -440,9 +456,9 @@ This was prepared with the intention of “better than nothing.”</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Technical Reference</a><ul>
-<li><a class="reference internal" href="#modules">Modules</a></li>
 <li><a class="reference internal" href="#classes-essential">Classes (essential)</a></li>
 <li><a class="reference internal" href="#classes-support">Classes (support)</a></li>
+<li><a class="reference internal" href="#modules">Modules</a></li>
 </ul>
 </li>
 </ul>

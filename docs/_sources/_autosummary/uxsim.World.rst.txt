@@ -19,6 +19,7 @@
       ~World.addVehicle
       ~World.adddemand
       ~World.adddemand_area2area
+      ~World.adddemand_nodes2nodes
       ~World.adddemand_point2point
       ~World.check_simulation_ongoing
       ~World.copy

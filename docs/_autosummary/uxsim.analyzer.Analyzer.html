@@ -234,11 +234,6 @@ gtag('config', 'UA-111714220-1');
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
@@ -251,6 +246,12 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.scenario_reader_writer.html">uxsim.scenario_reader_writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -331,11 +332,17 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.__init__" title="uxsim.analyzer.Analyzer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W[, font_pillow, font_matplotlib])</p></td>
 <td><p>Create result analysis object.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.area_to_pandas" title="uxsim.analyzer.Analyzer.area_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">area_to_pandas</span></code></a>(areas[, area_names, ...])</p></td>
+<td><p>Compute traffic stats in area and return as pandas.DataFrame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.areas2areas_to_pandas" title="uxsim.analyzer.Analyzer.areas2areas_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">areas2areas_to_pandas</span></code></a>(areas[, area_names])</p></td>
+<td><p>Compute the area-wise OD-specific stats and return a pandas DataFrame.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.basic_analysis" title="uxsim.analyzer.Analyzer.basic_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_analysis</span></code></a>()</p></td>
 <td><p>Analyze basic stats.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.basic_to_pandas" title="uxsim.analyzer.Analyzer.basic_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_to_pandas</span></code></a>()</p></td>
-<td><p>Converts the basic stats to a pandas DataFrame.</p></td>
+<td><p>Comutes the basic stats and return as a pandas DataFrame.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">comp_route_travel_time</span></code>(t, route)</p></td>
 <td><p></p></td>
@@ -353,19 +360,19 @@ gtag('config', 'UA-111714220-1');
 <td><p>Plots the cumulative curves and travel times for the provided links.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.gps_like_log_to_pandas" title="uxsim.analyzer.Analyzer.gps_like_log_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gps_like_log_to_pandas</span></code></a>()</p></td>
-<td><p>Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles.</p></td>
+<td><p>Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles and return as a pandas DataFrame.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_analysis_coarse" title="uxsim.analyzer.Analyzer.link_analysis_coarse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_analysis_coarse</span></code></a>()</p></td>
 <td><p>Analyze link-level coarse stats: traffic volume, remaining vehicles, free-flow travel time, average travel time, its std.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_cumulative_to_pandas" title="uxsim.analyzer.Analyzer.link_cumulative_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_cumulative_to_pandas</span></code></a>()</p></td>
-<td><p>Converts the cumulative counts etc.</p></td>
+<td><p>Compute the cumulative counts etc.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_to_pandas" title="uxsim.analyzer.Analyzer.link_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_to_pandas</span></code></a>()</p></td>
 <td><p>Converts the link-level analysis results to a pandas DataFrame.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.link_traffic_state_to_pandas" title="uxsim.analyzer.Analyzer.link_traffic_state_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">link_traffic_state_to_pandas</span></code></a>()</p></td>
-<td><p>Converts the traffic states in links to a pandas DataFrame.</p></td>
+<td><p>Compute the traffic states in links and return as a pandas DataFrame.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.log_vehicles_to_pandas" title="uxsim.analyzer.Analyzer.log_vehicles_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_vehicles_to_pandas</span></code></a>()</p></td>
 <td><p>same to <cite>vehicles_to_pandas</cite>, just for backward compatibility</p></td>
@@ -374,7 +381,7 @@ gtag('config', 'UA-111714220-1');
 <td><p>Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.mfd_to_pandas" title="uxsim.analyzer.Analyzer.mfd_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mfd_to_pandas</span></code></a>([links])</p></td>
-<td><p>Converts the MFD to a pandas DataFrame.</p></td>
+<td><p>Compute the MFD-like stats and return as a pandas DataFrame.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.network" title="uxsim.analyzer.Analyzer.network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">network</span></code></a>([t, detailed, minwidth, maxwidth, ...])</p></td>
 <td><p>Visualizes the entire transportation network and its current traffic conditions.</p></td>
@@ -389,13 +396,13 @@ gtag('config', 'UA-111714220-1');
 <td><p>Visualizes the entire transportation network and its current traffic conditions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.od_analysis" title="uxsim.analyzer.Analyzer.od_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_analysis</span></code></a>()</p></td>
-<td><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std</p></td>
+<td><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.od_to_pandas" title="uxsim.analyzer.Analyzer.od_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_to_pandas</span></code></a>()</p></td>
-<td><p>Converts the OD-specific analysis results to a pandas DataFrame.</p></td>
+<td><p>Compute the OD-specific stats and return as a pandas DataFrame.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.output_data" title="uxsim.analyzer.Analyzer.output_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_data</span></code></a>([fname])</p></td>
-<td><p>Save all results to CSV files</p></td>
+<td><p>Save all results to CSV files.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.plot_vehicle_log" title="uxsim.analyzer.Analyzer.plot_vehicle_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_vehicle_log</span></code></a>(vehname)</p></td>
 <td><p>Plots the driving link and speed for a single vehicle.</p></td>
@@ -418,15 +425,53 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj_links" title="uxsim.analyzer.Analyzer.time_space_diagram_traj_links"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_space_diagram_traj_links</span></code></a>(linkslist[, ...])</p></td>
 <td><p>Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicle_trip_to_pandas" title="uxsim.analyzer.Analyzer.vehicle_trip_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle_trip_to_pandas</span></code></a>()</p></td>
-<td><p>Converts the vehicle trip top to a pandas DataFrame.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicle_groups_to_pandas" title="uxsim.analyzer.Analyzer.vehicle_groups_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle_groups_to_pandas</span></code></a>(groups[, group_names])</p></td>
+<td><p>Computes the stats of vehicle group and return as a pandas DataFrame.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicles_to_pandas" title="uxsim.analyzer.Analyzer.vehicles_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicles_to_pandas</span></code></a>()</p></td>
-<td><p>Converts the vehicle travel logs to a pandas DataFrame.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicle_trip_to_pandas" title="uxsim.analyzer.Analyzer.vehicle_trip_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle_trip_to_pandas</span></code></a>()</p></td>
+<td><p>Compute the vehicle trip summary and return as a pandas DataFrame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicles_to_pandas" title="uxsim.analyzer.Analyzer.vehicles_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicles_to_pandas</span></code></a>()</p></td>
+<td><p>Compute the detailed vehicle travel logs and return as a pandas DataFrame.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.area_to_pandas">
+<span class="sig-name descname"><span class="pre">area_to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">areas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.area_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.area_to_pandas" title="Link to this definition">¶</a></dt>
+<dd><p>Compute traffic stats in area and return as pandas.DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>areas</strong> (<em>list</em>) – The list of areas. Each area is defined as a list of nodes. The items of area can be Node objects or names of Nodes.</p></li>
+<li><p><strong>area_names</strong> (<em>list</em><em>, </em><em>optional</em>) – The list of names of areas.</p></li>
+<li><p><strong>border_include</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set to True, the links on the border of the area are included in the analysis. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.areas2areas_to_pandas">
+<span class="sig-name descname"><span class="pre">areas2areas_to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">areas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.areas2areas_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.areas2areas_to_pandas" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the area-wise OD-specific stats and return a pandas DataFrame. It analyzes travel stats between areas (set of nodes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>areas</strong> (<em>list</em>) – The list of areas. Each area is defined as a list of nodes. The items of area can be Node objects or names of Nodes.</p></li>
+<li><p><strong>area_names</strong> (<em>list</em><em>, </em><em>optional</em>) – The list of names of areas.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.basic_analysis">
 <span class="sig-name descname"><span class="pre">basic_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.basic_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.basic_analysis" title="Link to this definition">¶</a></dt>
@@ -436,7 +481,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.basic_to_pandas">
 <span class="sig-name descname"><span class="pre">basic_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.basic_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.basic_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the basic stats to a pandas DataFrame.</p>
+<dd><p>Comutes the basic stats and return as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -483,7 +528,7 @@ The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with the fil
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.gps_like_log_to_pandas">
 <span class="sig-name descname"><span class="pre">gps_like_log_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.gps_like_log_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.gps_like_log_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles.</p>
+<dd><p>Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles and return as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -500,7 +545,7 @@ The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with the fil
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.link_cumulative_to_pandas">
 <span class="sig-name descname"><span class="pre">link_cumulative_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.link_cumulative_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.link_cumulative_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the cumulative counts etc. in links to a pandas DataFrame.</p>
+<dd><p>Compute the cumulative counts etc. in links and return as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -522,7 +567,7 @@ The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with the fil
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.link_traffic_state_to_pandas">
 <span class="sig-name descname"><span class="pre">link_traffic_state_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.link_traffic_state_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.link_traffic_state_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the traffic states in links to a pandas DataFrame.</p>
+<dd><p>Compute the traffic states in links and return as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -561,7 +606,7 @@ The plot is saved to the directory <cite>out&lt;W.name&gt;</cite> with the filen
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.mfd_to_pandas">
 <span class="sig-name descname"><span class="pre">mfd_to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.mfd_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.mfd_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the MFD to a pandas DataFrame.</p>
+<dd><p>Compute the MFD-like stats and return as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -682,13 +727,13 @@ The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with filenam
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.od_analysis">
 <span class="sig-name descname"><span class="pre">od_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.od_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.od_analysis" title="Link to this definition">¶</a></dt>
-<dd><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std</p>
+<dd><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.od_to_pandas">
 <span class="sig-name descname"><span class="pre">od_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.od_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.od_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the OD-specific analysis results to a pandas DataFrame.</p>
+<dd><p>Compute the OD-specific stats and return as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -699,7 +744,7 @@ The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with filenam
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.output_data">
 <span class="sig-name descname"><span class="pre">output_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.output_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.output_data" title="Link to this definition">¶</a></dt>
-<dd><p>Save all results to CSV files</p>
+<dd><p>Save all results to CSV files. This is obsolute; not all functions are implemented.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -797,12 +842,29 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.vehicle_groups_to_pandas">
+<span class="sig-name descname"><span class="pre">vehicle_groups_to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.vehicle_groups_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.vehicle_groups_to_pandas" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the stats of vehicle group and return as a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>groups</strong> (<em>list</em>) – The list of vehicle groups. Each group is defined as a list of vehicle object.</p></li>
+<li><p><strong>group_names</strong> (<em>list</em><em>, </em><em>optional</em>) – The list of names of vehicle groups.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.vehicle_trip_to_pandas">
 <span class="sig-name descname"><span class="pre">vehicle_trip_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.vehicle_trip_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.vehicle_trip_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the vehicle trip top to a pandas DataFrame.</p>
+<dd><p>Compute the vehicle trip summary and return as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p>A DataFrame containing the top of the vehicle trip logs, with the columns:</p>
+<dd class="field-odd"><p><p>A DataFrame containing the trip summary of the vehicle trip logs, with the columns:</p>
 <ul class="simple">
 <li><p>’name’: the name of the vehicle (platoon).</p></li>
 <li><p>’orig’: the origin node of the vehicle’s trip.</p></li>
@@ -811,6 +873,7 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <li><p>’final_state’: the final state of the vehicle.</p></li>
 <li><p>’travel_time’: the travel time of the vehicle.</p></li>
 <li><p>’average_speed’: the average speed of the vehicle.</p></li>
+<li><p>’distance_traveled’: the distance traveled by the vehicle.</p></li>
 </ul>
 </p>
 </dd>
@@ -823,7 +886,7 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.vehicles_to_pandas">
 <span class="sig-name descname"><span class="pre">vehicles_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.vehicles_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.vehicles_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the vehicle travel logs to a pandas DataFrame.</p>
+<dd><p>Compute the detailed vehicle travel logs and return as a pandas DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><p>A DataFrame containing the travel logs of vehicles, with the columns:</p>
@@ -908,6 +971,8 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <li><a class="reference internal" href="#">uxsim.analyzer.Analyzer</a><ul>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer"><code class="docutils literal notranslate"><span class="pre">Analyzer</span></code></a><ul>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.__init__"><code class="docutils literal notranslate"><span class="pre">Analyzer.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.analyzer.Analyzer.area_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.area_to_pandas()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.analyzer.Analyzer.areas2areas_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.areas2areas_to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.basic_analysis"><code class="docutils literal notranslate"><span class="pre">Analyzer.basic_analysis()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.basic_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.basic_to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.compute_accurate_traj"><code class="docutils literal notranslate"><span class="pre">Analyzer.compute_accurate_traj()</span></code></a></li>
@@ -936,6 +1001,7 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.time_space_diagram_density"><code class="docutils literal notranslate"><span class="pre">Analyzer.time_space_diagram_density()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj"><code class="docutils literal notranslate"><span class="pre">Analyzer.time_space_diagram_traj()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj_links"><code class="docutils literal notranslate"><span class="pre">Analyzer.time_space_diagram_traj_links()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicle_groups_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.vehicle_groups_to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicle_trip_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.vehicle_trip_to_pandas()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicles_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.vehicles_to_pandas()</span></code></a></li>
 </ul>

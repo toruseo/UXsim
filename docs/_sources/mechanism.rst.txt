@@ -14,7 +14,7 @@ UXsim computes network traffic flow dynamics by combining following models:
 * The `mesoscopic version of the incremental node model <https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/>`_ for inter-link transfer at nodes.
 * `Dynamic user optimum <https://doi.org/10.1016/S0191-2615(00)00005-9>`_ (aka. reactive assignment) with stochasticity and delay for route choice of travelers.
 
-Key Inputs
+Key inputs
 ----------
 
 UXsim's key inputs (i.e., simulation scenario parameters) are as follows:
@@ -27,14 +27,14 @@ UXsim's key inputs (i.e., simulation scenario parameters) are as follows:
 * Parameters of each node. For example, position (`x` and `y`) and traffic signal setting (`signal`).
 * Demand. For example, origin, destination, and departure time of each vehicle are specified.
 
-Program Structure
+Program structure
 -----------------
 
 Class diagram of UXsim: the relationship between classes and their key properties.
 
 .. image:: img/class_diagram.png
 
-Computation Procedure
+Computation procedure
 ---------------------
 
 Activity diagram of UXsim: the overall computation procedure of UXsim.
@@ -46,7 +46,7 @@ Activity diagram of a specific vehicle in UXsim: the computation procedure for e
 .. image:: img/activity_diagram_veh.png
 
 
-The Details on Traffic Flow Model on Link
+The details on traffic flow model on link
 -----------------------------------------
 
 Traffic Flow Model

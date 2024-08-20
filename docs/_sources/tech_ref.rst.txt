@@ -2,27 +2,19 @@
 Technical Reference
 ===================
 
-Please note that this document is automatically generated from docstring, and some of the docstrings are automatically written by ChatGPT. 
-Thus, they are not completely perfect.
-This was prepared with the intention of "better than nothing."
+This page summarizes the detailed specifications of the modules, classes, and their functions in UXsim.
+This is highly technical; for the basic introduction, please see the :doc:`getting started page <./getting_started>` and :doc:`mechanism page <./mechanism>` first.
 
-Modules
--------
-
-.. autosummary::
-   :toctree: _autosummary
-   :nosignatures:
-
-   uxsim.uxsim
-   uxsim.utils
-   uxsim.analyzer
-   uxsim.ResultGUIViewer.ResultGUIViewer
-   uxsim.TaxiHandler.TaxiHandler
-   uxsim.Utilities.Utilities
-   
    
 Classes (essential)
 -------------------
+
+These classes are essential for UXsim.
+``World`` is the simulation environment and accessed by users directly.
+``Node``, ``Link``, and ``Vehicle`` objects should be added to a ``World`` object by ``World.addNode``, ``World.addLink``, ``World.adddemand`` methods, and access to them is provided by ``World``.
+Thus, for basic usage, users do not need to access them directly.
+``RouteChoice`` is for vehicles' route choice behaviors, and basically it is not required to be directly accessed by users.
+``Analyzer`` is for analysis of simulation results and it is basically accessible as ``World.analyzer``. 
 
 .. autosummary::
    :toctree: _autosummary
@@ -37,6 +29,9 @@ Classes (essential)
 
 Classes (support)
 -----------------
+
+These classes are not necessary for the basic usage of UXsim, but useful for specific or advanced analyses.
+
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
@@ -47,5 +42,29 @@ Classes (support)
    uxsim.TaxiHandler.TaxiHandler_nearest
    uxsim.OSMImporter.OSMImporter
    uxsim.ResultGUIViewer.ResultGUIViewer
+
+
+Modules
+-------
+
+These are the module and sub-module of UXsim.
+For basic usage, only ``uxsim`` is required to imported.
+``analyzer``, ``utils``, and ``scenario_reader_writer`` are automatically imported along with ``uxsim``, and access to them is provided by classes in ``uxsim``.
+``analyzer`` is for analysis of simulation results and it is basically accessible via ``World.analyzer``.
+For ``utils`` and ``scenario_reader_writer``, users will not use them directly.
+The other sub-modules may be useful for specific or advanced analyses.
+
+.. autosummary::
+   :toctree: _autosummary
+   :nosignatures:
+
+   uxsim.uxsim
+   uxsim.utils
+   uxsim.analyzer
+   uxsim.scenario_reader_writer
+   uxsim.ResultGUIViewer.ResultGUIViewer
+   uxsim.TaxiHandler.TaxiHandler
+   uxsim.Utilities.Utilities
+   
 
 * :ref:`genindex`

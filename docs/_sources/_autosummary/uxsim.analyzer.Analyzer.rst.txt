@@ -14,6 +14,8 @@
    .. autosummary::
    
       ~Analyzer.__init__
+      ~Analyzer.area_to_pandas
+      ~Analyzer.areas2areas_to_pandas
       ~Analyzer.basic_analysis
       ~Analyzer.basic_to_pandas
       ~Analyzer.comp_route_travel_time
@@ -43,6 +45,7 @@
       ~Analyzer.time_space_diagram_density
       ~Analyzer.time_space_diagram_traj
       ~Analyzer.time_space_diagram_traj_links
+      ~Analyzer.vehicle_groups_to_pandas
       ~Analyzer.vehicle_trip_to_pandas
       ~Analyzer.vehicles_to_pandas
    

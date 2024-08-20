@@ -233,11 +233,6 @@ gtag('config', 'UA-111714220-1');
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.utils.html">uxsim.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.Link.html">uxsim.Link</a></li>
@@ -250,6 +245,12 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.scenario_reader_writer.html">uxsim.scenario_reader_writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
 </ul>
 </li>
 </ul>
@@ -334,11 +335,12 @@ gtag('config', 'UA-111714220-1');
     <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">links</span></div>
 
 
+
 <div class="viewcode-block" id="enumerate_k_shortest_routes">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.enumerate_k_shortest_routes">[docs]</a>
-<span class="k">def</span> <span class="nf">enumerate_k_shortest_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">l</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">print_stats</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">enumerate_k_shortest_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">l</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">print_stats</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_cost</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Enumerate the k shortest routes between two nodes in a network.</span>
+<span class="sd">    Enumerate the k shortest routes between two nodes in a network. By default, `enumerate_k_shortest_routes(W, &quot;O&quot;, &quot;D&quot;)` returns the shortest path from node &quot;O&quot; to &quot;D&quot; based on the free-flow travel time. </span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -349,16 +351,20 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    target : str | Node</span>
 <span class="sd">        The target node.</span>
 <span class="sd">    k : int</span>
-<span class="sd">        The number of shortest routes to enumerate.</span>
+<span class="sd">        The number of shortest routes to enumerate. Default is 1.</span>
 <span class="sd">    cost_function : function</span>
 <span class="sd">        A link cost function to compute shortest path. The argument is Link object. Default is the free-flow travel time, `lambda l: l.length/l.u`.</span>
 <span class="sd">    print_stats : bool</span>
 <span class="sd">        Print the statistics of the paths.</span>
+<span class="sd">    return_cost : bool</span>
+<span class="sd">        Return the cost of the paths.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    routes : list</span>
-<span class="sd">        A list of k shortest routes. Each route is a list of link names.</span>
+<span class="sd">        A list of k shortest routes. Each route is a list of link names. </span>
+<span class="sd">    costs : list</span>
+<span class="sd">        A list of costs of the routes if return_cost is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
@@ -366,20 +372,85 @@ gtag('config', 'UA-111714220-1');
 
     <span class="n">k_shortest_paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_simple_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">))[:</span><span class="n">k</span><span class="p">]</span>
     <span class="n">routes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">costs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">k_shortest_paths</span><span class="p">:</span>
         <span class="n">route</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
             <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">path</span><span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
                     <span class="n">route</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
 
         <span class="n">path_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:])])</span>
         <span class="k">if</span> <span class="n">print_stats</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route: </span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2">, Cost: </span><span class="si">{</span><span class="n">path_weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+        <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
+        <span class="n">costs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path_weight</span><span class="p">)</span>
     
-    <span class="k">return</span> <span class="n">routes</span></div>
+    <span class="k">if</span> <span class="n">return_cost</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">routes</span><span class="p">,</span> <span class="n">costs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">routes</span></div>
 
+
+
+<div class="viewcode-block" id="enumerate_k_shortest_routes_on_t">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t">[docs]</a>
+<span class="k">def</span> <span class="nf">enumerate_k_shortest_routes_on_t</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">instant_travel_time</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">print_stats</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_cost</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumerate the k shortest routes between two nodes in a network. By default, `enumerate_k_shortest_routes_on_t(W, &quot;O&quot;, &quot;D&quot;, t=t)` returns the shortest path from node &quot;O&quot; to &quot;D&quot; based on instantanious travel time on time t.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : World</span>
+<span class="sd">        The world object containing the network.   </span>
+<span class="sd">    source : str | Node</span>
+<span class="sd">        The source node.</span>
+<span class="sd">    target : str | Node</span>
+<span class="sd">        The target node.</span>
+<span class="sd">    t : float</span>
+<span class="sd">        The time point to compute shortest routes.</span>
+<span class="sd">    k : int</span>
+<span class="sd">        The number of shortest routes to enumerate. Default is 1.</span>
+<span class="sd">    cost_function : function</span>
+<span class="sd">        A link cost function to compute shortest path. The argument is Link object and time t. Default is the instantaneous travel time, `lambda l, t: l.instant_travel_time(t)`.</span>
+<span class="sd">    print_stats : bool</span>
+<span class="sd">        Print the statistics of the paths.</span>
+<span class="sd">    return_cost : bool</span>
+<span class="sd">        Return the cost of the paths.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    routes : list</span>
+<span class="sd">        A list of k shortest routes. Each route is a list of link names. </span>
+<span class="sd">    costs : list</span>
+<span class="sd">        A list of costs of the routes if return_cost is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">cost_function</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span>
+
+    <span class="n">k_shortest_paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_simple_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">))[:</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">routes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">costs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">k_shortest_paths</span><span class="p">:</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">path</span><span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">route</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">path_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:])])</span>
+        <span class="k">if</span> <span class="n">print_stats</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Route: </span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2">, Cost: </span><span class="si">{</span><span class="n">path_weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+        <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
+        <span class="n">costs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path_weight</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">return_cost</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">routes</span><span class="p">,</span> <span class="n">costs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">routes</span></div>
 
 </pre></div>
         </article>

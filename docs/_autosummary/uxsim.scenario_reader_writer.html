@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="uxsim.Utilities.Utilities" href="uxsim.Utilities.Utilities.html" /><link rel="prev" title="uxsim.utils" href="uxsim.utils.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>uxsim.TaxiHandler.TaxiHandler.TaxiHandler - UXsim: Traffic Simulation in Python v1 documentation</title>
+        <title>uxsim.scenario_reader_writer - UXsim: Traffic Simulation in Python v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
@@ -220,7 +220,7 @@ gtag('config', 'UA-111714220-1');
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_01en.html">Step-by-step Tutorial</a></li>
@@ -233,7 +233,7 @@ gtag('config', 'UA-111714220-1');
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Link.html">uxsim.Link</a></li>
@@ -248,7 +248,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.scenario_reader_writer.html">uxsim.scenario_reader_writer</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">uxsim.scenario_reader_writer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
@@ -274,7 +274,7 @@ gtag('config', 'UA-111714220-1');
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/_autosummary/uxsim.TaxiHandler.TaxiHandler.TaxiHandler.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/_autosummary/uxsim.scenario_reader_writer.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -294,123 +294,107 @@ gtag('config', 'UA-111714220-1');
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="uxsim-taxihandler-taxihandler-taxihandler">
-<h1>uxsim.TaxiHandler.TaxiHandler.TaxiHandler<a class="headerlink" href="#uxsim-taxihandler-taxihandler-taxihandler" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.TaxiHandler.TaxiHandler.</span></span><span class="sig-name descname"><span class="pre">TaxiHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler" title="Link to this definition">¶</a></dt>
-<dd><p>A base class for handling the assignment of trip requests to taxis (or ridesourcing, ridehailing, ridesharing, robot-taxi, shared mobility, whatever).</p>
-<p>Initializes a taxi handler.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object.</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Initializes a taxi handler.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<p class="rubric">Methods</p>
+          <section id="module-uxsim.scenario_reader_writer">
+<span id="uxsim-scenario-reader-writer"></span><h1>uxsim.scenario_reader_writer<a class="headerlink" href="#module-uxsim.scenario_reader_writer" title="Link to this heading">¶</a></h1>
+<p>Scenario reader and writer using toml.</p>
+<p class="rubric">Functions</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.__init__" title="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W)</p></td>
-<td><p>Initializes a taxi handler.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.scenario_reader_writer.demand_info_record" title="uxsim.scenario_reader_writer.demand_info_record"><code class="xref py py-obj docutils literal notranslate"><span class="pre">demand_info_record</span></code></a>(func)</p></td>
+<td><p>A decorator to record arguments of <cite>World.addVehicle</cite>, <cite>World.adddemand</cite>, etc used in secenario definition in World object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.add_trip_request" title="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.add_trip_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_trip_request</span></code></a>(orig, dest, depart_time[, ...])</p></td>
-<td><p>Adds a trip request to this handler.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.scenario_reader_writer.instance_to_arg_dict" title="uxsim.scenario_reader_writer.instance_to_arg_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">instance_to_arg_dict</span></code></a>(instance)</p></td>
+<td><p>Convert an instance's attributes to a dictionary of constructor arguments.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.assign_taxi" title="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.assign_taxi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_taxi</span></code></a>(vehicle, trip_request)</p></td>
-<td><p>Assigns a trip request to a vehicle.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.scenario_reader_writer.load_scenario" title="uxsim.scenario_reader_writer.load_scenario"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_scenario</span></code></a>(W, fname[, network, demand])</p></td>
+<td><p>Load scenario data from a file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.basic_to_pandas" title="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.basic_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basic_to_pandas</span></code></a>()</p></td>
-<td><p>Converts the basic statistics on taxi travels to a pandas DataFrame.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.compute_stats" title="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.compute_stats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_stats</span></code></a>()</p></td>
-<td><p>Computes basic statistics of the taxi travels.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.get_trip" title="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.get_trip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trip</span></code></a>(tr)</p></td>
-<td><p>Get a TripRequest instance by name or object.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.print_stats" title="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.print_stats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_stats</span></code></a>()</p></td>
-<td><p>Prints the basic statistics.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.trips_to_pandas" title="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.trips_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trips_to_pandas</span></code></a>()</p></td>
-<td><p>Converts the trips and their travel records to a pandas DataFrame.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.scenario_reader_writer.save_scenario" title="uxsim.scenario_reader_writer.save_scenario"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_scenario</span></code></a>(W, fname[, network, demand])</p></td>
+<td><p>Save scenario data to a file.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.add_trip_request">
-<span class="sig-name descname"><span class="pre">add_trip_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depart_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.add_trip_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.add_trip_request" title="Link to this definition">¶</a></dt>
-<dd><p>Adds a trip request to this handler.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.scenario_reader_writer.demand_info_record">
+<span class="sig-prename descclassname"><span class="pre">uxsim.scenario_reader_writer.</span></span><span class="sig-name descname"><span class="pre">demand_info_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/scenario_reader_writer.html#demand_info_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.scenario_reader_writer.demand_info_record" title="Link to this definition">¶</a></dt>
+<dd><p>A decorator to record arguments of <cite>World.addVehicle</cite>, <cite>World.adddemand</cite>, etc used in secenario definition in World object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.scenario_reader_writer.instance_to_arg_dict">
+<span class="sig-prename descclassname"><span class="pre">uxsim.scenario_reader_writer.</span></span><span class="sig-name descname"><span class="pre">instance_to_arg_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/scenario_reader_writer.html#instance_to_arg_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.scenario_reader_writer.instance_to_arg_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Convert an instance’s attributes to a dictionary of constructor arguments.</p>
+<p>This function inspects an object instance and creates a dictionary of
+arguments that could be used to recreate the instance. It uses the
+signature of the class’s __init__ method to determine which attributes
+to include.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>instance</strong> (<em>object</em>) – The instance to convert to a dictionary of arguments.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary where keys are parameter names and values are the
+corresponding attribute values from the instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Parameters with default values are omitted if the instance’s value
+matches the default.</p></li>
+<li><p>The ‘self’ parameter is always ignored.</p></li>
+<li><p>The ‘W’ parameter, if present, is removed from the resulting dictionary.</p></li>
+<li><p>Attributes of type ‘Node’ or ‘Link’ are replaced with their ‘name’ attribute.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.scenario_reader_writer.load_scenario">
+<span class="sig-prename descclassname"><span class="pre">uxsim.scenario_reader_writer.</span></span><span class="sig-name descname"><span class="pre">load_scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/scenario_reader_writer.html#load_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.scenario_reader_writer.load_scenario" title="Link to this definition">¶</a></dt>
+<dd><p>Load scenario data from a file.</p>
+<p>This function loads various components of a scenario, including meta data,
+network information (nodes and links), and demand information, from a file
+created by the save_scenario function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The origin node of the trip request.</p></li>
-<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node of the trip request.</p></li>
-<li><p><strong>depart_time</strong> (<em>float</em>) – The time at which the trip request departs.</p></li>
-<li><p><strong>name</strong> (<em>any</em><em>, </em><em>optional</em>) – The name of the trip request. Default is None.</p></li>
-<li><p><strong>attribute</strong> (<em>any</em>) – An optional attribute of the trip request. This can be used to store any information by users’ need.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world to which the scenario data will be loaded.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – The file name or path from which the scenario data will be loaded.</p></li>
+<li><p><strong>network</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, load network information (nodes and links). Default is True.</p></li>
+<li><p><strong>demand</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, load demand information. Default is True.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.assign_taxi">
-<span class="sig-name descname"><span class="pre">assign_taxi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trip_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.assign_taxi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.assign_taxi" title="Link to this definition">¶</a></dt>
-<dd><p>Assigns a trip request to a vehicle.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.scenario_reader_writer.save_scenario">
+<span class="sig-prename descclassname"><span class="pre">uxsim.scenario_reader_writer.</span></span><span class="sig-name descname"><span class="pre">save_scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/scenario_reader_writer.html#save_scenario"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.scenario_reader_writer.save_scenario" title="Link to this definition">¶</a></dt>
+<dd><p>Save scenario data to a file.</p>
+<p>This function saves various components of a scenario, including meta data,
+network information (nodes and links), and demand information, to a file
+using pickle serialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="uxsim.Vehicle.html#uxsim.Vehicle" title="uxsim.Vehicle"><em>Vehicle</em></a>) – The vehicle to assign the trip request to.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world to be saved</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – The file name or path where the scenario data will be saved.</p></li>
+<li><p><strong>network</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, save network information (nodes and links). Default is True.</p></li>
+<li><p><strong>demand</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, save demand information. Default is True.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.basic_to_pandas">
-<span class="sig-name descname"><span class="pre">basic_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.basic_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.basic_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the basic statistics on taxi travels to a pandas DataFrame.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.compute_stats">
-<span class="sig-name descname"><span class="pre">compute_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.compute_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.compute_stats" title="Link to this definition">¶</a></dt>
-<dd><p>Computes basic statistics of the taxi travels.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.get_trip">
-<span class="sig-name descname"><span class="pre">get_trip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.get_trip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.get_trip" title="Link to this definition">¶</a></dt>
-<dd><p>Get a TripRequest instance by name or object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tr</strong> (<em>any</em><em> | </em><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TaxiHandler.TripRequest" title="uxsim.TaxiHandler.TaxiHandler.TripRequest"><em>TripRequest</em></a>) – The name or object of the trip request.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.print_stats">
-<span class="sig-name descname"><span class="pre">print_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.print_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.print_stats" title="Link to this definition">¶</a></dt>
-<dd><p>Prints the basic statistics.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="uxsim.TaxiHandler.TaxiHandler.TaxiHandler.trips_to_pandas">
-<span class="sig-name descname"><span class="pre">trips_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/TaxiHandler/TaxiHandler.html#TaxiHandler.trips_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.trips_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Converts the trips and their travel records to a pandas DataFrame.</p>
-</dd></dl>
-
+<p class="rubric">Notes</p>
+<p>The function uses the pickle module to serialize the data. The saved file
+will be in binary format.</p>
+<p>The saved data structure is a dictionary containing:
+- ‘meta_data’: Meta data from W.meta_data
+- ‘Nodes’ and ‘Links’: Network information (if network=True)
+- Demand information from W.demand_info (if demand=True)</p>
 </dd></dl>
 
 </section>
@@ -420,8 +404,26 @@ gtag('config', 'UA-111714220-1');
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="uxsim.Utilities.Utilities.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">uxsim.Utilities.Utilities</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="uxsim.utils.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">uxsim.utils</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -452,18 +454,11 @@ gtag('config', 'UA-111714220-1');
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">uxsim.TaxiHandler.TaxiHandler.TaxiHandler</a><ul>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler"><code class="docutils literal notranslate"><span class="pre">TaxiHandler</span></code></a><ul>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.__init__"><code class="docutils literal notranslate"><span class="pre">TaxiHandler.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.add_trip_request"><code class="docutils literal notranslate"><span class="pre">TaxiHandler.add_trip_request()</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.assign_taxi"><code class="docutils literal notranslate"><span class="pre">TaxiHandler.assign_taxi()</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.basic_to_pandas"><code class="docutils literal notranslate"><span class="pre">TaxiHandler.basic_to_pandas()</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.compute_stats"><code class="docutils literal notranslate"><span class="pre">TaxiHandler.compute_stats()</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.get_trip"><code class="docutils literal notranslate"><span class="pre">TaxiHandler.get_trip()</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.print_stats"><code class="docutils literal notranslate"><span class="pre">TaxiHandler.print_stats()</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.TaxiHandler.TaxiHandler.TaxiHandler.trips_to_pandas"><code class="docutils literal notranslate"><span class="pre">TaxiHandler.trips_to_pandas()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">uxsim.scenario_reader_writer</a><ul>
+<li><a class="reference internal" href="#uxsim.scenario_reader_writer.demand_info_record"><code class="docutils literal notranslate"><span class="pre">demand_info_record()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.scenario_reader_writer.instance_to_arg_dict"><code class="docutils literal notranslate"><span class="pre">instance_to_arg_dict()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.scenario_reader_writer.load_scenario"><code class="docutils literal notranslate"><span class="pre">load_scenario()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.scenario_reader_writer.save_scenario"><code class="docutils literal notranslate"><span class="pre">save_scenario()</span></code></a></li>
 </ul>
 </li>
 </ul>
