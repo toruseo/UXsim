@@ -1437,11 +1437,11 @@ class Analyzer:
         
         s.df_areas2areas = pd.DataFrame(out[1:], columns=out[0])
         return s.df_areas2areas
-    
+
     def area_to_pandas(s, areas, area_names=None, border_include=True):
         """
         Compute traffic stats in area and return as pandas.DataFrame.
-        
+
         Parameters
         ----------
         areas : list
@@ -1450,60 +1450,59 @@ class Analyzer:
             The list of names of areas.
         border_include : bool, optional
             If set to True, the links on the border of the area are included in the analysis. Default is True.
-            
+
         Returns
         -------
         pd.DataFrame
         """
+
+        # Precompute DataFrames
+        df_links = s.W.analyzer.link_to_pandas()
+        df_veh_link = s.W.analyzer.vehicles_to_pandas().drop_duplicates(subset=['name', 'link'])
+
+        # Prepare areas as sets for fast lookup
+        areas_set = [{s.W.get_node(n).name for n in area} for area in areas]
+
+        # Initialize result lists
         n_links_rec = []
         traffic_volume_rec = []
         vehicles_remain_rec = []
         total_travel_time_rec = []
         average_delay_rec = []
 
-
-        for i,area in enumerate(areas):
-            area = {s.W.get_node(n).name:0 for n in area}
-
-            df = s.W.analyzer.link_to_pandas()
-            df_veh_link = s.W.analyzer.vehicles_to_pandas().drop_duplicates(subset=['name', 'link'])
-
-            n_links = 0
-            traffic_volume = 0
-            vehicles_remain = 0
-            total_travel_time = 0
-            total_free_time = 0
-            average_delay = 0
-
+        # Vectorized approach to process all areas at once
+        for area_set in areas_set:
             if border_include:
-                rows = df["start_node"].isin(area) | df["end_node"].isin(area)
+                rows = df_links["start_node"].isin(area_set) | df_links["end_node"].isin(area_set)
             else:
-                rows = df["start_node"].isin(area) & df["end_node"].isin(area)
-            links = {l:0 for l in df["link"][rows].values}
+                rows = df_links["start_node"].isin(area_set) & df_links["end_node"].isin(area_set)
 
-            n_links = sum(rows)
-            traffic_volume = df_veh_link[df_veh_link["link"].isin(links)].drop_duplicates(subset="name").shape[0]*s.W.DELTAN
-            vehicles_remain = df["vehicles_remain"][rows].sum()
+            links = df_links.loc[rows, "link"].unique()
+
+            n_links = links.size
+            traffic_volume = df_veh_link[df_veh_link["link"].isin(links)]["name"].nunique() * s.W.DELTAN
+            vehicles_remain = df_links.loc[rows, "vehicles_remain"].sum()
+
             if traffic_volume > 0:
-                total_travel_time = (df["average_travel_time"][rows] * (df["traffic_volume"][rows]-df["vehicles_remain"][rows])).values.sum()
-                total_free_time = (df["free_travel_time"][rows] * (df["traffic_volume"][rows]-df["vehicles_remain"][rows])).values.sum()
-                average_delay = total_travel_time/total_free_time - 1
-                if average_delay < 0:
-                    average_delay = 0
+                traffic_volume_rows = (
+                            df_links.loc[rows, "traffic_volume"] - df_links.loc[rows, "vehicles_remain"]).values
+                total_travel_time = np.sum(df_links.loc[rows, "average_travel_time"].values * traffic_volume_rows)
+                total_free_time = np.sum(df_links.loc[rows, "free_travel_time"].values * traffic_volume_rows)
+                average_delay = max(total_travel_time / total_free_time - 1, 0)
             else:
                 total_travel_time = 0
                 total_free_time = 0
                 average_delay = np.nan
 
-            #print(f"{n_links=}, {traffic_volume=}, {vehicles_remain=}, {total_travel_time=}, {total_free_time=}, {average_delay=}")
-
+            # Append the results to lists
             n_links_rec.append(n_links)
             traffic_volume_rec.append(traffic_volume)
             vehicles_remain_rec.append(vehicles_remain)
             total_travel_time_rec.append(total_travel_time)
             average_delay_rec.append(average_delay)
 
-        df = pd.DataFrame({
+        # Create DataFrame from the results
+        df_result = pd.DataFrame({
             "area": area_names,
             "n_links": n_links_rec,
             "traffic_volume": traffic_volume_rec,
@@ -1511,10 +1510,10 @@ class Analyzer:
             "total_travel_time": total_travel_time_rec,
             "average_delay": average_delay_rec
         })
-        s.df_area = df
-        
+
+        s.df_area = df_result
         return s.df_area
-                       
+
     def vehicle_groups_to_pandas(s, groups, group_names=None):
         """
         Computes the stats of vehicle group and return as a pandas DataFrame.
