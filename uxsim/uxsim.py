@@ -217,7 +217,7 @@ class Node:
 
                         outlink.vehicles.append(veh)
 
-                        outlink.cum_arrival[-1] += s.W.DELTAN
+                        outlink.cum_arrival[-1][1] += s.W.DELTAN
                         veh.link_arrival_time = s.W.T*s.W.DELTAT
 
                         outlink.capacity_in_remain -= s.W.DELTAN
@@ -272,8 +272,8 @@ class Node:
                 inlink = veh.link
 
                 #累積台数関連更新
-                inlink.cum_departure[-1] += s.W.DELTAN
-                outlink.cum_arrival[-1] += s.W.DELTAN
+                inlink.cum_arrival[-1][1] += s.W.DELTAN
+                outlink.cum_arrival[-1][1] += s.W.DELTAN
                 inlink.traveltime_actual[int(veh.link_arrival_time/s.W.DELTAT):] = s.W.T*s.W.DELTAT - veh.link_arrival_time #自分の流入時刻より後の実旅行時間も今の実旅行時間で仮決め．後に流出した車両が上書きする前提
 
                 veh.link_arrival_time = s.W.T*s.W.DELTAT
@@ -611,16 +611,21 @@ class Link:
 
     def update(s):
         """
-        Make necessary updates when the timestep is incremented.
+        Make necessary updates when the timestep is incremented, including time-based accumulations.
         """
         s.in_out_flow_constraint()
 
+        # Update instantaneous travel time and cumulative counts
         s.set_traveltime_instant()
-        s.cum_arrival.append(0)
-        s.cum_departure.append(0)
+
+        current_time = s.W.T * s.W.DELTAT
+        current_time = s.W.T * s.W.DELTAT
+        s.cum_arrival.append([current_time, 0])  # Store time alongside cumulative arrivals
+        s.cum_departure.append([current_time, 0])  # Store time alongside cumulative departures
+
         if len(s.cum_arrival) > 1:
-            s.cum_arrival[-1] = s.cum_arrival[-2]
-            s.cum_departure[-1] = s.cum_departure[-2]
+            s.cum_arrival[-1][1] = s.cum_arrival[-2][1]
+            s.cum_departure[-1][1] = s.cum_departure[-2][1]
 
         if s.user_function is not None:
             s.user_function(s)
@@ -1063,7 +1068,7 @@ class Vehicle:
         """
         s.state = "end"
 
-        s.link.cum_departure[-1] += s.W.DELTAN
+        s.link.cum_departure[-1][1] += s.W.DELTAN
         s.link.traveltime_actual[int(s.link_arrival_time/s.W.DELTAT):] = (s.W.T+1)*s.W.DELTAT - s.link_arrival_time  #端部の挙動改善 todo: 精査
 
         if s.follower != None:

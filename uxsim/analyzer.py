@@ -175,12 +175,23 @@ class Analyzer:
         s.linkc_remain = ddict(lambda:0)
 
         for l in s.W.LINKS:
-            s.linkc_volume[l] = l.cum_departure[-1]
-            s.linkc_remain[l] = l.cum_arrival[-1]-l.cum_departure[-1]
-            s.linkc_tt_free[l] = l.length/l.u
+            # Access the cumulative counts (second element in the lists)
+            cum_departure_count = l.cum_departure[-1][1]
+            cum_arrival_count = l.cum_arrival[-1][1]
+
+            # Store the departure count as the volume
+            s.linkc_volume[l] = cum_departure_count
+
+            # Remaining vehicles on the link is the difference between arrival and departure counts
+            s.linkc_remain[l] = cum_arrival_count - cum_departure_count
+
+            # Free-flow travel time (distance / free speed)
+            s.linkc_tt_free[l] = l.length / l.u
+
+            # If there are any departed vehicles, compute average and std of travel times
             if s.linkc_volume[l]:
-                s.linkc_tt_ave[l] = np.average([t for t in l.traveltime_actual if t>0])
-                s.linkc_tt_std[l] = np.std([t for t in l.traveltime_actual if t>0])
+                s.linkc_tt_ave[l] = np.average([t for t in l.traveltime_actual if t > 0])
+                s.linkc_tt_std[l] = np.std([t for t in l.traveltime_actual if t > 0])
 
     def compute_accurate_traj(s):
         """
@@ -1195,10 +1206,14 @@ class Analyzer:
         else:
             plt.close("all")
 
-
-    def vehicles_to_pandas(s):
+    def vehicles_to_pandas(s, t_seconds=None):
         """
-        Compute the detailed vehicle travel logs and return as a pandas DataFrame.
+        Convert detailed vehicle travel logs to a pandas DataFrame, with optional time filtering.
+
+        Parameters
+        ----------
+        t_seconds : float, optional
+            If provided, filters vehicle logs from the last t_seconds of simulation time.
 
         Returns
         -------
@@ -1216,29 +1231,31 @@ class Analyzer:
             - 'v': the speed of the vehicle.
         """
         if s.W.vehicle_logging_timestep_interval != 1:
-            warnings.warn("vehicle_logging_timestep_interval is not 1. The output data is not exactly accurate.", LoggingWarning)
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The output data is not exactly accurate.",
+                          LoggingWarning)
 
-        if s.flag_pandas_convert == 0:
-            out = [["name", "dn", "orig", "dest", "t", "link", "x", "s", "v"]]
-            for veh in s.W.VEHICLES.values():
-                for i in range(len(veh.log_t)):
-                    if veh.log_state[i] in ("wait", "run", "end", "abort"):
-                        if veh.log_link[i] != -1:
-                            linkname = veh.log_link[i].name
-                        else:
-                            if veh.log_state[i] == "wait":
-                                linkname = "waiting_at_origin_node"
-                            elif veh.log_state[i] == "abort":
-                                linkname = "trip_aborted"
-                            else:
-                                linkname = "trip_end"
-                        veh_dest_name = None
-                        if veh.dest != None:
-                            veh_dest_name = veh.dest.name
-                        out.append([veh.name, s.W.DELTAN, veh.orig.name, veh_dest_name, veh.log_t[i], linkname, veh.log_x[i], veh.log_s[i], veh.log_v[i]])
-            s.df_vehicles = pd.DataFrame(out[1:], columns=out[0])
+        # Base DataFrame creation
+        out = [["name", "dn", "orig", "dest", "t", "link", "x", "s", "v"]]
+        current_time = s.W.T * s.W.DELTAT
 
-            s.flag_pandas_convert = 1
+        for veh in s.W.VEHICLES.values():
+            for i in range(len(veh.log_t)):
+                if veh.log_state[i] in ("wait", "run", "end", "abort"):
+                    linkname = veh.log_link[i].name if veh.log_link[i] != -1 else "trip_end"
+                    veh_dest_name = veh.dest.name if veh.dest is not None else None
+
+                    out.append(
+                        [veh.name, s.W.DELTAN, veh.orig.name, veh_dest_name, veh.log_t[i], linkname, veh.log_x[i],
+                         veh.log_s[i], veh.log_v[i]])
+
+        # Convert to DataFrame
+        s.df_vehicles = pd.DataFrame(out[1:], columns=out[0])
+
+        # Apply time filtering
+        if t_seconds is not None:
+            start_time = current_time - t_seconds
+            s.df_vehicles = s.df_vehicles[s.df_vehicles['t'] >= start_time]
+
         return s.df_vehicles
 
     def log_vehicles_to_pandas(s):
@@ -1438,7 +1455,7 @@ class Analyzer:
         s.df_areas2areas = pd.DataFrame(out[1:], columns=out[0])
         return s.df_areas2areas
 
-    def area_to_pandas(s, areas, area_names=None, border_include=True):
+    def area_to_pandas(s, areas, area_names=None, border_include=True, t_seconds=None):
         """
         Compute traffic stats in area and return as pandas.DataFrame.
 
@@ -1450,6 +1467,8 @@ class Analyzer:
             The list of names of areas.
         border_include : bool, optional
             If set to True, the links on the border of the area are included in the analysis. Default is True.
+        t_seconds : int, optional
+            The time window (in seconds) to include data from the last `t_seconds`. Default is None (use all available data).
 
         Returns
         -------
@@ -1457,8 +1476,17 @@ class Analyzer:
         """
 
         # Precompute DataFrames
-        df_links = s.W.analyzer.link_to_pandas()
-        df_veh_link = s.W.analyzer.vehicles_to_pandas().drop_duplicates(subset=['name', 'link'])
+        df_links = s.W.analyzer.link_to_pandas(t_seconds=t_seconds)
+        df_veh_link = s.W.analyzer.vehicles_to_pandas(t_seconds=t_seconds).drop_duplicates(subset=['name', 'link'])
+
+        # Filter data based on t_seconds if provided
+        if t_seconds is not None:
+            current_time = s.W.T * s.W.DELTAT  # Current simulation time in seconds
+            time_threshold = current_time - t_seconds
+
+            # Filter df_links and df_veh_link based on the time window
+            df_links = df_links[df_links['t'] >= time_threshold]
+            df_veh_link = df_veh_link[df_veh_link['t'] >= time_threshold]
 
         # Prepare areas as sets for fast lookup
         areas_set = [{s.W.get_node(n).name for n in area} for area in areas]
@@ -1647,9 +1675,15 @@ class Analyzer:
         s.df_mfd = pd.DataFrame(out[1:], columns=out[0])
         return s.df_mfd
 
-    def link_to_pandas(s):
+    def link_to_pandas(s, t_seconds=None):
         """
-        Converts the link-level analysis results to a pandas DataFrame.
+        Converts the link-level analysis results to a pandas DataFrame and optionally filters
+        data from the past t_seconds of simulation time.
+
+        Parameters
+        ----------
+        t_seconds : float, optional
+            If provided, filters data from the last t_seconds of simulation time.
 
         Returns
         -------
@@ -1657,10 +1691,33 @@ class Analyzer:
         """
         s.link_analysis_coarse()
 
-        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time", "length"]]
+        # Create the base DataFrame with additional time column
+        out = [["t", "link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time",
+                "average_travel_time", "stddiv_travel_time", "length"]]
+        current_time = s.W.T * s.W.DELTAT  # Current simulation time in seconds
+
         for l in s.W.LINKS:
-            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l], l.length])
+            out.append([
+                current_time,  # Add the time column
+                l.name,
+                l.start_node.name,
+                l.end_node.name,
+                s.linkc_volume[l],
+                s.linkc_remain[l],
+                s.linkc_tt_free[l],
+                s.linkc_tt_ave[l],
+                s.linkc_tt_std[l],
+                l.length
+            ])
+
+        # Convert to DataFrame
         s.df_linkc = pd.DataFrame(out[1:], columns=out[0])
+
+        # Apply time filtering if t_seconds is provided
+        if t_seconds is not None:
+            start_time = current_time - t_seconds
+            s.df_linkc = s.df_linkc[s.df_linkc['t'] >= start_time]
+
         return s.df_linkc
 
     def link_traffic_state_to_pandas(s):
