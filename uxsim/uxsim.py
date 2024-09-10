@@ -272,7 +272,7 @@ class Node:
                 inlink = veh.link
 
                 #累積台数関連更新
-                inlink.cum_arrival[-1][1] += s.W.DELTAN
+                inlink.cum_departure[-1][1] += s.W.DELTAN
                 outlink.cum_arrival[-1][1] += s.W.DELTAN
                 inlink.traveltime_actual[int(veh.link_arrival_time/s.W.DELTAT):] = s.W.T*s.W.DELTAT - veh.link_arrival_time #自分の流入時刻より後の実旅行時間も今の実旅行時間で仮決め．後に流出した車両が上書きする前提
 
