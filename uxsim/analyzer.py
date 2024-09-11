@@ -1469,6 +1469,8 @@ class Analyzer:
         vehicles_remain_rec = []
         total_travel_time_rec = []
         average_delay_rec = []
+        average_speed_rec = []
+        vehicle_density_rec = []
 
         # Vectorized approach to process all areas at once
         for area_set in areas_set:
@@ -1489,10 +1491,20 @@ class Analyzer:
                 total_travel_time = np.sum(df_links.loc[rows, "average_travel_time"].values * traffic_volume_rows)
                 total_free_time = np.sum(df_links.loc[rows, "free_travel_time"].values * traffic_volume_rows)
                 average_delay = max(total_travel_time / total_free_time - 1, 0)
+
+                # Average speed calculation: total distance / total time
+                total_distance = np.sum(df_links.loc[rows, "length"].values * traffic_volume_rows)
+                average_speed = total_distance / total_travel_time if total_travel_time > 0 else np.nan
+
+                # Vehicle density calculation: total number of vehicles / total link length
+                total_link_length = df_links.loc[rows, "length"].sum()
+                vehicle_density = traffic_volume / total_link_length if total_link_length > 0 else np.nan
             else:
                 total_travel_time = 0
                 total_free_time = 0
                 average_delay = np.nan
+                average_speed = np.nan
+                vehicle_density = np.nan
 
             # Append the results to lists
             n_links_rec.append(n_links)
@@ -1500,6 +1512,8 @@ class Analyzer:
             vehicles_remain_rec.append(vehicles_remain)
             total_travel_time_rec.append(total_travel_time)
             average_delay_rec.append(average_delay)
+            average_speed_rec.append(average_speed)
+            vehicle_density_rec.append(vehicle_density)
 
         # Create DataFrame from the results
         df_result = pd.DataFrame({
@@ -1508,7 +1522,9 @@ class Analyzer:
             "traffic_volume": traffic_volume_rec,
             "vehicles_remain": vehicles_remain_rec,
             "total_travel_time": total_travel_time_rec,
-            "average_delay": average_delay_rec
+            "average_delay": average_delay_rec,
+            "average_speed": average_speed_rec,
+            "vehicle_density": vehicle_density_rec,
         })
 
         s.df_area = df_result
@@ -1641,9 +1657,9 @@ class Analyzer:
         """
         s.link_analysis_coarse()
 
-        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time"]]
+        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time", "length"]]
         for l in s.W.LINKS:
-            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l]])
+            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l], l.length])
         s.df_linkc = pd.DataFrame(out[1:], columns=out[0])
         return s.df_linkc
 
