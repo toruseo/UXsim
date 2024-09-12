@@ -1,5 +1,5 @@
 from uxsim import *
-import pickle
+import dill as pickle
 
 
 # Simulation definition
