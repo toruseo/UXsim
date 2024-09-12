@@ -12,12 +12,12 @@ def world_user_function(W):
             print("World state:", W.TIME)
 
 def node_user_function(node):
-    #print the numnber of incoming vehicles to node
+    #print the number of incoming vehicles to node
     if node.W.T%20 == 0:
         print(f"Node {node.name} state:", len(node.incoming_vehicles))
 
 def link_user_function(link):
-    #print the numnber of vehicles on link and their average speed, and record the speed
+    #print the number of vehicles on link and their average speed, and record the speed
     if link.W.T%20 == 0:
         if len(link.vehicles):
             print(f"Link {link.name} state:", len(link.vehicles), np.average([veh.v for veh in link.vehicles]))
@@ -25,14 +25,13 @@ def link_user_function(link):
         else:
             print(f"Link {link.name} state:", len(link.vehicles))
 
-
 def veh_user_function(veh):
-    #print when the vehicle stated or ended its trip
-    if veh.state != "home" and veh.user_attrubute["state_old"] == "home":
+    #print when the vehicle started or ended its trip
+    if veh.state != "home" and veh.user_attribute["state_old"] == "home":
         print(f"Vehicle {veh.name} started trip on time {veh.W.TIME}")        
-    if veh.state in ["end", "abort"] and veh.user_attrubute["state_old"] not in ["end", "abort"]:
+    if veh.state in ["end", "abort"] and veh.user_attribute["state_old"] not in ["end", "abort"]:
         print(f"Vehicle {veh.name} ended trip on time {veh.W.TIME}")
-    veh.user_attrubute["state_old"] = veh.state
+    veh.user_attribute["state_old"] = veh.state
 
 # define uxsim scenario
 
@@ -55,9 +54,9 @@ W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_l
 W.adddemand("orig1", "dest", 0, 1000, 0.45)
 W.adddemand("orig2", "dest", 400, 1000, 0.6)
 
-W.VEHICLES["10"].user_attrubute = {"state_old":None}
+W.VEHICLES["10"].user_attribute = {"state_old":None}
 W.VEHICLES["10"].user_function = veh_user_function
-W.VEHICLES["120"].user_attrubute = {"state_old":None}
+W.VEHICLES["120"].user_attribute = {"state_old":None}
 W.VEHICLES["120"].user_function = veh_user_function
 
 W.exec_simulation()
