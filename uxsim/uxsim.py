@@ -1561,7 +1561,9 @@ class World:
         W.EULAR_DT = eular_dt     #time discretization size for Eular-type data (aggregated traffic state)
 
         W.DELTAT = W.REACTION_TIME*W.DELTAN
-        W.DELTAT_ROUTE = int(W.DUO_UPDATE_TIME/W.DELTAT)
+        W.DELTAT_ROUTE = int(W.DUO_UPDATE_TIME/W.DELTAT) #this unit is timestep
+        if W.DELTAT_ROUTE == 0:
+            W.DELTAT_ROUTE = 1
 
         ## data storage
         W.VEHICLES = OrderedDict()            #home, wait, run, end
@@ -2011,8 +2013,6 @@ class World:
         if end_ts > W.TSIZE:
             end_ts = W.TSIZE
 
-        #W.print(f"simulating: from t = {start_ts*W.DELTAT} to {(end_ts-1)*W.DELTAT} s...")
-
         if start_ts == end_ts == W.TSIZE:
             if W.print_mode and W.show_progress:
                 W.analyzer.show_simulation_progress()
@@ -2022,7 +2022,9 @@ class World:
             raise Exception("exec_simulation error: Simulation duration is negative. Check until_t or duration_t")
 
         #the main loop
-        for W.T in range(start_ts, end_ts):
+        #print("preping:", W.T, start_ts, end_ts, W.check_simulation_ongoing())
+        for W.T in range(start_ts, end_ts+1):
+            #print("execing:", W.T, start_ts, end_ts, W.check_simulation_ongoing())
             if W.T == 0:
                 W.print("      time| # of vehicles| ave speed| computation time", flush=True)
                 W.analyzer.show_simulation_progress()
@@ -2048,7 +2050,6 @@ class World:
                     W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
                 W.ROUTECHOICE.homogeneous_DUO_update()
             else:
-                # old rule, keeping for compatibility
                 if W.T % W.DELTAT_ROUTE == 0:
                     W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
                     W.ROUTECHOICE.homogeneous_DUO_update()
@@ -2059,16 +2060,21 @@ class World:
 
             if W.print_mode and W.show_progress and W.T%W.show_progress_deltat_timestep == 0 and W.T > 0:
                 W.analyzer.show_simulation_progress()
-                
+            
             W.user_function(W)
 
-        if W.T == W.TSIZE-1:
+            if W.T == W.TSIZE-1:
+                #print("break")
+                break
+
+        W.T += 1
+
+        if W.T == W.TSIZE:
             if W.print_mode and W.show_progress:
                 W.analyzer.show_simulation_progress()
             W.simulation_terminated()
             return 1
-
-        W.T += 1
+        
         return 0 #simulation not yet finished
 
     def check_simulation_ongoing(W):
@@ -2082,7 +2088,7 @@ class World:
         """
         if W.finalized == 0:
             return 1
-        return W.T < W.TSIZE-1
+        return W.T <= W.TSIZE-1
 
     def simulation_terminated(W):
         """

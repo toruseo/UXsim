@@ -941,3 +941,120 @@ def test_KW_theory_cumulative_curves_and_travel_time():
 @pytest.mark.flaky(reruns=2)
 def test_KW_theory_cumulative_curves_and_travel_time_deltan1():
     rigorous_verification_of_KW_theory_cumulative_curves_and_travel_time(1)
+
+def test_iterative_exec_rigorous():
+    for _ in range(20):
+        W = World(
+            name="",
+            deltan=10,
+            tmax=100,
+            duo_update_time=10,
+            print_mode=0, save_mode=0, show_mode=0,
+            random_seed=42,
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("dest", 2, 1)
+        W.addLink("link1", "orig", "dest", length=10000, free_flow_speed=20, number_of_lanes=1)
+        W.addVehicle("orig", "dest", 0)
+        W.addVehicle("orig", "dest", 50)
+        W.addVehicle("orig", "dest", 100)
+
+        #print("W.T, start_t, end_t")
+        print("W.T", "\t", "W.TIME", "duration_t", "ongoing")
+        
+        if random.random() < 0.5:
+            maxt = 30
+        else:
+            maxt = 200
+
+        while W.check_simulation_ongoing():
+            duration_t = random.randint(0, maxt)
+            if hasattr(W, "T"):
+                print(W.T, "\t", W.TIME, "\t", duration_t, "\t", W.check_simulation_ongoing())
+            else:
+                print(0, "\t", 0, "\t", duration_t, "\t", W.check_simulation_ongoing())
+            W.exec_simulation(duration_t=duration_t)
+        else:
+            print(W.T, "\t","\t",  "\t", W.check_simulation_ongoing())
+
+
+        if  hasattr(W.analyzer, "total_distance_traveled"):
+            print("SUCCESS TO TERMINATE")
+            W.analyzer.print_simple_stats(force_print=True)
+        else:
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            assert False
+        print_columns(["log_t"]+W.VEHICLES["0"].log_t, ["log_x"]+W.VEHICLES["0"].log_x, ["log_v"]+W.VEHICLES["0"].log_v)
+        print("final_x", W.VEHICLES["0"].x)
+        assert W.VEHICLES["0"].log_t[-1] == 90
+        assert W.VEHICLES["0"].log_x[-1] == 1600
+        assert W.VEHICLES["0"].x == 1800
+        """
+        This simulation runs until 100 sec with deltat=10 sec.
+        Thus, the final time step start from 90 sec and simulate the duration of [90 sec, 100 sec).
+        The last recorded vehicle position in `log_x` is 1600 m that is the position on 90 sec ((90 sec - 10 sec) * 20 m/sec) where the departure time was 10 sec.
+        The last position `x` is 1800 m that is the "to-be" position on time 100 sec.
+        """
+
+        print()
+
+
+def test_iterative_exec_rigorous_random_size():
+    for _ in range(100):
+        deltan = random.randint(1,10)
+        tmax = random.randint(50,150)
+        link_u = random.randint(10,30)
+        W = World(
+            name="",
+            deltan=deltan,
+            tmax=tmax,
+            duo_update_time=10,
+            print_mode=1, save_mode=0, show_mode=0,
+            random_seed=42,
+        )
+        if not tmax//W.DELTAT-2 > 1:
+            continue
+
+        W.addNode("orig", 0, 0)
+        W.addNode("dest", 2, 1)
+        W.addLink("link1", "orig", "dest", length=10000, free_flow_speed=link_u, number_of_lanes=1)
+        W.addVehicle("orig", "dest", 0)
+        W.addVehicle("orig", "dest", 50)
+        W.addVehicle("orig", "dest", 100)
+
+        #print("W.T, start_t, end_t")
+        # print("W.T", "\t", "W.TIME", "duration_t", "ongoing")
+        
+        if random.random() < 0.5:
+            maxt = 30
+        else:
+            maxt = 200
+
+        while W.check_simulation_ongoing():
+            duration_t = random.randint(0, maxt)
+            # if hasattr(W, "T"):
+            #     print(W.T, "\t", W.TIME, "\t", duration_t, "\t", W.check_simulation_ongoing())
+            # else:
+            #     print(0, "\t", 0, "\t", duration_t, "\t", W.check_simulation_ongoing())
+            W.exec_simulation(duration_t=duration_t)
+        # else:
+        #     print(W.T, "\t","\t",  "\t", W.check_simulation_ongoing())
+
+        if  hasattr(W.analyzer, "total_distance_traveled"):
+            print("SUCCESS TO TERMINATE")
+            W.analyzer.print_simple_stats(force_print=True)
+        else:
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            assert False
+        print_columns(["log_t"]+W.VEHICLES["0"].log_t, ["log_x"]+W.VEHICLES["0"].log_x, ["log_v"]+W.VEHICLES["0"].log_v)
+        print("final_x", W.VEHICLES["0"].x)
+        assert W.VEHICLES["0"].log_t[-1] == (tmax//W.DELTAT-1)*W.DELTAT
+        assert W.VEHICLES["0"].log_x[-1] == (tmax//W.DELTAT-2)*W.DELTAT*link_u
+        assert W.VEHICLES["0"].x == (tmax//W.DELTAT-1)*W.DELTAT*link_u
+
+        print()
