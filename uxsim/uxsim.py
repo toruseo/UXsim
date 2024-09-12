@@ -21,7 +21,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None):
+    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None, user_attribute=None, user_function=lambda node:None):
         """
         Create a node
 
@@ -49,6 +49,16 @@ class Node:
             The number of lanes that can be green simultaniously at the node. Default is None.
         attribute : any, optional
             Additional (meta) attributes defined by users.
+        user_attribute : any, optional
+            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
+        user_function : func, optinal
+            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep.
+            >>> def user_function(node):
+            >>>     print(len(node.incoming_vehicles))
+            >>> W = World(...)
+            >>> W.addNode("node", 0, 0, user_function=user_function)
+            >>> ... #define your scenario
+            >>> W.exec_simulation()
 
         Attributes
         ----------
@@ -65,6 +75,8 @@ class Node:
 
         #custom attibutes
         s.attribute = attribute
+        s.user_attribute = user_attribute
+        s.user_function = user_function
         
         #incoming/outgoing links
         s.inlinks = dict()
@@ -326,13 +338,14 @@ class Node:
         """
         s.signal_control()
         s.flow_capacity_update()
+        s.user_function(s)
 
 
 class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=[0], capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, auto_rename=False):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=[0], capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, user_attribute=None, user_function=lambda link:None, auto_rename=False):
         """
         Create a link
 
@@ -368,6 +381,16 @@ class Link:
             The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.
         attribute : any, optional
             Additional (meta) attributes defined by users.
+        user_attribute : any, optional
+            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
+        user_function : func, optinal
+            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep.
+            >>> def user_function(link):
+            >>>     print(len(link.vehicles))
+            >>> W = World(...)
+            >>> W.addLink("link", "node1", "node2, 1000, user_function=user_function)
+            >>> ... #define your scenario
+            >>> W.exec_simulation()
         auto_rename : bool, optional
             Whether to automatically rename the link if the name is already used. Default is False (raise an exception).
 
@@ -540,6 +563,9 @@ class Link:
         s.end_node.inlinks[s.name] = s
 
         s.attribute = attribute
+        s.user_attribute = user_attribute
+        s.user_function = user_function
+
 
         #リアルタイムリンク状態（外部から参照する用）
         s._speed = -1 #リンク全体の平均速度
@@ -594,6 +620,8 @@ class Link:
         if len(s.cum_arrival) > 1:
             s.cum_arrival[-1] = s.cum_arrival[-2]
             s.cum_departure[-1] = s.cum_departure[-2]
+
+        s.user_function(s)
 
         #リアルタイム状態リセット
         s._speed = -1
@@ -803,7 +831,7 @@ class Vehicle:
     """
     Vehicle or platoon in a network.
     """
-    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, mode="single_trip", links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, auto_rename=False):
+    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, mode="single_trip", links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, user_attribute=None, user_function=lambda veh:None, auto_rename=False):
         """
         Create a vehicle (more precisely, platoon)
 
@@ -835,6 +863,16 @@ class Vehicle:
             Whether to abort the trip if a dead end is reached, default is 1.
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
+        user_attribute : any, optional
+            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
+        user_function : func, optinal
+            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep.
+            >>> def user_function(veh):
+            >>>     print(veh.speed))
+            >>> W = World(...)
+            >>> ... #define your scenario
+            >>> W.addVehicle("orig", "dest", 100, user_function=user_function)
+            >>> W.exec_simulation()
         auto_rename : bool, optional
             Whether to automatically rename the vehicle if the name is already used. Default is False.
         """
@@ -921,6 +959,8 @@ class Vehicle:
         s.distance_traveled = 0
 
         s.attribute = attribute
+        s.user_attribute = user_attribute
+        s.user_function = user_function
 
         s.id = len(s.W.VEHICLES)
         if name != None:
@@ -1011,6 +1051,8 @@ class Vehicle:
         if s.state in ["end", "abort"] :
             #ended the trip
             pass
+
+        s.user_function(s)
 
     def end_trip(s):
         """
@@ -1437,7 +1479,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, hard_deterministic_mode=False, meta_data={}):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, hard_deterministic_mode=False, meta_data={}, user_attribute=None, user_function=lambda W:None):
         """
         Create a World.
 
@@ -1488,6 +1530,15 @@ class World:
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
         meta_data : dict, optinal
             Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.
+        user_attribute : any, optinal
+            Optinonal meta attributes that can be freely defined by a user.
+        user_function : func, optinal
+            User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep.
+            >>> def user_function(W):
+            >>>     print(W.TIME)
+            >>> W = World(user_function=user_function)
+            >>> ... #define your scenario
+            >>> W.exec_simulation()
 
         Notes
         -----
@@ -1556,6 +1607,9 @@ class World:
             W.print = noprint
         W.save_mode = save_mode
         W.show_mode = show_mode
+
+        W.user_attribute = user_attribute
+        W.user_function = user_function
 
     def addNode(W, *args, **kwargs):
         """
@@ -2005,6 +2059,8 @@ class World:
 
             if W.print_mode and W.show_progress and W.T%W.show_progress_deltat_timestep == 0 and W.T > 0:
                 W.analyzer.show_simulation_progress()
+                
+            W.user_function(W)
 
         if W.T == W.TSIZE-1:
             if W.print_mode and W.show_progress:

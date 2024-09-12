@@ -5,6 +5,7 @@ Scenario reader and writer using toml.
 import functools
 import inspect
 from collections import defaultdict as ddict
+import dill as pickle
 
 def demand_info_record(func):
     """
@@ -144,7 +145,6 @@ def save_scenario(W, fname, network=True, demand=True):
     
     # from pprint import pprint
     # pprint(out)
-    import pickle
     with open(fname, "wb") as f:
         pickle.dump(out, f)
     
@@ -169,7 +169,6 @@ def load_scenario(W, fname, network=True, demand=True):
         If True, load demand information. Default is True.
     """
 
-    import pickle
     with open(fname, "rb") as f:
         dat = pickle.load(f)
     
