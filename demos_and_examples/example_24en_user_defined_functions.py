@@ -12,12 +12,12 @@ def world_user_function(W):
             print("World state:", W.TIME)
 
 def node_user_function(node):
-    #print the numnber of incoming vehicles to node
+    #print the number of incoming vehicles to node
     if node.W.T%20 == 0:
         print(f"Node {node.name} state:", len(node.incoming_vehicles))
 
 def link_user_function(link):
-    #print the numnber of vehicles on link and their average speed, and record the speed
+    #print the number of vehicles on link and their average speed, and record the speed
     if link.W.T%20 == 0:
         if len(link.vehicles):
             print(f"Link {link.name} state:", len(link.vehicles), np.average([veh.v for veh in link.vehicles]))
