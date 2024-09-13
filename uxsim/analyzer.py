@@ -1218,7 +1218,7 @@ class Analyzer:
         if s.W.vehicle_logging_timestep_interval != 1:
             warnings.warn("vehicle_logging_timestep_interval is not 1. The output data is not exactly accurate.", LoggingWarning)
 
-        if s.flag_pandas_convert == 0:
+        if s.flag_pandas_convert == 0 or t_seconds is not None:
             out = [["name", "dn", "orig", "dest", "t", "link", "x", "s", "v"]]
             current_time = s.W.T * s.W.DELTAT
             for veh in s.W.VEHICLES.values():
