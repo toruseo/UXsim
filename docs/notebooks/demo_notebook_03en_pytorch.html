@@ -233,7 +233,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
@@ -313,6 +314,7 @@ gtag('config', 'UA-111714220-1');
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">random</span>
 </pre></div>
 </div>
 </div>
@@ -821,8 +823,6 @@ results:
 
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">(</span><span class="n">policy_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">LR</span><span class="p">,</span> <span class="n">amsgrad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">memory</span> <span class="o">=</span> <span class="n">ReplayMemory</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
-
-<span class="n">steps_done</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 </div>
 </div>
@@ -835,7 +835,8 @@ results:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_episodes</span> <span class="o">=</span> <span class="mi">200</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">steps_done</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">num_episodes</span> <span class="o">=</span> <span class="mi">200</span>
 
 <span class="n">log_states</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">log_epi_average_delay</span> <span class="o">=</span> <span class="p">[]</span>

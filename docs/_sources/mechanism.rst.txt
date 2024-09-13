@@ -1,9 +1,9 @@
 
-Simulation Mechanism
-====================
+Simulation Mechanism: Summary
+=============================
 
 In this page, we briefly explain the models and logics behind UXsim.
-If you want to know the details, please refer to `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_, the code, the original articles, or  `Japanese textbook on traffic simulation <https://www.coronasha.co.jp/np/isbn/9784339052794/>`_.
+If you want to know more details, please refer to `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_, the code, the original articles, or  `Japanese textbook on traffic simulation <https://www.coronasha.co.jp/np/isbn/9784339052794/>`_.
 
 Models
 ------
@@ -14,7 +14,7 @@ UXsim computes network traffic flow dynamics by combining following models:
 * The `mesoscopic version of the incremental node model <https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/>`_ for inter-link transfer at nodes.
 * `Dynamic user optimum <https://doi.org/10.1016/S0191-2615(00)00005-9>`_ (aka. reactive assignment) with stochasticity and delay for route choice of travelers.
 
-Key inputs
+Key Inputs
 ----------
 
 UXsim's key inputs (i.e., simulation scenario parameters) are as follows:
@@ -27,14 +27,14 @@ UXsim's key inputs (i.e., simulation scenario parameters) are as follows:
 * Parameters of each node. For example, position (`x` and `y`) and traffic signal setting (`signal`).
 * Demand. For example, origin, destination, and departure time of each vehicle are specified.
 
-Program structure
+Program Structure
 -----------------
 
 Class diagram of UXsim: the relationship between classes and their key properties.
 
 .. image:: img/class_diagram.png
 
-Computation procedure
+Computation Procedure
 ---------------------
 
 Activity diagram of UXsim: the overall computation procedure of UXsim.
@@ -46,68 +46,26 @@ Activity diagram of a specific vehicle in UXsim: the computation procedure for e
 .. image:: img/activity_diagram_veh.png
 
 
-The details on traffic flow model on link
------------------------------------------
-
-Traffic Flow Model
-^^^^^^^^^^^^^^^^^^
-
-- The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.
-- Fundamental diagram parameters such as ``free_flow_speed``, ``jam_density`` (or ``jam_density_per_lane``), and ``number_of_lanes`` determine the link's flow characteristics. Reaction time of drivers ``REACTION_TIME`` is a global parameter.
-- Real-time link status for external reference is maintained with attributes ``speed``, ``density``, ``flow``, ``num_vehicles``, and ``num_vehicles_queue``.
-
 Traffic Flow Model Parameters
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
-- The following parameters are used in UXsim, defined through `Link`, `World`, and `Node` (\*: input, \*\*: alternative input).
-	- \* ``free_flow_speed`` (m/s)
-	- \* ``jam_density`` (veh/m/LINK)
-	- \*\* ``jam_density_per_lane`` (veh/m/lane)
-	- \* ``lanes``, ``number_of_lane`` (lane)
-	- ``tau``: y-intercept of link FD (s/veh\*LINK)
-	- ``REACTION_TIME`` (s/veh\*lane)
-	- ``w`` (m/s)
-	- ``capacity`` (veh/s/LINK)
-	- ``capacity_per_lane`` (veh/s/lane)
-	- ``delta``: minimum spacing (m/veh\*LINK)
-	- ``delta_per_lane``: minimum spacing in lane (m/veh\*lane)
-	- ``q_star``: capacity (veh/s/LINK)
-	- ``k_star``: critical density (veh/s/LINK)
-	- \* ``capacity_in``, ``capacity_out``: bottleneck capacity at beginning/end of link (veh/s/LINK)
-	- \* ``Node.flow_capacity``: node flow capacity (veh/s/LINK-LIKE)
+The following parameters are used in UXsim, defined through `Link`, `World`, and `Node` (\*: input, \*\*: alternative input).
+If you are not familiar with the traffic flow theory, it is recommended that you adjust only ``free_flow_speed`` and ``number_of_lanes`` for the traffic flow model parameters, leaving the other parameters at their default values.
+
+- \* ``free_flow_speed`` (m/s)
+- \* ``jam_density`` (veh/m/LINK)
+- \*\* ``jam_density_per_lane`` (veh/m/lane)
+- \* ``lanes``, ``number_of_lane`` (lane)
+- ``tau``: y-intercept of link FD (s/veh\*LINK)
+- ``REACTION_TIME`` (s/veh\*lane)
+- ``w`` (m/s)
+- ``capacity`` (veh/s/LINK)
+- ``capacity_per_lane`` (veh/s/lane)
+- ``delta``: minimum spacing (m/veh\*LINK)
+- ``delta_per_lane``: minimum spacing in lane (m/veh\*lane)
+- ``q_star``: capacity (veh/s/LINK)
+- ``k_star``: critical density (veh/s/LINK)
+- \* ``capacity_in``, ``capacity_out``: bottleneck capacity at beginning/end of link (veh/s/LINK)
+- \* ``Node.flow_capacity``: node flow capacity (veh/s/LINK-LIKE)
 
 .. image:: img/fundamental_diagram.png
-
-- If you are not familiar with the traffic flow theory, it is recommended that you adjust only ``free_flow_speed`` and ``number_of_lanes`` for the traffic flow model parameters, leaving the other parameters at their default values.
-
-Capacity and Bottlenecks
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-- The ``capacity_out`` and ``capacity_in`` parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.
-- These capacities can represent bottlenecks at the beginning or end of the link.
-
-Connection to Node Model
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-- At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.
-- At the upstream end of a receiving link, all lanes can accept vehicles.
-
-Parameter Adjustments
-^^^^^^^^^^^^^^^^^^^^^
-
-- Some traffic flow model parameters like ``free_flow_speed``, ``jam_density``, ``capacity_out``, ``capacity_in``, and ``merge_priority`` can be altered during simulation to reflect changing conditions.
-
-Details on Multi-lane model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- Link model:
-    - Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.
-    - Links have a ``lanes`` attribute representing the number of lanes.
-    - Each vehicle has a ``lane`` attribute.
-    - Each vehicle follows the leader vehicle in the same lane, i.e., the vehicle ``lanes`` steps ahead on the link.
-- Node model:
-    - Sending links:
-        - Vehicles in all lanes at the downstream end of the link have the right to be sent out.
-        - However, to ensure link FIFO, vehicles are tried to be sent out in the order they entered the link. If a vehicle cannot be accepted, the outflow from that link stops.
-    - Receiving links:
-        - All lanes at the upstream end of the link can accept vehicles.

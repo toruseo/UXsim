@@ -1,0 +1,788 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Technical Reference" href="tech_ref.html" /><link rel="prev" title="Simulation Mechanism: Summary" href="mechanism.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>Simulation Mechanism: Details - UXsim: Traffic Simulation in Python v1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+  
+</head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">UXsim: Traffic Simulation in Python v1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_01en.html">Step-by-step Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_02en.html">Advanced example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mechanism.html">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Simulation Mechanism: Details</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.World.html">uxsim.World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Node.html">uxsim.Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Link.html">uxsim.Link</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Vehicle.html">uxsim.Vehicle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Route.html">uxsim.Route</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.scenario_reader_writer.html">uxsim.scenario_reader_writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/mechanism_detailed.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="simulation-mechanism-details">
+<h1>Simulation Mechanism: Details<a class="headerlink" href="#simulation-mechanism-details" title="Link to this heading">¶</a></h1>
+<p>The below is further details on the mechanism and program structure with reference to the code elements.</p>
+<section id="overall-structure">
+<h2>Overall Structure<a class="headerlink" href="#overall-structure" title="Link to this heading">¶</a></h2>
+<p>UXsim is built upon several core classes that represent different elements of a traffic network:</p>
+<ul class="simple">
+<li><p><strong>Node</strong>: Represents intersections or junctions where vehicles can enter, exit, or transfer between links.</p></li>
+<li><p><strong>Link</strong>: Represents road segments connecting nodes, modeling traffic flow dynamics.</p></li>
+<li><p><strong>Vehicle</strong>: Represents individual vehicles or platoons moving through the network.</p></li>
+<li><p><strong>RouteChoice</strong>: Handles route choice computations, allowing vehicles to select routes based on current traffic conditions.</p></li>
+<li><p><strong>World</strong>: The simulation environment that contains all nodes, links, vehicles, and manages the simulation execution.</p></li>
+<li><p><strong>Route</strong>: Represents a specific path (sequence of links) through the network.</p></li>
+</ul>
+<section id="node-class">
+<h3>Node Class<a class="headerlink" href="#node-class" title="Link to this heading">¶</a></h3>
+<p>The <cite>Node</cite> class models intersections or junctions in the network. Each node has:</p>
+<ul class="simple">
+<li><p><strong>Position</strong>: Coordinates <cite>x</cite> and <cite>y</cite> for visualization.</p></li>
+<li><p><strong>Signal Control</strong>: Nodes can have traffic signals, specified by the <cite>signal</cite> attribute, which is a list representing signal phases (e.g., <cite>[60, 10, 50, 5]</cite> for four phases with respective durations in seconds).</p></li>
+<li><p><strong>Flow Capacity</strong>: Optionally limits the number of vehicles that can pass through the node (<cite>flow_capacity</cite>).</p></li>
+<li><p><strong>Vehicle Management</strong>:</p>
+<ul>
+<li><p><strong>Generation Queue</strong>: A queue (<cite>generation_queue</cite>) for vehicles waiting to enter the network.</p></li>
+<li><p><strong>Incoming Vehicles</strong>: A list (<cite>incoming_vehicles</cite>) of vehicles requesting to move to another link via this node.</p></li>
+</ul>
+</li>
+<li><p><strong>Methods</strong>:</p>
+<ul>
+<li><p><cite>signal_control()</cite>: Updates the signal phase based on elapsed time.</p></li>
+<li><p><cite>flow_capacity_update()</cite>: Updates the remaining flow capacity at the node.</p></li>
+<li><p><cite>generate()</cite>: Moves vehicles from the generation queue onto outgoing links if possible.</p></li>
+<li><p><cite>transfer()</cite>: Manages vehicle movements between incoming and outgoing links, considering signal phases and capacities.</p></li>
+<li><p><cite>update()</cite>: Calls necessary update methods each simulation step.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="link-class">
+<h3>Link Class<a class="headerlink" href="#link-class" title="Link to this heading">¶</a></h3>
+<p>The <cite>Link</cite> class models road segments connecting nodes and handles traffic flow dynamics. Key attributes include:</p>
+<ul class="simple">
+<li><p><strong>Connectivity</strong>: <cite>start_node</cite> and <cite>end_node</cite> defining the link’s direction.</p></li>
+<li><p><strong>Physical Attributes</strong>:</p>
+<ul>
+<li><p><cite>length</cite>: Length of the link in meters.</p></li>
+<li><p><cite>number_of_lanes</cite>: Number of lanes on the link.</p></li>
+<li><p><cite>merge_priority</cite>: Priority level when merging at nodes.</p></li>
+</ul>
+</li>
+<li><p><strong>Traffic Flow Parameters</strong>:</p>
+<ul>
+<li><p><cite>free_flow_speed</cite> (<cite>u</cite>): Speed vehicles travel at under uncongested conditions.</p></li>
+<li><p><cite>jam_density</cite> (<cite>kappa</cite>): Maximum vehicle density under congested conditions.</p></li>
+<li><p>Derived parameters like <cite>tau</cite>, <cite>w</cite>, <cite>capacity</cite>, <cite>delta</cite>, and <cite>k_star</cite> are calculated based on the fundamental diagram of traffic flow.</p></li>
+</ul>
+</li>
+<li><p><strong>Capacity Constraints</strong>:</p>
+<ul>
+<li><p><cite>capacity_in</cite>: Maximum rate vehicles can enter the link.</p></li>
+<li><p><cite>capacity_out</cite>: Maximum rate vehicles can leave the link.</p></li>
+</ul>
+</li>
+<li><p><strong>Signal Group</strong>: <cite>signal_group</cite> determines which signal phases affect the link.</p></li>
+<li><p><strong>Vehicle List</strong>: <cite>vehicles</cite> stores vehicles currently on the link.</p></li>
+<li><p><strong>Methods</strong>:</p>
+<ul>
+<li><p><cite>in_out_flow_constraint()</cite>: Updates inflow and outflow capacities.</p></li>
+<li><p><cite>set_traveltime_instant()</cite>: Calculates instantaneous travel time.</p></li>
+<li><p><cite>update()</cite>: Updates the link state each simulation step.</p></li>
+<li><p>Getter methods for <cite>speed</cite>, <cite>density</cite>, <cite>flow</cite>, <cite>num_vehicles</cite>, and <cite>num_vehicles_queue</cite> provide real-time traffic information.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="vehicle-class">
+<h3>Vehicle Class<a class="headerlink" href="#vehicle-class" title="Link to this heading">¶</a></h3>
+<p>The <cite>Vehicle</cite> class represents individual vehicles or platoons. Key features include:</p>
+<ul class="simple">
+<li><p><strong>Trip Details</strong>:</p>
+<ul>
+<li><p><cite>orig</cite> and <cite>dest</cite>: Origin and destination nodes.</p></li>
+<li><p><cite>departure_time</cite>: Scheduled time for the vehicle to start its trip.</p></li>
+<li><p><cite>arrival_time</cite> and <cite>travel_time</cite>: Recorded upon trip completion.</p></li>
+</ul>
+</li>
+<li><p><strong>State Management</strong>:</p>
+<ul>
+<li><p><cite>state</cite>: Current state, such as “home”, “wait”, “run”, or “end”.</p></li>
+<li><p><cite>flag_waiting_for_trip_end</cite>: Indicates if the vehicle is ready to end its trip.</p></li>
+</ul>
+</li>
+<li><p><strong>Position and Movement</strong>:</p>
+<ul>
+<li><p><cite>link</cite>: Current link the vehicle is on.</p></li>
+<li><p><cite>x</cite>: Position along the link.</p></li>
+<li><p><cite>v</cite>: Current speed.</p></li>
+<li><p><cite>lane</cite>: Assigned lane on multi-lane links.</p></li>
+<li><p><cite>leader</cite> and <cite>follower</cite>: References to adjacent vehicles for car-following behavior.</p></li>
+</ul>
+</li>
+<li><p><strong>Route Choice</strong>:</p>
+<ul>
+<li><p><cite>route_pref</cite>: Preferences for choosing links based on route choice principles.</p></li>
+<li><p><cite>route_next_link</cite>: Next link the vehicle intends to take.</p></li>
+<li><p><cite>route_choice_principle</cite>: Strategy used for route selection (e.g., “homogeneous_DUO”).</p></li>
+</ul>
+</li>
+<li><p><strong>Methods</strong>:</p>
+<ul>
+<li><p><cite>update()</cite>: Updates the vehicle’s state and position each simulation step.</p></li>
+<li><p><cite>end_trip()</cite>: Handles trip completion procedures.</p></li>
+<li><p><cite>carfollow()</cite>: Implements car-following logic to update position and speed.</p></li>
+<li><p><cite>route_pref_update()</cite>: Updates route preferences based on traffic conditions.</p></li>
+<li><p><cite>route_next_link_choice()</cite>: Chooses the next link to traverse.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="routechoice-class">
+<h3>RouteChoice Class<a class="headerlink" href="#routechoice-class" title="Link to this heading">¶</a></h3>
+<p>The <cite>RouteChoice</cite> class manages the route selection process for vehicles:</p>
+<ul class="simple">
+<li><p><strong>Shortest Path Computation</strong>:</p>
+<ul>
+<li><p><cite>route_search_all()</cite>: Computes shortest paths between all node pairs using Dijkstra’s algorithm.</p></li>
+</ul>
+</li>
+<li><p><strong>Route Preference Update</strong>:</p>
+<ul>
+<li><p><cite>homogeneous_DUO_update()</cite>: Updates link preferences based on the Dynamic User Optimum (DUO) principle, promoting routes that minimize travel times.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="world-class">
+<h3>World Class<a class="headerlink" href="#world-class" title="Link to this heading">¶</a></h3>
+<p>The <cite>World</cite> class represents the entire simulation environment:</p>
+<ul class="simple">
+<li><p><strong>Global Parameters</strong>:</p>
+<ul>
+<li><p><cite>DELTAT</cite>: Simulation time step width, calculated from reaction time and platoon size.</p></li>
+<li><p><cite>REACTION_TIME</cite> and <cite>DELTAN</cite>: Driver reaction time and platoon size.</p></li>
+<li><p>Route choice parameters like <cite>DUO_UPDATE_TIME</cite>, <cite>DUO_UPDATE_WEIGHT</cite>, and <cite>DUO_NOISE</cite>.</p></li>
+</ul>
+</li>
+<li><p><strong>Data Structures</strong>:</p>
+<ul>
+<li><p>Lists of <cite>NODES</cite> and <cite>LINKS</cite>.</p></li>
+<li><p>Dictionaries for <cite>VEHICLES</cite>, <cite>VEHICLES_LIVING</cite>, and <cite>VEHICLES_RUNNING</cite>.</p></li>
+</ul>
+</li>
+<li><p><strong>Scenario Management</strong>:</p>
+<ul>
+<li><p>Methods like <cite>addNode()</cite>, <cite>addLink()</cite>, and <cite>addVehicle()</cite> to build the network and populate it with vehicles.</p></li>
+<li><p><cite>finalize_scenario()</cite>: Prepares the simulation by setting time limits and initializing components.</p></li>
+</ul>
+</li>
+<li><p><strong>Simulation Execution</strong>:</p>
+<ul>
+<li><p><cite>exec_simulation()</cite>: Runs the simulation loop, updating all components each time step.</p></li>
+<li><p><cite>simulation_terminated()</cite>: Handles post-simulation tasks like data analysis.</p></li>
+</ul>
+</li>
+<li><p><strong>Utility Functions</strong>:</p>
+<ul>
+<li><p>Methods to get nodes or links by name (<cite>get_node()</cite> and <cite>get_link()</cite>).</p></li>
+<li><p>Functions to load and save scenarios.</p></li>
+<li><p>Visualization tools like <cite>show_network()</cite>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="computation-procedure">
+<h2>Computation Procedure<a class="headerlink" href="#computation-procedure" title="Link to this heading">¶</a></h2>
+<p>The simulation in UXsim advances in discrete time steps, updating the state of vehicles, links, and nodes at each step based on predefined models and parameters.</p>
+<ol class="arabic simple">
+<li><p><strong>Initialization</strong>:</p>
+<ul class="simple">
+<li><p>Define the simulation parameters and create a <cite>World</cite> instance.</p></li>
+<li><p>Add nodes and links to build the network.</p></li>
+<li><p>Populate the network with vehicles, specifying origins, destinations, and departure times.</p></li>
+<li><p>Finalize the scenario with <cite>finalize_scenario()</cite>.</p></li>
+</ul>
+</li>
+<li><p><strong>Main Simulation Loop (`exec_simulation()`)</strong>:</p>
+<ul class="simple">
+<li><p><strong>Time Advancement</strong>: The simulation progresses one time step (<cite>DELTAT</cite>) at a time.</p></li>
+<li><p><strong>Link Updates</strong>: Each link updates its capacities and traffic state.</p>
+<ul>
+<li><p><cite>in_out_flow_constraint()</cite>: Manages inflow and outflow capacities.</p></li>
+<li><p><cite>set_traveltime_instant()</cite>: Updates instantaneous travel times.</p></li>
+</ul>
+</li>
+<li><p><strong>Node Operations</strong>:</p>
+<ul>
+<li><p>Nodes generate vehicles from their queues with <cite>generate()</cite>.</p></li>
+<li><p>Signals are updated via <cite>signal_control()</cite>.</p></li>
+<li><p>Vehicles are transferred between links using <cite>transfer()</cite>.</p></li>
+</ul>
+</li>
+<li><p><strong>Vehicle Updates</strong>:</p>
+<ul>
+<li><p>Each vehicle updates its position and state with <cite>update()</cite>.</p></li>
+<li><p>Movement is calculated using <cite>carfollow()</cite> based on car-following models.</p></li>
+<li><p>Route choices are made at nodes using <cite>route_next_link_choice()</cite>.</p></li>
+</ul>
+</li>
+<li><p><strong>Route Choice Updates</strong>:</p>
+<ul>
+<li><p>At intervals defined by <cite>DUO_UPDATE_TIME</cite>, the route choice model updates vehicle preferences.</p></li>
+<li><p>Shortest paths are recalculated with <cite>route_search_all()</cite>.</p></li>
+<li><p>Preferences are adjusted using <cite>homogeneous_DUO_update()</cite>.</p></li>
+</ul>
+</li>
+<li><p><strong>Data Logging</strong>:</p>
+<ul>
+<li><p>Vehicles record their positions and states for analysis.</p></li>
+<li><p>Traffic state data is collected for links and nodes.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Termination</strong>:</p>
+<ul class="simple">
+<li><p>The simulation ends when the maximum time is reached or all vehicles have completed their trips.</p></li>
+<li><p><cite>simulation_terminated()</cite> is called to perform any final calculations or data processing.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="traffic-flow-model-details">
+<h2>Traffic Flow Model Details<a class="headerlink" href="#traffic-flow-model-details" title="Link to this heading">¶</a></h2>
+<section id="fundamental-diagram-parameters">
+<h3>Fundamental Diagram Parameters<a class="headerlink" href="#fundamental-diagram-parameters" title="Link to this heading">¶</a></h3>
+<p>Each link uses a fundamental diagram to model traffic flow, characterized by:</p>
+<ul class="simple">
+<li><p><strong>Free Flow Speed (`u`)</strong>: Speed under uncongested conditions.</p></li>
+<li><p><strong>Jam Density (`kappa`)</strong>: Maximum density when the link is fully congested.</p></li>
+<li><p><strong>Reaction Time (`REACTION_TIME`)</strong>: Affects the time step and driver response.</p></li>
+<li><p><strong>Derived Parameters</strong>:</p>
+<ul>
+<li><p><strong>Wave Speed (`w`)</strong>: Speed at which congestion waves move backward.</p></li>
+<li><p><strong>Capacity (`capacity`)</strong>: Maximum flow rate of the link.</p></li>
+<li><p><strong>Critical Density (`k_star`)</strong>: Density at which flow reaches capacity.</p></li>
+<li><p><strong>Minimum Spacing (`delta`)</strong>: Minimum distance between vehicles.</p></li>
+</ul>
+</li>
+</ul>
+<p>These parameters influence how vehicles accelerate, decelerate, and interact on the link.</p>
+</section>
+<section id="multi-lane-modeling">
+<h3>Multi-Lane Modeling<a class="headerlink" href="#multi-lane-modeling" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Single-Pipe Approach</strong>: Even with multiple lanes, the link is treated as a single entity for flow calculations.</p></li>
+<li><p><strong>Lane Assignment</strong>:</p>
+<ul>
+<li><p>Vehicles have a <cite>lane</cite> attribute to represent their lane.</p></li>
+<li><p>No explicit lane-changing behavior is modeled.</p></li>
+</ul>
+</li>
+<li><p><strong>Car-Following Behavior</strong>:</p>
+<ul>
+<li><p>Vehicles adjust their speed based on the distance to the vehicle ahead in the same lane.</p></li>
+<li><p>The <cite>carfollow()</cite> method implements this behavior.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="capacity-and-bottlenecks">
+<h3>Capacity and Bottlenecks<a class="headerlink" href="#capacity-and-bottlenecks" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Inflow (`capacity_in`) and Outflow (`capacity_out`) Capacities</strong>:</p>
+<ul>
+<li><p>Limit the number of vehicles entering or exiting a link.</p></li>
+<li><p>Can model real-world bottlenecks like narrow bridges or toll booths.</p></li>
+</ul>
+</li>
+<li><p><strong>Node Capacities</strong>:</p>
+<ul>
+<li><p>Nodes can have a <cite>flow_capacity</cite> limiting throughput.</p></li>
+<li><p>Signals at nodes further control vehicle movements.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="signal-control-at-nodes">
+<h3>Signal Control at Nodes<a class="headerlink" href="#signal-control-at-nodes" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Signal Phases</strong>:</p>
+<ul>
+<li><p>Nodes with traffic signals have defined phases, each with a duration.</p></li>
+<li><p>Vehicles can only proceed if their link’s <cite>signal_group</cite> matches the current <cite>signal_phase</cite>.</p></li>
+</ul>
+</li>
+<li><p><strong>Signal Timing</strong>:</p>
+<ul>
+<li><p>The <cite>signal_control()</cite> method updates the current phase based on elapsed time and the signal schedule (<cite>signal</cite> attribute).</p></li>
+</ul>
+</li>
+<li><p><strong>Impact on Vehicle Transfer</strong>:</p>
+<ul>
+<li><p>Signals influence the <cite>transfer()</cite> method, determining whether vehicles can move between links.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="route-choice-modeling">
+<h2>Route Choice Modeling<a class="headerlink" href="#route-choice-modeling" title="Link to this heading">¶</a></h2>
+<p>Vehicles make route choices based on current traffic conditions, aiming to minimize travel times.</p>
+<ul class="simple">
+<li><p><strong>Dynamic User Optimum (DUO)</strong>:</p>
+<ul>
+<li><p>Vehicles periodically update their route preferences to follow the shortest paths.</p></li>
+<li><p>The <cite>RouteChoice</cite> class computes these paths and updates preferences.</p></li>
+</ul>
+</li>
+<li><p><strong>Stochasticity</strong>:</p>
+<ul>
+<li><p>A small noise factor (<cite>DUO_NOISE</cite>) is added to travel times to prevent ties and promote variability.</p></li>
+</ul>
+</li>
+<li><p><strong>Preference Updates</strong>:</p>
+<ul>
+<li><p>Vehicles adjust their <cite>route_pref</cite> attributes based on updated shortest paths.</p></li>
+<li><p>Gradual updates can be enabled to smooth transitions.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="key-inputs-for-simulation">
+<h2>Key Inputs for Simulation<a class="headerlink" href="#key-inputs-for-simulation" title="Link to this heading">¶</a></h2>
+<p>To set up a simulation in UXsim, the following inputs are essential:</p>
+<ul class="simple">
+<li><p><strong>Network Definition</strong>:</p>
+<ul>
+<li><p><strong>Nodes</strong>: Positions (<cite>x</cite>, <cite>y</cite>), signal settings, flow capacities.</p></li>
+<li><p><strong>Links</strong>: Start and end nodes, physical attributes (<cite>length</cite>, <cite>number_of_lanes</cite>), traffic flow parameters (<cite>free_flow_speed</cite>, <cite>jam_density</cite>), capacities, and signal groups.</p></li>
+</ul>
+</li>
+<li><p><strong>Vehicle Demand</strong>:</p>
+<ul>
+<li><p>Origin and destination nodes for each vehicle.</p></li>
+<li><p>Departure times.</p></li>
+<li><p>Route preferences or specific route choice principles if deviating from the default.</p></li>
+</ul>
+</li>
+<li><p><strong>Global Simulation Parameters</strong>:</p>
+<ul>
+<li><p>Time step settings (<cite>REACTION_TIME</cite>, <cite>DELTAN</cite>).</p></li>
+<li><p>Route choice parameters (<cite>DUO_UPDATE_TIME</cite>, <cite>DUO_UPDATE_WEIGHT</cite>, <cite>DUO_NOISE</cite>).</p></li>
+<li><p>Simulation duration (<cite>TMAX</cite>) if not automatically determined.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="program-structure-and-workflow">
+<h2>Program Structure and Workflow<a class="headerlink" href="#program-structure-and-workflow" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Initialize the World</strong>:
+- Create a <cite>World</cite> instance with desired global parameters.</p></li>
+<li><p><strong>Define the Network</strong>:</p>
+<ul class="simple">
+<li><p>Add nodes using <cite>addNode()</cite>.</p></li>
+<li><p>Add links using <cite>addLink()</cite>.</p></li>
+</ul>
+</li>
+<li><p><strong>Specify Vehicle Demand</strong>:</p>
+<ul class="simple">
+<li><p>Add vehicles individually using <cite>addVehicle()</cite>.</p></li>
+<li><p>Or use demand functions like <cite>adddemand()</cite> for bulk additions.</p></li>
+</ul>
+</li>
+<li><p><strong>Finalize the Scenario</strong>:</p>
+<ul class="simple">
+<li><p>Call <cite>finalize_scenario()</cite> to prepare for simulation.</p></li>
+<li><p>This sets up internal structures and calculates any derived parameters.</p></li>
+</ul>
+</li>
+<li><p><strong>Run the Simulation</strong>:</p>
+<ul class="simple">
+<li><p>Execute <cite>exec_simulation()</cite> to start the simulation loop.</p></li>
+<li><p>Can specify <cite>until_t</cite> or <cite>duration_t</cite> to control simulation length.</p></li>
+</ul>
+</li>
+<li><p><strong>Analyze Results</strong>:</p>
+<ul class="simple">
+<li><p>Use built-in analysis tools in <cite>Analyzer</cite> or access logs from vehicles and links.</p></li>
+<li><p>Visualization functions like <cite>show_network()</cite> help display results.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="tech_ref.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Technical Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="mechanism.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Simulation Mechanism: Summary</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023 Toru Seo
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Simulation Mechanism: Details</a><ul>
+<li><a class="reference internal" href="#overall-structure">Overall Structure</a><ul>
+<li><a class="reference internal" href="#node-class">Node Class</a></li>
+<li><a class="reference internal" href="#link-class">Link Class</a></li>
+<li><a class="reference internal" href="#vehicle-class">Vehicle Class</a></li>
+<li><a class="reference internal" href="#routechoice-class">RouteChoice Class</a></li>
+<li><a class="reference internal" href="#world-class">World Class</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#computation-procedure">Computation Procedure</a></li>
+<li><a class="reference internal" href="#traffic-flow-model-details">Traffic Flow Model Details</a><ul>
+<li><a class="reference internal" href="#fundamental-diagram-parameters">Fundamental Diagram Parameters</a></li>
+<li><a class="reference internal" href="#multi-lane-modeling">Multi-Lane Modeling</a></li>
+<li><a class="reference internal" href="#capacity-and-bottlenecks">Capacity and Bottlenecks</a></li>
+<li><a class="reference internal" href="#signal-control-at-nodes">Signal Control at Nodes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#route-choice-modeling">Route Choice Modeling</a></li>
+<li><a class="reference internal" href="#key-inputs-for-simulation">Key Inputs for Simulation</a></li>
+<li><a class="reference internal" href="#program-structure-and-workflow">Program Structure and Workflow</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=5cb08e4e"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=4e2eecee"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    </body>
+</html>

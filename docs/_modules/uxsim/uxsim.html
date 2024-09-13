@@ -231,7 +231,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
@@ -315,7 +316,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Node.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Node.html#uxsim.Node.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a node</span>
 
@@ -343,6 +344,16 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The number of lanes that can be green simultaniously at the node. Default is None.</span>
 <span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        user_attribute : any, optional</span>
+<span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
+<span class="sd">        user_function : func, optinal</span>
+<span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">            &gt;&gt;&gt; def user_function(node):</span>
+<span class="sd">            &gt;&gt;&gt;     print(len(node.incoming_vehicles))</span>
+<span class="sd">            &gt;&gt;&gt; W = World(...)</span>
+<span class="sd">            &gt;&gt;&gt; W.addNode(&quot;node&quot;, 0, 0, user_function=user_function)</span>
+<span class="sd">            &gt;&gt;&gt; ... #define your scenario</span>
+<span class="sd">            &gt;&gt;&gt; W.exec_simulation()</span>
 
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
@@ -359,6 +370,8 @@ gtag('config', 'UA-111714220-1');
 
         <span class="c1">#custom attibutes</span>
         <span class="n">s</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">user_attribute</span> <span class="o">=</span> <span class="n">user_attribute</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">user_function</span> <span class="o">=</span> <span class="n">user_function</span>
         
         <span class="c1">#incoming/outgoing links</span>
         <span class="n">s</span><span class="o">.</span><span class="n">inlinks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -634,7 +647,9 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        Make necessary updates when the timestep is incremented.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">signal_control</span><span class="p">()</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_update</span><span class="p">()</span></div>
+        <span class="n">s</span><span class="o">.</span><span class="n">flow_capacity_update</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">user_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">user_function</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
 </div>
 
 
@@ -647,7 +662,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Link.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Link.html#uxsim.Link.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">capacity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">capacity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a link</span>
 
@@ -683,6 +698,16 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.</span>
 <span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        user_attribute : any, optional</span>
+<span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
+<span class="sd">        user_function : func, optinal</span>
+<span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">            &gt;&gt;&gt; def user_function(link):</span>
+<span class="sd">            &gt;&gt;&gt;     print(len(link.vehicles))</span>
+<span class="sd">            &gt;&gt;&gt; W = World(...)</span>
+<span class="sd">            &gt;&gt;&gt; W.addLink(&quot;link&quot;, &quot;node1&quot;, &quot;node2, 1000, user_function=user_function)</span>
+<span class="sd">            &gt;&gt;&gt; ... #define your scenario</span>
+<span class="sd">            &gt;&gt;&gt; W.exec_simulation()</span>
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the link if the name is already used. Default is False (raise an exception).</span>
 
@@ -855,6 +880,9 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">inlinks</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">user_attribute</span> <span class="o">=</span> <span class="n">user_attribute</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">user_function</span> <span class="o">=</span> <span class="n">user_function</span>
+
 
         <span class="c1">#リアルタイムリンク状態（外部から参照する用）</span>
         <span class="n">s</span><span class="o">.</span><span class="n">_speed</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1">#リンク全体の平均速度</span>
@@ -915,6 +943,9 @@ gtag('config', 'UA-111714220-1');
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
             <span class="n">s</span><span class="o">.</span><span class="n">cum_departure</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">cum_departure</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">user_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">user_function</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 
         <span class="c1">#リアルタイム状態リセット</span>
         <span class="n">s</span><span class="o">.</span><span class="n">_speed</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -1148,7 +1179,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Vehicle.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Vehicle.html#uxsim.Vehicle.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;single_trip&quot;</span><span class="p">,</span> <span class="n">links_prefer</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;single_trip&quot;</span><span class="p">,</span> <span class="n">links_prefer</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a vehicle (more precisely, platoon)</span>
 
@@ -1180,6 +1211,16 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Whether to abort the trip if a dead end is reached, default is 1.</span>
 <span class="sd">        attribute : any, optinonal</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        user_attribute : any, optional</span>
+<span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
+<span class="sd">        user_function : func, optinal</span>
+<span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">            &gt;&gt;&gt; def user_function(veh):</span>
+<span class="sd">            &gt;&gt;&gt;     print(veh.speed))</span>
+<span class="sd">            &gt;&gt;&gt; W = World(...)</span>
+<span class="sd">            &gt;&gt;&gt; ... #define your scenario</span>
+<span class="sd">            &gt;&gt;&gt; W.addVehicle(&quot;orig&quot;, &quot;dest&quot;, 100, user_function=user_function)</span>
+<span class="sd">            &gt;&gt;&gt; W.exec_simulation()</span>
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the vehicle if the name is already used. Default is False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1266,6 +1307,8 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">distance_traveled</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">user_attribute</span> <span class="o">=</span> <span class="n">user_attribute</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">user_function</span> <span class="o">=</span> <span class="n">user_function</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
@@ -1358,7 +1401,10 @@ gtag('config', 'UA-111714220-1');
         
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;abort&quot;</span><span class="p">]</span> <span class="p">:</span>
             <span class="c1">#ended the trip</span>
-            <span class="k">pass</span></div>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">user_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">user_function</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Vehicle.end_trip">
@@ -1836,7 +1882,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.uxsim.World.html#uxsim.World.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">reaction_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duo_update_time</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">duo_update_weight</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">duo_noise</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">eular_dt</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="s2">&quot;homogeneous_DUO&quot;</span><span class="p">,</span> <span class="n">route_choice_update_gradual</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_progress_deltat</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vehicle_logging_timestep_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">instantaneous_TT_timestep_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">hard_deterministic_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">reaction_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duo_update_time</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">duo_update_weight</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">duo_noise</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">eular_dt</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="s2">&quot;homogeneous_DUO&quot;</span><span class="p">,</span> <span class="n">route_choice_update_gradual</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_progress_deltat</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vehicle_logging_timestep_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">instantaneous_TT_timestep_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">hard_deterministic_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{},</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a World.</span>
 
@@ -1887,6 +1933,15 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.</span>
 <span class="sd">        meta_data : dict, optinal</span>
 <span class="sd">            Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.</span>
+<span class="sd">        user_attribute : any, optinal</span>
+<span class="sd">            Optinonal meta attributes that can be freely defined by a user.</span>
+<span class="sd">        user_function : func, optinal</span>
+<span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">            &gt;&gt;&gt; def user_function(W):</span>
+<span class="sd">            &gt;&gt;&gt;     print(W.TIME)</span>
+<span class="sd">            &gt;&gt;&gt; W = World(user_function=user_function)</span>
+<span class="sd">            &gt;&gt;&gt; ... #define your scenario</span>
+<span class="sd">            &gt;&gt;&gt; W.exec_simulation()</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -1909,7 +1964,9 @@ gtag('config', 'UA-111714220-1');
         <span class="n">W</span><span class="o">.</span><span class="n">EULAR_DT</span> <span class="o">=</span> <span class="n">eular_dt</span>     <span class="c1">#time discretization size for Eular-type data (aggregated traffic state)</span>
 
         <span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">REACTION_TIME</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
-        <span class="n">W</span><span class="o">.</span><span class="n">DELTAT_ROUTE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">DUO_UPDATE_TIME</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">DELTAT_ROUTE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">DUO_UPDATE_TIME</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span> <span class="c1">#this unit is timestep</span>
+        <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAT_ROUTE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">DELTAT_ROUTE</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="c1">## data storage</span>
         <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>            <span class="c1">#home, wait, run, end</span>
@@ -1954,7 +2011,10 @@ gtag('config', 'UA-111714220-1');
                 <span class="k">pass</span>
             <span class="n">W</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="n">noprint</span>
         <span class="n">W</span><span class="o">.</span><span class="n">save_mode</span> <span class="o">=</span> <span class="n">save_mode</span>
-        <span class="n">W</span><span class="o">.</span><span class="n">show_mode</span> <span class="o">=</span> <span class="n">show_mode</span></div>
+        <span class="n">W</span><span class="o">.</span><span class="n">show_mode</span> <span class="o">=</span> <span class="n">show_mode</span>
+
+        <span class="n">W</span><span class="o">.</span><span class="n">user_attribute</span> <span class="o">=</span> <span class="n">user_attribute</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">user_function</span> <span class="o">=</span> <span class="n">user_function</span></div>
 
 
 <div class="viewcode-block" id="World.addNode">
@@ -2383,8 +2443,6 @@ gtag('config', 'UA-111714220-1');
         <span class="k">if</span> <span class="n">end_ts</span> <span class="o">&gt;</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="p">:</span>
             <span class="n">end_ts</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span>
 
-        <span class="c1">#W.print(f&quot;simulating: from t = {start_ts*W.DELTAT} to {(end_ts-1)*W.DELTAT} s...&quot;)</span>
-
         <span class="k">if</span> <span class="n">start_ts</span> <span class="o">==</span> <span class="n">end_ts</span> <span class="o">==</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">print_mode</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
                 <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">show_simulation_progress</span><span class="p">()</span>
@@ -2394,7 +2452,9 @@ gtag('config', 'UA-111714220-1');
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;exec_simulation error: Simulation duration is negative. Check until_t or duration_t&quot;</span><span class="p">)</span>
 
         <span class="c1">#the main loop</span>
-        <span class="k">for</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_ts</span><span class="p">,</span> <span class="n">end_ts</span><span class="p">):</span>
+        <span class="c1">#print(&quot;preping:&quot;, W.T, start_ts, end_ts, W.check_simulation_ongoing())</span>
+        <span class="k">for</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_ts</span><span class="p">,</span> <span class="n">end_ts</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="c1">#print(&quot;execing:&quot;, W.T, start_ts, end_ts, W.check_simulation_ongoing())</span>
             <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;      time| # of vehicles| ave speed| computation time&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">show_simulation_progress</span><span class="p">()</span>
@@ -2420,7 +2480,6 @@ gtag('config', 'UA-111714220-1');
                     <span class="n">W</span><span class="o">.</span><span class="n">ROUTECHOICE</span><span class="o">.</span><span class="n">route_search_all</span><span class="p">(</span><span class="n">noise</span><span class="o">=</span><span class="n">W</span><span class="o">.</span><span class="n">DUO_NOISE</span><span class="p">)</span>
                 <span class="n">W</span><span class="o">.</span><span class="n">ROUTECHOICE</span><span class="o">.</span><span class="n">homogeneous_DUO_update</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># old rule, keeping for compatibility</span>
                 <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">%</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAT_ROUTE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">W</span><span class="o">.</span><span class="n">ROUTECHOICE</span><span class="o">.</span><span class="n">route_search_all</span><span class="p">(</span><span class="n">noise</span><span class="o">=</span><span class="n">W</span><span class="o">.</span><span class="n">DUO_NOISE</span><span class="p">)</span>
                     <span class="n">W</span><span class="o">.</span><span class="n">ROUTECHOICE</span><span class="o">.</span><span class="n">homogeneous_DUO_update</span><span class="p">()</span>
@@ -2431,14 +2490,22 @@ gtag('config', 'UA-111714220-1');
 
             <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">print_mode</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">show_progress</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="o">%</span><span class="n">W</span><span class="o">.</span><span class="n">show_progress_deltat_timestep</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">show_simulation_progress</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">user_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">W</span><span class="o">.</span><span class="n">user_function</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">==</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">==</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1">#print(&quot;break&quot;)</span>
+                <span class="k">break</span>
+
+        <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">==</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">print_mode</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
                 <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">show_simulation_progress</span><span class="p">()</span>
             <span class="n">W</span><span class="o">.</span><span class="n">simulation_terminated</span><span class="p">()</span>
             <span class="k">return</span> <span class="mi">1</span>
-
-        <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">+=</span> <span class="mi">1</span>
+        
         <span class="k">return</span> <span class="mi">0</span> <span class="c1">#simulation not yet finished</span></div>
 
 
@@ -2455,7 +2522,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">finalized</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="o">-</span><span class="mi">1</span></div>
+        <span class="k">return</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;=</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="o">-</span><span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="World.simulation_terminated">

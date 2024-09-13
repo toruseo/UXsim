@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Simulation Mechanism" href="../mechanism.html" /><link rel="prev" title="Vehicle routing and its optimization" href="demo_notebook_07en_optimal_routing.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Simulation Mechanism: Summary" href="../mechanism.html" /><link rel="prev" title="Vehicle routing and its optimization" href="demo_notebook_07en_optimal_routing.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>Huge-scale simulation using Chicago-Sketch dataset - UXsim: Traffic Simulation in Python v1 documentation</title>
@@ -233,7 +233,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
@@ -314,7 +315,7 @@ model output the equivalent results for within-link traffic dynamics regardless 
 <h2>Simulation<a class="headerlink" href="#Simulation" title="Link to this heading">¶</a></h2>
 <p>By loading the pre-defined scenario file <code class="docutils literal notranslate"><span class="pre">dat/chicago_sketch.uxsim_scenario</span></code>, this simulation can be done easily as follows.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
@@ -355,27 +356,27 @@ simulation setting:
  number of platoons:     32284
  number of links:        2176
  number of nodes:        546
- setup time:             3.93 s
+ setup time:             4.39 s
 simulating...
       time| # of vehicles| ave speed| computation time
-       0 s|        0 vehs|   0.0 m/s|     0.01 s
-     600 s|    61170 vehs|  17.0 m/s|     2.54 s
-    1200 s|   125430 vehs|  15.6 m/s|     5.21 s
-    1800 s|   173760 vehs|  14.2 m/s|     8.57 s
-    2400 s|   220560 vehs|  12.3 m/s|    12.09 s
-    3000 s|   267330 vehs|  10.4 m/s|    15.69 s
-    3600 s|   322110 vehs|   8.5 m/s|    19.42 s
-    4200 s|   249960 vehs|   7.7 m/s|    22.84 s
-    4800 s|   190860 vehs|   8.0 m/s|    25.55 s
-    5400 s|   156390 vehs|   8.5 m/s|    27.73 s
-    6000 s|   120330 vehs|   9.6 m/s|    29.55 s
-    6600 s|    93360 vehs|  10.0 m/s|    30.98 s
-    7200 s|    70560 vehs|  11.1 m/s|    32.20 s
-    7800 s|    46410 vehs|  12.6 m/s|    33.12 s
-    8400 s|    26340 vehs|  15.4 m/s|    33.83 s
-    9000 s|    11850 vehs|  17.9 m/s|    34.35 s
-    9600 s|     5400 vehs|  20.8 m/s|    34.75 s
-    9960 s|     3870 vehs|  22.3 m/s|    34.90 s
+       0 s|        0 vehs|   0.0 m/s|     0.00 s
+     600 s|    61170 vehs|  17.0 m/s|     2.56 s
+    1200 s|   125430 vehs|  15.6 m/s|     5.33 s
+    1800 s|   173760 vehs|  14.2 m/s|     9.08 s
+    2400 s|   220560 vehs|  12.3 m/s|    12.87 s
+    3000 s|   267330 vehs|  10.4 m/s|    16.81 s
+    3600 s|   322110 vehs|   8.5 m/s|    20.79 s
+    4200 s|   249960 vehs|   7.7 m/s|    24.45 s
+    4800 s|   190860 vehs|   8.0 m/s|    27.20 s
+    5400 s|   156390 vehs|   8.5 m/s|    29.52 s
+    6000 s|   120330 vehs|   9.6 m/s|    31.46 s
+    6600 s|    93360 vehs|  10.0 m/s|    32.93 s
+    7200 s|    70560 vehs|  11.1 m/s|    34.19 s
+    7800 s|    46410 vehs|  12.6 m/s|    35.16 s
+    8400 s|    26340 vehs|  15.4 m/s|    35.95 s
+    9000 s|    11850 vehs|  17.9 m/s|    36.48 s
+    9600 s|     5400 vehs|  20.8 m/s|    36.91 s
+    9960 s|     3870 vehs|  22.3 m/s|    37.06 s
  simulation finished
 results:
  average speed:  11.3 m/s
@@ -387,10 +388,10 @@ results:
 </div>
 <p>You can see that the simulation finishes in about 40 seconds. Now let’s visualize the results.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">display_image_in_notebook</span><span class="p">(</span><span class="s2">&quot;out/anim_network_fancy.gif&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -407,7 +408,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "44c676e0048241a7be397c847d2a6553", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "76675548120c4e548ac9e5a28b461ea2", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -420,10 +421,10 @@ results:
 </section>
 <section id="Validation">
 <h2>Validation<a class="headerlink" href="#Validation" title="Link to this heading">¶</a></h2>
-<p>The original TNTP dataset includes traffic volumes and travel time of every links based on static static assignment. Since <em>static</em> traffic assignment and <em>dynamic</em> traffic assignment of UXsim is substantially different, these results will not match exactly. Nevertheless, it would be worth comparing these results to see whether UXsim outputs plausible results or not.</p>
+<p>The original TNTP dataset includes traffic volumes and travel time of every links based on static traffic assignment with a BPR function. Since <em>static</em> traffic assignment and <em>dynamic</em> traffic assignment of UXsim is substantially different, these results will not match exactly. Nevertheless, it would be worth comparing these results to see whether UXsim outputs plausible results or not.</p>
 <p>First, read the link traffic states of UXsim.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_res_link</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">()</span>
@@ -432,7 +433,7 @@ results:
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -594,7 +595,7 @@ results:
 <p>And then TNTP data.</p>
 <p>NOTE: If you want to execute this notebook, please obtain <code class="docutils literal notranslate"><span class="pre">ChicagoSketch_flow.tntp</span></code> and place it to an appropriate path.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_tntp_flow</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;out/ChicagoSketch_flow.tntp&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -729,7 +730,7 @@ results:
 </div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
@@ -762,7 +763,7 @@ results:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
@@ -793,10 +794,11 @@ results:
 </div>
 <p>The above figures show the comparison of link traffic volume. Roughly speaking, they are mostly correlated.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;all links&quot;</span><span class="p">)</span>
+<span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
 <span class="n">subplot</span><span class="p">(</span><span class="mi">131</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
 <span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_sec</span><span class="p">,</span> <span class="n">res_uxsim_sec</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link travel time (sec)&quot;</span><span class="p">)</span>
@@ -817,21 +819,70 @@ results:
 
 <span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">show</span><span class="p">()</span>
-</pre></div>
+
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;links with non-small traffic volume only. This is because travel time of links with small traffic volume is almost equal to free flow travel time and may not be meaningful comparison&quot;</span><span class="p">)</span>
+<span class="n">threth</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">subplot</span><span class="p">(</span><span class="mi">131</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_sec</span><span class="p">[</span><span class="n">res_tntp_vol</span><span class="o">&gt;</span><span class="n">threth</span><span class="p">],</span> <span class="n">res_uxsim_sec</span><span class="p">[</span><span class="n">res_tntp_vol</span><span class="o">&gt;</span><span class="n">threth</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;UXsim link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">132</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_sec</span><span class="p">[</span><span class="n">res_tntp_vol</span><span class="o">&gt;</span><span class="n">threth</span><span class="p">],</span> <span class="n">res_uxsim_sec</span><span class="p">[</span><span class="n">res_tntp_vol</span><span class="o">&gt;</span><span class="n">threth</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">]],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;UXsim link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">133</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">res_tntp_sec</span><span class="p">[</span><span class="n">res_tntp_vol</span><span class="o">&gt;</span><span class="n">threth</span><span class="p">],</span> <span class="n">res_uxsim_sec</span><span class="p">[</span><span class="n">res_tntp_vol</span><span class="o">&gt;</span><span class="n">threth</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">600</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">600</span><span class="p">]],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">())</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;TNTP link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;UXsim link travel time (sec)&quot;</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="p">()</span>
+
+<span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+all links
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_08en_chicago_14_1.png" src="../_images/notebooks_demo_notebook_08en_chicago_14_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+links with non-small traffic volume only. This is because travel time of links with small traffic volume is almost equal to free flow travel time and may not be meaningful comparison
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_08en_chicago_14_0.png" src="../_images/notebooks_demo_notebook_08en_chicago_14_0.png" />
+<img alt="../_images/notebooks_demo_notebook_08en_chicago_14_3.png" src="../_images/notebooks_demo_notebook_08en_chicago_14_3.png" />
 </div>
 </div>
-<p>The above figures show the comparison of link traffic travel time. You can see a clear 45-degree line. But this would not be an interesting result: in both of UXsim and TNTP, most of the links have very small number of users, so free-flow travel time is output.</p>
-<p>Another noticeable feature is that many links in UXsim experienced substantially longer travel time than TNTP. This is a reasonable result, because in dynamic traffic assignment with hard traffic capacity, traffic congestion can grow significantly if the demand was large.</p>
+<p>The above figures show the comparison of link traffic travel time. You can see a clear 45-degree line, suggesting that both results are similar for many links.</p>
+<p>However, there is a noticeable difference that many links in UXsim experienced substantially longer travel time than TNTP. This is a reasonable result, because in dynamic traffic assignment with hard traffic capacity, traffic congestion can grow significantly and extend to the upstream links if the demand exceeds the capacity. This kind of realistic phenomena is not captured by the static traffic assignment model.</p>
 <p>Now we compare the total travel time in the entire network. As shown in below, the results are not so different. From these results, we can say that UXsim output a plausible result for this scenario.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total travel time (h)&quot;</span><span class="p">)</span>
@@ -851,6 +902,195 @@ UXsim:   347367.7123302059
 </pre></div></div>
 </div>
 </section>
+<section id="Code-to-translate-TNTP-files-to-UXsim-scenario">
+<h2>Code to translate TNTP files to UXsim scenario<a class="headerlink" href="#Code-to-translate-TNTP-files-to-UXsim-scenario" title="Link to this heading">¶</a></h2>
+<p>Below if the code used to generate <code class="docutils literal notranslate"><span class="pre">chicago_sketch.uxsim_scenario</span></code> from TNTP datasets. To execute this code, please obtain TNTP files from <a class="reference external" href="https://github.com/bstabler/TransportationNetworks">TNTP repo</a> and place them to appropriate path in advance. This code is applicable to other TNTP files with slight modifications.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1">############################################</span>
+<span class="c1"># tntp parser customized for Chicago-sketch</span>
+<span class="c1">############################################</span>
+
+<span class="k">def</span> <span class="nf">import_links</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modified from `parsing networks in Python.ipynb` in https://github.com/bstabler/TransportationNetworks</span>
+<span class="sd">    Credit: Transportation Networks for Research Core Team. Transportation Networks for Research. https://github.com/bstabler/TransportationNetworks. Accessed 2021-10-01.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">trimmed</span><span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">trimmed</span>
+
+    <span class="c1"># And drop the silly first andlast columns</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;~&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">net</span>
+
+<span class="k">def</span> <span class="nf">import_nodes</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modified from `parsing networks in Python.ipynb` in https://github.com/bstabler/TransportationNetworks</span>
+<span class="sd">    Credit: Transportation Networks for Research Core Team. Transportation Networks for Research. https://github.com/bstabler/TransportationNetworks. Accessed 2021-10-01.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">trimmed</span><span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">trimmed</span>
+
+    <span class="n">net</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;;&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">net</span>
+
+<span class="k">def</span> <span class="nf">import_odmatrix_chicago</span><span class="p">(</span><span class="n">matfile</span><span class="p">,</span> <span class="n">nodefile</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modified from `parsing networks in Python.ipynb` in https://github.com/bstabler/TransportationNetworks</span>
+<span class="sd">    Credit: Transportation Networks for Research Core Team. Transportation Networks for Research. https://github.com/bstabler/TransportationNetworks. Accessed 2021-10-01.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">matfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">all_rows</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="n">all_rows</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;Origin&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">blocks</span><span class="p">)):</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">dests</span> <span class="o">=</span> <span class="n">orig</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">orig</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">orig</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="o">+</span><span class="n">a</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;}&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">dests</span><span class="p">]</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">destinations</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">destinations</span><span class="p">,</span> <span class="o">**</span><span class="n">i</span><span class="p">}</span>
+        <span class="n">matrix</span><span class="p">[</span><span class="n">orig</span><span class="p">]</span> <span class="o">=</span> <span class="n">destinations</span>
+    <span class="n">zones</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="c1"># mat = np.zeros((zones, zones))</span>
+    <span class="c1"># for i in range(zones):</span>
+    <span class="c1">#     for j in range(zones):</span>
+    <span class="c1">#         # We map values to a index i-1, as Numpy is base 0</span>
+    <span class="c1">#         mat[i, j] = matrix.get(i+1,{}).get(j+1,0)</span>
+
+    <span class="n">mat</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">zones</span><span class="p">)]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">zones</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">zones</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">zones</span><span class="p">):</span>
+            <span class="c1"># We map values to a index i-1, as Python is base 0</span>
+            <span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">zones</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">nodelist</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">387</span><span class="p">)]</span><span class="c1">#list(import_nodes(nodefile)[&quot;node&quot;])</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">nodelist</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;origin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodelist</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;origin&quot;</span><span class="p">]</span><span class="o">+</span><span class="n">nodelist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+<span class="n">df_nodes</span> <span class="o">=</span> <span class="n">import_nodes</span><span class="p">(</span><span class="s2">&quot;_private_files/ChicagoSketch_node.tntp&quot;</span><span class="p">)</span>
+<span class="n">df_links</span> <span class="o">=</span> <span class="n">import_links</span><span class="p">(</span><span class="s2">&quot;_private_files/ChicagoSketch_net.tntp&quot;</span><span class="p">)</span>
+<span class="n">df_demand</span> <span class="o">=</span> <span class="n">import_odmatrix_chicago</span><span class="p">(</span><span class="s2">&quot;_private_files/ChicagoSketch_trips.tntp&quot;</span><span class="p">,</span> <span class="s2">&quot;_private_files/ChicagoSketch_node.tntp&quot;</span><span class="p">)</span>
+
+<span class="c1">############################################</span>
+<span class="c1"># prepare for deleting dummy links/nodes</span>
+<span class="c1">############################################</span>
+
+<span class="n">map_dummy2real</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">map_real2dummy</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lange</span><span class="p">(</span><span class="n">df_links</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">49500</span><span class="p">:</span>    <span class="c1">#dummy link between dummy node and real node</span>
+        <span class="k">if</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;init_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">map_dummy2real</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;init_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;term_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]:</span>
+            <span class="c1">#print(&quot;delete: link&quot;, (df_links[&quot;init_node&quot;][i], df_links[&quot;term_node&quot;][i]), end=&quot;, &quot;)</span>
+            <span class="n">map_dummy2real</span><span class="p">[</span><span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;init_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;term_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="c1">############################################</span>
+<span class="c1"># uxsim setup</span>
+<span class="c1">############################################</span>
+
+
+<span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">deltan</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+    <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">vehicle_logging_timestep_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">meta_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DATA SOURCE AND LICENCE&quot;</span><span class="p">:</span> <span class="s2">&quot;Chicago-Sketch network. This is based on https://github.com/bstabler/TransportationNetworks/tree/master/Chicago-Sketch by Transportation Networks for Research Core Team. Users need to follow their licence. Especially, this data is for academic research purposes only, and users must indicate the source of any dataset they are using in any publication that relies on any of the datasets provided in this web site.&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_nodes</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">map_dummy2real</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_nodes</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_nodes</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_links</span><span class="p">)):</span>
+    <span class="n">start_node</span> <span class="o">=</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;init_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">end_node</span> <span class="o">=</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;term_node&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">start_node</span> <span class="ow">in</span> <span class="n">map_dummy2real</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">end_node</span> <span class="ow">in</span> <span class="n">map_dummy2real</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    <span class="c1">#delete dummy node</span>
+        <span class="k">continue</span>
+
+    <span class="n">length</span> <span class="o">=</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mf">1609.34</span>  <span class="c1">#mile to m</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">capacity</span> <span class="o">=</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;capacity&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mi">3600</span>
+    <span class="n">n_lanes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">capacity</span><span class="o">/</span><span class="mf">0.5</span><span class="p">)</span> <span class="c1">#based on the assumption that flow capacity per lane is 0.5 veh/s in arterial roads</span>
+    <span class="k">if</span> <span class="n">n_lanes</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n_lanes</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;link_type&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>   <span class="c1">#highway</span>
+        <span class="n">n_lanes</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="n">free_flow_time</span> <span class="o">=</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;free_flow_time&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mi">60</span>
+    <span class="k">if</span> <span class="n">free_flow_time</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="n">length</span><span class="o">/</span><span class="n">free_flow_time</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="k">if</span> <span class="n">free_flow_speed</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="k">elif</span> <span class="n">free_flow_speed</span> <span class="o">&gt;</span> <span class="mi">40</span><span class="p">:</span>
+        <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="mi">40</span>
+
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">start_node</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">end_node</span><span class="p">),</span> <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">free_flow_speed</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="n">n_lanes</span><span class="p">)</span>
+
+
+<span class="n">demand_multipiler</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mf">0.85</span>  <span class="c1">#compensete some demands that are filtered out by pre-processing</span>
+<span class="n">demand_threthhold</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1">#delete too small demand (&lt;= deltan) as they cause peculiar traffic pattern at the beginning of simulation</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_demand</span><span class="p">))):</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span> <span class="ow">in</span> <span class="n">map_dummy2real</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">origin</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">map_dummy2real</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">origin</span><span class="p">)])</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_demand</span><span class="p">)):</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span> <span class="ow">in</span> <span class="n">map_dummy2real</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">map_dummy2real</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">destination</span><span class="p">)])</span>
+
+        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="n">destination</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">demand</span> <span class="o">=</span> <span class="n">df_demand</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">demand_multipiler</span>
+        <span class="k">if</span> <span class="n">demand</span> <span class="o">&gt;</span> <span class="n">demand_threthhold</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">demand</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;inconsistent demand:&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">demand</span><span class="p">)</span>
+
+<span class="n">W</span><span class="o">.</span><span class="n">save_scenario</span><span class="p">(</span><span class="s2">&quot;out/chicago_sketch.uxsim_scenario&quot;</span><span class="p">)</span>
+
+<span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
+
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_fancy</span><span class="p">(</span><span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
 </section>
 
         </article>
@@ -863,7 +1103,7 @@ UXsim:   347367.7123302059
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Simulation Mechanism</div>
+                <div class="title">Simulation Mechanism: Summary</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -911,6 +1151,7 @@ UXsim:   347367.7123302059
 <li><a class="reference internal" href="#">Huge-scale simulation using Chicago-Sketch dataset</a><ul>
 <li><a class="reference internal" href="#Simulation">Simulation</a></li>
 <li><a class="reference internal" href="#Validation">Validation</a></li>
+<li><a class="reference internal" href="#Code-to-translate-TNTP-files-to-UXsim-scenario">Code to translate TNTP files to UXsim scenario</a></li>
 </ul>
 </li>
 </ul>

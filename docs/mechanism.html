@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Technical Reference" href="tech_ref.html" /><link rel="prev" title="Huge-scale simulation using Chicago-Sketch dataset" href="notebooks/demo_notebook_08en_chicago.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Simulation Mechanism: Details" href="mechanism_detailed.html" /><link rel="prev" title="Huge-scale simulation using Chicago-Sketch dataset" href="notebooks/demo_notebook_08en_chicago.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>Simulation Mechanism - UXsim: Traffic Simulation in Python v1 documentation</title>
+        <title>Simulation Mechanism: Summary - UXsim: Traffic Simulation in Python v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -232,7 +232,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Simulation Mechanism</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mechanism_detailed.html">Simulation Mechanism: Details</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.Node.html">uxsim.Node</a></li>
@@ -294,10 +295,10 @@ gtag('config', 'UA-111714220-1');
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="simulation-mechanism">
-<h1>Simulation Mechanism<a class="headerlink" href="#simulation-mechanism" title="Link to this heading">¶</a></h1>
+          <section id="simulation-mechanism-summary">
+<h1>Simulation Mechanism: Summary<a class="headerlink" href="#simulation-mechanism-summary" title="Link to this heading">¶</a></h1>
 <p>In this page, we briefly explain the models and logics behind UXsim.
-If you want to know the details, please refer to <a class="reference external" href="https://arxiv.org/pdf/2309.17114.pdf">arXiv preprint on UXsim</a>, the code, the original articles, or  <a class="reference external" href="https://www.coronasha.co.jp/np/isbn/9784339052794/">Japanese textbook on traffic simulation</a>.</p>
+If you want to know more details, please refer to <a class="reference external" href="https://arxiv.org/pdf/2309.17114.pdf">arXiv preprint on UXsim</a>, the code, the original articles, or  <a class="reference external" href="https://www.coronasha.co.jp/np/isbn/9784339052794/">Japanese textbook on traffic simulation</a>.</p>
 <section id="models">
 <h2>Models<a class="headerlink" href="#models" title="Link to this heading">¶</a></h2>
 <p>UXsim computes network traffic flow dynamics by combining following models:</p>
@@ -308,7 +309,7 @@ If you want to know the details, please refer to <a class="reference external" h
 </ul>
 </section>
 <section id="key-inputs">
-<h2>Key inputs<a class="headerlink" href="#key-inputs" title="Link to this heading">¶</a></h2>
+<h2>Key Inputs<a class="headerlink" href="#key-inputs" title="Link to this heading">¶</a></h2>
 <p>UXsim’s key inputs (i.e., simulation scenario parameters) are as follows:</p>
 <ul class="simple">
 <li><p>Reaction time of vehicles (<cite>reaction_time</cite> argument of <cite>World</cite>). This value determines the simulation time step width. This is a global parameter.</p></li>
@@ -321,32 +322,22 @@ If you want to know the details, please refer to <a class="reference external" h
 </ul>
 </section>
 <section id="program-structure">
-<h2>Program structure<a class="headerlink" href="#program-structure" title="Link to this heading">¶</a></h2>
+<h2>Program Structure<a class="headerlink" href="#program-structure" title="Link to this heading">¶</a></h2>
 <p>Class diagram of UXsim: the relationship between classes and their key properties.</p>
 <img alt="_images/class_diagram.png" src="_images/class_diagram.png" />
 </section>
 <section id="computation-procedure">
-<h2>Computation procedure<a class="headerlink" href="#computation-procedure" title="Link to this heading">¶</a></h2>
+<h2>Computation Procedure<a class="headerlink" href="#computation-procedure" title="Link to this heading">¶</a></h2>
 <p>Activity diagram of UXsim: the overall computation procedure of UXsim.</p>
 <img alt="_images/activity_diagram.png" src="_images/activity_diagram.png" />
 <p>Activity diagram of a specific vehicle in UXsim: the computation procedure for each vehicle.</p>
 <img alt="_images/activity_diagram_veh.png" src="_images/activity_diagram_veh.png" />
 </section>
-<section id="the-details-on-traffic-flow-model-on-link">
-<h2>The details on traffic flow model on link<a class="headerlink" href="#the-details-on-traffic-flow-model-on-link" title="Link to this heading">¶</a></h2>
-<section id="traffic-flow-model">
-<h3>Traffic Flow Model<a class="headerlink" href="#traffic-flow-model" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p>The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.</p></li>
-<li><p>Fundamental diagram parameters such as <code class="docutils literal notranslate"><span class="pre">free_flow_speed</span></code>, <code class="docutils literal notranslate"><span class="pre">jam_density</span></code> (or <code class="docutils literal notranslate"><span class="pre">jam_density_per_lane</span></code>), and <code class="docutils literal notranslate"><span class="pre">number_of_lanes</span></code> determine the link’s flow characteristics. Reaction time of drivers <code class="docutils literal notranslate"><span class="pre">REACTION_TIME</span></code> is a global parameter.</p></li>
-<li><p>Real-time link status for external reference is maintained with attributes <code class="docutils literal notranslate"><span class="pre">speed</span></code>, <code class="docutils literal notranslate"><span class="pre">density</span></code>, <code class="docutils literal notranslate"><span class="pre">flow</span></code>, <code class="docutils literal notranslate"><span class="pre">num_vehicles</span></code>, and <code class="docutils literal notranslate"><span class="pre">num_vehicles_queue</span></code>.</p></li>
-</ul>
-</section>
 <section id="traffic-flow-model-parameters">
-<h3>Traffic Flow Model Parameters<a class="headerlink" href="#traffic-flow-model-parameters" title="Link to this heading">¶</a></h3>
+<h2>Traffic Flow Model Parameters<a class="headerlink" href="#traffic-flow-model-parameters" title="Link to this heading">¶</a></h2>
+<p>The following parameters are used in UXsim, defined through <cite>Link</cite>, <cite>World</cite>, and <cite>Node</cite> (*: input, **: alternative input).
+If you are not familiar with the traffic flow theory, it is recommended that you adjust only <code class="docutils literal notranslate"><span class="pre">free_flow_speed</span></code> and <code class="docutils literal notranslate"><span class="pre">number_of_lanes</span></code> for the traffic flow model parameters, leaving the other parameters at their default values.</p>
 <ul class="simple">
-<li><dl class="simple">
-<dt>The following parameters are used in UXsim, defined through <cite>Link</cite>, <cite>World</cite>, and <cite>Node</cite> (*: input, **: alternative input).</dt><dd><ul>
 <li><p>* <code class="docutils literal notranslate"><span class="pre">free_flow_speed</span></code> (m/s)</p></li>
 <li><p>* <code class="docutils literal notranslate"><span class="pre">jam_density</span></code> (veh/m/LINK)</p></li>
 <li><p>** <code class="docutils literal notranslate"><span class="pre">jam_density_per_lane</span></code> (veh/m/lane)</p></li>
@@ -363,71 +354,7 @@ If you want to know the details, please refer to <a class="reference external" h
 <li><p>* <code class="docutils literal notranslate"><span class="pre">capacity_in</span></code>, <code class="docutils literal notranslate"><span class="pre">capacity_out</span></code>: bottleneck capacity at beginning/end of link (veh/s/LINK)</p></li>
 <li><p>* <code class="docutils literal notranslate"><span class="pre">Node.flow_capacity</span></code>: node flow capacity (veh/s/LINK-LIKE)</p></li>
 </ul>
-</dd>
-</dl>
-</li>
-</ul>
 <img alt="_images/fundamental_diagram.png" src="_images/fundamental_diagram.png" />
-<ul class="simple">
-<li><p>If you are not familiar with the traffic flow theory, it is recommended that you adjust only <code class="docutils literal notranslate"><span class="pre">free_flow_speed</span></code> and <code class="docutils literal notranslate"><span class="pre">number_of_lanes</span></code> for the traffic flow model parameters, leaving the other parameters at their default values.</p></li>
-</ul>
-</section>
-<section id="capacity-and-bottlenecks">
-<h3>Capacity and Bottlenecks<a class="headerlink" href="#capacity-and-bottlenecks" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">capacity_out</span></code> and <code class="docutils literal notranslate"><span class="pre">capacity_in</span></code> parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.</p></li>
-<li><p>These capacities can represent bottlenecks at the beginning or end of the link.</p></li>
-</ul>
-</section>
-<section id="connection-to-node-model">
-<h3>Connection to Node Model<a class="headerlink" href="#connection-to-node-model" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p>At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.</p></li>
-<li><p>At the upstream end of a receiving link, all lanes can accept vehicles.</p></li>
-</ul>
-</section>
-<section id="parameter-adjustments">
-<h3>Parameter Adjustments<a class="headerlink" href="#parameter-adjustments" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p>Some traffic flow model parameters like <code class="docutils literal notranslate"><span class="pre">free_flow_speed</span></code>, <code class="docutils literal notranslate"><span class="pre">jam_density</span></code>, <code class="docutils literal notranslate"><span class="pre">capacity_out</span></code>, <code class="docutils literal notranslate"><span class="pre">capacity_in</span></code>, and <code class="docutils literal notranslate"><span class="pre">merge_priority</span></code> can be altered during simulation to reflect changing conditions.</p></li>
-</ul>
-</section>
-<section id="details-on-multi-lane-model">
-<h3>Details on Multi-lane model<a class="headerlink" href="#details-on-multi-lane-model" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><dl class="simple">
-<dt>Link model:</dt><dd><ul>
-<li><p>Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.</p></li>
-<li><p>Links have a <code class="docutils literal notranslate"><span class="pre">lanes</span></code> attribute representing the number of lanes.</p></li>
-<li><p>Each vehicle has a <code class="docutils literal notranslate"><span class="pre">lane</span></code> attribute.</p></li>
-<li><p>Each vehicle follows the leader vehicle in the same lane, i.e., the vehicle <code class="docutils literal notranslate"><span class="pre">lanes</span></code> steps ahead on the link.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Node model:</dt><dd><ul>
-<li><dl class="simple">
-<dt>Sending links:</dt><dd><ul>
-<li><p>Vehicles in all lanes at the downstream end of the link have the right to be sent out.</p></li>
-<li><p>However, to ensure link FIFO, vehicles are tried to be sent out in the order they entered the link. If a vehicle cannot be accepted, the outflow from that link stops.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Receiving links:</dt><dd><ul>
-<li><p>All lanes at the upstream end of the link can accept vehicles.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-</section>
 </section>
 </section>
 
@@ -436,12 +363,12 @@ If you want to know the details, please refer to <a class="reference external" h
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="tech_ref.html">
+          <a class="next-page" href="mechanism_detailed.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Technical Reference</div>
+                <div class="title">Simulation Mechanism: Details</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -486,20 +413,12 @@ If you want to know the details, please refer to <a class="reference external" h
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Simulation Mechanism</a><ul>
+<li><a class="reference internal" href="#">Simulation Mechanism: Summary</a><ul>
 <li><a class="reference internal" href="#models">Models</a></li>
-<li><a class="reference internal" href="#key-inputs">Key inputs</a></li>
-<li><a class="reference internal" href="#program-structure">Program structure</a></li>
-<li><a class="reference internal" href="#computation-procedure">Computation procedure</a></li>
-<li><a class="reference internal" href="#the-details-on-traffic-flow-model-on-link">The details on traffic flow model on link</a><ul>
-<li><a class="reference internal" href="#traffic-flow-model">Traffic Flow Model</a></li>
+<li><a class="reference internal" href="#key-inputs">Key Inputs</a></li>
+<li><a class="reference internal" href="#program-structure">Program Structure</a></li>
+<li><a class="reference internal" href="#computation-procedure">Computation Procedure</a></li>
 <li><a class="reference internal" href="#traffic-flow-model-parameters">Traffic Flow Model Parameters</a></li>
-<li><a class="reference internal" href="#capacity-and-bottlenecks">Capacity and Bottlenecks</a></li>
-<li><a class="reference internal" href="#connection-to-node-model">Connection to Node Model</a></li>
-<li><a class="reference internal" href="#parameter-adjustments">Parameter Adjustments</a></li>
-<li><a class="reference internal" href="#details-on-multi-lane-model">Details on Multi-lane model</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

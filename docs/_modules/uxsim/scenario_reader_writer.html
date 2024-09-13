@@ -231,7 +231,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
@@ -295,6 +296,7 @@ gtag('config', 'UA-111714220-1');
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+<span class="kn">import</span> <span class="nn">dill</span> <span class="k">as</span> <span class="nn">pickle</span>
 
 <div class="viewcode-block" id="demand_info_record">
 <a class="viewcode-back" href="../../_autosummary/uxsim.scenario_reader_writer.html#uxsim.scenario_reader_writer.demand_info_record">[docs]</a>
@@ -442,7 +444,6 @@ gtag('config', 'UA-111714220-1');
     
     <span class="c1"># from pprint import pprint</span>
     <span class="c1"># pprint(out)</span>
-    <span class="kn">import</span> <span class="nn">pickle</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
 
@@ -470,7 +471,6 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        If True, load demand information. Default is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="kn">import</span> <span class="nn">pickle</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">dat</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     

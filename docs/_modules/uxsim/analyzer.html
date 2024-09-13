@@ -231,7 +231,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
@@ -1810,13 +1811,13 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">df_areas2areas</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_areas2areas</span></div>
 
-    
+
 <div class="viewcode-block" id="Analyzer.area_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.area_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">area_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">areas</span><span class="p">,</span> <span class="n">area_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">border_include</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute traffic stats in area and return as pandas.DataFrame.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        areas : list</span>
@@ -1825,72 +1826,87 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The list of names of areas.</span>
 <span class="sd">        border_include : bool, optional</span>
 <span class="sd">            If set to True, the links on the border of the area are included in the analysis. Default is True.</span>
-<span class="sd">            </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pd.DataFrame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Precompute DataFrames</span>
+        <span class="n">df_links</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">()</span>
+        <span class="n">df_veh_link</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">vehicles_to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Prepare areas as sets for fast lookup</span>
+        <span class="n">areas_set</span> <span class="o">=</span> <span class="p">[{</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">area</span><span class="p">}</span> <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">]</span>
+
+        <span class="c1"># Initialize result lists</span>
         <span class="n">n_links_rec</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">traffic_volume_rec</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">vehicles_remain_rec</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">total_travel_time_rec</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">average_delay_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">average_speed_rec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">vehicle_density_rec</span> <span class="o">=</span> <span class="p">[]</span>
 
-
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">area</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">areas</span><span class="p">):</span>
-            <span class="n">area</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">:</span><span class="mi">0</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">area</span><span class="p">}</span>
-
-            <span class="n">df</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">()</span>
-            <span class="n">df_veh_link</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">vehicles_to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">])</span>
-
-            <span class="n">n_links</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">traffic_volume</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">vehicles_remain</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">total_travel_time</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">total_free_time</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">average_delay</span> <span class="o">=</span> <span class="mi">0</span>
-
+        <span class="c1"># Vectorized approach to process all areas at once</span>
+        <span class="k">for</span> <span class="n">area_set</span> <span class="ow">in</span> <span class="n">areas_set</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">border_include</span><span class="p">:</span>
-                <span class="n">rows</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;start_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="o">|</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;end_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;start_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area_set</span><span class="p">)</span> <span class="o">|</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;end_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area_set</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">rows</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;start_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;end_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
-            <span class="n">links</span> <span class="o">=</span> <span class="p">{</span><span class="n">l</span><span class="p">:</span><span class="mi">0</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">}</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;start_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area_set</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">df_links</span><span class="p">[</span><span class="s2">&quot;end_node&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">area_set</span><span class="p">)</span>
 
-            <span class="n">n_links</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
-            <span class="n">traffic_volume</span> <span class="o">=</span> <span class="n">df_veh_link</span><span class="p">[</span><span class="n">df_veh_link</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">links</span><span class="p">)]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
-            <span class="n">vehicles_remain</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;vehicles_remain&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">links</span> <span class="o">=</span> <span class="n">df_links</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+            <span class="n">n_links</span> <span class="o">=</span> <span class="n">links</span><span class="o">.</span><span class="n">size</span>
+            <span class="n">traffic_volume</span> <span class="o">=</span> <span class="n">df_veh_link</span><span class="p">[</span><span class="n">df_veh_link</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">links</span><span class="p">)][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span> <span class="o">*</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
+            <span class="n">vehicles_remain</span> <span class="o">=</span> <span class="n">df_links</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="s2">&quot;vehicles_remain&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
             <span class="k">if</span> <span class="n">traffic_volume</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">total_travel_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;vehicles_remain&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]))</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="n">total_free_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;free_travel_time&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]</span><span class="o">-</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;vehicles_remain&quot;</span><span class="p">][</span><span class="n">rows</span><span class="p">]))</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="n">average_delay</span> <span class="o">=</span> <span class="n">total_travel_time</span><span class="o">/</span><span class="n">total_free_time</span> <span class="o">-</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">average_delay</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">average_delay</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">traffic_volume_rows</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">df_links</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="s2">&quot;traffic_volume&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df_links</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="s2">&quot;vehicles_remain&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">total_travel_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df_links</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="s2">&quot;average_travel_time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">traffic_volume_rows</span><span class="p">)</span>
+                <span class="n">total_free_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df_links</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="s2">&quot;free_travel_time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">traffic_volume_rows</span><span class="p">)</span>
+                <span class="n">average_delay</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">total_travel_time</span> <span class="o">/</span> <span class="n">total_free_time</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+                <span class="c1"># Average speed calculation: total distance / total time</span>
+                <span class="n">total_distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df_links</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">traffic_volume_rows</span><span class="p">)</span>
+                <span class="n">average_speed</span> <span class="o">=</span> <span class="n">total_distance</span> <span class="o">/</span> <span class="n">total_travel_time</span> <span class="k">if</span> <span class="n">total_travel_time</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+                <span class="c1"># Vehicle density calculation: total number of vehicles / total link length</span>
+                <span class="n">total_link_length</span> <span class="o">=</span> <span class="n">df_links</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">vehicle_density</span> <span class="o">=</span> <span class="n">traffic_volume</span> <span class="o">/</span> <span class="n">total_link_length</span> <span class="k">if</span> <span class="n">total_link_length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">total_travel_time</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">total_free_time</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">average_delay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                <span class="n">average_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                <span class="n">vehicle_density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-            <span class="c1">#print(f&quot;{n_links=}, {traffic_volume=}, {vehicles_remain=}, {total_travel_time=}, {total_free_time=}, {average_delay=}&quot;)</span>
-
+            <span class="c1"># Append the results to lists</span>
             <span class="n">n_links_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_links</span><span class="p">)</span>
             <span class="n">traffic_volume_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">traffic_volume</span><span class="p">)</span>
             <span class="n">vehicles_remain_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vehicles_remain</span><span class="p">)</span>
             <span class="n">total_travel_time_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_travel_time</span><span class="p">)</span>
             <span class="n">average_delay_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">average_delay</span><span class="p">)</span>
+            <span class="n">average_speed_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">average_speed</span><span class="p">)</span>
+            <span class="n">vehicle_density_rec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vehicle_density</span><span class="p">)</span>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="c1"># Create DataFrame from the results</span>
+        <span class="n">df_result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
             <span class="s2">&quot;area&quot;</span><span class="p">:</span> <span class="n">area_names</span><span class="p">,</span>
             <span class="s2">&quot;n_links&quot;</span><span class="p">:</span> <span class="n">n_links_rec</span><span class="p">,</span>
             <span class="s2">&quot;traffic_volume&quot;</span><span class="p">:</span> <span class="n">traffic_volume_rec</span><span class="p">,</span>
             <span class="s2">&quot;vehicles_remain&quot;</span><span class="p">:</span> <span class="n">vehicles_remain_rec</span><span class="p">,</span>
             <span class="s2">&quot;total_travel_time&quot;</span><span class="p">:</span> <span class="n">total_travel_time_rec</span><span class="p">,</span>
-            <span class="s2">&quot;average_delay&quot;</span><span class="p">:</span> <span class="n">average_delay_rec</span>
+            <span class="s2">&quot;average_delay&quot;</span><span class="p">:</span> <span class="n">average_delay_rec</span><span class="p">,</span>
+            <span class="s2">&quot;average_speed&quot;</span><span class="p">:</span> <span class="n">average_speed_rec</span><span class="p">,</span>
+            <span class="s2">&quot;vehicle_density&quot;</span><span class="p">:</span> <span class="n">vehicle_density_rec</span><span class="p">,</span>
         <span class="p">})</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">df_area</span> <span class="o">=</span> <span class="n">df</span>
-        
+
+        <span class="n">s</span><span class="o">.</span><span class="n">df_area</span> <span class="o">=</span> <span class="n">df_result</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_area</span></div>
 
-                       
+
 <div class="viewcode-block" id="Analyzer.vehicle_groups_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.vehicle_groups_to_pandas">[docs]</a>
     <span class="k">def</span> <span class="nf">vehicle_groups_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">group_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -2026,9 +2042,9 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">link_analysis_coarse</span><span class="p">()</span>
 
-        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;start_node&quot;</span><span class="p">,</span> <span class="s2">&quot;end_node&quot;</span><span class="p">,</span> <span class="s2">&quot;traffic_volume&quot;</span><span class="p">,</span> <span class="s2">&quot;vehicles_remain&quot;</span><span class="p">,</span> <span class="s2">&quot;free_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;stddiv_travel_time&quot;</span><span class="p">]]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;start_node&quot;</span><span class="p">,</span> <span class="s2">&quot;end_node&quot;</span><span class="p">,</span> <span class="s2">&quot;traffic_volume&quot;</span><span class="p">,</span> <span class="s2">&quot;vehicles_remain&quot;</span><span class="p">,</span> <span class="s2">&quot;free_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;stddiv_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">]]</span>
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_volume</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_remain</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_free</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_ave</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_std</span><span class="p">[</span><span class="n">l</span><span class="p">]])</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_volume</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_remain</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_free</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_ave</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_std</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="p">])</span>
         <span class="n">s</span><span class="o">.</span><span class="n">df_linkc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_linkc</span></div>
 

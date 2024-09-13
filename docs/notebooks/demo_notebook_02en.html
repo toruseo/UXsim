@@ -233,7 +233,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
@@ -453,27 +454,28 @@ simulation setting:
  number of platoons:     10164
  number of links:        460
  number of nodes:        121
- setup time:             1.52 s
+ setup time:             11.29 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|     7155 vehs|  11.3 m/s|     2.23 s
-    1200 s|    13080 vehs|  10.4 m/s|     5.41 s
-    1800 s|    16025 vehs|   9.6 m/s|     9.08 s
-    2400 s|    19150 vehs|   9.4 m/s|    12.79 s
-    3000 s|    19880 vehs|   8.6 m/s|    16.55 s
-    3600 s|    22265 vehs|   8.3 m/s|    20.10 s
-    4200 s|    13560 vehs|  10.5 m/s|    22.97 s
-    4800 s|     3610 vehs|  14.8 m/s|    24.51 s
-    5400 s|       45 vehs|  16.7 m/s|    24.96 s
-    5995 s|        0 vehs|   0.0 m/s|    25.08 s
+     600 s|     7175 vehs|  11.7 m/s|     3.63 s
+    1200 s|    13290 vehs|  10.6 m/s|     9.32 s
+    1800 s|    15685 vehs|   9.6 m/s|    15.46 s
+    2400 s|    19230 vehs|   9.1 m/s|    22.05 s
+    3000 s|    20325 vehs|   8.8 m/s|    28.21 s
+    3600 s|    22925 vehs|   7.6 m/s|    34.75 s
+    4200 s|    14525 vehs|  10.0 m/s|    39.50 s
+    4800 s|     4440 vehs|  13.9 m/s|    42.22 s
+    5400 s|       70 vehs|  15.0 m/s|    42.81 s
+    5995 s|        0 vehs|   0.0 m/s|    42.98 s
  simulation finished
 results:
- average speed:  10.5 m/s
+ average speed:  10.3 m/s
  number of completed trips:      50820 / 50820
- average travel time of trips:   1386.5 s
- average delay of trips:         634.1 s
- delay ratio:                    0.457
+ average travel time of trips:   1413.4 s
+ average delay of trips:         661.0 s
+ delay ratio:                    0.468
+ total distance traveled:        737340752.1 m
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -502,7 +504,7 @@ results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
- drawing trajectories in consecutive links...
+ drawing trajectories...
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -517,7 +519,7 @@ results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
- drawing trajectories in consecutive links...
+ drawing trajectories...
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -539,7 +541,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5e501ba00a164b279e82cfb2d9d71f97", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "065e9171fe084cf5bea7dff538ba85dd", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -607,27 +609,28 @@ simulation setting:
  number of platoons:     10164
  number of links:        460
  number of nodes:        121
- setup time:             61.09 s
+ setup time:             94.95 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|     7170 vehs|  11.4 m/s|     2.27 s
-    1200 s|    13025 vehs|  11.1 m/s|     5.76 s
-    1800 s|    15135 vehs|  11.3 m/s|     9.30 s
-    2400 s|    16935 vehs|  11.3 m/s|    12.76 s
-    3000 s|    16025 vehs|  11.7 m/s|    16.12 s
-    3600 s|    16500 vehs|  12.3 m/s|    18.90 s
-    4200 s|     6785 vehs|  14.0 m/s|    20.93 s
-    4800 s|      220 vehs|  15.0 m/s|    21.64 s
-    5400 s|        0 vehs|   0.0 m/s|    21.87 s
-    5995 s|        0 vehs|   0.0 m/s|    21.99 s
+     600 s|     7175 vehs|  11.7 m/s|     4.14 s
+    1200 s|    13260 vehs|  11.0 m/s|    10.09 s
+    1800 s|    15255 vehs|  10.5 m/s|    16.70 s
+    2400 s|    17760 vehs|  11.3 m/s|    23.60 s
+    3000 s|    16695 vehs|  11.2 m/s|    29.99 s
+    3600 s|    16970 vehs|  11.5 m/s|    35.63 s
+    4200 s|     7560 vehs|  13.9 m/s|    39.36 s
+    4800 s|      315 vehs|  15.2 m/s|    40.48 s
+    5400 s|        0 vehs|   0.0 m/s|    40.69 s
+    5995 s|        0 vehs|   0.0 m/s|    40.87 s
  simulation finished
 results:
- average speed:  12.4 m/s
+ average speed:  12.1 m/s
  number of completed trips:      50820 / 50820
- average travel time of trips:   1114.7 s
- average delay of trips:         362.3 s
- delay ratio:                    0.325
+ average travel time of trips:   1147.6 s
+ average delay of trips:         395.2 s
+ delay ratio:                    0.344
+ total distance traveled:        701821587.2 m
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -656,7 +659,7 @@ results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
- drawing trajectories in consecutive links...
+ drawing trajectories...
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -671,7 +674,7 @@ results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
- drawing trajectories in consecutive links...
+ drawing trajectories...
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -693,7 +696,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "64f7ddf6c1864fcf8618f65914e4478c", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f4534b88a02d475a89d1dde5153b3f3a", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -774,14 +777,6 @@ toll case
 </pre></div></div>
 </div>
 <p>You can see that the number of highway users were decreased, and the overall traffic efficiency was improved.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 

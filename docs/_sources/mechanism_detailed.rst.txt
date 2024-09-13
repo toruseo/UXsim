@@ -1,0 +1,335 @@
+Simulation Mechanism: Details
+=============================
+
+The below is further details on the mechanism and program structure with reference to the code elements.
+
+Overall Structure
+-----------------
+
+UXsim is built upon several core classes that represent different elements of a traffic network:
+
+- **Node**: Represents intersections or junctions where vehicles can enter, exit, or transfer between links.
+- **Link**: Represents road segments connecting nodes, modeling traffic flow dynamics.
+- **Vehicle**: Represents individual vehicles or platoons moving through the network.
+- **RouteChoice**: Handles route choice computations, allowing vehicles to select routes based on current traffic conditions.
+- **World**: The simulation environment that contains all nodes, links, vehicles, and manages the simulation execution.
+- **Route**: Represents a specific path (sequence of links) through the network.
+
+Node Class
+~~~~~~~~~~
+
+The `Node` class models intersections or junctions in the network. Each node has:
+
+- **Position**: Coordinates `x` and `y` for visualization.
+- **Signal Control**: Nodes can have traffic signals, specified by the `signal` attribute, which is a list representing signal phases (e.g., `[60, 10, 50, 5]` for four phases with respective durations in seconds).
+- **Flow Capacity**: Optionally limits the number of vehicles that can pass through the node (`flow_capacity`).
+- **Vehicle Management**:
+
+  - **Generation Queue**: A queue (`generation_queue`) for vehicles waiting to enter the network.
+  - **Incoming Vehicles**: A list (`incoming_vehicles`) of vehicles requesting to move to another link via this node.
+  
+- **Methods**:
+
+  - `signal_control()`: Updates the signal phase based on elapsed time.
+  - `flow_capacity_update()`: Updates the remaining flow capacity at the node.
+  - `generate()`: Moves vehicles from the generation queue onto outgoing links if possible.
+  - `transfer()`: Manages vehicle movements between incoming and outgoing links, considering signal phases and capacities.
+  - `update()`: Calls necessary update methods each simulation step.
+
+Link Class
+~~~~~~~~~~
+
+The `Link` class models road segments connecting nodes and handles traffic flow dynamics. Key attributes include:
+
+- **Connectivity**: `start_node` and `end_node` defining the link's direction.
+- **Physical Attributes**:
+
+  - `length`: Length of the link in meters.
+  - `number_of_lanes`: Number of lanes on the link.
+  - `merge_priority`: Priority level when merging at nodes.
+  
+- **Traffic Flow Parameters**:
+
+  - `free_flow_speed` (`u`): Speed vehicles travel at under uncongested conditions.
+  - `jam_density` (`kappa`): Maximum vehicle density under congested conditions.
+  - Derived parameters like `tau`, `w`, `capacity`, `delta`, and `k_star` are calculated based on the fundamental diagram of traffic flow.
+  
+- **Capacity Constraints**:
+
+  - `capacity_in`: Maximum rate vehicles can enter the link.
+  - `capacity_out`: Maximum rate vehicles can leave the link.
+  
+- **Signal Group**: `signal_group` determines which signal phases affect the link.
+- **Vehicle List**: `vehicles` stores vehicles currently on the link.
+- **Methods**:
+
+  - `in_out_flow_constraint()`: Updates inflow and outflow capacities.
+  - `set_traveltime_instant()`: Calculates instantaneous travel time.
+  - `update()`: Updates the link state each simulation step.
+  - Getter methods for `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue` provide real-time traffic information.
+
+Vehicle Class
+~~~~~~~~~~~~~
+
+The `Vehicle` class represents individual vehicles or platoons. Key features include:
+
+- **Trip Details**:
+
+  - `orig` and `dest`: Origin and destination nodes.
+  - `departure_time`: Scheduled time for the vehicle to start its trip.
+  - `arrival_time` and `travel_time`: Recorded upon trip completion.
+  
+- **State Management**:
+
+  - `state`: Current state, such as "home", "wait", "run", or "end".
+  - `flag_waiting_for_trip_end`: Indicates if the vehicle is ready to end its trip.
+  
+- **Position and Movement**:
+
+  - `link`: Current link the vehicle is on.
+  - `x`: Position along the link.
+  - `v`: Current speed.
+  - `lane`: Assigned lane on multi-lane links.
+  - `leader` and `follower`: References to adjacent vehicles for car-following behavior.
+  
+- **Route Choice**:
+
+  - `route_pref`: Preferences for choosing links based on route choice principles.
+  - `route_next_link`: Next link the vehicle intends to take.
+  - `route_choice_principle`: Strategy used for route selection (e.g., "homogeneous_DUO").
+  
+- **Methods**:
+
+  - `update()`: Updates the vehicle's state and position each simulation step.
+  - `end_trip()`: Handles trip completion procedures.
+  - `carfollow()`: Implements car-following logic to update position and speed.
+  - `route_pref_update()`: Updates route preferences based on traffic conditions.
+  - `route_next_link_choice()`: Chooses the next link to traverse.
+
+RouteChoice Class
+~~~~~~~~~~~~~~~~~
+
+The `RouteChoice` class manages the route selection process for vehicles:
+
+- **Shortest Path Computation**:
+
+  - `route_search_all()`: Computes shortest paths between all node pairs using Dijkstra's algorithm.
+  
+- **Route Preference Update**:
+
+  - `homogeneous_DUO_update()`: Updates link preferences based on the Dynamic User Optimum (DUO) principle, promoting routes that minimize travel times.
+
+World Class
+~~~~~~~~~~~
+
+The `World` class represents the entire simulation environment:
+
+- **Global Parameters**:
+
+  - `DELTAT`: Simulation time step width, calculated from reaction time and platoon size.
+  - `REACTION_TIME` and `DELTAN`: Driver reaction time and platoon size.
+  - Route choice parameters like `DUO_UPDATE_TIME`, `DUO_UPDATE_WEIGHT`, and `DUO_NOISE`.
+  
+- **Data Structures**:
+
+  - Lists of `NODES` and `LINKS`.
+  - Dictionaries for `VEHICLES`, `VEHICLES_LIVING`, and `VEHICLES_RUNNING`.
+  
+- **Scenario Management**:
+
+  - Methods like `addNode()`, `addLink()`, and `addVehicle()` to build the network and populate it with vehicles.
+  - `finalize_scenario()`: Prepares the simulation by setting time limits and initializing components.
+  
+- **Simulation Execution**:
+
+  - `exec_simulation()`: Runs the simulation loop, updating all components each time step.
+  - `simulation_terminated()`: Handles post-simulation tasks like data analysis.
+  
+- **Utility Functions**:
+
+  - Methods to get nodes or links by name (`get_node()` and `get_link()`).
+  - Functions to load and save scenarios.
+  - Visualization tools like `show_network()`.
+
+Computation Procedure
+---------------------
+
+The simulation in UXsim advances in discrete time steps, updating the state of vehicles, links, and nodes at each step based on predefined models and parameters.
+
+1. **Initialization**:
+
+   - Define the simulation parameters and create a `World` instance.
+   - Add nodes and links to build the network.
+   - Populate the network with vehicles, specifying origins, destinations, and departure times.
+   - Finalize the scenario with `finalize_scenario()`.
+
+2. **Main Simulation Loop (`exec_simulation()`)**:
+
+   - **Time Advancement**: The simulation progresses one time step (`DELTAT`) at a time.
+   - **Link Updates**: Each link updates its capacities and traffic state.
+   
+     - `in_out_flow_constraint()`: Manages inflow and outflow capacities.
+     - `set_traveltime_instant()`: Updates instantaneous travel times.
+     
+   - **Node Operations**:
+   
+     - Nodes generate vehicles from their queues with `generate()`.
+     - Signals are updated via `signal_control()`.
+     - Vehicles are transferred between links using `transfer()`.
+     
+   - **Vehicle Updates**:
+   
+     - Each vehicle updates its position and state with `update()`.
+     - Movement is calculated using `carfollow()` based on car-following models.
+     - Route choices are made at nodes using `route_next_link_choice()`.
+     
+   - **Route Choice Updates**:
+   
+     - At intervals defined by `DUO_UPDATE_TIME`, the route choice model updates vehicle preferences.
+     - Shortest paths are recalculated with `route_search_all()`.
+     - Preferences are adjusted using `homogeneous_DUO_update()`.
+     
+   - **Data Logging**:
+   
+     - Vehicles record their positions and states for analysis.
+     - Traffic state data is collected for links and nodes.
+
+3. **Termination**:
+
+   - The simulation ends when the maximum time is reached or all vehicles have completed their trips.
+   - `simulation_terminated()` is called to perform any final calculations or data processing.
+
+Traffic Flow Model Details
+--------------------------
+
+Fundamental Diagram Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each link uses a fundamental diagram to model traffic flow, characterized by:
+
+- **Free Flow Speed (`u`)**: Speed under uncongested conditions.
+- **Jam Density (`kappa`)**: Maximum density when the link is fully congested.
+- **Reaction Time (`REACTION_TIME`)**: Affects the time step and driver response.
+- **Derived Parameters**:
+
+  - **Wave Speed (`w`)**: Speed at which congestion waves move backward.
+  - **Capacity (`capacity`)**: Maximum flow rate of the link.
+  - **Critical Density (`k_star`)**: Density at which flow reaches capacity.
+  - **Minimum Spacing (`delta`)**: Minimum distance between vehicles.
+
+These parameters influence how vehicles accelerate, decelerate, and interact on the link.
+
+Multi-Lane Modeling
+~~~~~~~~~~~~~~~~~~~
+
+- **Single-Pipe Approach**: Even with multiple lanes, the link is treated as a single entity for flow calculations.
+- **Lane Assignment**:
+
+  - Vehicles have a `lane` attribute to represent their lane.
+  - No explicit lane-changing behavior is modeled.
+  
+- **Car-Following Behavior**:
+
+  - Vehicles adjust their speed based on the distance to the vehicle ahead in the same lane.
+  - The `carfollow()` method implements this behavior.
+
+Capacity and Bottlenecks
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Inflow (`capacity_in`) and Outflow (`capacity_out`) Capacities**:
+
+  - Limit the number of vehicles entering or exiting a link.
+  - Can model real-world bottlenecks like narrow bridges or toll booths.
+  
+- **Node Capacities**:
+
+  - Nodes can have a `flow_capacity` limiting throughput.
+  - Signals at nodes further control vehicle movements.
+
+Signal Control at Nodes
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Signal Phases**:
+
+  - Nodes with traffic signals have defined phases, each with a duration.
+  - Vehicles can only proceed if their link's `signal_group` matches the current `signal_phase`.
+  
+- **Signal Timing**:
+
+  - The `signal_control()` method updates the current phase based on elapsed time and the signal schedule (`signal` attribute).
+  
+- **Impact on Vehicle Transfer**:
+
+  - Signals influence the `transfer()` method, determining whether vehicles can move between links.
+
+Route Choice Modeling
+---------------------
+
+Vehicles make route choices based on current traffic conditions, aiming to minimize travel times.
+
+- **Dynamic User Optimum (DUO)**:
+
+  - Vehicles periodically update their route preferences to follow the shortest paths.
+  - The `RouteChoice` class computes these paths and updates preferences.
+  
+- **Stochasticity**:
+
+  - A small noise factor (`DUO_NOISE`) is added to travel times to prevent ties and promote variability.
+  
+- **Preference Updates**:
+
+  - Vehicles adjust their `route_pref` attributes based on updated shortest paths.
+  - Gradual updates can be enabled to smooth transitions.
+
+Key Inputs for Simulation
+-------------------------
+
+To set up a simulation in UXsim, the following inputs are essential:
+
+- **Network Definition**:
+
+  - **Nodes**: Positions (`x`, `y`), signal settings, flow capacities.
+  - **Links**: Start and end nodes, physical attributes (`length`, `number_of_lanes`), traffic flow parameters (`free_flow_speed`, `jam_density`), capacities, and signal groups.
+  
+- **Vehicle Demand**:
+
+  - Origin and destination nodes for each vehicle.
+  - Departure times.
+  - Route preferences or specific route choice principles if deviating from the default.
+  
+- **Global Simulation Parameters**:
+
+  - Time step settings (`REACTION_TIME`, `DELTAN`).
+  - Route choice parameters (`DUO_UPDATE_TIME`, `DUO_UPDATE_WEIGHT`, `DUO_NOISE`).
+  - Simulation duration (`TMAX`) if not automatically determined.
+
+Program Structure and Workflow
+------------------------------
+
+1. **Initialize the World**:
+   - Create a `World` instance with desired global parameters.
+
+2. **Define the Network**:
+
+   - Add nodes using `addNode()`.
+   - Add links using `addLink()`.
+
+3. **Specify Vehicle Demand**:
+
+   - Add vehicles individually using `addVehicle()`.
+   - Or use demand functions like `adddemand()` for bulk additions.
+
+4. **Finalize the Scenario**:
+
+   - Call `finalize_scenario()` to prepare for simulation.
+   - This sets up internal structures and calculates any derived parameters.
+
+5. **Run the Simulation**:
+
+   - Execute `exec_simulation()` to start the simulation loop.
+   - Can specify `until_t` or `duration_t` to control simulation length.
+
+6. **Analyze Results**:
+
+   - Use built-in analysis tools in `Analyzer` or access logs from vehicles and links.
+   - Visualization functions like `show_network()` help display results.
