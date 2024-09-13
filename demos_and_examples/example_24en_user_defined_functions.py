@@ -4,7 +4,17 @@ from uxsim import *
 # define custom user_functions
 
 def world_user_function(W):
-    #print the current time and the average speed of traveling vehicles in the World
+    """
+    This is a custom user function to be attached to `World` object and automatically executed on each timestep during the simulation.
+    This can be specified as an optional argument `user_function` in the initialization function or by doing `W.user_function=world_user_function` after initialization.
+
+    User functions must have only one argument: the `World` object itself.
+    It can access to the properties of the `World` object via the argument.
+    Users can also define custom properties of the `World` object by using the variable `World.user_attribute`; This variable can be used by the user freely.
+
+    This simple example prints the current time and the average speed of traveling vehicles in the World during the simulation.
+    Users can do more complicated things like traffic control or data collection.
+    """
     if W.T%20 == 0:
         if len(W.VEHICLES_RUNNING):
             print("World state:", W.TIME, np.average([veh.v for veh in W.VEHICLES_RUNNING.values()]))
@@ -12,12 +22,12 @@ def world_user_function(W):
             print("World state:", W.TIME)
 
 def node_user_function(node):
-    #print the number of incoming vehicles to node
+    #print the number of incoming vehicles to node. The specification is similar to world_user_function
     if node.W.T%20 == 0:
         print(f"Node {node.name} state:", len(node.incoming_vehicles))
 
 def link_user_function(link):
-    #print the number of vehicles on link and their average speed, and record the speed
+    #print the number of vehicles on link and their average speed, and record the speed. The specification is similar to world_user_function
     if link.W.T%20 == 0:
         if len(link.vehicles):
             print(f"Link {link.name} state:", len(link.vehicles), np.average([veh.v for veh in link.vehicles]))
@@ -26,7 +36,7 @@ def link_user_function(link):
             print(f"Link {link.name} state:", len(link.vehicles))
 
 def veh_user_function(veh):
-    #print when the vehicle started or ended its trip
+    #print when the vehicle started or ended its trip. The specification is similar to world_user_function
     if veh.state != "home" and veh.user_attribute["state_old"] == "home":
         print(f"Vehicle {veh.name} started trip on time {veh.W.TIME}")        
     if veh.state in ["end", "abort"] and veh.user_attribute["state_old"] not in ["end", "abort"]:
