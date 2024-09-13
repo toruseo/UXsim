@@ -21,7 +21,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None, user_attribute=None, user_function=lambda node:None):
+    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None, user_attribute=None, user_function=None):
         """
         Create a node
 
@@ -52,7 +52,7 @@ class Node:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optinal
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep.
+            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
             >>> def user_function(node):
             >>>     print(len(node.incoming_vehicles))
             >>> W = World(...)
@@ -338,14 +338,15 @@ class Node:
         """
         s.signal_control()
         s.flow_capacity_update()
-        s.user_function(s)
+        if s.user_function is not None:
+            s.user_function(s)
 
 
 class Link:
     """
     Link in a network.
     """
-    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=[0], capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, user_attribute=None, user_function=lambda link:None, auto_rename=False):
+    def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=[0], capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
         Create a link
 
@@ -384,7 +385,7 @@ class Link:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optinal
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep.
+            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.
             >>> def user_function(link):
             >>>     print(len(link.vehicles))
             >>> W = World(...)
@@ -621,7 +622,8 @@ class Link:
             s.cum_arrival[-1] = s.cum_arrival[-2]
             s.cum_departure[-1] = s.cum_departure[-2]
 
-        s.user_function(s)
+        if s.user_function is not None:
+            s.user_function(s)
 
         #リアルタイム状態リセット
         s._speed = -1
@@ -831,7 +833,7 @@ class Vehicle:
     """
     Vehicle or platoon in a network.
     """
-    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, mode="single_trip", links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, user_attribute=None, user_function=lambda veh:None, auto_rename=False):
+    def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, mode="single_trip", links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
         Create a vehicle (more precisely, platoon)
 
@@ -866,7 +868,7 @@ class Vehicle:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optinal
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep.
+            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
             >>> def user_function(veh):
             >>>     print(veh.speed))
             >>> W = World(...)
@@ -1052,7 +1054,8 @@ class Vehicle:
             #ended the trip
             pass
 
-        s.user_function(s)
+        if s.user_function is not None:
+            s.user_function(s)
 
     def end_trip(s):
         """
@@ -1479,7 +1482,7 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, hard_deterministic_mode=False, meta_data={}, user_attribute=None, user_function=lambda W:None):
+    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, hard_deterministic_mode=False, meta_data={}, user_attribute=None, user_function=None):
         """
         Create a World.
 
@@ -1533,7 +1536,7 @@ class World:
         user_attribute : any, optinal
             Optinonal meta attributes that can be freely defined by a user.
         user_function : func, optinal
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep.
+            User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
             >>> def user_function(W):
             >>>     print(W.TIME)
             >>> W = World(user_function=user_function)
@@ -2061,7 +2064,8 @@ class World:
             if W.print_mode and W.show_progress and W.T%W.show_progress_deltat_timestep == 0 and W.T > 0:
                 W.analyzer.show_simulation_progress()
             
-            W.user_function(W)
+            if W.user_function is not None:
+                W.user_function(W)
 
             if W.T == W.TSIZE-1:
                 #print("break")
