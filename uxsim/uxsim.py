@@ -1374,6 +1374,28 @@ class RouteChoice:
         s.dist = dist.T
         s.next = pred.T
 
+    def get_all_distances(self, directed=True):
+        """
+        Compute the shortest distances (in meters) between all node pairs based on link lengths.
+
+        Returns
+        -------
+        distances : np.ndarray
+            A matrix where distances[i, j] contains the shortest distance between node i and node j.
+        """
+        num_nodes = len(self.W.NODES)
+        distances = np.full((num_nodes, num_nodes), np.inf)  # Initialize with infinity
+
+        # Fill in the distances based on the link lengths
+        for link in self.W.LINKS:
+            i = link.start_node.id
+            j = link.end_node.id
+            distances[i, j] = min(distances[i, j], link.length)
+
+        # Use Dijkstra algorithm to compute shortest distances
+        distances = *dijkstra(csr_matrix(distances), directed=directed, return_predecessors=False),
+        return distances
+
     def homogeneous_DUO_update(s):
         """
         Update link preference of all homogeneous travelers based on DUO principle.
