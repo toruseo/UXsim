@@ -1438,7 +1438,7 @@ class Analyzer:
         s.df_areas2areas = pd.DataFrame(out[1:], columns=out[0])
         return s.df_areas2areas
 
-    def area_to_pandas(s, areas, area_names=None, border_include=True, time_bin=None):
+    def area_to_pandas(s, areas, area_names=None, border_include=True, time_bin=None, set_index=False):
         """
         Compute traffic stats in area and return as pandas.DataFrame.
 
@@ -1452,6 +1452,8 @@ class Analyzer:
             If set to True, the links on the border of the area are included in the analysis. Default is True.
         time_bin : int, optional
             The time bin size in seconds. If provided, results will be aggregated by time bins.
+        set_index : bool, optional
+            If set to True, the DataFrame index will be set to the area, and (area, time_bin) if time_bin is not None. Default is False.
 
         Returns
         -------
@@ -1508,17 +1510,18 @@ class Analyzer:
                 for _, group in df_links.groupby("time_bin"):
                     area_result = process_area(area_set, group)
                     result.append({"area": area_name, "time_bin": group["time_bin"].iloc[0], **area_result})
-
-            s.df_area = pd.DataFrame(result).set_index(["time_bin", "area"])
         else:
             result = []
             for area_set, area_name in zip(areas_set, area_names):
                 area_result = process_area(area_set, df_links)
                 result.append({"area": area_name, **area_result})
 
-            s.df_area = pd.DataFrame(result).set_index("area")
-
-        return s.df_area
+        s.df_area = pd.DataFrame(result)
+        if set_index:
+            if time_bin is not None:
+                return s.df_area.set_index(["time_bin", "area"])
+            else:
+                return s.df_area.set_index(["area"])
 
     def vehicle_groups_to_pandas(s, groups, group_names=None):
         """
