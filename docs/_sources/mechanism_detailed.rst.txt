@@ -207,15 +207,15 @@ Fundamental Diagram Parameters
 
 Each link uses a fundamental diagram to model traffic flow, characterized by:
 
-- **Free Flow Speed (`u`)**: Speed under uncongested conditions.
-- **Jam Density (`kappa`)**: Maximum density when the link is fully congested.
-- **Reaction Time (`REACTION_TIME`)**: Affects the time step and driver response.
-- **Derived Parameters**:
+- Free Flow Speed (`u`): Speed under uncongested conditions.
+- Jam Density (`kappa`): Maximum density when the link is fully congested.
+- Reaction Time (`REACTION_TIME`): Affects the time step and driver response.
+- Derived Parameters:
 
-  - **Wave Speed (`w`)**: Speed at which congestion waves move backward.
-  - **Capacity (`capacity`)**: Maximum flow rate of the link.
-  - **Critical Density (`k_star`)**: Density at which flow reaches capacity.
-  - **Minimum Spacing (`delta`)**: Minimum distance between vehicles.
+  - Wave Speed (`w`): Speed at which congestion waves move backward.
+  - Capacity (`capacity`): Maximum flow rate of the link.
+  - Critical Density (`k_star`): Density at which flow reaches capacity.
+  - Minimum Spacing (`delta`): Minimum distance between vehicles.
 
 These parameters influence how vehicles accelerate, decelerate, and interact on the link.
 

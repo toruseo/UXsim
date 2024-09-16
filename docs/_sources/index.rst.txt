@@ -3,6 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. raw:: html
+
+   <style>
+   .bordered-image {
+       border: 1px solid #e1e4e8;
+       border-radius: 6px;
+       padding: 5px;
+   }
+   </style>
+
+
 UXsim: Traffic Simulation in Python
 ===================================
 
@@ -11,7 +22,15 @@ About
 
 UXsim is an open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
 This webpage is a technical documentation of UXsim codes.
-Please visit `Github repo <https://github.com/toruseo/UXsim>`_ first. 
+Please visit `GitHub repo <https://github.com/toruseo/UXsim>`_ first. 
+
+
+.. image:: https://opengraph.githubassets.com/1/toruseo/UXsim
+   :alt: GitHub Repository Preview
+   :target: https://github.com/toruseo/UXsim
+   :width: 400
+   :align: center
+   :class: bordered-image
 
 Example
 -------
