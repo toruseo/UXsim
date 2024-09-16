@@ -2209,7 +2209,7 @@ class World:
                 nodes.append(node)
         return nodes
     
-    def get_distance_between_all_nodes(W, return_matrix=False):
+    def get_shortest_path_distance_between_all_nodes(W, return_matrix=False):
         """
         Get the shortest distances (in meters) between all node pairs based on link lengths.
 
