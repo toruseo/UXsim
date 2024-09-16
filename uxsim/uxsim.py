@@ -2211,7 +2211,7 @@ class World:
     
     def get_shortest_path_distance_between_all_nodes(W, return_matrix=False):
         """
-        Get the shortest distances (in meters) between all node pairs based on link lengths.
+        Get the shortest distances (in meters) between all node pairs based on link lengths. Work in progress and not tested. TODO: test
 
         Parameters
         ----------
