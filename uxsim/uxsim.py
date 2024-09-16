@@ -2211,7 +2211,7 @@ class World:
     
     def get_shortest_path_distance_between_all_nodes(W, return_matrix=False):
         """
-        Get the shortest distances (in meters) between all node pairs based on link lengths.
+        Get the shortest distances (in meters) between all node pairs based on link lengths. Work in progress and not tested. TODO: test
 
         Parameters
         ----------
@@ -2221,8 +2221,8 @@ class World:
         Returns
         -------
         dict or numpy array
-            Returns a dictionary of distances between nodes whose key is node if `return_matrix` is False.
-            Returns a numpy array of distances between nodes whose index is node.id if `return_matrix` is True.
+            Returns a dictionary of distances between nodes whose key is node pair if `return_matrix` is False.
+            Returns a numpy array of distances between nodes whose index is node.id pair if `return_matrix` is True.
         """
         num_nodes = len(W.NODES)
         distances = np.full((num_nodes, num_nodes), np.inf)  # Initialize with infinity
@@ -2239,7 +2239,12 @@ class World:
         if return_matrix == True:
             return distances
         else:
-            raise NotImplementedError("return_matrix=True is not implemented yet.")#TODO
+            distances_dict = dict()
+            for node1 in W.NODES:
+                for node2 in W.NODES:
+                    distances_dict[node1, node2] = distances[node1.id, node2.id]
+                    distances_dict[node1.name, node2.name] = distances[node1.id, node2.id]
+            return distances_dict
 
     def load_scenario_from_csv(W, fname_node, fname_link, fname_demand, tmax=None):
         """
