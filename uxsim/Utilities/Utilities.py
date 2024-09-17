@@ -3,6 +3,9 @@ Submodule for general utilities.
 This contains functions that are not essential for simulation but useful to specific analysis.
 """
 import networkx as nx
+import numpy as np
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import dijkstra
 
 def generate_grid_network(W, imax, jmax, **kwargs):
     """
@@ -153,3 +156,71 @@ def enumerate_k_shortest_routes_on_t(W, source, target, t, k=1, cost_function=la
         return routes, costs
     else:
         return routes
+
+def get_shortest_path_distance_between_all_nodes(W, return_matrix=False):
+    """
+    Get the shortest distances (in meters) between all node pairs based on link lengths
+
+    Parameters
+    ----------
+    W : World
+        The World object.
+    return_matrix : bool, optional
+        Whether to return the distance matrix as a numpy array. Default is False.
+
+    Returns
+    -------
+    dict or numpy array
+        Returns a dictionary of distances between nodes whose key is node pair if `return_matrix` is False.
+        Returns a numpy array of distances between nodes whose index is node.id pair if `return_matrix` is True.
+    """
+    num_nodes = len(W.NODES)
+    distances = np.full((num_nodes, num_nodes), np.inf)  # Initialize with infinity
+
+    # Fill in the distances based on the link lengths
+    for link in W.LINKS:
+        i = link.start_node.id
+        j = link.end_node.id
+        distances[i, j] = min(distances[i, j], link.length)
+
+    # Use Dijkstra algorithm to compute shortest distances
+    distances = dijkstra(csr_matrix(distances), directed=True, return_predecessors=False)
+
+    if return_matrix == True:
+        return distances
+    else:
+        distances_dict = dict()
+        for node1 in W.NODES:
+            for node2 in W.NODES:
+                distances_dict[node1, node2] = distances[node1.id, node2.id]
+                distances_dict[node1.name, node2.name] = distances[node1.id, node2.id]
+        return distances_dict
+
+def get_shortest_path_instantaneous_travel_time_between_all_nodes(W, return_matrix=False):
+    """
+    Get the shortest instantaneous travel time (in seconds) between all node pairs based on the current instantaneous travel time of each link.
+
+    Parameters
+    ----------
+    W : World
+        The World object.
+    return_matrix : bool, optional
+        Whether to return the distance matrix as a numpy array. Default is False.
+
+    Returns
+    -------
+    dict or numpy array
+        Returns a dictionary of distances between nodes whose key is node pair if `return_matrix` is False.
+        Returns a numpy array of distances between nodes whose index is node.id pair if `return_matrix` is True.
+    """
+    distances = W.ROUTECHOICE.dist
+
+    if return_matrix == True:
+        return distances
+    else:
+        distances_dict = dict()
+        for node1 in W.NODES:
+            for node2 in W.NODES:
+                distances_dict[node1, node2] = distances[node1.id, node2.id]
+                distances_dict[node1.name, node2.name] = distances[node1.id, node2.id]
+        return distances_dict
