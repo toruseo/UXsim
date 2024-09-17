@@ -3,6 +3,7 @@ This script tests various other functions in UXsim.
 """
 
 import pytest
+from numpy import *
 from uxsim import *
 from uxsim.Utilities import *
 
@@ -405,7 +406,7 @@ def test_shortest_path_costs():
 
     W.analyzer.cumulative_curves(figsize=(4,2))
 
-    spd = W.get_shortest_path_distance_between_all_nodes()
+    spd = get_shortest_path_distance_between_all_nodes(W)
     assert spd["orig", "dest"] == 2000
     assert spd["orig", "mid1"] == 1000
     assert spd["orig", "mid2"] == 1000
@@ -415,11 +416,11 @@ def test_shortest_path_costs():
     assert spd[orig, dest] == 2000
     assert spd[dest, orig] == np.Inf
 
-    spd = W.get_shortest_path_distance_between_all_nodes(return_matrix=True)
+    spd = get_shortest_path_distance_between_all_nodes(W, return_matrix=True)
     assert spd[0, 3] == 2000
     assert spd[3, 0] == np.Inf
 
-    spt = W.get_shortest_path_instantaneous_travel_time_between_all_nodes()
+    spt = get_shortest_path_instantaneous_travel_time_between_all_nodes(W)
     assert equal_tolerance(spt["orig", "dest"], 150)
     assert equal_tolerance(spt["orig", "mid1"], 50, rel_tol=0.2)
     assert equal_tolerance(spt["orig", "mid2"], 150)
@@ -429,7 +430,7 @@ def test_shortest_path_costs():
     assert equal_tolerance(spt[orig, dest], 150)
     assert spt[dest, orig] == np.Inf
 
-    spt = W.get_shortest_path_instantaneous_travel_time_between_all_nodes(return_matrix=True)
+    spt = get_shortest_path_instantaneous_travel_time_between_all_nodes(W, return_matrix=True)
     assert equal_tolerance(spt[0, 3], 150)
     assert spt[3, 0] == np.Inf
 
@@ -569,55 +570,66 @@ def test_area2area_demand_and_stats():
 
 @pytest.mark.flaky(reruns=10)
 def test_area_stats():
-    W = World(
-        name="",
-        deltan=10,
-        tmax=3000,
-        print_mode=1, save_mode=1, show_mode=0,
-        random_seed=None,
-    )
 
-    n_nodes = 4
-    imax = n_nodes
-    jmax = n_nodes
-    nodes = {}
-    for i in range(imax):
-        for j in range(jmax):
-            nodes[i,j] = W.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
+    rec_volume_areaN = []
+    rec_volume_areaS = []
+    rec_ttt_areaN = []
+    rec_delay_areaN = []
 
-    links = {}
-    for i in range(imax):
-        for j in range(jmax):
-            if i != imax-1:
-                links[i,j,i+1,j] = W.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000)
-            if i != 0:
-                links[i,j,i-1,j] = W.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000)
-            if j != jmax-1:
-                links[i,j,i,j+1] = W.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000)
-            if j != 0:
-                links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000)
+    for i in range(10):
+        W = World(
+            name="",
+            deltan=10,
+            tmax=3000,
+            print_mode=1, save_mode=1, show_mode=0,
+            random_seed=None,
+        )
+
+        n_nodes = 4
+        imax = n_nodes
+        jmax = n_nodes
+        nodes = {}
+        for i in range(imax):
+            for j in range(jmax):
+                nodes[i,j] = W.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
+
+        links = {}
+        for i in range(imax):
+            for j in range(jmax):
+                if i != imax-1:
+                    links[i,j,i+1,j] = W.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000)
+                if i != 0:
+                    links[i,j,i-1,j] = W.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000)
+                if j != jmax-1:
+                    links[i,j,i,j+1] = W.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000)
+                if j != 0:
+                    links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000)
 
 
-    area_dict = {
-        "areaN": [nodes[0,i] for i in range(n_nodes)],
-        "areaS": [nodes[n_nodes-1,i] for i in range(n_nodes)],
-        "areaNW": [nodes[0,0]],
-        "areaSE": [nodes[n_nodes-1, n_nodes-1]]
-    }
+        area_dict = {
+            "areaN": [nodes[0,i] for i in range(n_nodes)],
+            "areaS": [nodes[n_nodes-1,i] for i in range(n_nodes)],
+            "areaNW": [nodes[0,0]],
+            "areaSE": [nodes[n_nodes-1, n_nodes-1]]
+        }
 
-    W.adddemand_nodes2nodes(area_dict["areaN"], area_dict["areaS"], 0, 3000, volume=7000)
+        W.adddemand_nodes2nodes(area_dict["areaN"], area_dict["areaS"], 0, 3000, volume=7000)
 
-    W.exec_simulation()
-    W.analyzer.print_simple_stats()
+        W.exec_simulation()
+        W.analyzer.print_simple_stats()
 
-    df = W.analyzer.area_to_pandas(list(area_dict.values()), list(area_dict.keys()), border_include=True)
-    print(df)
+        df = W.analyzer.area_to_pandas(list(area_dict.values()), list(area_dict.keys()), border_include=True)
+        print(df)
 
-    assert equal_tolerance(df["traffic_volume"][df["area"] == "areaN"].values[0], 6900)
-    assert equal_tolerance(df["traffic_volume"][df["area"] == "areaS"].values[0], 6300)
-    assert equal_tolerance(df["total_travel_time"][df["area"] == "areaN"].values[0], 800000, rel_tol=0.3)
-    assert equal_tolerance(df["average_delay"][df["area"] == "areaN"].values[0], 0.73, abs_tol=0.2)
+        rec_volume_areaN.append(df["traffic_volume"][df["area"] == "areaN"].values[0])
+        rec_volume_areaS.append(df["traffic_volume"][df["area"] == "areaS"].values[0])
+        rec_ttt_areaN.append(df["total_travel_time"][df["area"] == "areaN"].values[0])
+        rec_delay_areaN.append(df["average_delay"][df["area"] == "areaN"].values[0])
 
+    assert equal_tolerance(average(rec_volume_areaN), 6880)
+    assert equal_tolerance(average(rec_volume_areaS), 6380)
+    assert equal_tolerance(average(rec_ttt_areaN), 840000)
+    assert equal_tolerance(average(rec_delay_areaN), 0.77, abs_tol=0.1)
 
 @pytest.mark.flaky(reruns=10)
 def test_vehicle_group_stats():
