@@ -1327,7 +1327,7 @@ class RouteChoice:
         s.W = W
         #リンク旅行時間行列: adjacency matrix whose cost is link travel cost
         s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        #ij間最短距離: the shortest path cost from node i to j
+        #ij間最短距離: the shortest path cost (based on the current instantaneous travel time) from node i to j
         s.dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
         #iからjに行くために次に進むべきノード: the node to proceed from i when the destination is j
         s.next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
@@ -2211,7 +2211,7 @@ class World:
     
     def get_shortest_path_distance_between_all_nodes(W, return_matrix=False):
         """
-        Get the shortest distances (in meters) between all node pairs based on link lengths. Work in progress and not tested. TODO: test
+        Get the shortest distances (in meters) between all node pairs based on link lengths
 
         Parameters
         ----------
@@ -2234,7 +2234,34 @@ class World:
             distances[i, j] = min(distances[i, j], link.length)
 
         # Use Dijkstra algorithm to compute shortest distances
-        distances = *dijkstra(csr_matrix(distances), directed=True, return_predecessors=False),
+        distances = dijkstra(csr_matrix(distances), directed=True, return_predecessors=False)
+
+        if return_matrix == True:
+            return distances
+        else:
+            distances_dict = dict()
+            for node1 in W.NODES:
+                for node2 in W.NODES:
+                    distances_dict[node1, node2] = distances[node1.id, node2.id]
+                    distances_dict[node1.name, node2.name] = distances[node1.id, node2.id]
+            return distances_dict
+
+    def get_shortest_path_instantaneous_travel_time_between_all_nodes(W, return_matrix=False):
+        """
+        Get the shortest instantaneous travel time (in seconds) between all node pairs based on the current instantaneous travel time of each link.
+
+        Parameters
+        ----------
+        return_matrix : bool, optional
+            Whether to return the distance matrix as a numpy array. Default is False.
+
+        Returns
+        -------
+        dict or numpy array
+            Returns a dictionary of distances between nodes whose key is node pair if `return_matrix` is False.
+            Returns a numpy array of distances between nodes whose index is node.id pair if `return_matrix` is True.
+        """
+        distances = W.ROUTECHOICE.dist
 
         if return_matrix == True:
             return distances
