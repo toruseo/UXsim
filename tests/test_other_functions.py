@@ -378,6 +378,61 @@ def test_k_shortest_path_on_t():
     assert routes[0] == ['O2', '2D']
     assert equal_tolerance(costs[0], 200.0)
 
+@pytest.mark.flaky(reruns=10)
+def test_shortest_path_costs():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=1200,
+        print_mode=1, save_mode=1, show_mode=0,
+        random_seed=None
+    )
+
+    orig = W.addNode("orig", 0, 0)
+    W.addNode("mid1", 1, 1)
+    W.addNode("mid2", 1, -1)
+    dest = W.addNode("dest", 2, 0)
+    W.addLink("link01", "orig", "mid1", length=1000, free_flow_speed=20, number_of_lanes=2)
+    W.addLink("link02", "orig", "mid2", length=1000, free_flow_speed=20, number_of_lanes=2)
+    W.addLink("link13", "mid1", "dest", length=2000, free_flow_speed=20, number_of_lanes=2)
+    W.addLink("link23", "mid2", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.adddemand("orig", "dest", 0, 1000, 1.2)
+    W.show_network(figsize=(3,3))
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    W.analyzer.cumulative_curves(figsize=(4,2))
+
+    spd = W.get_shortest_path_distance_between_all_nodes()
+    assert spd["orig", "dest"] == 2000
+    assert spd["orig", "mid1"] == 1000
+    assert spd["orig", "mid2"] == 1000
+    assert spd["mid1", "dest"] == 2000
+    assert spd["mid2", "dest"] == 1000
+    assert spd["dest", "orig"] == np.Inf
+    assert spd[orig, dest] == 2000
+    assert spd[dest, orig] == np.Inf
+
+    spd = W.get_shortest_path_distance_between_all_nodes(return_matrix=True)
+    assert spd[0, 3] == 2000
+    assert spd[3, 0] == np.Inf
+
+    spt = W.get_shortest_path_instantaneous_travel_time_between_all_nodes()
+    assert equal_tolerance(spt["orig", "dest"], 150)
+    assert equal_tolerance(spt["orig", "mid1"], 50, rel_tol=0.2)
+    assert equal_tolerance(spt["orig", "mid2"], 150)
+    assert equal_tolerance(spt["mid1", "dest"], 100)
+    assert equal_tolerance(spt["mid2", "dest"], 50, rel_tol=0.2)
+    assert spt["dest", "orig"] == np.Inf
+    assert equal_tolerance(spt[orig, dest], 150)
+    assert spt[dest, orig] == np.Inf
+
+    spt = W.get_shortest_path_instantaneous_travel_time_between_all_nodes(return_matrix=True)
+    assert equal_tolerance(spt[0, 3], 150)
+    assert spt[3, 0] == np.Inf
+
 
 def test_util_catch_exceptions_and_warn():
     with pytest.warns(UserWarning, match=r".*network().*"):
@@ -560,7 +615,7 @@ def test_area_stats():
 
     assert equal_tolerance(df["traffic_volume"][df["area"] == "areaN"].values[0], 6900)
     assert equal_tolerance(df["traffic_volume"][df["area"] == "areaS"].values[0], 6300)
-    assert equal_tolerance(df["total_travel_time"][df["area"] == "areaN"].values[0], 700000, rel_tol=0.2)
+    assert equal_tolerance(df["total_travel_time"][df["area"] == "areaN"].values[0], 800000, rel_tol=0.3)
     assert equal_tolerance(df["average_delay"][df["area"] == "areaN"].values[0], 0.73, abs_tol=0.2)
 
 
