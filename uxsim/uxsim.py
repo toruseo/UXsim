@@ -1334,6 +1334,8 @@ class RouteChoice:
         #iからjに行くために来たノード. This is not used anymore
         s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
 
+        s.dist_record = {}
+
         #homogeneous DUO用．kに行くための最短経路的上にあれば1: array[dest,link]==1 if link is on the shortest path to dest
         #s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES} #old definition, {node_id: {link: preference}. preference of link is 1 if it is on the shortest path to node_id
         s.route_pref = np.zeros([len(W.NODES), len(W.LINKS)])
@@ -1374,6 +1376,8 @@ class RouteChoice:
         s.dist = dist.T
         s.next = pred.T
 
+        s.dist_record[s.W.T] = s.dist
+
     def homogeneous_DUO_update(s):
         """
         Update link preference of all homogeneous travelers based on DUO principle.
@@ -1407,74 +1411,6 @@ class RouteChoice:
         s.route_pref = np.where(next_node_mask,
                                 (1 - weights[:, np.newaxis]) * s.route_pref + weights[:, np.newaxis],
                                 (1 - weights[:, np.newaxis]) * s.route_pref)
-
-    # def route_search_all_old(s, infty=np.inf, noise=0):
-    #     """
-    #     Compute the current shortest path based on instantaneous travel time. 
-    #     OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
-
-    #     Parameters
-    #     ----------
-    #     infty : float
-    #         value representing infinity.
-    #     noise : float
-    #         very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
-    #     """
-    #     s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-    #     adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-
-    #     for link in s.W.LINKS:
-    #         i = link.start_node.id
-    #         j = link.end_node.id
-    #         if s.W.ADJ_MAT[i,j]:
-    #             new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.route_choice_penalty
-    #             n = adj_mat_link_count[i,j]
-    #             s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
-    #             # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
-    #             adj_mat_link_count[i,j] += 1
-    #             if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
-    #                 s.adj_mat_time[i,j] = np.inf
-    #         else:
-    #             s.adj_mat_time[i,j] = np.inf
-
-    #     s.dist, s.pred = floyd_warshall(s.adj_mat_time, return_predecessors=True)
-
-    #     n_vertices = s.pred.shape[0]
-    #     s.next = -np.ones((n_vertices, n_vertices), dtype=int)
-    #     for i in range(n_vertices):
-    #         for j in range(n_vertices):
-    #             # iからjへの最短経路を逆にたどる．．． -> todo: 起終点を逆にした最短経路探索にすればよい -> done
-    #             if i != j:
-    #                 prev = j
-    #                 while s.pred[i, prev] != i and s.pred[i, prev] != -9999:
-    #                     prev = s.pred[i, prev]
-    #                 s.next[i, j] = prev
-
-    # def homogeneous_DUO_update_old(s):
-    #     """
-    #     Update link preference of all homogeneous travelers based on DUO principle.
-    #     OLD VERSION. JUST FOR COMPARISON/BENCHMARKING. TO BE REMOVED IN THE FUTURE
-    #     """
-    #     if s.W.route_choice_update_gradual == True:
-    #         weight0 = s.W.DUO_UPDATE_WEIGHT*(s.W.DELTAT/s.W.DUO_UPDATE_TIME)
-    #     else:
-    #         weight0 = s.W.DUO_UPDATE_WEIGHT
-                
-    #     for dest in s.W.NODES:
-    #         k = dest.id
-    #         weight = weight0
-    #         if sum(list(s.route_pref[k].values())) == 0:
-    #             #set 1 if prefernce is empty (i.e., the initial stage of simulation)
-    #             weight = 1
-    #         for l in s.W.LINKS:
-    #             i = l.start_node.id
-    #             j = l.end_node.id
-    #             if j == s.next[i,k]:
-    #                 #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l] + weight)
-    #                 s.route_pref[k][l] = (1-weight)*s.route_pref[k][l] + weight
-    #             else:
-    #                 #if dest.name=="dest": print(s.W.T, dest, l, s.route_pref[k][l], (1-weight)*s.route_pref[k][l])
-    #                 s.route_pref[k][l] = (1-weight)*s.route_pref[k][l]
 
 
 class World:

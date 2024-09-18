@@ -385,6 +385,7 @@ def test_shortest_path_costs():
         name="",
         deltan=5,
         tmax=1200,
+        duo_update_time=600,
         print_mode=1, save_mode=1, show_mode=0,
         random_seed=None
     )
@@ -434,6 +435,30 @@ def test_shortest_path_costs():
     assert equal_tolerance(spt[0, 3], 150)
     assert spt[3, 0] == np.Inf
 
+    spt0 = get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W,0)
+    assert equal_tolerance(spt0["orig", "dest"], 100)
+    assert equal_tolerance(spt0["orig", "mid1"], 50, rel_tol=0.2)
+    assert equal_tolerance(spt0["orig", "mid2"], 50, rel_tol=0.2)
+    assert equal_tolerance(spt0["mid1", "dest"], 100)
+    assert equal_tolerance(spt0["mid2", "dest"], 50, rel_tol=0.2)
+
+    spt200, t = get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W, 200, return_time=True)
+    assert spt0 == spt200
+    assert t == 0
+
+    spt600 = get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W,600)
+    assert equal_tolerance(spt600["orig", "dest"], 150)
+    assert equal_tolerance(spt600["orig", "mid1"], 50, rel_tol=0.2)
+    assert equal_tolerance(spt600["orig", "mid2"], 150)
+    assert equal_tolerance(spt600["mid1", "dest"], 100)
+    assert equal_tolerance(spt600["mid2", "dest"], 50, rel_tol=0.2)
+
+    spt1200 = get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W,1200)
+    assert spt600 == spt1200
+
+    spt600_mat = get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W, 600, return_matrix=True)
+    assert equal_tolerance(spt600_mat[0, 3], 150)
+    assert spt600_mat[3, 0] == np.Inf
 
 def test_util_catch_exceptions_and_warn():
     with pytest.warns(UserWarning, match=r".*network().*"):
