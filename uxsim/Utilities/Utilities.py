@@ -224,3 +224,47 @@ def get_shortest_path_instantaneous_travel_time_between_all_nodes(W, return_matr
                 distances_dict[node1, node2] = distances[node1.id, node2.id]
                 distances_dict[node1.name, node2.name] = distances[node1.id, node2.id]
         return distances_dict
+    
+def get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W, t, return_time=False, return_matrix=False):
+    """
+    Get the shortest instantaneous travel time (in seconds) between all node pairs based on the instantaneous travel time of each link near time t (based on the route choice update interval).
+
+    Parameters
+    ----------
+    W : World
+        The World object.
+    t : float
+        The time point to compute shortest travel time.
+    return_time : bool, optional
+        Whether to return the actual time of computing shortest path cost. Default is False.
+    return_matrix : bool, optional
+        Whether to return the distance matrix as a numpy array. Default is False.
+
+    Returns
+    -------
+    dict or numpy array or tuple
+        Returns a dictionary of distances between nodes whose key is node pair if `return_matrix` is False and `return_time` is False.
+        Returns a numpy array of distances between nodes whose index is node.id pair if `return_matrix` is True and `return_time` is False.
+        Returns a tuple of the abode distances and the actual time of computing shortest path cost if `return_time` is True.
+    """
+    if t >= W.TMAX:
+        t = W.TMAX-W.DELTAT
+    duo_t = t//W.DUO_UPDATE_TIME
+    duo_timestep = int(duo_t*W.DUO_UPDATE_TIME/W.DELTAT)
+
+    distances = W.ROUTECHOICE.dist_record[duo_timestep]
+
+    if return_matrix == True:
+        ret = distances
+    else:
+        distances_dict = dict()
+        for node1 in W.NODES:
+            for node2 in W.NODES:
+                distances_dict[node1, node2] = distances[node1.id, node2.id]
+                distances_dict[node1.name, node2.name] = distances[node1.id, node2.id]
+        ret = distances_dict
+
+    if return_time == True:
+        return ret, duo_t
+    else:
+        return ret
