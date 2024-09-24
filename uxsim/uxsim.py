@@ -1408,9 +1408,7 @@ class RouteChoice:
             next_node_mask[k] = end_nodes == s.next[start_nodes, k]
 
         # Update route preferences
-        s.route_pref = np.where(next_node_mask,
-                                (1 - weights[:, np.newaxis]) * s.route_pref + weights[:, np.newaxis],
-                                (1 - weights[:, np.newaxis]) * s.route_pref)
+        np.place(s.route_pref, next_node_mask, (1 - weights[:, np.newaxis]) * s.route_pref + weights[:, np.newaxis])
 
 
 class World:
