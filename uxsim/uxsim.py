@@ -185,7 +185,7 @@ class Node:
                     if set(outlinks) & set(veh.links_avoid):
                         outlinks = sorted(set(outlinks) - set(veh.links_avoid))
                     
-                    preference = np.array([veh.route_pref[l.id] for l in outlinks], dtype=float)
+                    preference = np.array([veh.route_pref[l.id] for l in outlinks], dtype=np.float32)
                     if s.W.hard_deterministic_mode == False:
                         if sum(preference) > 0:
                             outlink = s.W.rng.choice(outlinks, p=preference/sum(preference))
@@ -261,7 +261,7 @@ class Node:
                 ] 
                 if len(vehs) == 0:
                     continue
-                merge_priorities = np.array([veh.link.merge_priority for veh in vehs], dtype=float)
+                merge_priorities = np.array([veh.link.merge_priority for veh in vehs], dtype=np.float32)
                 if sum(merge_priorities) == 0:
                     merge_priorities = np.ones(len(merge_priorities))
                 if s.W.hard_deterministic_mode == False:
@@ -599,15 +599,15 @@ class Link:
         #Euler型交通状態
         s.edie_dt = s.W.EULAR_DT
         s.edie_dx = s.edie_dx
-        s.k_mat = np.zeros([int(s.W.TMAX/s.edie_dt)+1, int(s.length/s.edie_dx)])
-        s.q_mat = np.zeros(s.k_mat.shape)
-        s.v_mat = np.zeros(s.k_mat.shape)
-        s.tn_mat = np.zeros(s.k_mat.shape)
-        s.dn_mat = np.zeros(s.k_mat.shape)
+        s.k_mat = np.zeros([int(s.W.TMAX/s.edie_dt)+1, int(s.length/s.edie_dx)], np.float32)
+        s.q_mat = np.zeros(s.k_mat.shape, np.float32)
+        s.v_mat = np.zeros(s.k_mat.shape, np.float32)
+        s.tn_mat = np.zeros(s.k_mat.shape, np.float32)
+        s.dn_mat = np.zeros(s.k_mat.shape, np.float32)
         s.an = s.edie_dt*s.edie_dx
 
         #累積
-        s.traveltime_actual = np.array([s.length/s.u for t in range(s.W.TSIZE)])
+        s.traveltime_actual = np.array([s.length/s.u for t in range(s.W.TSIZE)], np.float32)
 
     def update(s):
         """
@@ -1154,7 +1154,7 @@ class Vehicle:
                 if set(outlinks) & set(s.links_avoid):
                     outlinks = sorted(set(outlinks) - set(s.links_avoid))
 
-                preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=float)
+                preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=np.float32)
                 if s.W.hard_deterministic_mode == False:
                     if sum(preference) > 0:
                         s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
@@ -1326,19 +1326,19 @@ class RouteChoice:
         """
         s.W = W
         #リンク旅行時間行列: adjacency matrix whose cost is link travel cost
-        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=np.float32)
         #ij間最短距離: the shortest path cost (based on the current instantaneous travel time) from node i to j
-        s.dist = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        s.dist = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=np.float32)
         #iからjに行くために次に進むべきノード: the node to proceed from i when the destination is j
-        s.next = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        s.next = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=np.int32)
         #iからjに行くために来たノード. This is not used anymore
-        s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        # s.pred = np.zeros([len(s.W.NODES), len(s.W.NODES)])
 
         s.dist_record = {}
 
         #homogeneous DUO用．kに行くための最短経路的上にあれば1: array[dest,link]==1 if link is on the shortest path to dest
         #s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES} #old definition, {node_id: {link: preference}. preference of link is 1 if it is on the shortest path to node_id
-        s.route_pref = np.zeros([len(W.NODES), len(W.LINKS)])
+        s.route_pref = np.zeros([len(W.NODES), len(W.LINKS)], dtype=np.float32)
 
     def route_search_all(s, infty=np.inf, noise=0):
         """
@@ -1351,8 +1351,8 @@ class RouteChoice:
         noise : float
             very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.
         """
-        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)])
-        adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)])
+        s.adj_mat_time = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=np.float32)
+        adj_mat_link_count = np.zeros([len(s.W.NODES), len(s.W.NODES)], dtype=np.uint16)
 
         for link in s.W.LINKS:
             i = link.start_node.id
@@ -1395,12 +1395,12 @@ class RouteChoice:
         empty_pref_mask = np.sum(s.route_pref, axis=1) == 0
 
         # Initialize weight array
-        weights = np.full(num_nodes, weight0)
+        weights = np.full(num_nodes, weight0, dtype=np.float32)
         weights[empty_pref_mask] = 1
 
         # Create arrays for start and end nodes of links
-        start_nodes = np.array([l.start_node.id for l in s.W.LINKS])
-        end_nodes = np.array([l.end_node.id for l in s.W.LINKS])
+        start_nodes = np.array([l.start_node.id for l in s.W.LINKS], dtype=np.uint16)
+        end_nodes = np.array([l.end_node.id for l in s.W.LINKS], dtype=np.uint16)
 
         # Create the next_node_mask
         next_node_mask = np.zeros((num_nodes, num_links), dtype=bool)
@@ -1880,7 +1880,7 @@ class World:
 
         #generate adjacency matrix
         W.ROUTECHOICE = RouteChoice(W)
-        W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)])
+        W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)], dtype=bool)
         W.ADJ_MAT_LINKS = dict() #リンクオブジェクトが入った隣接行列（的な辞書）
         for link in W.LINKS:
             for i,node in enumerate(W.NODES):
