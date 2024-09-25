@@ -1403,7 +1403,7 @@ class RouteChoice:
         end_nodes = np.array([l.end_node.id for l in s.W.LINKS], dtype=np.uint16)
 
         # Create the next_node_mask
-        next_node_mask = np.zeros((num_nodes, num_links), dtype=np.bool)
+        next_node_mask = np.zeros((num_nodes, num_links), dtype=np.bool_)
         for k in range(num_nodes):
             next_node_mask[k] = end_nodes == s.next[start_nodes, k]
 
@@ -1880,7 +1880,7 @@ class World:
 
         #generate adjacency matrix
         W.ROUTECHOICE = RouteChoice(W)
-        W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)], dtype=np.bool)
+        W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)], dtype=np.bool_)
         W.ADJ_MAT_LINKS = dict() #リンクオブジェクトが入った隣接行列（的な辞書）
         for link in W.LINKS:
             for i,node in enumerate(W.NODES):
