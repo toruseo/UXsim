@@ -1519,9 +1519,10 @@ class Analyzer:
         s.df_area = pd.DataFrame(result)
         if set_index:
             if time_bin is not None:
-                return s.df_area.set_index(["time_bin", "area"])
+                s.df_area.set_index(["time_bin", "area"], inplace=True)
             else:
-                return s.df_area.set_index(["area"])
+                s.df_area.set_index(["area"], inplace=True)
+        return s.df_area
 
     def vehicle_groups_to_pandas(s, groups, group_names=None):
         """
