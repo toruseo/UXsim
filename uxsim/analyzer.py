@@ -1477,8 +1477,15 @@ class Analyzer:
 
             area_data = df_slice.loc[rows]
 
+            # Count vehicles entering the area
+            entering_links = area_data[~area_data["start_node"].isin(area_set) & area_data["end_node"].isin(area_set)]
+            # Count vehicles starting their trip within the area
+            internal_start_links = area_data[
+                area_data["start_node"].isin(area_set) & ~area_data["end_node"].isin(area_set)]
+
+            traffic_volume = entering_links["traffic_volume"].sum() + internal_start_links["traffic_volume"].sum()
+
             n_links = area_data["link"].nunique()
-            traffic_volume = area_data["traffic_volume"].sum()
             vehicles_remain = area_data["vehicles_remain"].sum()
             total_travel_time = (area_data["average_travel_time"] * area_data["traffic_volume"]).sum()
             total_free_time = (area_data["free_travel_time"] * area_data["traffic_volume"]).sum()
