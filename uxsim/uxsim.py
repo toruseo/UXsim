@@ -1410,9 +1410,11 @@ class RouteChoice:
             next_node_mask[k] = end_nodes == s.next[start_nodes, k]
 
         # Update route preferences
-        s.route_pref = np.where(next_node_mask,
-                                (1 - weights[:, np.newaxis]) * s.route_pref + weights[:, np.newaxis],
-                                (1 - weights[:, np.newaxis]) * s.route_pref)
+        # In-place scaling of all elements
+        s.route_pref *= (1 - weights[:, np.newaxis])
+
+        # In-place addition of weights where next_node_mask is True
+        s.route_pref += weights[:, np.newaxis] * next_node_mask
 
 
 class World:
