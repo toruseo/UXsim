@@ -130,12 +130,13 @@ class Node:
         s.id = len(s.W.NODES)
         s.name = name
         s.auto_rename = auto_rename
-        if s.name in [n.name for n in s.W.NODES]:
+        if s.name in s.W.NODES_NAME_DICT.keys():
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
                 raise ValueError(f"Node name {s.name} already used by another node. Please specify a unique name.")
         s.W.NODES.append(s)
+        s.W.NODES_NAME_DICT[s.name] = s
 
     def __repr__(s):
         return f"<Node {s.name}>"
@@ -554,12 +555,13 @@ class Link:
         s.id = len(s.W.LINKS)
         s.name = name
         s.auto_rename = auto_rename
-        if s.name in [l.name for l in s.W.LINKS]:
+        if s.name in s.W.LINKS_NAME_DICT.keys():
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
                 raise ValueError(f"Link name {s.name} already used by another link. Please specify a unique name.")
         s.W.LINKS.append(s)
+        s.W.LINKS_NAME_DICT[s.name] = s
         s.start_node.outlinks[s.name] = s
         s.end_node.inlinks[s.name] = s
 
@@ -1511,6 +1513,9 @@ class World:
         W.NODES = []
         W.LINKS = []
 
+        W.NODES_NAME_DICT = {} #map from name to node object
+        W.LINKS_NAME_DICT = {}
+
         W.vehicle_logging_timestep_interval = vehicle_logging_timestep_interval
 
         W.route_choice_principle = route_choice_principle
@@ -2057,13 +2062,11 @@ class World:
             if node in W.NODES:
                 return node
             else:
-                for n in W.NODES:
-                    if n.name == node.name:
-                        return n
+                if node.name in W.NODES_NAME_DICT:
+                    return W.NODES_NAME_DICT[node.name]
         elif type(node) is str:
-            for n in W.NODES:
-                if n.name == node:
-                    return n
+            if node in W.NODES_NAME_DICT:
+                return W.NODES_NAME_DICT[node]
         raise Exception(f"'{node}' is not Node in this World")
 
     def get_link(W, link):
@@ -2087,13 +2090,11 @@ class World:
             if link in W.LINKS:
                 return link
             else:
-                for l in W.LINKS:
-                    if l.name == link.name:
-                        return l
+                if link.name in W.LINKS_NAME_DICT:
+                    return W.LINKS_NAME_DICT[link.name]
         elif type(link) is str:
-            for l in W.LINKS:
-                if l.name == link:
-                    return l
+            if link in W.LINKS_NAME_DICT:
+                return W.LINKS_NAME_DICT[link]
         raise Exception(f"'{link}' is not Link in this World")
 
     def get_nearest_node(W, x, y):
