@@ -1086,6 +1086,9 @@ class Vehicle:
 
         s.record_log(enforce_log=1)
 
+        if s.W.reduce_memory_delele_vehicle_route_pref:
+            s.route_pref = None
+
     def carfollow(s):
         """
         Drive withing a link.
@@ -1422,7 +1425,16 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, hard_deterministic_mode=False, meta_data={}, user_attribute=None, user_function=None):
+    def __init__(W, name="", deltan=5, reaction_time=1, 
+                 duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, instantaneous_TT_timestep_interval=5, 
+                 eular_dt=120, eular_dx=100, 
+                 random_seed=None, 
+                 print_mode=1, save_mode=1, show_mode=0, show_progress=1, show_progress_deltat=600, 
+                 tmax=None, 
+                 vehicle_logging_timestep_interval=1, 
+                 reduce_memory_delele_vehicle_route_pref=False,
+                 hard_deterministic_mode=False, 
+                 meta_data={}, user_attribute=None, user_function=None):
         """
         Create a World.
 
@@ -1471,6 +1483,8 @@ class World:
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
         hard_deterministic_mode : bool, optional
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
+        reduce_memory_delele_vehicle_route_pref : bool, optional
+            If True, the simulation will delete the route preference of vehicles after its ends. This is useful when the route preference is not needed after the simulation ends.
         meta_data : dict, optinal
             Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.
         user_attribute : any, optinal
@@ -1533,6 +1547,9 @@ class World:
         ## progress print setting
         W.show_progress = show_progress
         W.show_progress_deltat_timestep = int(show_progress_deltat/W.DELTAT)
+
+        ## memory setting
+        W.reduce_memory_delele_vehicle_route_pref = reduce_memory_delele_vehicle_route_pref
 
         ## system setting
         W.name = name
