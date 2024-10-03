@@ -835,7 +835,7 @@ def test_reduce_memory_delete_vehicle_route_pref():
         deltan=10,
         tmax=3000,
         print_mode=1, save_mode=1, show_mode=0,
-        reduce_memory_delele_vehicle_route_pref=True,
+        reduce_memory_delete_vehicle_route_pref=True,
         random_seed=0,
     )
 
