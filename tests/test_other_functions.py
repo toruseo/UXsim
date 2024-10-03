@@ -600,6 +600,8 @@ def test_area_stats():
     rec_volume_areaS = []
     rec_ttt_areaN = []
     rec_delay_areaN = []
+    rec_volume_areaN_bin = []
+    rec_volume_areaS_bin = []
 
     for i in range(10):
         W = World(
@@ -646,15 +648,49 @@ def test_area_stats():
         df = W.analyzer.area_to_pandas(list(area_dict.values()), list(area_dict.keys()), border_include=True)
         print(df)
 
+        # Test with time binning
+        df_time_bin = W.analyzer.area_to_pandas(list(area_dict.values()), list(area_dict.keys()), border_include=True, time_bin=1000)
+
+        # Check if time bins are correct
+        assert set(df_time_bin['time_bin'].unique()) == set([0, 1000, 2000])
+
+        # Test setting index
+        df_indexed = W.analyzer.area_to_pandas(list(area_dict.values()), list(area_dict.keys()), border_include=True, time_bin=1000, set_index=True)
+        assert df_indexed.index.names == ['time_bin', 'area']
+
+        # Numerical validity checks
+        # Check if total traffic volume is reasonable and non-negative
+        for area in area_dict.keys():
+            area_data = df_time_bin[df_time_bin['area'] == area]
+            assert (area_data['traffic_volume'] >= 0).all()
+            assert area_data['traffic_volume'].sum() > 0
+
+        # Check if total traffic volume across all areas and time bins is close to the total number of vehicles
+        total_volume = df['traffic_volume'].sum()
+        total_volume_bin = df_time_bin.groupby('area')['traffic_volume'].sum().sum()
+        assert equal_tolerance(total_volume, total_volume_bin, rel_tol=0.02)
+        # Check is it's within 5% for each area
+        for area in area_dict.keys():
+            area_data = df[df['area'] == area]
+            area_data_bin = df_time_bin[df_time_bin['area'] == area]
+            assert equal_tolerance(area_data['traffic_volume'].sum(), area_data_bin['traffic_volume'].sum(), rel_tol=0.05)
+            assert equal_tolerance(area_data['total_travel_time'].sum(), area_data_bin['total_travel_time'].sum(), rel_tol=0.2)
+
         rec_volume_areaN.append(df["traffic_volume"][df["area"] == "areaN"].values[0])
         rec_volume_areaS.append(df["traffic_volume"][df["area"] == "areaS"].values[0])
         rec_ttt_areaN.append(df["total_travel_time"][df["area"] == "areaN"].values[0])
         rec_delay_areaN.append(df["average_delay"][df["area"] == "areaN"].values[0])
 
+        rec_volume_areaN_bin.append(sum(df_time_bin["traffic_volume"][df_time_bin["area"] == "areaN"].values))
+        rec_volume_areaS_bin.append(sum(df_time_bin["traffic_volume"][df_time_bin["area"] == "areaS"].values))
+
     assert equal_tolerance(average(rec_volume_areaN), 6880)
     assert equal_tolerance(average(rec_volume_areaS), 6380)
     assert equal_tolerance(average(rec_ttt_areaN), 840000)
     assert equal_tolerance(average(rec_delay_areaN), 0.77, abs_tol=0.1)
+
+    assert equal_tolerance(average(rec_volume_areaN_bin), 6880)
+    assert equal_tolerance(average(rec_volume_areaS_bin), 6380)
 
 @pytest.mark.flaky(reruns=10)
 def test_vehicle_group_stats():
