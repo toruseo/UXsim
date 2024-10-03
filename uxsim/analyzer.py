@@ -3,6 +3,7 @@ Analyzer for a UXsim simulation result.
 This module is automatically loaded when you import the `uxsim` module.
 """
 
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 import glob, os, csv, time
@@ -1672,11 +1673,11 @@ class Analyzer:
             s.df_linkc = pd.DataFrame(out[1:], columns=out[0])
         else:
             out = []
-            num_bins = s.W.TIME // time_bin
+            num_bins = math.ceil(s.W.TIME / time_bin)  # Use ceiling division
             for l in s.W.LINKS:
                 for bin_idx in range(num_bins):
                     t_start = bin_idx * time_bin
-                    t_end = (bin_idx + 1) * time_bin
+                    t_end = min((bin_idx + 1) * time_bin, s.W.TIME)  # Ensure last bin doesn't exceed simulation time
                     idx_start = int(t_start / s.W.DELTAT)
                     idx_end = int(t_end / s.W.DELTAT)
 
