@@ -783,3 +783,96 @@ def test_user_functions():
     print("average speed of link1:", np.nanmean(link1.user_attribute["speed_record"]))
 
     assert equal_tolerance(np.nanmean(link1.user_attribute["speed_record"]), 15.89)
+
+def test_reduce_memory_delele_vehicle_route_pref():
+    W = World(
+        name="",
+        deltan=10,
+        tmax=3000,
+        print_mode=1, save_mode=1, show_mode=0,
+        reduce_memory_delele_vehicle_route_pref=False,
+        random_seed=0,
+    )
+
+    n_nodes = 4
+    imax = n_nodes
+    jmax = n_nodes
+    nodes = {}
+    for i in range(imax):
+        for j in range(jmax):
+            nodes[i,j] = W.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
+
+    links = {}
+    for i in range(imax):
+        for j in range(jmax):
+            if i != imax-1:
+                links[i,j,i+1,j] = W.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000)
+            if i != 0:
+                links[i,j,i-1,j] = W.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000)
+            if j != jmax-1:
+                links[i,j,i,j+1] = W.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000)
+            if j != 0:
+                links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000)
+
+
+    area_dict = {
+        "areaN": [nodes[0,i] for i in range(n_nodes)],
+        "areaS": [nodes[n_nodes-1,i] for i in range(n_nodes)],
+        "areaNW": [nodes[0,0]],
+        "areaSE": [nodes[n_nodes-1, n_nodes-1]]
+    }
+
+    W.adddemand_nodes2nodes(area_dict["areaN"], area_dict["areaS"], 0, 3000, volume=7000)
+
+    W.exec_simulation()
+    W.analyzer.print_simple_stats()
+
+    df1 = W.analyzer.area_to_pandas(list(area_dict.values()), list(area_dict.keys()), border_include=True)
+    print(df1)
+
+    W = World(
+        name="",
+        deltan=10,
+        tmax=3000,
+        print_mode=1, save_mode=1, show_mode=0,
+        reduce_memory_delele_vehicle_route_pref=True,
+        random_seed=0,
+    )
+
+    n_nodes = 4
+    imax = n_nodes
+    jmax = n_nodes
+    nodes = {}
+    for i in range(imax):
+        for j in range(jmax):
+            nodes[i,j] = W.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
+
+    links = {}
+    for i in range(imax):
+        for j in range(jmax):
+            if i != imax-1:
+                links[i,j,i+1,j] = W.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000)
+            if i != 0:
+                links[i,j,i-1,j] = W.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000)
+            if j != jmax-1:
+                links[i,j,i,j+1] = W.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000)
+            if j != 0:
+                links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000)
+
+
+    area_dict = {
+        "areaN": [nodes[0,i] for i in range(n_nodes)],
+        "areaS": [nodes[n_nodes-1,i] for i in range(n_nodes)],
+        "areaNW": [nodes[0,0]],
+        "areaSE": [nodes[n_nodes-1, n_nodes-1]]
+    }
+
+    W.adddemand_nodes2nodes(area_dict["areaN"], area_dict["areaS"], 0, 3000, volume=7000)
+
+    W.exec_simulation()
+    W.analyzer.print_simple_stats()
+
+    df2 = W.analyzer.area_to_pandas(list(area_dict.values()), list(area_dict.keys()), border_include=True)
+    print(df2)
+
+    assert df1["total_travel_time"][0] == df2["total_travel_time"][0]

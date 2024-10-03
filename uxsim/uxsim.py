@@ -130,12 +130,13 @@ class Node:
         s.id = len(s.W.NODES)
         s.name = name
         s.auto_rename = auto_rename
-        if s.name in [n.name for n in s.W.NODES]:
+        if s.name in s.W.NODES_NAME_DICT.keys():
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
                 raise ValueError(f"Node name {s.name} already used by another node. Please specify a unique name.")
         s.W.NODES.append(s)
+        s.W.NODES_NAME_DICT[s.name] = s
 
     def __repr__(s):
         return f"<Node {s.name}>"
@@ -554,12 +555,13 @@ class Link:
         s.id = len(s.W.LINKS)
         s.name = name
         s.auto_rename = auto_rename
-        if s.name in [l.name for l in s.W.LINKS]:
+        if s.name in s.W.LINKS_NAME_DICT.keys():
             if auto_rename:
                 s.name = s.name+"_renamed"+"".join(s.W.rng.choice(list(string.ascii_letters + string.digits), size=8))
             else:
                 raise ValueError(f"Link name {s.name} already used by another link. Please specify a unique name.")
         s.W.LINKS.append(s)
+        s.W.LINKS_NAME_DICT[s.name] = s
         s.start_node.outlinks[s.name] = s
         s.end_node.inlinks[s.name] = s
 
@@ -1084,6 +1086,9 @@ class Vehicle:
 
         s.record_log(enforce_log=1)
 
+        if s.W.reduce_memory_delele_vehicle_route_pref:
+            s.route_pref = None
+
     def carfollow(s):
         """
         Drive withing a link.
@@ -1420,7 +1425,16 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name="", deltan=5, reaction_time=1, duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, eular_dt=120, eular_dx=100, random_seed=None, print_mode=1, save_mode=1, show_mode=0, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, show_progress=1, show_progress_deltat=600, tmax=None, vehicle_logging_timestep_interval=1, instantaneous_TT_timestep_interval=5, hard_deterministic_mode=False, meta_data={}, user_attribute=None, user_function=None):
+    def __init__(W, name="", deltan=5, reaction_time=1, 
+                 duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01, route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False, instantaneous_TT_timestep_interval=5, 
+                 eular_dt=120, eular_dx=100, 
+                 random_seed=None, 
+                 print_mode=1, save_mode=1, show_mode=0, show_progress=1, show_progress_deltat=600, 
+                 tmax=None, 
+                 vehicle_logging_timestep_interval=1, 
+                 reduce_memory_delele_vehicle_route_pref=False,
+                 hard_deterministic_mode=False, 
+                 meta_data={}, user_attribute=None, user_function=None):
         """
         Create a World.
 
@@ -1469,6 +1483,8 @@ class World:
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
         hard_deterministic_mode : bool, optional
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
+        reduce_memory_delele_vehicle_route_pref : bool, optional
+            If True, the simulation will delete the route preference of vehicles after its ends. This is useful when the route preference is not needed after the simulation ends.
         meta_data : dict, optinal
             Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.
         user_attribute : any, optinal
@@ -1513,6 +1529,9 @@ class World:
         W.NODES = []
         W.LINKS = []
 
+        W.NODES_NAME_DICT = {} #map from name to node object
+        W.LINKS_NAME_DICT = {}
+
         W.vehicle_logging_timestep_interval = vehicle_logging_timestep_interval
 
         W.route_choice_principle = route_choice_principle
@@ -1528,6 +1547,9 @@ class World:
         ## progress print setting
         W.show_progress = show_progress
         W.show_progress_deltat_timestep = int(show_progress_deltat/W.DELTAT)
+
+        ## memory setting
+        W.reduce_memory_delele_vehicle_route_pref = reduce_memory_delele_vehicle_route_pref
 
         ## system setting
         W.name = name
@@ -2059,13 +2081,11 @@ class World:
             if node in W.NODES:
                 return node
             else:
-                for n in W.NODES:
-                    if n.name == node.name:
-                        return n
+                if node.name in W.NODES_NAME_DICT:
+                    return W.NODES_NAME_DICT[node.name]
         elif type(node) is str:
-            for n in W.NODES:
-                if n.name == node:
-                    return n
+            if node in W.NODES_NAME_DICT:
+                return W.NODES_NAME_DICT[node]
         raise Exception(f"'{node}' is not Node in this World")
 
     def get_link(W, link):
@@ -2089,13 +2109,11 @@ class World:
             if link in W.LINKS:
                 return link
             else:
-                for l in W.LINKS:
-                    if l.name == link.name:
-                        return l
+                if link.name in W.LINKS_NAME_DICT:
+                    return W.LINKS_NAME_DICT[link.name]
         elif type(link) is str:
-            for l in W.LINKS:
-                if l.name == link:
-                    return l
+            if link in W.LINKS_NAME_DICT:
+                return W.LINKS_NAME_DICT[link]
         raise Exception(f"'{link}' is not Link in this World")
 
     def get_nearest_node(W, x, y):
