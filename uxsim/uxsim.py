@@ -137,7 +137,7 @@ class Node:
                 raise ValueError(f"Node name {s.name} already used by another node. Please specify a unique name.")
         s.W.NODES.append(s)
         s.W.NODES_NAME_DICT[s.name] = s
-
+    
     def __repr__(s):
         return f"<Node {s.name}>"
 
@@ -590,6 +590,7 @@ class Link:
             if s.edie_dx < s.u*s.W.DELTAT:
                 s.edie_dx = s.u*s.W.DELTAT
 
+
     def __repr__(s):
         return f"<Link {s.name}>"
 
@@ -979,7 +980,6 @@ class Vehicle:
         s.W.VEHICLES[s.name] = s
         s.W.VEHICLES_LIVING[s.name] = s
 
-
     def __repr__(s):
         return f"<Vehicle {s.name}: {s.state}, x={s.x}, link={s.link}>"
 
@@ -1086,7 +1086,7 @@ class Vehicle:
 
         s.record_log(enforce_log=1)
 
-        if s.W.reduce_memory_delele_vehicle_route_pref:
+        if s.W.reduce_memory_delete_vehicle_route_pref:
             s.route_pref = None
 
     def carfollow(s):
@@ -1432,7 +1432,7 @@ class World:
                  print_mode=1, save_mode=1, show_mode=0, show_progress=1, show_progress_deltat=600, 
                  tmax=None, 
                  vehicle_logging_timestep_interval=1, 
-                 reduce_memory_delele_vehicle_route_pref=False,
+                 reduce_memory_delete_vehicle_route_pref=False,
                  hard_deterministic_mode=False, 
                  meta_data={}, user_attribute=None, user_function=None):
         """
@@ -1483,7 +1483,7 @@ class World:
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
         hard_deterministic_mode : bool, optional
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
-        reduce_memory_delele_vehicle_route_pref : bool, optional
+        reduce_memory_delete_vehicle_route_pref : bool, optional
             If True, the simulation will delete the route preference of vehicles after its ends. This is useful when the route preference is not needed after the simulation ends.
         meta_data : dict, optinal
             Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.
@@ -1549,7 +1549,7 @@ class World:
         W.show_progress_deltat_timestep = int(show_progress_deltat/W.DELTAT)
 
         ## memory setting
-        W.reduce_memory_delele_vehicle_route_pref = reduce_memory_delele_vehicle_route_pref
+        W.reduce_memory_delete_vehicle_route_pref = reduce_memory_delete_vehicle_route_pref
 
         ## system setting
         W.name = name

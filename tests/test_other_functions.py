@@ -784,13 +784,13 @@ def test_user_functions():
 
     assert equal_tolerance(np.nanmean(link1.user_attribute["speed_record"]), 15.89)
 
-def test_reduce_memory_delele_vehicle_route_pref():
+def test_reduce_memory_delete_vehicle_route_pref():
     W = World(
         name="",
         deltan=10,
         tmax=3000,
         print_mode=1, save_mode=1, show_mode=0,
-        reduce_memory_delele_vehicle_route_pref=False,
+        reduce_memory_delete_vehicle_route_pref=False,
         random_seed=0,
     )
 
