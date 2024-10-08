@@ -1735,11 +1735,14 @@ class World:
             flow = volume/(t_end-t_start)
 
         f = 0
+
         for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
             f += flow*W.DELTAT
             while f >= W.DELTAN:
                 W.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute, direct_call=False)
                 f -= W.DELTAN
+
+        
 
     @demand_info_record
     def adddemand_point2point(W, x_orig, y_orig, x_dest, y_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
