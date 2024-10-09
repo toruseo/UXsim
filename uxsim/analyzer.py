@@ -3,6 +3,7 @@ Analyzer for a UXsim simulation result.
 This module is automatically loaded when you import the `uxsim` module.
 """
 
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 import glob, os, csv, time
@@ -1438,96 +1439,97 @@ class Analyzer:
         s.df_areas2areas = pd.DataFrame(out[1:], columns=out[0])
         return s.df_areas2areas
 
-    def area_to_pandas(s, areas, area_names=None, border_include=True):
+    def area_to_pandas(s, areas, area_names=None, border_include=True, time_bin=None, set_index=False):
         """
         Compute traffic stats in area and return as pandas.DataFrame.
 
         Parameters
         ----------
         areas : list
-            The list of areas. Each area is defined as a list of nodes. The items of area can be Node objects or names of Nodes.
+            The list of areas. Each area is defined as a list of nodes.
         area_names : list, optional
             The list of names of areas.
         border_include : bool, optional
             If set to True, the links on the border of the area are included in the analysis. Default is True.
+        time_bin : int, optional
+            The time bin size in seconds. If provided, results will be aggregated by time bins.
+        set_index : bool, optional
+            If set to True, the DataFrame index will be set to the area, and (area, time_bin) if time_bin is not None. Default is False.
 
         Returns
         -------
         pd.DataFrame
         """
-
         # Precompute DataFrames
-        df_links = s.W.analyzer.link_to_pandas()
-        df_veh_link = s.W.analyzer.vehicles_to_pandas().drop_duplicates(subset=['name', 'link'])
+        df_links = s.link_to_pandas(time_bin=time_bin)
 
         # Prepare areas as sets for fast lookup
         areas_set = [{s.W.get_node(n).name for n in area} for area in areas]
 
-        # Initialize result lists
-        n_links_rec = []
-        traffic_volume_rec = []
-        vehicles_remain_rec = []
-        total_travel_time_rec = []
-        average_delay_rec = []
-        average_speed_rec = []
-        vehicle_density_rec = []
+        if area_names is None:
+            area_names = [f"area_{i}" for i in range(len(areas))]
 
-        # Vectorized approach to process all areas at once
-        for area_set in areas_set:
+        # Function to process data for a single area and time bin
+        def process_area(area_set, df_slice):
             if border_include:
-                rows = df_links["start_node"].isin(area_set) | df_links["end_node"].isin(area_set)
+                rows = df_slice["start_node"].isin(area_set) | df_slice["end_node"].isin(area_set)
             else:
-                rows = df_links["start_node"].isin(area_set) & df_links["end_node"].isin(area_set)
+                rows = df_slice["start_node"].isin(area_set) & df_slice["end_node"].isin(area_set)
 
-            links = df_links.loc[rows, "link"].unique()
+            area_data = df_slice.loc[rows]
 
-            n_links = links.size
-            traffic_volume = df_veh_link[df_veh_link["link"].isin(links)]["name"].nunique() * s.W.DELTAN
-            vehicles_remain = df_links.loc[rows, "vehicles_remain"].sum()
+            # Count vehicles entering the area
+            entering_links = area_data[~area_data["start_node"].isin(area_set) & area_data["end_node"].isin(area_set)]
+            # Count vehicles starting their trip within the area
+            internal_start_links = area_data[
+                area_data["start_node"].isin(area_set) & ~area_data["end_node"].isin(area_set)]
+
+            traffic_volume = entering_links["traffic_volume"].sum() + internal_start_links["traffic_volume"].sum()
+
+            n_links = area_data["link"].nunique()
+            vehicles_remain = area_data["vehicles_remain"].sum()
+            total_travel_time = (area_data["average_travel_time"] * area_data["traffic_volume"]).sum()
+            total_free_time = (area_data["free_travel_time"] * area_data["traffic_volume"]).sum()
 
             if traffic_volume > 0:
-                traffic_volume_rows = (
-                            df_links.loc[rows, "traffic_volume"] - df_links.loc[rows, "vehicles_remain"]).values
-                total_travel_time = np.sum(df_links.loc[rows, "average_travel_time"].values * traffic_volume_rows)
-                total_free_time = np.sum(df_links.loc[rows, "free_travel_time"].values * traffic_volume_rows)
                 average_delay = max(total_travel_time / total_free_time - 1, 0)
-
-                # Average speed calculation: total distance / total time
-                total_distance = np.sum(df_links.loc[rows, "length"].values * traffic_volume_rows)
-                average_speed = total_distance / total_travel_time if total_travel_time > 0 else np.nan
-
-                # Vehicle density calculation: total number of vehicles / total link length
-                total_link_length = df_links.loc[rows, "length"].sum()
-                vehicle_density = traffic_volume / total_link_length if total_link_length > 0 else np.nan
+                average_speed = (area_data["length"] * area_data["traffic_volume"]).sum() / total_travel_time if total_travel_time > 0 else np.nan
+                total_link_length = area_data["length"].sum()
+                vehicle_density = vehicles_remain / total_link_length if total_link_length > 0 else np.nan
             else:
-                total_travel_time = 0
-                total_free_time = 0
                 average_delay = np.nan
                 average_speed = np.nan
                 vehicle_density = np.nan
 
-            # Append the results to lists
-            n_links_rec.append(n_links)
-            traffic_volume_rec.append(traffic_volume)
-            vehicles_remain_rec.append(vehicles_remain)
-            total_travel_time_rec.append(total_travel_time)
-            average_delay_rec.append(average_delay)
-            average_speed_rec.append(average_speed)
-            vehicle_density_rec.append(vehicle_density)
+            return pd.Series({
+                "n_links": n_links,
+                "traffic_volume": traffic_volume,
+                "vehicles_remain": vehicles_remain,
+                "total_travel_time": total_travel_time,
+                "average_delay": average_delay,
+                "average_speed": average_speed,
+                "vehicle_density": vehicle_density,
+            })
 
-        # Create DataFrame from the results
-        df_result = pd.DataFrame({
-            "area": area_names,
-            "n_links": n_links_rec,
-            "traffic_volume": traffic_volume_rec,
-            "vehicles_remain": vehicles_remain_rec,
-            "total_travel_time": total_travel_time_rec,
-            "average_delay": average_delay_rec,
-            "average_speed": average_speed_rec,
-            "vehicle_density": vehicle_density_rec,
-        })
+        # Process data with or without time binning
+        if time_bin is not None:
+            result = []
+            for area_set, area_name in zip(areas_set, area_names):
+                for _, group in df_links.groupby("time_bin"):
+                    area_result = process_area(area_set, group)
+                    result.append({"area": area_name, "time_bin": group["time_bin"].iloc[0], **area_result})
+        else:
+            result = []
+            for area_set, area_name in zip(areas_set, area_names):
+                area_result = process_area(area_set, df_links)
+                result.append({"area": area_name, **area_result})
 
-        s.df_area = df_result
+        s.df_area = pd.DataFrame(result)
+        if set_index:
+            if time_bin is not None:
+                s.df_area.set_index(["time_bin", "area"], inplace=True)
+            else:
+                s.df_area.set_index(["area"], inplace=True)
         return s.df_area
 
     def vehicle_groups_to_pandas(s, groups, group_names=None):
@@ -1647,9 +1649,14 @@ class Analyzer:
         s.df_mfd = pd.DataFrame(out[1:], columns=out[0])
         return s.df_mfd
 
-    def link_to_pandas(s):
+    def link_to_pandas(s, time_bin=None):
         """
         Converts the link-level analysis results to a pandas DataFrame.
+
+        Parameters
+        ----------
+        time_bin : int, optional
+            The time bin size in seconds. If provided, results will be aggregated by time bins.
 
         Returns
         -------
@@ -1657,10 +1664,50 @@ class Analyzer:
         """
         s.link_analysis_coarse()
 
-        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time", "length"]]
-        for l in s.W.LINKS:
-            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l], l.length])
-        s.df_linkc = pd.DataFrame(out[1:], columns=out[0])
+        if time_bin is None:
+            out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time",
+                    "average_travel_time", "stddiv_travel_time", "length"]]
+            for l in s.W.LINKS:
+                out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l],
+                            s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l], l.length])
+            s.df_linkc = pd.DataFrame(out[1:], columns=out[0])
+        else:
+            out = []
+            num_bins = math.ceil(s.W.TIME / time_bin)  # Use ceiling division
+            for l in s.W.LINKS:
+                for bin_idx in range(num_bins):
+                    t_start = bin_idx * time_bin
+                    t_end = min((bin_idx + 1) * time_bin, s.W.TIME)  # Ensure last bin doesn't exceed simulation time
+                    idx_start = int(t_start / s.W.DELTAT)
+                    idx_end = int(t_end / s.W.DELTAT)
+
+                    cum_arrival_slice = l.cum_arrival[idx_start:idx_end]
+                    cum_departure_slice = l.cum_departure[idx_start:idx_end]
+
+                    traffic_volume = cum_departure_slice[-1] - cum_departure_slice[0]
+                    vehicles_remain = cum_arrival_slice[-1] - cum_departure_slice[-1]
+
+                    tt_actual_slice = l.traveltime_actual[idx_start:idx_end]
+                    average_travel_time = np.mean(tt_actual_slice) if len(tt_actual_slice) > 0 else np.nan
+                    stddiv_travel_time = np.std(tt_actual_slice) if len(tt_actual_slice) > 0 else np.nan
+
+                    out.append([
+                        t_start,
+                        l.name,
+                        l.start_node.name,
+                        l.end_node.name,
+                        traffic_volume,
+                        vehicles_remain,
+                        s.linkc_tt_free[l],
+                        average_travel_time,
+                        stddiv_travel_time,
+                        l.length
+                    ])
+
+            s.df_linkc = pd.DataFrame(out, columns=["time_bin", "link", "start_node", "end_node", "traffic_volume",
+                                                    "vehicles_remain", "free_travel_time", "average_travel_time",
+                                                    "stddiv_travel_time", "length"])
+
         return s.df_linkc
 
     def link_traffic_state_to_pandas(s):
