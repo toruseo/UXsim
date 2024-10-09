@@ -6,6 +6,7 @@ This `uxsim.py` is the core of UXsim. It summarizes the classes and methods that
 import csv, time, math, string, warnings, copy
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
+import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -941,7 +942,7 @@ class Vehicle:
         else:
             s.route_pref = {l.id:route_pref[l] for l in route_pref.keys()}
 
-        #好むリンクと避けるリンク（近視眼的）1
+        #好むリンクと避けるリンク（近視眼的）
         s.links_prefer = [s.W.get_link(l) for l in links_prefer]
         s.links_avoid = [s.W.get_link(l) for l in links_avoid]
 
@@ -1777,7 +1778,116 @@ class World:
     @demand_info_record
     def adddemand_area2area(W, x_orig, y_orig,  radious_orig, x_dest, y_dest, radious_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
         """
-        Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas.
+        Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas. `adddemand_area2area()` is not recommended as it may truncate demand. Consider to use new `adddemand_area2area2()` which is more accurate, smooth, and fast.
+
+        Parameters
+        ----------
+        x_orig : float
+            The x-coordinate of the center of the origin area.
+        y_orig : float
+            The y-coordinate of the center of the origin area.
+        radious_orig : float
+            The radious of the origin area. Note that too large radious may generate too sparse demand that is rounded to zero.
+        x_dest : float
+            The x-coordinate of the center of the destination area.
+        y_dest : float
+            The y-coordinate of the center of the destination area.
+        radious_dest : float
+            The radious of the destination area.
+        t_start : float
+            The start time for the demand in seconds.
+        t_end : float
+            The end time for the demand in seconds.
+        flow : float, optional
+            The flow rate from the origin to the destination in vehicles per second.
+        volume: float, optional
+            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
+        """
+        warnings.warn(
+            "`adddemand_area2area()` is not recommended as it may truncate demand. Consider to use new `adddemand_area2area2()` which is more accurate, smooth, and fast.",
+            FutureWarning
+        )
+
+        origs = W.get_nodes_in_area(x_orig, y_orig, radious_orig)
+        dests = W.get_nodes_in_area(x_dest, y_dest, radious_dest)
+
+        origs_new = []
+        dests_new = []
+        for o in origs:
+            if len(o.outlinks) != 0:
+                origs_new.append(o)
+        for d in dests:
+            if len(d.inlinks) != 0:
+                dests_new.append(d)
+        origs = origs_new
+        dests = dests_new
+        if len(origs) == 0:
+            origs.append(W.get_nearest_node(x_orig, y_orig))
+        if len(dests) == 0:
+            dests.append(W.get_nearest_node(x_dest, y_dest))
+        
+        if flow != -1:
+            flow = flow/(len(origs)*len(dests))
+        if volume != -1:
+            volume = volume/(len(origs)*len(dests))
+        for o in origs:
+            for d in dests:
+                W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=False)
+    
+    @demand_info_record
+    def adddemand_nodes2nodes(W, origs, dests, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
+        """
+        Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one. `adddemand_nodes2nodes()` is not recommended as it may truncate demand. Consider to use new `adddemand_nodes2nodes2() which is more accurate, smooth, and fast.
+
+        Parameters
+        ----------
+        origs : list
+            The list of origin nodes. The items can be Node objects or names of Nodes.
+        dests : list
+            The list of destination nodes. The items can be Node objects or names of Nodes.
+        t_start : float
+            The start time for the demand in seconds.
+        t_end : float
+            The end time for the demand in seconds.
+        flow : float, optional
+            The flow rate from the origin to the destination in vehicles per second.
+        volume: float, optional
+            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
+        attribute : any, optinonal
+            Additional (meta) attributes defined by users.
+        """
+        warnings.warn(
+            "`adddemand_nodes2nodes()` is not recommended as it may truncate demand. Consider to use new `adddemand_nodes2nodes2() which is more accurate, smooth, and fast.`",
+            FutureWarning
+        )
+
+        origs_new = []
+        dests_new = []
+        for oo in origs:
+            o = W.get_node(oo)
+            if len(o.outlinks) != 0:
+                origs_new.append(o)
+        for dd in dests:
+            d = W.get_node(dd)
+            if len(d.inlinks) != 0:
+                dests_new.append(d)
+        origs = origs_new
+        dests = dests_new
+        
+        if flow != -1:
+            flow = flow/(len(origs)*len(dests))
+        if volume != -1:
+            volume = volume/(len(origs)*len(dests))
+        for o in origs:
+            for d in dests:
+                W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=False)
+
+    @demand_info_record
+    def adddemand_area2area2(W, x_orig, y_orig,  radious_orig, x_dest, y_dest, radious_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
+        """
+        Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas. This is new version of `adddemand_area2area`, more efficient, more smooth, and more accurate. However, it introduces some randomness.
 
         Parameters
         ----------
@@ -1807,12 +1917,18 @@ class World:
         origs = W.get_nodes_in_area(x_orig, y_orig, radious_orig)
         dests = W.get_nodes_in_area(x_dest, y_dest, radious_dest)
 
+        if flow >= 0 and volume == -1:
+            volume = flow*(t_end-t_start)
+        size = int(volume/W.DELTAN)
+
         origs_new = []
         dests_new = []
-        for o in origs:
+        for oo in origs:
+            o = W.get_node(oo)
             if len(o.outlinks) != 0:
                 origs_new.append(o)
-        for d in dests:
+        for dd in dests:
+            d = W.get_node(dd)
             if len(d.inlinks) != 0:
                 dests_new.append(d)
         origs = origs_new
@@ -1821,18 +1937,19 @@ class World:
             origs.append(W.get_nearest_node(x_orig, y_orig))
         if len(dests) == 0:
             dests.append(W.get_nearest_node(x_dest, y_dest))
+
+        ts = np.linspace(t_start, t_end, size)
         
-        if flow != -1:
-            flow = flow/(len(origs)*len(dests))
-        if volume != -1:
-            volume = volume/(len(origs)*len(dests))
-        for o in origs:
-            for d in dests:
-                W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=False)
-    
-    def adddemand_nodes2nodes(W, origs, dests, t_start, t_end, flow=-1, volume=-1, attribute=None):
+        os = W.rng.choice(origs, size=size)
+        ds = W.rng.choice(dests, size=size)
+        
+        for t, o, d, in zip(ts, os, ds):
+            W.addVehicle(o, d, t, attribute=attribute, direct_call=False)
+
+    @demand_info_record
+    def adddemand_nodes2nodes2(W, origs, dests, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
         """
-        Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one.
+        Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one. This is new version of `adddemand_nodes2nodes`, more efficient, more smooth, and more accurate. However, it introduces some randomness.
 
         Parameters
         ----------
@@ -1851,6 +1968,10 @@ class World:
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
         """
+        
+        if flow >= 0 and volume == -1:
+            volume = flow*(t_end-t_start)
+        size = int(volume/W.DELTAN)
 
         origs_new = []
         dests_new = []
@@ -1864,14 +1985,13 @@ class World:
                 dests_new.append(d)
         origs = origs_new
         dests = dests_new
+        ts = np.linspace(t_start, t_end, size)
         
-        if flow != -1:
-            flow = flow/(len(origs)*len(dests))
-        if volume != -1:
-            volume = volume/(len(origs)*len(dests))
-        for o in origs:
-            for d in dests:
-                W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=True)
+        os = W.rng.choice(origs, size=size)
+        ds = W.rng.choice(dests, size=size)
+        
+        for t, o, d, in zip(ts, os, ds):
+            W.addVehicle(o, d, t, attribute=attribute, direct_call=False)
 
     def finalize_scenario(W, tmax=None):
         """
