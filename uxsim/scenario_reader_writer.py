@@ -202,10 +202,24 @@ def load_scenario(W, fname, network=True, demand=True):
                 for dem in dat[demand_type]:
                     W.adddemand_point2point(**dem)
                 print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
-            if demand_type == 'adddemand_area2area':
+            elif demand_type == 'adddemand_area2area':
                 for dem in dat[demand_type]:
                     W.adddemand_area2area(**dem)
                 print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+            elif demand_type == 'adddemand_nodes2nodes':
+                for dem in dat[demand_type]:
+                    W.adddemand_nodes2nodes(**dem)
+                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+            elif demand_type == 'adddemand_area2area2':
+                for dem in dat[demand_type]:
+                    W.adddemand_area2area2(**dem)
+                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+            elif demand_type == 'adddemand_nodes2nodes2':
+                for dem in dat[demand_type]:
+                    W.adddemand_nodes2nodes2(**dem)
+                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+            else:
+                pass
         
 
 

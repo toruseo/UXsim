@@ -413,13 +413,13 @@ def test_shortest_path_costs():
     assert spd["orig", "mid2"] == 1000
     assert spd["mid1", "dest"] == 2000
     assert spd["mid2", "dest"] == 1000
-    assert spd["dest", "orig"] == np.Inf
+    assert spd["dest", "orig"] == np.inf
     assert spd[orig, dest] == 2000
-    assert spd[dest, orig] == np.Inf
+    assert spd[dest, orig] == np.inf
 
     spd = get_shortest_path_distance_between_all_nodes(W, return_matrix=True)
     assert spd[0, 3] == 2000
-    assert spd[3, 0] == np.Inf
+    assert spd[3, 0] == np.inf
 
     spt = get_shortest_path_instantaneous_travel_time_between_all_nodes(W)
     assert equal_tolerance(spt["orig", "dest"], 150)
@@ -427,13 +427,13 @@ def test_shortest_path_costs():
     assert equal_tolerance(spt["orig", "mid2"], 150)
     assert equal_tolerance(spt["mid1", "dest"], 100)
     assert equal_tolerance(spt["mid2", "dest"], 50, rel_tol=0.2)
-    assert spt["dest", "orig"] == np.Inf
+    assert spt["dest", "orig"] == np.inf
     assert equal_tolerance(spt[orig, dest], 150)
-    assert spt[dest, orig] == np.Inf
+    assert spt[dest, orig] == np.inf
 
     spt = get_shortest_path_instantaneous_travel_time_between_all_nodes(W, return_matrix=True)
     assert equal_tolerance(spt[0, 3], 150)
-    assert spt[3, 0] == np.Inf
+    assert spt[3, 0] == np.inf
 
     spt0 = get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W,0)
     assert equal_tolerance(spt0["orig", "dest"], 100)
@@ -458,7 +458,7 @@ def test_shortest_path_costs():
 
     spt600_mat = get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W, 600, return_matrix=True)
     assert equal_tolerance(spt600_mat[0, 3], 150)
-    assert spt600_mat[3, 0] == np.Inf
+    assert spt600_mat[3, 0] == np.inf
 
 def test_util_catch_exceptions_and_warn():
     with pytest.warns(UserWarning, match=r".*network().*"):
@@ -592,6 +592,111 @@ def test_area2area_demand_and_stats():
     assert df["average_free_travel_time"][(df["origin_area"] == "areaNW") & (df["destination_area"] == "areaSE")].values[0] == 400.0
     assert df["average_shortest_distance"][(df["origin_area"] == "areaNW") & (df["destination_area"] == "areaSE")].values[0] == 8000.0
 
+def test_adddemand_area2area2_nodes2nodes2():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=7200,
+        print_mode=1, save_mode=1, show_mode=0,
+        random_seed=0
+    )
+
+    # scenario
+    #automated network generation
+    #deploy nodes as an imax x jmax grid
+    imax = 5
+    jmax = 5
+    nodes = {}
+    for i in range(imax):
+        for j in range(jmax):
+            nodes[i,j] = W.addNode(f"n{(i,j)}", i, j)
+
+    #create links between neighborhood nodes
+    links = {}
+    for i in range(imax):
+        for j in range(jmax):
+            if i != imax-1:
+                links[i,j,i+1,j] = W.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000, free_flow_speed=20, jam_density=0.2)
+            if i != 0:
+                links[i,j,i-1,j] = W.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000, free_flow_speed=20, jam_density=0.2)
+            if j != jmax-1:
+                links[i,j,i,j+1] = W.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000, free_flow_speed=20, jam_density=0.2)
+            if j != 0:
+                links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000, free_flow_speed=20, jam_density=0.2)
+
+    W.adddemand_nodes2nodes2(nodes.values(), nodes.values(), 0, 3600, volume=5000)
+    W.adddemand_area2area2(0, 0, 1.1, 5, 5, 1.1, 0, 3600, volume=5000)
+
+    W.finalize_scenario()
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    assert equal_tolerance(10000, len(W.VEHICLES)*W.DELTAT)
+
+def test_adddemand_area2area2_nodes2nodes2_scenario():
+    # simulation world
+    W = World(
+        name="",
+        deltan=5,
+        tmax=7200,
+        print_mode=1, save_mode=1, show_mode=0,
+        random_seed=0
+    )
+
+    # scenario
+    #automated network generation
+    #deploy nodes as an imax x jmax grid
+    imax = 5
+    jmax = 5
+    nodes = {}
+    for i in range(imax):
+        for j in range(jmax):
+            nodes[i,j] = W.addNode(f"n{(i,j)}", i, j)
+
+    #create links between neighborhood nodes
+    links = {}
+    for i in range(imax):
+        for j in range(jmax):
+            if i != imax-1:
+                links[i,j,i+1,j] = W.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000, free_flow_speed=20, jam_density=0.2)
+            if i != 0:
+                links[i,j,i-1,j] = W.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000, free_flow_speed=20, jam_density=0.2)
+            if j != jmax-1:
+                links[i,j,i,j+1] = W.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000, free_flow_speed=20, jam_density=0.2)
+            if j != 0:
+                links[i,j,i,j-1] = W.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000, free_flow_speed=20, jam_density=0.2)
+
+    W.adddemand_nodes2nodes2(nodes.values(), nodes.values(), 0, 3600, volume=5000)
+    W.adddemand_area2area2(0, 0, 1.1, 5, 5, 1.1, 0, 3600, volume=5000)
+
+    W.save_scenario("out/demandtest.uxsim_scenario")
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    #W.analyzer.network_fancy(animation_speed_inverse=15, sample_ratio=0.2, interval=5, trace_length=10,  figsize=6, antialiasing=False)
+    #display_image_in_notebook("out/anim_network_fancy.gif") 
+
+
+    ### ITER2
+
+    W2 = World(
+        name="",
+        deltan=5,
+        tmax=7200,
+        print_mode=1, save_mode=1, show_mode=0,
+        random_seed=0
+    )
+
+    W2.load_scenario("out/demandtest.uxsim_scenario")
+
+    W2.exec_simulation()
+    W2.analyzer.print_simple_stats()
+
+    assert W.analyzer.average_travel_time == W2.analyzer.average_travel_time
 
 @pytest.mark.flaky(reruns=10)
 def test_area_stats():
