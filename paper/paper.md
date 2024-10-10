@@ -13,7 +13,7 @@ authors:
 affiliations:
  - name: Department of Civil and Environmental Engineering, Institute of Science Tokyo, Japan
    index: 1
-date: 2024-10-07
+date: 7 October 2024
 bibliography: paper.bib
 ---
 
