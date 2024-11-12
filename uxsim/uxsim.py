@@ -182,10 +182,10 @@ class Node:
 
                     #consider the link preferences
                     outlinks = list(s.outlinks.values())
-                    if set(outlinks) & set(veh.links_prefer): 
-                        outlinks = sorted(set(outlinks) & set(veh.links_prefer))
+                    if set(outlinks) & set(veh.links_prefer):
+                        outlinks = sorted(set(outlinks) & set(veh.links_prefer), key=lambda l:l.name)
                     if set(outlinks) & set(veh.links_avoid):
-                        outlinks = sorted(set(outlinks) - set(veh.links_avoid))
+                        outlinks = sorted(set(outlinks) - set(veh.links_avoid), key=lambda l:l.name)
                     
                     preference = np.array([veh.route_pref[l.id] for l in outlinks], dtype=float)
                     if s.W.hard_deterministic_mode == False:
@@ -1105,6 +1105,13 @@ class Vehicle:
         if s.x_next > s.link.length:
             s.move_remain = s.x_next - s.link.length
             s.x_next = s.link.length
+    
+    def enforce_route(s, route):
+        """
+        Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check
+        """
+        s.links_prefer = [s.W.get_link(l) for l in route]
+        s.links_avoid = [s.W.get_link(l) for l in s.W.LINKS if l not in s.links_prefer]
 
     def route_pref_update(s, weight=1):
         """
@@ -1156,9 +1163,9 @@ class Vehicle:
 
                 #if links_prefer is given and available at the node, select only from the links in the list. if links_avoid is given, select links not in the list.
                 if set(outlinks) & set(s.links_prefer):
-                    outlinks = sorted(set(outlinks) & set(s.links_prefer))
+                    outlinks = sorted(set(outlinks) & set(s.links_prefer), key=lambda l:l.name)
                 if set(outlinks) & set(s.links_avoid):
-                    outlinks = sorted(set(outlinks) - set(s.links_avoid))
+                    outlinks = sorted(set(outlinks) - set(s.links_avoid), key=lambda l:l.name)
 
                 preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=float)
                 if s.W.hard_deterministic_mode == False:
@@ -1232,6 +1239,13 @@ class Vehicle:
     def traveled_route(s):
         """
         Returns the route this vehicle traveled.
+
+        Returns
+        -------
+        Route
+            The route this vehicle traveled.
+        ts
+            The time at which the vehicle entered each link. The last element is the time the vehicle reached the destination.
         """
         link_old = -1
         t = -1
@@ -1944,7 +1958,11 @@ class World:
         ds = W.rng.choice(dests, size=size)
         
         for t, o, d, in zip(ts, os, ds):
-            W.addVehicle(o, d, t, attribute=attribute, direct_call=False)
+            d2 = d
+            if o == d:
+                d2 = W.rng.choice([dd for dd in dests if dd!=d])
+            W.addVehicle(o, d2, t, attribute=attribute, direct_call=False)
+
 
     @demand_info_record
     def adddemand_nodes2nodes2(W, origs, dests, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
@@ -1991,7 +2009,10 @@ class World:
         ds = W.rng.choice(dests, size=size)
         
         for t, o, d, in zip(ts, os, ds):
-            W.addVehicle(o, d, t, attribute=attribute, direct_call=False)
+            d2 = d
+            if o == d:
+                d2 = W.rng.choice([dd for dd in dests if dd!=d])
+            W.addVehicle(o, d2, t, attribute=attribute, direct_call=False)
 
     def finalize_scenario(W, tmax=None):
         """
@@ -2044,21 +2065,34 @@ class World:
         W.finalized = 1
 
         ## 問題規模表示
-        W.print("simulation setting:")
-        W.print(" scenario name:", W.name)
-        W.print(" simulation duration:\t", W.TMAX, "s")
-        W.print(" number of vehicles:\t", len(W.VEHICLES)*W.DELTAN, "veh")
-        W.print(" total road length:\t", sum([l.length for l in W.LINKS]),"m")
-        W.print(" time discret. width:\t", W.DELTAT, "s")
-        W.print(" platoon size:\t\t", W.DELTAN, "veh")
-        W.print(" number of timesteps:\t", W.TSIZE)
-        W.print(" number of platoons:\t", len(W.VEHICLES))
-        W.print(" number of links:\t", len(W.LINKS))
-        W.print(" number of nodes:\t", len(W.NODES))
-        W.print(" setup time:\t\t", f"{time.time()-W.world_start_time:.2f}", "s")
+        if W.print_mode:
+            W.print_scenario_stats()
 
         W.sim_start_time = time.time()
         W.print("simulating...")
+
+    def print_scenario_stats(W):
+        """
+        Print scenario stats
+        """
+        if W.finalized:
+            print("simulation setting:")
+        else:
+            print("simulation setting (not finalized):")
+        print(" scenario name:", W.name)
+        print(" simulation duration:\t", W.TMAX, "s")
+        print(" number of vehicles:\t", len(W.VEHICLES)*W.DELTAN, "veh")
+        print(" total road length:\t", sum([l.length for l in W.LINKS]),"m")
+        print(" time discret. width:\t", W.DELTAT, "s")
+        print(" platoon size:\t\t", W.DELTAN, "veh")
+        if W.finalized:
+            print(" number of timesteps:\t", W.TSIZE)
+        else:
+            print(" number of timesteps:\t", W.TMAX/W.DELTAT)
+        print(" number of platoons:\t", len(W.VEHICLES))
+        print(" number of links:\t", len(W.LINKS))
+        print(" number of nodes:\t", len(W.NODES))
+        print(" setup time:\t\t", f"{time.time()-W.world_start_time:.2f}", "s")
 
     def exec_simulation(W, until_t=None, duration_t=None):
         """
@@ -2288,6 +2322,19 @@ class World:
                 nodes.append(node)
         return nodes
 
+    def defRoute(W, *args, **kwargs):
+        """
+        Define Route object.
+
+        Parameters
+        ----------
+        links : list of str or Link objects
+            The list the links in the route.
+        """
+
+        return Route(W, *args, **kwargs)
+
+
     def load_scenario_from_csv(W, fname_node, fname_link, fname_demand, tmax=None):
         """
         Load a scenario from CSV files.
@@ -2500,8 +2547,8 @@ class Route:
         ----------
         links : list
             List of links. The contents are Link objects.
-        links_name : list
-            List of name of links. The contents are str.
+        name : str
+            Name of the route.
         trust_input : bool
             True if you trust the `links` in order to reduce the computation cost by omitting verification.
 
@@ -2529,7 +2576,10 @@ class Route:
                 else:
                     raise Exception(f"route is not defined by concective links: {links}, {l1}")
                     #todo: interpolation based on shotest path
-            s.links.append(l2)
+            if len(links) >= 2:
+                s.links.append(l2)
+            else:
+                s.links.append(W.get_link(links[0]))
         else:
             #検査せずそのまま使用（計算コスト削減）
             s.links = links
