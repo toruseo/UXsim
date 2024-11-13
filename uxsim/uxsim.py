@@ -1106,12 +1106,13 @@ class Vehicle:
             s.move_remain = s.x_next - s.link.length
             s.x_next = s.link.length
     
-    def enforce_route(s, route):
+    def enforce_route(s, route, set_avoid=False):
         """
         Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check
         """
         s.links_prefer = [s.W.get_link(l) for l in route]
-        s.links_avoid = [s.W.get_link(l) for l in s.W.LINKS if l not in s.links_prefer]
+        if set_avoid:
+            s.links_avoid = [s.W.get_link(l) for l in s.W.LINKS if l not in s.links_prefer]
 
     def route_pref_update(s, weight=1):
         """
