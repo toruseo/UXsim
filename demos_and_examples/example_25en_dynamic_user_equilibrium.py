@@ -128,7 +128,7 @@ for i in range(max_iter):
             n_swap += 1
             routes_specified[key] = route_changed
 
-    print(f'iter {i}: time gap: {total_t_gap:.1f}, potential swap: {potential_n_swap}, swap: {n_swap}, total travel time: {W.analyzer.total_travel_time: .1f}, delay ratio: {W.analyzer.average_delay/W.analyzer.average_travel_time: .3f}')
+    print(f'iter {i}: time gap: {total_t_gap:.1f}, potential route change: {potential_n_swap}, route change: {n_swap}, total travel time: {W.analyzer.total_travel_time: .1f}, delay ratio: {W.analyzer.average_delay/W.analyzer.average_travel_time: .3f}')
 
     ttts.append(int(W.analyzer.total_travel_time))
     n_swaps.append(n_swap)

@@ -1109,6 +1109,13 @@ class Vehicle:
     def enforce_route(s, route, set_avoid=False):
         """
         Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check
+
+        Parameters
+        ----------
+        route : List of Link
+            The route for this vehicle.
+        set_avoid : bool
+            If True, the vehicle only travel the links in `route` argument. This is very strict. If the route is not consistent (e.g., the route does not completely connect between the origin and the destination), it will raise an exception.
         """
         s.links_prefer = [s.W.get_link(l) for l in route]
         if set_avoid:
