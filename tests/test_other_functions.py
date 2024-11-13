@@ -7,6 +7,7 @@ from numpy import *
 from uxsim import *
 from uxsim.Utilities import *
 
+
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     if check == 0 and abs_tol == 0:
         abs_tol = 0.1
@@ -981,3 +982,165 @@ def test_reduce_memory_delete_vehicle_route_pref():
     print(df2)
 
     assert df1["total_travel_time"][0] == df2["total_travel_time"][0]
+
+def test_route_definition():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=4000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=42
+    )
+
+    # scenario
+    W.addNode("0orig", 0, 0)
+    W.addNode("1orig", 0, 0)
+    W.addNode("2dummy", 2, 0)
+    W.addNode("3dummy", 2.2, 0)
+    W.addNode("4dest", 3, 0)
+    W.addLink("link01", "0orig", "1orig", length=500, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link12", "1orig", "2dummy", length=2000, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link24", "2dummy", "4dest", length=2000, free_flow_speed=20, jam_density=0.2, capacity_in=0.6)
+    W.addLink("link13", "1orig", "3dummy", length=2000, free_flow_speed=15, jam_density=0.2)
+    W.addLink("link34", "3dummy", "4dest", length=2000, free_flow_speed=15, jam_density=0.2)
+    W.adddemand("0orig", "4dest", 0, 3000, 0.51111111)
+    W.adddemand("0orig", "4dest", 1800, 3000, 0.5)
+
+
+    r1 = W.defRoute(["link01", "link12", "link24"])
+    r2 = W.defRoute(["link01", "link13", "link34"])
+
+    # simulation
+    W.exec_simulation()
+
+    # results
+    W.analyzer.print_simple_stats()
+    W.analyzer.time_space_diagram_traj_links(r1.links)
+    W.analyzer.time_space_diagram_traj_links(r2.links)
+
+    assert True
+
+def test_route_actual_travel_time():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=4000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=42
+    )
+
+    # scenario
+    W.addNode("0orig", 0, 0)
+    W.addNode("1orig", 0, 0)
+    W.addNode("2dummy", 2, 0)
+    W.addNode("3dummy", 2.2, 0)
+    W.addNode("4dest", 3, 0)
+    W.addLink("link01", "0orig", "1orig", length=500, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link12", "1orig", "2dummy", length=2000, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link24", "2dummy", "4dest", length=2000, free_flow_speed=20, jam_density=0.2, capacity_in=0.6)
+    W.addLink("link13", "1orig", "3dummy", length=2000, free_flow_speed=15, jam_density=0.2)
+    W.addLink("link34", "3dummy", "4dest", length=2000, free_flow_speed=15, jam_density=0.2)
+    W.adddemand("0orig", "4dest", 0, 3000, 0.51111111)
+    W.adddemand("0orig", "4dest", 1800, 3000, 0.5)
+
+
+    r1 = W.defRoute(["link01", "link12", "link24"])
+    r2 = W.defRoute(["link01", "link13", "link34"])
+
+    # simulation
+    W.exec_simulation()
+
+    # results
+    W.analyzer.print_simple_stats()
+
+    assert equal_tolerance(r1.actual_travel_time(500), (500+2000+2000)/20)
+    assert equal_tolerance(r2.actual_travel_time(500), 500/20+(2000+2000)/15)
+
+    assert equal_tolerance(r1.actual_travel_time(2500), 350)
+    assert equal_tolerance(r2.actual_travel_time(2500), 300)
+
+    
+def test_route_vehicle_methods():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=4000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=42
+    )
+
+    # scenario
+    W.addNode("0orig", 0, 0)
+    W.addNode("1orig", 0, 0)
+    W.addNode("2dummy", 2, 0)
+    W.addNode("3dummy", 2.2, 0)
+    W.addNode("4dest", 3, 0)
+    W.addLink("link01", "0orig", "1orig", length=500, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link12", "1orig", "2dummy", length=2000, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link24", "2dummy", "4dest", length=2000, free_flow_speed=20, jam_density=0.2, capacity_in=0.6)
+    W.addLink("link13", "1orig", "3dummy", length=2000, free_flow_speed=15, jam_density=0.2)
+    W.addLink("link34", "3dummy", "4dest", length=2000, free_flow_speed=15, jam_density=0.2)
+    W.adddemand("0orig", "4dest", 0, 3000, 0.51111111)
+    W.adddemand("0orig", "4dest", 1800, 3000, 0.5)
+
+
+    r1 = W.defRoute(["link01", "link12", "link24"])
+    r2 = W.defRoute(["link01", "link13", "link34"])
+
+    # simulation
+    W.exec_simulation()
+
+    # results
+    W.analyzer.print_simple_stats()
+
+    assert W.VEHICLES["0"].traveled_route()[0] == r1
+    assert W.VEHICLES["0"].traveled_route()[0] != r2
+    
+    assert W.VEHICLES["300"].traveled_route()[0] == r2
+    assert W.VEHICLES["300"].traveled_route()[1][0] == 3260
+    assert W.VEHICLES["300"].traveled_route()[1][-1] == 3550
+
+    tt_from_vehicle_route = W.VEHICLES["300"].traveled_route()[1][-1]-W.VEHICLES["300"].traveled_route()[1][0]
+    tt_from_route_by_departure_time = W.VEHICLES["300"].traveled_route()[0].actual_travel_time(W.VEHICLES["300"].traveled_route()[1][0])
+    assert equal_tolerance(tt_from_vehicle_route, tt_from_route_by_departure_time)
+
+
+def test_route_enforce_route():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=4000,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=42
+    )
+
+    # scenario
+    W.addNode("0orig", 0, 0)
+    W.addNode("1orig", 0, 0)
+    W.addNode("2dummy", 2, 0)
+    W.addNode("3dummy", 2.2, 0)
+    W.addNode("4dest", 3, 0)
+    W.addLink("link01", "0orig", "1orig", length=500, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link12", "1orig", "2dummy", length=2000, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link24", "2dummy", "4dest", length=2000, free_flow_speed=20, jam_density=0.2, capacity_in=0.6)
+    W.addLink("link13", "1orig", "3dummy", length=2000, free_flow_speed=15, jam_density=0.2)
+    W.addLink("link34", "3dummy", "4dest", length=2000, free_flow_speed=15, jam_density=0.2)
+    W.adddemand("0orig", "4dest", 0, 3000, 0.51111111)
+    W.adddemand("0orig", "4dest", 1800, 3000, 0.5)
+
+
+    r1 = W.defRoute(["link01", "link12", "link24"])
+    r2 = W.defRoute(["link01", "link13", "link34"])
+
+    for veh in W.VEHICLES.values():
+        veh.enforce_route(r2)
+    
+    # simulation
+    W.exec_simulation()
+
+    # results
+    W.analyzer.print_simple_stats()
+
+    df = W.analyzer.link_to_pandas()
+    for l in r2:
+        assert df[df["link"]==l.name]["traffic_volume"].values[0] == 2130

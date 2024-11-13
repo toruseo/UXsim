@@ -2332,12 +2332,16 @@ class World:
 
     def defRoute(W, *args, **kwargs):
         """
-        Define Route object.
+        Define Route object for this World.
 
         Parameters
         ----------
-        links : list of str or Link objects
-            The list the links in the route.
+        links : list
+            List of links (Link object or str)
+        name : str
+            Name of the route.
+        trust_input : bool
+            True if you trust the `links` in order to reduce the computation cost by omitting verification.
         """
 
         return Route(W, *args, **kwargs)
@@ -2551,10 +2555,12 @@ class Route:
         """
         Define a route.
 
-        Attributes
+        Parameters
         ----------
+        W : World
+            The World to which this Route belongs
         links : list
-            List of links. The contents are Link objects.
+            List of links (Link object or str)
         name : str
             Name of the route.
         trust_input : bool
@@ -2610,7 +2616,7 @@ class Route:
         Override `==` operator. If the links of two route are the same, then the routes are the same.
         """
         if isinstance(other, Route):
-            return self.links == other.links
+            return [l.name for l in self.links] == [l.name for l in other.links]
         return NotImplemented
 
     def actual_travel_time(s, t, return_details=False):
