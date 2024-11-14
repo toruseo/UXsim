@@ -175,13 +175,13 @@ def load_scenario(W, fname, network=True, demand=True):
     # from pprint import pprint
     # pprint(dat)
 
-    print(f"loading scenario from '{fname}'")
+    W.print(f"loading scenario from '{fname}'")
     if dat["meta_data"]:
         if type(dat["meta_data"]) is dict:
             for key in dat["meta_data"]:
                 print("", key, ":", dat["meta_data"][key])
         else:
-            print("", dat["meta_data"])
+            W.print("", dat["meta_data"])
 
 
     if network:
@@ -189,35 +189,35 @@ def load_scenario(W, fname, network=True, demand=True):
             W.addNode(**n)
         for l in dat["Links"]:
             W.addLink(**l)
-        print(" Number of loaded nodes:", len(dat["Nodes"]))
-        print(" Number of loaded links:", len(dat["Links"]))
+        W.print(" Number of loaded nodes:", len(dat["Nodes"]))
+        W.print(" Number of loaded links:", len(dat["Links"]))
     
     if demand:
         for demand_type in dat:
             if demand_type == 'adddemand':
                 for dem in dat[demand_type]:
                     W.adddemand(**dem)
-                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+                W.print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
             elif demand_type == 'adddemand_point2point':
                 for dem in dat[demand_type]:
                     W.adddemand_point2point(**dem)
-                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+                W.print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
             elif demand_type == 'adddemand_area2area':
                 for dem in dat[demand_type]:
                     W.adddemand_area2area(**dem)
-                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+                W.print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
             elif demand_type == 'adddemand_nodes2nodes':
                 for dem in dat[demand_type]:
                     W.adddemand_nodes2nodes(**dem)
-                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+                W.print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
             elif demand_type == 'adddemand_area2area2':
                 for dem in dat[demand_type]:
                     W.adddemand_area2area2(**dem)
-                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+                W.print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
             elif demand_type == 'adddemand_nodes2nodes2':
                 for dem in dat[demand_type]:
                     W.adddemand_nodes2nodes2(**dem)
-                print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
+                W.print(f" Number of loaded `{demand_type}`s:", len( dat[demand_type]))
             else:
                 pass
         
