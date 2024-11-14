@@ -17,37 +17,44 @@ import random
 from collections import defaultdict
 
 # scenario definition
-seed = None
-W_orig = uxsim.World(
-    name="",
-    deltan=10,
-    tmax=4000,
-    print_mode=0, save_mode=1, show_mode=1,
-    random_seed=seed
-)
-random.seed(seed)
+def create_World():
+    """
+    A function that returns World object with scenario informaiton. This is faster way to reuse the same scenario, as `World.copy` or `World.load_scenario` takes some computation time.
+    """
+    W_orig = uxsim.World(
+        name="",
+        deltan=10,
+        tmax=4000,
+        print_mode=0, save_mode=1, show_mode=1,
+        vehicle_logging_timestep_interval=-1, 
+        random_seed=42    #fix seed to reproduce random demand 
+    )
 
-n_nodes = 4
-imax = n_nodes
-jmax = n_nodes
-nodes = {}
-for i in range(imax):
-    for j in range(jmax):
-        nodes[i,j] = W_orig.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
+    n_nodes = 4
+    imax = n_nodes
+    jmax = n_nodes
+    nodes = {}
+    for i in range(imax):
+        for j in range(jmax):
+            nodes[i,j] = W_orig.addNode(f"n{(i,j)}", i, j, flow_capacity=1.6)
 
-links = {}
-for i in range(imax):
-    for j in range(jmax):
-        if i != imax-1:
-            links[i,j,i+1,j] = W_orig.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000)
-        if i != 0:
-            links[i,j,i-1,j] = W_orig.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000)
-        if j != jmax-1:
-            links[i,j,i,j+1] = W_orig.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000)
-        if j != 0:
-            links[i,j,i,j-1] = W_orig.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000)
+    links = {}
+    for i in range(imax):
+        for j in range(jmax):
+            if i != imax-1:
+                links[i,j,i+1,j] = W_orig.addLink(f"l{(i,j,i+1,j)}", nodes[i,j], nodes[i+1,j], length=1000)
+            if i != 0:
+                links[i,j,i-1,j] = W_orig.addLink(f"l{(i,j,i-1,j)}", nodes[i,j], nodes[i-1,j], length=1000)
+            if j != jmax-1:
+                links[i,j,i,j+1] = W_orig.addLink(f"l{(i,j,i,j+1)}", nodes[i,j], nodes[i,j+1], length=1000)
+            if j != 0:
+                links[i,j,i,j-1] = W_orig.addLink(f"l{(i,j,i,j-1)}", nodes[i,j], nodes[i,j-1], length=1000)
 
-W_orig.adddemand_nodes2nodes2(nodes.values(), nodes.values(), 0, 3000, volume=20000)
+    W_orig.adddemand_nodes2nodes2(nodes.values(), nodes.values(), 0, 3000, volume=20000)
+
+    return W_orig
+
+W_orig = create_World()
 
 W_orig.print_scenario_stats()
 
@@ -62,7 +69,7 @@ for key, veh in W_orig.VEHICLES.items():
 
 dict_od_to_routes = {}
 for o,d in dict_od_to_vehid.keys():
-    routes = enumerate_k_shortest_routes(W_orig, o, d, k=n_routes_per_od)
+    routes = enumerate_k_shortest_routes(W_orig, o, d, k=n_routes_per_od) #TODO: to be replaced with many-to-many shortest path search
     dict_od_to_routes[o,d] = routes
     #print(o, d, routes)
 
@@ -74,10 +81,10 @@ n_swaps = []
 potential_swaps = []
 total_t_gaps = []
 swap_prob = 0.05
-max_iter = 100
+max_iter = 25 #50 or 100 is better
 
 for i in range(max_iter):
-    W = W_orig.copy()
+    W = create_World()
 
     if i != 0:
         for key in W.VEHICLES:

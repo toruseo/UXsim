@@ -942,7 +942,7 @@ class Vehicle:
         else:
             s.route_pref = {l.id:route_pref[l] for l in route_pref.keys()}
 
-        #好むリンクと避けるリンク（近視眼的）
+        #these links will be always chosen or not chosen when choosing next link at each node
         s.links_prefer = [s.W.get_link(l) for l in links_prefer]
         s.links_avoid = [s.W.get_link(l) for l in links_avoid]
 
@@ -950,7 +950,8 @@ class Vehicle:
         s.trip_abort = trip_abort
         s.flag_trip_aborted = 0
 
-        #ログなど
+        #log
+        s.vehicle_logging_timestep_interval = s.W.vehicle_logging_timestep_interval
         s.log_t = [] #時刻
         s.log_state = [] #状態
         s.log_link = [] #リンク
@@ -960,7 +961,8 @@ class Vehicle:
         s.log_lane = [] #車線
         s.color = (s.W.rng.random(), s.W.rng.random(), s.W.rng.random())
 
-        s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #新たなリンクに入った時にその時刻とリンクのみを保存．経路分析用
+        s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #route-level log. It records the time and link when the vehicle entered new link
+        s.link_old = None
         
         s.distance_traveled = 0
 
@@ -1244,28 +1246,58 @@ class Vehicle:
         for dest in dests:
             s.add_dest(dest)
     
-    def traveled_route(s):
+    def traveled_route(s, include_arrival_time=True, include_departure_time=False):
         """
         Returns the route this vehicle traveled.
+
+        Parameters
+        ----------
+        include_arrival_time : bool
+            If true, return the arrival time to the destination as well.  `-1` means it did not reach the destination.
+        include_departure_time : bool
+            If true, return the departure time from the origin as well. It will be different from the entering time to the first link if there are congestion (i.e., the vehicle need to enter the network). 
 
         Returns
         -------
         Route
             The route this vehicle traveled.
-        ts
-            The time at which the vehicle entered each link. The last element is the time the vehicle reached the destination.
+        list
+            The time at which the vehicle entered each link. If `include_arrival_time` is true, the last element is the time the vehicle reached the destination. If `include_departure_time` is true, the first element is the time the vehicle departed from the origin. This complexity is actually due to a design failure in the past. These options are added to keep the backward compatibility.
         """
-        link_old = -1
-        t = -1
+        # link_old = -1
+        # t = -1
+        # route = []
+        # ts = []
+        # for i, link in enumerate(s.log_link):
+        #     if link_old != link:
+        #         route.append(link)
+        #         ts.append(s.log_t[i])
+        #         link_old = link
+
+        # return Route(s.W, route[:-1]), ts
+
         route = []
         ts = []
-        for i, link in enumerate(s.log_link):
-            if link_old != link:
-                route.append(link)
-                ts.append(s.log_t[i])
-                link_old = link
 
-        return Route(s.W, route[:-1]), ts
+        for log in s.log_t_link:
+            t = log[0]
+            l = log[1]
+            if l == "home" and include_departure_time:
+                ts.append(t)
+            if type(l) == Link:
+                ts.append(t)
+                route.append(l)
+        
+        log = s.log_t_link[-1]
+        t = log[0]
+        l = log[1]
+        if include_arrival_time:
+            if l == "end":
+                ts.append(t)
+            else:
+                ts.append(-1)
+        
+        return Route(s.W, route), ts
 
     def get_xy_coords(s, t=-1):
         """
@@ -1302,11 +1334,11 @@ class Vehicle:
         enforce_log : bool, optional
             Record log regardless of the logging interval, default is 0.
         """
-        if s.W.vehicle_logging_timestep_interval != -1:
-            if (s.W.T%s.W.vehicle_logging_timestep_interval == 0 or enforce_log):
+        if s.vehicle_logging_timestep_interval != -1:
+            if s.vehicle_logging_timestep_interval == 1 or s.W.T%s.W.vehicle_logging_timestep_interval == 0 or enforce_log:
                 if s.state != "run":
-                    if s.state == "end" and s.log_t_link[-1][1] != "end":
-                        s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
+                    # if s.state == "end" and s.log_t_link[-1][1] != "end":
+                    #     s.log_t_link.append([t, "end"])
 
                     s.log_t.append(s.W.T*s.W.DELTAT)
                     s.log_state.append(s.state)
@@ -1320,8 +1352,8 @@ class Vehicle:
                         s.W.analyzer.average_speed_count += 1
                         s.W.analyzer.average_speed += 0
                 else:
-                    if len(s.log_link) == 0 or s.log_link[-1] != s.link:
-                        s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
+                    # if len(s.log_link) == 0 or s.log_link[-1] != s.link:
+                    #     s.log_t_link.append([t, s.link])
 
                     s.log_t.append(s.W.T*s.W.DELTAT)
                     s.log_state.append(s.state)
@@ -1336,6 +1368,13 @@ class Vehicle:
 
                     s.W.analyzer.average_speed_count += 1
                     s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
+        
+        if s.link != s.link_old:
+            if s.state == "run":
+                s.log_t_link.append([s.W.T*s.W.DELTAT, s.link])
+            elif s.state == "end":
+                s.log_t_link.append([s.W.T*s.W.DELTAT, "end"])
+            s.link_old = s.link
 
 
 class RouteChoice:
