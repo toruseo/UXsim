@@ -951,7 +951,6 @@ class Vehicle:
         s.flag_trip_aborted = 0
 
         #log
-        s.vehicle_logging_timestep_interval = s.W.vehicle_logging_timestep_interval
         s.log_t = [] #時刻
         s.log_state = [] #状態
         s.log_link = [] #リンク
@@ -1334,8 +1333,8 @@ class Vehicle:
         enforce_log : bool, optional
             Record log regardless of the logging interval, default is 0.
         """
-        if s.vehicle_logging_timestep_interval != -1:
-            if s.vehicle_logging_timestep_interval == 1 or s.W.T%s.W.vehicle_logging_timestep_interval == 0 or enforce_log:
+        if s.W.vehicle_logging_timestep_interval != -1:
+            if s.W.vehicle_logging_timestep_interval == 1 or s.W.T%s.W.vehicle_logging_timestep_interval == 0 or enforce_log:
                 if s.state != "run":
                     # if s.state == "end" and s.log_t_link[-1][1] != "end":
                     #     s.log_t_link.append([t, "end"])
@@ -1534,9 +1533,6 @@ class World:
             The time interval for showing network progress, default is 600 seconds.
         tmax : float or None, optional
             The simulation duration, default is None (automatically determined).
-        vehicle_logging_timestep_interval : int, optional
-            The interval for logging vehicle data, default is 1. Logging is off if set to -1.
-            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
         vehicle_logging_timestep_interval : int, optional
             The interval for logging vehicle data, default is 1. Logging is off if set to -1.
             Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
