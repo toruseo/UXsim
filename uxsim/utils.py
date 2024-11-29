@@ -7,6 +7,9 @@ import functools
 import traceback
 import sys
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 def catch_exceptions_and_warn(warning_msg=""):
     """
@@ -150,3 +153,32 @@ class LoggingWarning(UserWarning):
     This warns that when vehicle_logging_timestep_interval is not 1 but called vehicle logging-related functions.
     """
     pass
+
+def plot_multiple_y(x=None, ys=None, labels=None, **kwarg):
+    """
+    Plot multiple y values on the same plot, normalizing each value to [0, 1].
+
+    Parameters
+    ----------
+    x : array-like, optional
+        The x values to plot. If None, the indices of the y values are used. Default is None.
+    ys : list of array-like
+        The y values to plot.
+    labels : list of str, optional
+        The labels for each y value.
+    **kwarg : any
+        Additional keyword arguments to pass to the plt.plot function
+    """
+    if labels is None:
+        labels = [f"data-{i}" for i in lange(ys)]
+
+    for i,y in enumerate(ys):
+        y_min = np.min(y)
+        y_max = np.max(y)
+        if x is not None:
+            plt.plot(x, (y-y_min)/(y_max-y_min), label=f"{labels[i]}: [{y_min:.5g}, {y_max:.5g}]", **kwarg)
+        else:
+            plt.plot((y-y_min)/(y_max-y_min), label=f"{labels[i]}: [{y_min:.5g}, {y_max:.5g}]", **kwarg)
+
+    plt.ylabel("normalized to [0, 1]")
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))

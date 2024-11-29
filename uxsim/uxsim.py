@@ -2093,15 +2093,17 @@ class World:
         W.ROUTECHOICE = RouteChoice(W)
         W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)])
         W.ADJ_MAT_LINKS = dict() #リンクオブジェクトが入った隣接行列（的な辞書）
+        W.NODE_PAIR_LINKS = dict() #リンクオブジェクトが入った隣接行列（的な辞書）．キーはノード名
         for link in W.LINKS:
-            for i,node in enumerate(W.NODES):
-                if node == link.start_node:
+            for i,start_node in enumerate(W.NODES):
+                if start_node == link.start_node:
                     break
-            for j,node in enumerate(W.NODES):
-                if node == link.end_node:
+            for j,end_node in enumerate(W.NODES):
+                if end_node == link.end_node:
                     break
             W.ADJ_MAT[i,j] = 1
             W.ADJ_MAT_LINKS[i,j] = link
+            W.NODE_PAIR_LINKS[start_node.name,end_node.name] = link
 
         W.analyzer = Analyzer(W)
 
@@ -2501,7 +2503,7 @@ class World:
             return False
 
     @catch_exceptions_and_warn()
-    def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6):
+    def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6, show_id=True):
         """
         Visualizes the entire transportation network shape.
 
@@ -2527,7 +2529,11 @@ class World:
         for n in W.NODES:
             plt.plot(n.x, n.y, "o", c="gray", ms=node_size, zorder=10)
             if network_font_size > 0:
-                plt.text(n.x, n.y, f"{n.id}: {n.name}", c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
+                if show_id:
+                    label = f"{n.id}: {n.name}"
+                else:
+                    label = f"{n.name}"
+                plt.text(n.x, n.y, label, c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
         for l in W.LINKS:
             x1, y1 = l.start_node.x, l.start_node.y
             x2, y2 = l.end_node.x, l.end_node.y
@@ -2539,18 +2545,18 @@ class World:
             xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
             plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "gray", lw=width, zorder=6, solid_capstyle="butt")
             if network_font_size > 0:
-                plt.text(xmid1, ymid1, f"{l.id}: {l.name}", c="b", zorder=20, fontsize=network_font_size)
+                if show_id:
+                    label = f"{l.id}: {l.name}"
+                else:
+                    label = f"{l.name}"
+                plt.text(xmid1, ymid1, label, c="b", zorder=20, fontsize=network_font_size)
         maxx = max([n.x for n in W.NODES])
         minx = min([n.x for n in W.NODES])
         maxy = max([n.y for n in W.NODES])
         miny = min([n.y for n in W.NODES])
-        buffx, buffy = (maxx-minx)/10, (maxy-miny)/10
-        if buffx == 0:
-            buffx = buffy
-        if buffy == 0:
-            buffy = buffx
-        plt.xlim([minx-buffx, maxx+buffx])
-        plt.ylim([miny-buffy, maxy+buffy])
+        buffxy = max([(maxx-minx)/10, (maxy-miny)/10])
+        plt.xlim([minx-buffxy, maxx+buffxy])
+        plt.ylim([miny-buffxy, maxy+buffxy])
         plt.tight_layout()
         if W.save_mode:
             plt.savefig(f"out{W.name}/network.png")
