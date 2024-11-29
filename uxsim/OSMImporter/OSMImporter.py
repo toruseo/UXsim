@@ -43,7 +43,7 @@ class OSMImporter:
         north, south, east, west: float
             The latitudes and longitudes of the area to be imported.
         bbox: list
-            The bounding box of the area to be imported. The order is [north, south, east, west]. This is prioritized than north, south, east, west arguments.
+            The bounding box of the area to be imported. The order is [north, south, east, west] for OSMnx ver 1, and [west, south, east, north] for OSMnx ver 2. This is prioritized than north, south, east, west arguments.
         custom_filter: str
             The filter to be used for importing the data. 
             The default is '["highway"~"trunk|primary"]', which means that only trunk and primary roads (usually correspond to major arterial roads) are imported.
@@ -77,8 +77,13 @@ class OSMImporter:
                 warnings.warn("OSMnx version may be too old. Update is recommended.")
                 G = ox.graph.graph_from_bbox(north=bbox[0], south=bbox[1], east=bbox[2], west=bbox[3], network_type="drive", custom_filter=custom_filter)
         else:
-            G = ox.graph.graph_from_bbox(north=north, south=south, east=east, west=west, network_type="drive", 
-                                    custom_filter=custom_filter)
+            oxver = int(ox.__version__.split('.')[0])
+            if oxver == 1:
+                G = ox.graph.graph_from_bbox(north=north, south=south, east=east, west=west, network_type="drive", 
+                                             custom_filter=custom_filter)
+            elif oxver == 2:
+                G = ox.graph.graph_from_bbox(bbox=[west,south,east,north], network_type="drive", 
+                                             custom_filter=custom_filter)
         print("Download completed")
         """
         motorway: 高速道路
