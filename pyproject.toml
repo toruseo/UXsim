@@ -29,6 +29,7 @@ dependencies = [
     "pandas>=1.4.4",
     "PyQt5>=5.15.7",
     "dill>=0.3.8"
+    "networkx>=3.2.1"
 ]
 dynamic = ["version"] # Version is read from uxsim/__init__.py
 
