@@ -49,27 +49,32 @@ W.exec_simulation()
 W.analyzer.print_simple_stats(force_print=True)
 df_DUO = W.analyzer.basic_to_pandas()
 
+
 #################################
 # DUE
-solver = Solver_DUE(create_World)
-solver.solve(max_iter=20)
-W_DUE = solver.W_sol
+solver_DUE = SolverDUE(create_World)
+solver_DUE.solve(max_iter=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
+W_DUE = solver_DUE.W_sol
 W_DUE.analyzer.print_simple_stats(force_print=True)
 df_DUE = W_DUE.analyzer.basic_to_pandas()
 
 #################################
 # DSO
-W = solve_DSO(create_World, max_iter=20, initial_solution_World=W_DUE)
-W.analyzer.print_simple_stats(force_print=True)
-df_DSO = W.analyzer.basic_to_pandas()
+solver_DSO = SolverDSO(create_World)
+solver_DSO.solve(max_iter=20, initial_solution_World=W_DUE) # warm start up from DUE solution   # max_iter should be larger (e.g., 100). this is just for demonstration
+W_DSO = solver_DSO.W_sol
+W_DSO.analyzer.print_simple_stats(force_print=True)
+df_DSO = W_DSO.analyzer.basic_to_pandas()
 
 #################################
 # DSO by GA
-W = solve_DSO_genetic_algorithm(create_World, max_iter=10, pop_size=20, initial_solution_World=W_DUE)
-W.analyzer.print_simple_stats(force_print=True)
-df_DSO_GA = W.analyzer.basic_to_pandas()
+solver_DSO_GA = SolverDSO_GA(create_World)
+solver_DSO_GA.solve(max_iter=20, pop_size=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
+W_DSO_GA = solver_DSO_GA.W_sol
+W_DSO_GA.analyzer.print_simple_stats(force_print=True)
+df_DSO_GA = W_DSO_GA.analyzer.basic_to_pandas()
 
-
+# stats
 print("DUO")
 print(df_DUO)
 print("DUE")
@@ -77,3 +82,17 @@ print(df_DUE)
 print("DSO")
 print(df_DSO)
 print(df_DSO_GA)
+
+
+# visualizations
+solver_DUE.plot_convergence()
+solver_DUE.plot_link_stats()
+solver_DUE.plot_vehicle_stats(orig="4", dest="7")
+
+solver_DSO.plot_convergence()
+solver_DSO.plot_link_stats()
+solver_DSO.plot_vehicle_stats(orig="4", dest="7")
+
+solver_DSO.plot_convergence()
+solver_DSO.plot_link_stats()
+solver_DSO.plot_vehicle_stats(orig="4", dest="7")
