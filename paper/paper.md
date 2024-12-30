@@ -220,7 +220,7 @@ Because these values were computed by different methods, we cannot draw precise 
 
 # Acknowledgements
 
-The author would like thank contributions from Ewout ter Hoeven and various feedbacks from them and other users.
+The author would like thank contributions from [Ewout ter Hoeven](https://github.com/EwoutH) and various feedbacks from them and other users.
 
 
 # References
