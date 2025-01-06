@@ -951,7 +951,6 @@ class Vehicle:
         s.flag_trip_aborted = 0
 
         #log
-        s.vehicle_logging_timestep_interval = s.W.vehicle_logging_timestep_interval
         s.log_t = [] #時刻
         s.log_state = [] #状態
         s.log_link = [] #リンク
@@ -1334,8 +1333,8 @@ class Vehicle:
         enforce_log : bool, optional
             Record log regardless of the logging interval, default is 0.
         """
-        if s.vehicle_logging_timestep_interval != -1:
-            if s.vehicle_logging_timestep_interval == 1 or s.W.T%s.W.vehicle_logging_timestep_interval == 0 or enforce_log:
+        if s.W.vehicle_logging_timestep_interval != -1:
+            if s.W.vehicle_logging_timestep_interval == 1 or s.W.T%s.W.vehicle_logging_timestep_interval == 0 or enforce_log:
                 if s.state != "run":
                     # if s.state == "end" and s.log_t_link[-1][1] != "end":
                     #     s.log_t_link.append([t, "end"])
@@ -1534,9 +1533,6 @@ class World:
             The time interval for showing network progress, default is 600 seconds.
         tmax : float or None, optional
             The simulation duration, default is None (automatically determined).
-        vehicle_logging_timestep_interval : int, optional
-            The interval for logging vehicle data, default is 1. Logging is off if set to -1.
-            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
         vehicle_logging_timestep_interval : int, optional
             The interval for logging vehicle data, default is 1. Logging is off if set to -1.
             Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
@@ -2097,15 +2093,17 @@ class World:
         W.ROUTECHOICE = RouteChoice(W)
         W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)])
         W.ADJ_MAT_LINKS = dict() #リンクオブジェクトが入った隣接行列（的な辞書）
+        W.NODE_PAIR_LINKS = dict() #リンクオブジェクトが入った隣接行列（的な辞書）．キーはノード名
         for link in W.LINKS:
-            for i,node in enumerate(W.NODES):
-                if node == link.start_node:
+            for i,start_node in enumerate(W.NODES):
+                if start_node == link.start_node:
                     break
-            for j,node in enumerate(W.NODES):
-                if node == link.end_node:
+            for j,end_node in enumerate(W.NODES):
+                if end_node == link.end_node:
                     break
             W.ADJ_MAT[i,j] = 1
             W.ADJ_MAT_LINKS[i,j] = link
+            W.NODE_PAIR_LINKS[start_node.name,end_node.name] = link
 
         W.analyzer = Analyzer(W)
 
@@ -2483,7 +2481,7 @@ class World:
         demand : bool, optional
             Whether to load the demand data, default is True.
         """
-        load_scenario(W, fname, network, demand)
+        load_scenario(W, fname, network=network, demand=demand)
 
     def on_time(W, time):
         """
@@ -2505,7 +2503,7 @@ class World:
             return False
 
     @catch_exceptions_and_warn()
-    def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6):
+    def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6, show_id=True):
         """
         Visualizes the entire transportation network shape.
 
@@ -2531,7 +2529,11 @@ class World:
         for n in W.NODES:
             plt.plot(n.x, n.y, "o", c="gray", ms=node_size, zorder=10)
             if network_font_size > 0:
-                plt.text(n.x, n.y, f"{n.id}: {n.name}", c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
+                if show_id:
+                    label = f"{n.id}: {n.name}"
+                else:
+                    label = f"{n.name}"
+                plt.text(n.x, n.y, label, c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
         for l in W.LINKS:
             x1, y1 = l.start_node.x, l.start_node.y
             x2, y2 = l.end_node.x, l.end_node.y
@@ -2543,18 +2545,18 @@ class World:
             xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
             plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "gray", lw=width, zorder=6, solid_capstyle="butt")
             if network_font_size > 0:
-                plt.text(xmid1, ymid1, f"{l.id}: {l.name}", c="b", zorder=20, fontsize=network_font_size)
+                if show_id:
+                    label = f"{l.id}: {l.name}"
+                else:
+                    label = f"{l.name}"
+                plt.text(xmid1, ymid1, label, c="b", zorder=20, fontsize=network_font_size)
         maxx = max([n.x for n in W.NODES])
         minx = min([n.x for n in W.NODES])
         maxy = max([n.y for n in W.NODES])
         miny = min([n.y for n in W.NODES])
-        buffx, buffy = (maxx-minx)/10, (maxy-miny)/10
-        if buffx == 0:
-            buffx = buffy
-        if buffy == 0:
-            buffy = buffx
-        plt.xlim([minx-buffx, maxx+buffx])
-        plt.ylim([miny-buffy, maxy+buffy])
+        buffxy = max([(maxx-minx)/10, (maxy-miny)/10])
+        plt.xlim([minx-buffxy, maxx+buffxy])
+        plt.ylim([miny-buffxy, maxy+buffxy])
         plt.tight_layout()
         if W.save_mode:
             plt.savefig(f"out{W.name}/network.png")

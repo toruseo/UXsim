@@ -23,4 +23,4 @@ jobs:
     - name: Install pytest other dependencies
       run: pip install pytest pytest-rerunfailures pytest-xdist setuptools
     - name: Run verifications with pytest
-      run: pytest -n auto tests/test_verification_straight_road.py tests/test_verification_route_choice.py tests/test_verification_node.py tests/test_verification_exceptional.py tests/test_verification_sioux_falls.py tests/test_verification_multilane.py tests/test_verification_taxi.py --durations=0 -v
+      run: pytest -n auto tests/test_verification_straight_road.py tests/test_verification_route_choice.py tests/test_verification_node.py tests/test_verification_exceptional.py tests/test_verification_sioux_falls.py tests/test_verification_multilane.py tests/test_verification_taxi.py tests/test_verification_dta_solvers.py --durations=0 -v

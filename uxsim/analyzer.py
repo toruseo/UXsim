@@ -684,6 +684,60 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
+    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=4, node_size=2):
+        df = s.link_to_pandas()
+
+        plt.figure(figsize=figsize)
+        plt.subplot(111, aspect="equal")
+        for n in s.W.NODES:
+            plt.plot(n.x, n.y, "ko", ms=node_size, zorder=10)
+            if network_font_size > 0:
+                plt.text(n.x, n.y, n.name, c="g", horizontalalignment="center", verticalalignment="top", zorder=20, fontsize=network_font_size)
+        volume_max = np.max(df["traffic_volume"])
+        for l in s.W.LINKS:
+            x1, y1 = l.start_node.x, l.start_node.y
+            x2, y2 = l.end_node.x, l.end_node.y
+            vx, vy = (y1-y2)*0.05, (x2-x1)*0.05
+            if not left_handed:
+                vx, vy = -vx, -vy
+            
+            volume = df[df["link"]==l.name]["traffic_volume"].values[0]
+            delay_ratio = df[df["link"]==l.name]["average_travel_time"].values[0]/df[df["link"]==l.name]["free_travel_time"].values[0]
+
+            width = volume/volume_max*maxwidth + minwidth
+            if delay_ratio < 1.1: #free-flow
+                c = "b"
+            elif delay_ratio < 1.666: #slightly congested
+                c = "y"
+            elif delay_ratio < 3: #congested
+                c = "r"
+            else: #extremely congested
+                c = "#880000"
+
+            xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
+            xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
+            plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "k--", lw=0.25, zorder=5)
+            plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], c=c, lw=width, zorder=6, solid_capstyle="butt")
+            if network_font_size > 0:
+                plt.text(xmid1, ymid1, l.name, c="b", zorder=20, fontsize=network_font_size)
+        maxx = max([n.x for n in s.W.NODES])
+        minx = min([n.x for n in s.W.NODES])
+        maxy = max([n.y for n in s.W.NODES])
+        miny = min([n.y for n in s.W.NODES])
+        buffxy = max([(maxx-minx)/10, (maxy-miny)/10])
+        plt.xlim([minx-buffxy, maxx+buffxy])
+        plt.ylim([miny-buffxy, maxy+buffxy])
+        plt.tight_layout()
+
+        if s.W.save_mode:
+            plt.savefig(f"out{s.W.name}/network_average.png")
+        if s.W.show_mode:
+            plt.show()
+        else:
+            plt.close("all")
+
+
+    @catch_exceptions_and_warn()
     def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0):
         """
         Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.

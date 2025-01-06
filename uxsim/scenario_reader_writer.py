@@ -167,6 +167,8 @@ def load_scenario(W, fname, network=True, demand=True):
         If True, load network information (nodes and links). Default is True.
     demand : bool, optional
         If True, load demand information. Default is True.
+        print_meta_data : bool, optional
+            If True, print the meta data of the scenario file, such as licence info. Default is True.
     """
 
     with open(fname, "rb") as f:
@@ -179,7 +181,7 @@ def load_scenario(W, fname, network=True, demand=True):
     if dat["meta_data"]:
         if type(dat["meta_data"]) is dict:
             for key in dat["meta_data"]:
-                print("", key, ":", dat["meta_data"][key])
+                W.print("", key, ":", dat["meta_data"][key])
         else:
             W.print("", dat["meta_data"])
 
