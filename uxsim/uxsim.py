@@ -2481,7 +2481,7 @@ class World:
         demand : bool, optional
             Whether to load the demand data, default is True.
         """
-        load_scenario(W, fname, network, demand)
+        load_scenario(W, fname, network=network, demand=demand)
 
     def on_time(W, time):
         """
