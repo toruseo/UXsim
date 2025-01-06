@@ -41,7 +41,7 @@ class SolverDUE:
         s.W_sol = None
         s.dfs_link = []
     
-    def solve(s, max_iter, n_routes_per_od=4, swap_prob=0.05, print_info=True):
+    def solve(s, max_iter, n_routes_per_od=4, swap_prob=0.05, print_progress=True):
         """
         Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP
 
@@ -53,7 +53,7 @@ class SolverDUE:
             number of routes to enumerate for each OD pair
         swap_prob : float
             probability of route swap
-        print_info : bool
+        print_progress : bool
             whether to print the information
 
         Returns
@@ -63,7 +63,7 @@ class SolverDUE:
         """
 
         W_orig = s.func_World()
-        if print_info:
+        if print_progress:
             W_orig.print_scenario_stats()
 
         # enumerate routes for each OD pair
@@ -84,7 +84,7 @@ class SolverDUE:
             W_orig.finalize_scenario()
         dict_od_to_routes = enumerate_k_random_routes(W_orig, k=n_routes_per_od)
 
-        if print_info:
+        if print_progress:
             print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
 
         # day-to-day dynamics
@@ -97,8 +97,7 @@ class SolverDUE:
         swap_prob = swap_prob
         max_iter = max_iter #50 or 100 is better
 
-        if print_info:
-            print("solving DUE...")
+        print("solving DUE...")
         for i in range(max_iter):
             W = s.func_World()
             if i != max_iter-1:
@@ -162,7 +161,7 @@ class SolverDUE:
                     n_swap += 1
                     routes_specified[key] = route_changed
 
-            if print_info:
+            if print_progress:
                 print(f' iter {i}: time gap: {total_t_gap:.1f}, potential route change: {potential_n_swap}, route change: {n_swap}, total travel time: {W.analyzer.total_travel_time: .1f}, delay ratio: {W.analyzer.average_delay/W.analyzer.average_travel_time: .3f}')
 
             s.route_log.append(route_actual)
@@ -179,6 +178,12 @@ class SolverDUE:
             #     W.analyzer.network_anim(animation_speed_inverse=15, figsize=(6,6), detailed=0, network_font_size=0, file_name="out/due_anim_1mid.gif")
             # if i == max_iter-1:
             #     W.analyzer.network_anim(animation_speed_inverse=15, figsize=(6,6), detailed=0, network_font_size=0, file_name="out/due_anim_2last.gif")
+
+        print("DUE summary:")
+        last_iters = int(max_iter/4)
+        print(f" total travel time: initial {s.ttts[0]:.1f} -> average of last {last_iters} runs {np.average(s.ttts[-last_iters:]):.1f}")
+        print(f" number of potential route changes: initial {s.potential_swaps[0]:.1f} -> average of last {last_iters} runs {np.average(s.potential_swaps[-last_iters:]):.1f}")
+        print(f" travel time gap: initial {s.total_t_gaps[0]:.1f} -> average of last {last_iters} runs {np.average(s.total_t_gaps[-last_iters:]):.1f}")
 
         s.W_sol = W
         return s.W_sol
@@ -290,7 +295,7 @@ class SolverDSO:
         s.W_sol = None
         s.dfs_link = []
     
-    def solve(s, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2=5000, print_info=True, print_info_detailed=False, plot_res=False, initial_solution_World=None):
+    def solve(s, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2=5000, print_progress=True, print_progress_detailed=False, initial_solution_World=None):
         """
         Solve Dynamic System Optimum (DSO) problem. WIP
 
@@ -304,12 +309,10 @@ class SolverDSO:
             coefficient for logit response dynamics
         beta_coef2 : float
             coefficient for logit response dynamics
-        print_info : bool
+        print_progress : bool
             whether to print the information
-        print_info_detailed : bool
+        print_progress_detailed : bool
             whether to print the detailed information
-        plot_res : bool
-            whether to plot the results
         initial_solution_World : World
             initial solution (starting point) for the optimization algorithm. It must have the same structure as the output of func_World, and its simulation has been already executed. Recommended example: `W_init = solve_DUE(func_World); W = solve_DSO(func_World, initial_solution_World=W_init)`
 
@@ -327,7 +330,7 @@ class SolverDSO:
         """
 
         W = s.func_World()
-        if print_info:
+        if print_progress:
             W.print_scenario_stats()
 
         # enumerate routes for each OD pair
@@ -349,7 +352,7 @@ class SolverDSO:
             W.finalize_scenario()
         dict_od_to_routes = enumerate_k_random_routes(W, k=n_routes_per_od)
 
-        if print_info:
+        if print_progress:
             print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
 
         # day-to-day dynamics
@@ -360,8 +363,7 @@ class SolverDSO:
 
         s.dfs_link = []
 
-        if print_info:
-            print("solving DSO...")
+        print("solving DSO...")
         for i in range(max_iter):
 
             W = s.func_World()
@@ -375,14 +377,14 @@ class SolverDSO:
             
             # simulation
             # if initial_solution_DUE and i==0:
-            #     if print_info:
+            #     if print_progress:
             #         print(" pre-solving DUE...")
             #     W = solve_DUE(func_World, max_iter=initial_solution_DUE_max_iter)
             # else:
             #     W.exec_simulation()
 
             if i == 0 and initial_solution_World != None:
-                if print_info:
+                if print_progress:
                     print(" using pre-solved World...")
                 W = initial_solution_World
             else:
@@ -469,16 +471,19 @@ class SolverDSO:
             route_index = np.random.choice([i for i in range(len(game_prob))], p=game_prob/sum(game_prob))
             routes_specified[vehid] = dict_od_to_routes[o,d][route_index]
 
-            if print_info:
+            if print_progress:
                 print(f"iter {i}, ttt:{s.ttts[-1]}")
             #uxsim.print_columns(game_route, game_self_cost, game_system_cost,game_utility,game_prob)
-            if print_info and print_info_detailed:
+            if print_progress and print_progress_detailed:
                 print(f"i: {vehid}, system_cost_without_i:{system_cost_without_i}, selected route:{route_index}={routes_specified[vehid]}")
                 print_columns(game_self_cost, game_system_cost,game_utility,game_prob)
         
         # final result
         #W.analyzer.print_simple_stats(force_print=True)
         
+        print("DSO summary:")
+        print(f" total travel time: initial {s.ttts[0]:.1f} -> last {s.ttts[-1]:.1f}")
+
         s.W_sol = W
         return s.W_sol
     
@@ -556,7 +561,7 @@ class SolverDSO_GA:
         s.W_sol = None
         s.dfs_link = []
     
-    def solve(s, max_iter, n_routes=4, pop_size=50, elite_size=2, mutation_occur_rate=0.1, mutation_gene_rate=0.1, n_crossover_points=2, initial_solution_World=None):
+    def solve(s, max_iter, n_routes=4, pop_size=50, elite_size=2, mutation_occur_rate=0.1, mutation_gene_rate=0.1, n_crossover_points=2, print_progress=True, initial_solution_World=None):
         """
         Solve Dynamic System Optimum (DSO) problem using genetic algorithm. WIP
 
@@ -574,6 +579,10 @@ class SolverDSO_GA:
             mutation rate for gene
         n_crossover_points : int
             number of crossover points
+        print_progress_detailed : bool
+            whether to print the detailed information
+        initial_solution_World : World
+            initial solution (starting point) for the optimization algorithm. It must have the same structure as the output of func_World, and its simulation has been already executed. Recommended example: `W_init = solve_DUE(func_World); W = solve_DSO(func_World, initial_solution_World=W_init)`
 
         Returns
         -------
@@ -652,15 +661,11 @@ class SolverDSO_GA:
         ##############################################################
         # initial solution
         if initial_solution_World == None:
-            print("####"*20)
-            print("Deriving DUO")
-            
             W = s.func_World()
             W.exec_simulation()
-            print(W.analyzer.basic_to_pandas())
+            if print_progress:
+                print(W.analyzer.basic_to_pandas())
         else:
-            print("####"*20)
-            print("using initial solution")
             W = initial_solution_World
 
         ##############################################################
@@ -720,8 +725,9 @@ class SolverDSO_GA:
         population = initialize_population(pop_size, length, genome_maxs, W)
 
         for gen in range(max_iter):
-            print(f"Generation {gen}")
-            print(" total travel times: ", end="")
+            if print_progress:
+                print(f"Generation {gen}")
+                print(" total travel times: ", end="")
             fitnesses = []
             fitness_best = None
             for genome in population:
@@ -731,7 +737,8 @@ class SolverDSO_GA:
                 specify_routes(W, genome)
                 W.exec_simulation()
 
-                print(W.analyzer.total_travel_time, end=" ")
+                if print_progress:
+                    print(W.analyzer.total_travel_time, end=" ")
                 fitnesses.append(- W.analyzer.total_travel_time)
                 if fitness_best == None or fitnesses[-1] > fitness_best:
                     fitness_best = fitnesses[-1]
@@ -754,7 +761,8 @@ class SolverDSO_GA:
             s.ttts.append(int(W_best.analyzer.total_travel_time))
 
             # Print the best fitness in the current generation
-            print(f"\n Best fitness = {max(fitnesses)}, TTT = {W_best.analyzer.total_travel_time}, completed trips: {W_best.analyzer.trip_completed}")
+            if print_progress:
+                print(f"\n Best fitness = {max(fitnesses)}, TTT = {W_best.analyzer.total_travel_time}, completed trips: {W_best.analyzer.trip_completed}")
             
             s.dfs_link.append(W_best.analyzer.link_to_pandas())
 
@@ -780,6 +788,9 @@ class SolverDSO_GA:
 
             population = next_generation[:pop_size]
         
+        print("DSO summary:")
+        print(f" total travel time: initial {s.ttts[0]:.1f} -> last {s.ttts[-1]:.1f}")
+
         s.W_sol = W
         return s.W_sol
     
@@ -839,8 +850,9 @@ class SolverDSO_GA:
         plt.show()
 
 
+''' Commented out before remove
 
-def solve_DUE(func_World, max_iter, n_routes_per_od=4, swap_prob=0.05, print_info=True, plot_res=False, return_link_history=False, trace_plot=False):
+def solve_DUE(func_World, max_iter, n_routes_per_od=4, swap_prob=0.05, print_progress=True, plot_res=False, return_link_history=False, trace_plot=False):
     """
     Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP
 
@@ -854,7 +866,7 @@ def solve_DUE(func_World, max_iter, n_routes_per_od=4, swap_prob=0.05, print_inf
         number of routes to enumerate for each OD pair
     swap_prob : float
         probability of route swap
-    print_info : bool
+    print_progress : bool
         whether to print the information
     plot_res : bool
         whether to plot the results
@@ -883,7 +895,7 @@ def solve_DUE(func_World, max_iter, n_routes_per_od=4, swap_prob=0.05, print_inf
     warnings.warn("This function is deprecated", DeprecationWarning, stacklevel=2)
 
     W_orig = func_World()
-    if print_info:
+    if print_progress:
         W_orig.print_scenario_stats()
 
     # enumerate routes for each OD pair
@@ -900,7 +912,7 @@ def solve_DUE(func_World, max_iter, n_routes_per_od=4, swap_prob=0.05, print_inf
         routes = enumerate_k_shortest_routes(W_orig, o, d, k=n_routes_per_od) #TODO: to be replaced with many-to-many shortest path search
         dict_od_to_routes[o,d] = routes
 
-    if print_info:
+    if print_progress:
         print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
 
     # day-to-day dynamics
@@ -913,7 +925,7 @@ def solve_DUE(func_World, max_iter, n_routes_per_od=4, swap_prob=0.05, print_inf
 
     dfs = []
 
-    if print_info:
+    if print_progress:
         print("solving DUE...")
     for i in range(max_iter):
         W = func_World()
@@ -973,7 +985,7 @@ def solve_DUE(func_World, max_iter, n_routes_per_od=4, swap_prob=0.05, print_inf
                 n_swap += 1
                 routes_specified[key] = route_changed
 
-        if print_info:
+        if print_progress:
             print(f' iter {i}: time gap: {total_t_gap:.1f}, potential route change: {potential_n_swap}, route change: {n_swap}, total travel time: {W.analyzer.total_travel_time: .1f}, delay ratio: {W.analyzer.average_delay/W.analyzer.average_travel_time: .3f}')
 
         ttts.append(int(W.analyzer.total_travel_time))
@@ -1045,7 +1057,7 @@ def solve_DUE(func_World, max_iter, n_routes_per_od=4, swap_prob=0.05, print_inf
     else:
         return W    
 
-def solve_DSO(func_World, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2=5000, print_info=True, print_info_detailed=False, plot_res=False, initial_solution_World=None, return_link_history=False, trace_plot=False):
+def solve_DSO(func_World, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2=5000, print_progress=True, print_progress_detailed=False, plot_res=False, initial_solution_World=None, return_link_history=False, trace_plot=False):
     """
     Solve Dynamic System Optimum (DSO) problem. WIP
 
@@ -1061,9 +1073,9 @@ def solve_DSO(func_World, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2
         coefficient for logit response dynamics
     beta_coef2 : float
         coefficient for logit response dynamics
-    print_info : bool
+    print_progress : bool
         whether to print the information
-    print_info_detailed : bool
+    print_progress_detailed : bool
         whether to print the detailed information
     plot_res : bool
         whether to plot the results
@@ -1085,7 +1097,7 @@ def solve_DSO(func_World, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2
     warnings.warn("This function is deprecated", DeprecationWarning, stacklevel=2)
 
     W = func_World()
-    if print_info:
+    if print_progress:
         W.print_scenario_stats()
 
     # enumerate routes for each OD pair
@@ -1107,7 +1119,7 @@ def solve_DSO(func_World, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2
         W.finalize_scenario()
     dict_od_to_routes = enumerate_k_random_routes(W, k=n_routes_per_od)
 
-    if print_info:
+    if print_progress:
         print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
 
     # day-to-day dynamics
@@ -1116,7 +1128,7 @@ def solve_DSO(func_World, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2
 
     dfs = []
 
-    if print_info:
+    if print_progress:
         print("solving DSO...")
     for i in range(max_iter):
 
@@ -1131,14 +1143,14 @@ def solve_DSO(func_World, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2
         
         # simulation
         # if initial_solution_DUE and i==0:
-        #     if print_info:
+        #     if print_progress:
         #         print(" pre-solving DUE...")
         #     W = solve_DUE(func_World, max_iter=initial_solution_DUE_max_iter)
         # else:
         #     W.exec_simulation()
 
         if i == 0 and initial_solution_World != None:
-            if print_info:
+            if print_progress:
                 print(" using pre-solved World...")
             W = initial_solution_World
         else:
@@ -1217,10 +1229,10 @@ def solve_DSO(func_World, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2
         route_index = np.random.choice([i for i in range(len(game_prob))], p=game_prob/sum(game_prob))
         routes_specified[vehid] = dict_od_to_routes[o,d][route_index]
 
-        if print_info:
+        if print_progress:
             print(f"iter {i}, ttt:{ttts[-1]}")
         #uxsim.print_columns(game_route, game_self_cost, game_system_cost,game_utility,game_prob)
-        if print_info and print_info_detailed:
+        if print_progress and print_progress_detailed:
             print(f"i: {vehid}, system_cost_without_i:{system_cost_without_i}, selected route:{route_index}={routes_specified[vehid]}")
             print_columns(game_self_cost, game_system_cost,game_utility,game_prob)
     
@@ -1492,3 +1504,4 @@ def solve_DSO_genetic_algorithm(func_World, max_iter, n_routes=4, pop_size=50, e
     else:
         return W_best
 
+'''
