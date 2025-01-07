@@ -27,7 +27,7 @@ If you are interested, please see:
 - Basic analysis of simulation results and their export to `pandas.DataFrame` and CSV files
 - Visualization of simulation results using `Matplotlib`; interactive GUI is also available
 - Flexible and customizable thanks to pure Python implementation; can also be directly integrated with other Python-based frameworks, such as `PyTorch` for deep reinforcement learning traffic control
-- The main code `uxsim.py` is only about 1800 lines of code. Users may easily understand and customize it
+- The main code `uxsim.py` is only about 2300 lines of code. Users may easily understand and customize it
 
 ## Simulation Examples
 

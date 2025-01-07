@@ -1144,3 +1144,42 @@ def test_route_enforce_route():
     df = W.analyzer.link_to_pandas()
     for l in r2:
         assert df[df["link"]==l.name]["traffic_volume"].values[0] == 2130
+
+def test_construct_time_space_network():
+    W = World(
+        name="",
+        deltan=20,
+        tmax=6000,
+        print_mode=1, save_mode=1, show_mode=1,
+        vehicle_logging_timestep_interval=1, 
+        hard_deterministic_mode=False,
+        random_seed=42    #fix seed to reproduce random demand 
+    )
+
+    W.addNode("1", 0, 1)
+    W.addNode("2", 1, 1)
+    W.addNode("3", 5, 1)
+    W.addNode("4", 0, 0)
+    W.addNode("5", 1, 0)
+    W.addNode("6", 5, 0)
+    W.addNode("7", 6, 0.5)
+
+    W.addLink("highway12", "1", "2", length=1000, number_of_lanes=1, merge_priority=1)
+    W.addLink("highway23", "2", "3", length=3000, number_of_lanes=1, merge_priority=1, capacity_out=0.6)
+    W.addLink("highway37", "3", "7", length=1000, number_of_lanes=1, merge_priority=1)
+    W.addLink("onramp", "5", "2", length=1000, number_of_lanes=1, merge_priority=0.5)
+    W.addLink("arterial45", "4", "5", length=1000, free_flow_speed=10, number_of_lanes=2, merge_priority=0.5)
+    W.addLink("arterial56", "5", "6", length=3000, free_flow_speed=10, number_of_lanes=2, merge_priority=0.5)
+    W.addLink("arterial67", "6", "7", length=1000, free_flow_speed=10, number_of_lanes=2, merge_priority=0.5)
+
+    W.adddemand("1", "7", 0, 3000, 0.3)
+    W.adddemand("4", "7", 0, 3000, 0.4*3)
+
+    W.exec_simulation()
+
+    W.analyzer.print_simple_stats()
+
+    construct_time_space_network(W)
+
+    assert W.TSN_paths["4", 0]["7", "end"][-2] == ('7', 320)
+    assert equal_tolerance(W.TSN_costs["4", 0]["7", "end"], W.TSN_paths["4", 0]["7", "end"][-2][1])

@@ -162,7 +162,7 @@ def enumerate_k_shortest_routes_on_t(W, source, target, t, k=1, cost_function=la
 
 def enumerate_k_random_routes(W, k):
     """
-    Enumerate k random routes between all node pairs in a network. The shortest path with free flow travel time is always included. This is much faster than `enumerate_k_shortest_routes` and useful for some purposes.
+    Enumerate k random routes between all node pairs in a network. The shortest path with free flow travel time is always included. This is much faster than `enumerate_k_shortest_routes` and could be useful for a plausible choice set generation for route choice problems.
 
     Parameters
     ----------
@@ -328,19 +328,21 @@ def get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t(W, t, ret
 
 def construct_time_space_network(W, dt=None, from_origin_only=True):
     """
-    Construct a time-space network (TSN).
+    Construct a time-space network (TSN) that includes the time-dependent shortest path infomation.
 
     Parameters
     ----------
     W : World
         The World object.
     dt : int, optional
-        The time interval to construct the TSN. Default is None.
+        The time interval to construct the TSN. Default is None, which sets to the simulation timestep.
     from_origin_only : bool, optional
         Whether to compute the shortest path from the origin only. Default is True
 
     Notes
     -----
+        In the default setting, `W.TSN_paths` contains time-dependent shortest paths from the origin nodes to all nodes, for all departure time. The time-dependent link cost is based on the actual travel time. For example, `W.TSN_paths["orig_node_name", 0]` contains the shortest path from the node "orig_node_name" with departure time 0. `W.TSN_paths["orig_node_name", 0]["dest_node_name", "end"]` contains the shortest path from the node "orig_node_name" to "dest_node_name" with departure time 0. The travel time between these nodes on this time can be obtained by `W.TSN_costs["orig_node_name", 0]["dest_node_name", "end"]`.
+
         Not efficient for large networks.
     """
     if dt == None:
