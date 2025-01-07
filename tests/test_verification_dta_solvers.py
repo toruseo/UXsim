@@ -98,9 +98,9 @@ def test_DTA_total_travel_time_comparison():
     solver_DSO.plot_link_stats()
     solver_DSO.plot_vehicle_stats(orig="4", dest="7")
 
-    solver_DSO.plot_convergence()
-    solver_DSO.plot_link_stats()
-    solver_DSO.plot_vehicle_stats(orig="4", dest="7")
+    solver_DSO_GA.plot_convergence()
+    solver_DSO_GA.plot_link_stats()
+    solver_DSO_GA.plot_vehicle_stats(orig="4", dest="7")
     
     assert W_DUO.analyzer.total_travel_time > W_DUE.analyzer.total_travel_time
     assert W_DUE.analyzer.total_travel_time > W_DSO.analyzer.total_travel_time

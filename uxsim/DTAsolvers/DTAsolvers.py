@@ -416,7 +416,7 @@ class SolverDSO:
                     break
 
                 tmp_counter += 1
-                if tmp_counter>10000:
+                if tmp_counter > 1000000:
                     raise Exception("DSO error: No alternative routes.")
 
             routes_specified = {}
