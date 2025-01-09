@@ -2522,6 +2522,9 @@ class World:
         node_size : int, optional
             The size of the nodes in the visualization. Default is 6.
         """
+        
+        os.makedirs(f"out{W.name}", exist_ok=True)
+
         plt.rcParams["font.family"] = get_font_for_matplotlib()
 
         plt.figure(figsize=figsize)
