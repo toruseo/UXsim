@@ -2139,16 +2139,21 @@ class World:
         print(" number of nodes:\t", len(W.NODES))
         print(" setup time:\t\t", f"{time.time()-W.world_start_time:.2f}", "s")
 
-    def exec_simulation(W, until_t=None, duration_t=None):
+    def exec_simulation(W, until_t=None, duration_t=None, duration_t2=None):
         """
         Execute the main loop of the simulation.
 
         Parameters
         ----------
         until_t : float or None, optional
-            The time until the simulation is to be executed in seconds. If both `until_t` and `duration_t` are None, the simulation is executed until the end. Default is None.
+            The time until the simulation is to be executed in seconds. 
+            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None.
         duration_t : float or None, optional
-            The duration for which the simulation is to be executed in seconds. If both `until_t` and `duration_t` are None, the simulation is executed until the end. Default is None.
+            The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t+1` seconds for a technical reason. Old setting, not recommended.
+            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None. Recommended. 
+        duration_t2 : float or None, optional
+            The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t2` seconds.
+            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None. 
 
         Returns
         -------
@@ -2171,6 +2176,8 @@ class World:
         start_ts = W.T
         if until_t != None:
             end_ts = int(until_t/W.DELTAT)
+        elif duration_t2 != None:
+            end_ts = start_ts + int(duration_t2/W.DELTAT)-1
         elif duration_t != None:
             end_ts = start_ts + int(duration_t/W.DELTAT)
         else:
@@ -2184,7 +2191,7 @@ class World:
             W.simulation_terminated()
             return 1 #end of simulation
         if end_ts < start_ts:
-            raise Exception("exec_simulation error: Simulation duration is negative. Check until_t or duration_t")
+            raise Exception("exec_simulation error: Simulation duration is not positive. Check until_t or duration_t or duration_t2")
 
         #the main loop
         #print("preping:", W.T, start_ts, end_ts, W.check_simulation_ongoing())
@@ -2234,6 +2241,7 @@ class World:
                 break
 
         W.T += 1
+        W.TIME = W.T*W.DELTAT
 
         if W.T == W.TSIZE:
             if W.print_mode and W.show_progress:

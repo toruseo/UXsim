@@ -26,7 +26,7 @@ W.adddemand("orig2", "dest", 500, 1000, 0.6)
 #特定時間だけシミュを回す（途中で介入したいとき用）
 while W.check_simulation_ongoing():
     #10秒づつシミュレーションを回す
-    W.exec_simulation(duration_t=10)
+    W.exec_simulation(duration_t2=10)
 
     #方向別車両台数を調べる
     vehicles_per_links = {}

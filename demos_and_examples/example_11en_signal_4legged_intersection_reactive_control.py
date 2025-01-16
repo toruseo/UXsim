@@ -39,7 +39,7 @@ for t in range(0, 3600, dt):
 # simulation
 while W.check_simulation_ongoing():
     #run simulation for 30 s
-    W.exec_simulation(duration_t=30)
+    W.exec_simulation(duration_t2=30)
 
     #count number of vehicles per direction
     vehicles_per_links = {tuple(l.signal_group): 0 for l in II.inlinks.values()}
