@@ -2241,6 +2241,7 @@ class World:
                 break
 
         W.T += 1
+        W.TIME = W.T*W.DELTAT
 
         if W.T == W.TSIZE:
             if W.print_mode and W.show_progress:
