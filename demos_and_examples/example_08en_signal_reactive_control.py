@@ -26,7 +26,7 @@ W.adddemand("orig2", "dest", 500, 1000, 0.6)
 # Run the simulation for a specific duration (for cases where intervention is desired midway)
 while W.check_simulation_ongoing():
     # Execute the simulation in increments of 10 seconds
-    W.exec_simulation(duration_t=10)
+    W.exec_simulation(duration_t2=10)
 
     # Investigate the number of vehicles per direction
     vehicles_per_links = {}

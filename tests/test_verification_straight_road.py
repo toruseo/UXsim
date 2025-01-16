@@ -1002,7 +1002,7 @@ def test_iterative_exec_rigorous():
         print()
 
 
-def test_iterative_exec_rigorous_random_size():
+def test_iterative_exec_rigorous_random_size_old():
     for _ in range(100):
         deltan = random.randint(1,10)
         tmax = random.randint(50,150)
@@ -1040,6 +1040,64 @@ def test_iterative_exec_rigorous_random_size():
             # else:
             #     print(0, "\t", 0, "\t", duration_t, "\t", W.check_simulation_ongoing())
             W.exec_simulation(duration_t=duration_t)
+        # else:
+        #     print(W.T, "\t","\t",  "\t", W.check_simulation_ongoing())
+
+        if  hasattr(W.analyzer, "total_distance_traveled"):
+            print("SUCCESS TO TERMINATE")
+            W.analyzer.print_simple_stats(force_print=True)
+        else:
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            assert False
+        print_columns(["log_t"]+W.VEHICLES["0"].log_t, ["log_x"]+W.VEHICLES["0"].log_x, ["log_v"]+W.VEHICLES["0"].log_v)
+        print("final_x", W.VEHICLES["0"].x)
+        assert W.VEHICLES["0"].log_t[-1] == (tmax//W.DELTAT-1)*W.DELTAT
+        assert W.VEHICLES["0"].log_x[-1] == (tmax//W.DELTAT-2)*W.DELTAT*link_u
+        assert W.VEHICLES["0"].x == (tmax//W.DELTAT-1)*W.DELTAT*link_u
+
+        print()
+
+
+def test_iterative_exec_rigorous_random_size_duration_t2():
+    for _ in range(100):
+        deltan = random.randint(1,10)
+        tmax = random.randint(50,150)
+        link_u = random.randint(10,30)
+        W = World(
+            name="",
+            deltan=deltan,
+            tmax=tmax,
+            duo_update_time=10,
+            print_mode=1, save_mode=0, show_mode=0,
+            random_seed=42,
+        )
+        if not tmax//W.DELTAT-2 > 1:
+            continue
+
+        W.addNode("orig", 0, 0)
+        W.addNode("dest", 2, 1)
+        W.addLink("link1", "orig", "dest", length=10000, free_flow_speed=link_u, number_of_lanes=1)
+        W.addVehicle("orig", "dest", 0)
+        W.addVehicle("orig", "dest", 50)
+        W.addVehicle("orig", "dest", 100)
+
+        #print("W.T, start_t, end_t")
+        # print("W.T", "\t", "W.TIME", "duration_t2", "ongoing")
+        
+        if random.random() < 0.5:
+            maxt = 30
+        else:
+            maxt = 200
+
+        while W.check_simulation_ongoing():
+            duration_t2 = random.randint(0, maxt)
+            # if hasattr(W, "T"):
+            #     print(W.T, "\t", W.TIME, "\t", duration_t2, "\t", W.check_simulation_ongoing())
+            # else:
+            #     print(0, "\t", 0, "\t", duration_t2, "\t", W.check_simulation_ongoing())
+            W.exec_simulation(duration_t2=duration_t2)
         # else:
         #     print(W.T, "\t","\t",  "\t", W.check_simulation_ongoing())
 

@@ -127,7 +127,7 @@ class TrafficSim(gym.Env):
 
         #traffic dynamics. execute simulation for 30 seconds
         if self.W.check_simulation_ongoing():
-            self.W.exec_simulation(duration_t=30)
+            self.W.exec_simulation(duration_t2=30)
 
         #observe state
         observation = np.array(self.comp_state())

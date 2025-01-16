@@ -2139,16 +2139,21 @@ class World:
         print(" number of nodes:\t", len(W.NODES))
         print(" setup time:\t\t", f"{time.time()-W.world_start_time:.2f}", "s")
 
-    def exec_simulation(W, until_t=None, duration_t=None):
+    def exec_simulation(W, until_t=None, duration_t=None, duration_t2=None):
         """
         Execute the main loop of the simulation.
 
         Parameters
         ----------
         until_t : float or None, optional
-            The time until the simulation is to be executed in seconds. If both `until_t` and `duration_t` are None, the simulation is executed until the end. Default is None.
+            The time until the simulation is to be executed in seconds. 
+            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None.
         duration_t : float or None, optional
-            The duration for which the simulation is to be executed in seconds. If both `until_t` and `duration_t` are None, the simulation is executed until the end. Default is None.
+            The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t+1` seconds for a technical reason.
+            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None.
+        duration_t2 : float or None, optional
+            The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t2` seconds.
+            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None.
 
         Returns
         -------
@@ -2171,6 +2176,8 @@ class World:
         start_ts = W.T
         if until_t != None:
             end_ts = int(until_t/W.DELTAT)
+        elif duration_t2 != None:
+            end_ts = start_ts + int(duration_t2/W.DELTAT)-1
         elif duration_t != None:
             end_ts = start_ts + int(duration_t/W.DELTAT)
         else:
