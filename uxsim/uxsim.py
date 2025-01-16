@@ -2191,7 +2191,7 @@ class World:
             W.simulation_terminated()
             return 1 #end of simulation
         if end_ts < start_ts:
-            raise Exception("exec_simulation error: Simulation duration is negative. Check until_t or duration_t")
+            raise Exception("exec_simulation error: Simulation duration is not positive. Check until_t or duration_t or duration_t2")
 
         #the main loop
         #print("preping:", W.T, start_ts, end_ts, W.check_simulation_ongoing())
