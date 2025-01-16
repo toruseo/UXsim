@@ -53,6 +53,7 @@ def test_analyzer():
     W.analyzer.plot_vehicle_log("110")
     W.analyzer.plot_vehicles_log(["100", "110"])
     W.analyzer.macroscopic_fundamental_diagram()
+    W.analyzer.network_average()
     for t in list(range(0,W.TMAX,int(W.TMAX/6))):
         W.analyzer.network(t, detailed=0, network_font_size=0, figsize=(4,4))
     for t in list(range(0,W.TMAX,int(W.TMAX/6))):
