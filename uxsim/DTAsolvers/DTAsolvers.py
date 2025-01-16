@@ -2,6 +2,7 @@
 Submodule for Dynamic Traffic Assginment solvers
 """
 import random
+import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
@@ -40,6 +41,8 @@ class SolverDUE:
         s.func_World = func_World
         s.W_sol = None
         s.dfs_link = []
+
+        warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
     
     def solve(s, max_iter, n_routes_per_od=4, swap_prob=0.05, print_progress=True):
         """
@@ -294,8 +297,10 @@ class SolverDSO:
         s.func_World = func_World
         s.W_sol = None
         s.dfs_link = []
+        
+        warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
     
-    def solve(s, max_iter, n_routes_per_od=4, beta_coef=100, beta_coef2=5000, print_progress=True, print_progress_detailed=False, initial_solution_World=None):
+    def solve(s, max_iter, n_routes_per_od=4, beta_coef=1, beta_coef2=100000, print_progress=True, print_progress_detailed=False, initial_solution_World=None):
         """
         Solve Dynamic System Optimum (DSO) problem. WIP
 
@@ -306,9 +311,9 @@ class SolverDSO:
         n_routes_per_od : int
             number of routes to enumerate for each OD pair
         beta_coef : float
-            coefficient for logit response dynamics
+            coefficient for logit response dynamics. 
         beta_coef2 : float
-            coefficient for logit response dynamics
+            coefficient for logit response dynamics. Larger value is recommended for large network.
         print_progress : bool
             whether to print the information
         print_progress_detailed : bool
@@ -465,9 +470,10 @@ class SolverDSO:
                 game_system_cost.append(W_alt.analyzer.total_travel_time-system_cost_without_i)
             
             game_utility = -np.array(game_self_cost)-np.array(game_system_cost)
-            game_prob = np.exp(beta*game_utility)/sum(np.exp(beta*game_utility))
+            game_utility_max = max(game_utility)
+            game_prob = np.exp(beta*(game_utility-game_utility_max))/sum(np.exp(beta*(game_utility-game_utility_max)))
+            game_prob[np.isnan(game_prob)] = 0.5 #safety measure
 
-            game_prob[np.isnan(game_prob)] = 0.5 #TODO: 確率計算を正確にする
             route_index = np.random.choice([i for i in range(len(game_prob))], p=game_prob/sum(game_prob))
             routes_specified[vehid] = dict_od_to_routes[o,d][route_index]
 
@@ -560,6 +566,8 @@ class SolverDSO_GA:
         s.func_World = func_World
         s.W_sol = None
         s.dfs_link = []
+        
+        warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
     
     def solve(s, max_iter, n_routes=4, pop_size=50, elite_size=2, mutation_occur_rate=0.1, mutation_gene_rate=0.1, n_crossover_points=2, print_progress=True, initial_solution_World=None):
         """
