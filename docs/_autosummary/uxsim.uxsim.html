@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="uxsim.utils" href="uxsim.utils.html" /><link rel="prev" title="uxsim.ResultGUIViewer.ResultGUIViewer" href="uxsim.ResultGUIViewer.ResultGUIViewer.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>uxsim.uxsim - UXsim: Traffic Simulation in Python v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     
     
 
@@ -97,19 +97,6 @@ gtag('config', 'UA-111714220-1');
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
-    </svg>
-  </symbol>
   <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
     <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -150,7 +137,7 @@ gtag('config', 'UA-111714220-1');
       <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
       <path d="M13.5 6.5l4 4" />
       <path d="M20 21l2 -2l-2 -2" />
-      <path d="M17 17l-2 2l2 2" /
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
   <symbol id="svg-eye" viewBox="0 0 24 24">
@@ -224,6 +211,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_01en.html">Step-by-step Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_10en_traffic_signal_tutorial.html">Tutorial on Traffic Signal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
@@ -741,39 +729,16 @@ A vehicle is eligible for transfer if:
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.uxsim.</span></span><span class="sig-name descname"><span class="pre">Route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Route" title="Link to this definition">¶</a></dt>
 <dd><p>Class for a route that store concective links.</p>
 <p>Define a route.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="uxsim.uxsim.Route.links">
-<span class="sig-name descname"><span class="pre">links</span></span><a class="headerlink" href="#uxsim.uxsim.Route.links" title="Link to this definition">¶</a></dt>
-<dd><p>List of links. The contents are Link objects.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The World to which this Route belongs</p></li>
+<li><p><strong>links</strong> (<em>list</em>) – List of links (Link object or str)</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the route.</p></li>
+<li><p><strong>trust_input</strong> (<em>bool</em>) – True if you trust the <cite>links</cite> in order to reduce the computation cost by omitting verification.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="uxsim.uxsim.Route.links_name">
-<span class="sig-name descname"><span class="pre">links_name</span></span><a class="headerlink" href="#uxsim.uxsim.Route.links_name" title="Link to this definition">¶</a></dt>
-<dd><p>List of name of links. The contents are str.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="uxsim.uxsim.Route.trust_input">
-<span class="sig-name descname"><span class="pre">trust_input</span></span><a class="headerlink" href="#uxsim.uxsim.Route.trust_input" title="Link to this definition">¶</a></dt>
-<dd><p>True if you trust the <cite>links</cite> in order to reduce the computation cost by omitting verification.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">route</span> <span class="o">=</span> <span class="n">Route</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;l1&quot;</span><span class="p">,</span> <span class="s2">&quot;l2&quot;</span><span class="p">,</span> <span class="s2">&quot;l3&quot;</span><span class="p">])</span>
 <span class="gp">... </span><span class="n">vehicle_object</span><span class="o">.</span><span class="n">links_prefer</span> <span class="o">=</span> <span class="n">route</span>
@@ -914,6 +879,20 @@ Vectorized by Claude 3.5 Sonnet.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.Vehicle.enforce_route">
+<span class="sig-name descname"><span class="pre">enforce_route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_avoid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.enforce_route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Vehicle.enforce_route" title="Link to this definition">¶</a></dt>
+<dd><p>Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>route</strong> (<em>List</em><em> of </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link" title="uxsim.uxsim.Link"><em>Link</em></a>) – The route for this vehicle.</p></li>
+<li><p><strong>set_avoid</strong> (<em>bool</em>) – If True, the vehicle only travel the links in <cite>route</cite> argument. This is very strict. If the route is not consistent (e.g., the route does not completely connect between the origin and the destination), it will raise an exception.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.Vehicle.get_xy_coords">
 <span class="sig-name descname"><span class="pre">get_xy_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.get_xy_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Vehicle.get_xy_coords" title="Link to this definition">¶</a></dt>
 <dd><p>Get the x-y coordinates of the vehicle. If t is given, the position at time t is returned based on the logs.</p>
@@ -984,8 +963,23 @@ Should be in the range [0, 1], where 0 means the old preferences are fully retai
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.Vehicle.traveled_route">
-<span class="sig-name descname"><span class="pre">traveled_route</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.traveled_route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Vehicle.traveled_route" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">traveled_route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_arrival_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_departure_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Vehicle.traveled_route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.Vehicle.traveled_route" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the route this vehicle traveled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_arrival_time</strong> (<em>bool</em>) – If true, return the arrival time to the destination as well.  <cite>-1</cite> means it did not reach the destination.</p></li>
+<li><p><strong>include_departure_time</strong> (<em>bool</em>) – If true, return the departure time from the origin as well. It will be different from the entering time to the first link if there are congestion (i.e., the vehicle need to enter the network).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Route</em> – The route this vehicle traveled.</p></li>
+<li><p><em>list</em> – The time at which the vehicle entered each link. If <cite>include_arrival_time</cite> is true, the last element is the time the vehicle reached the destination. If <cite>include_departure_time</cite> is true, the first element is the time the vehicle departed from the origin. This complexity is actually due to a design failure in the past. These options are added to keep the backward compatibility.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1006,7 +1000,7 @@ Should be in the range [0, 1], where 0 means the old preferences are fully retai
 
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.uxsim.World">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.uxsim.</span></span><span class="sig-name descname"><span class="pre">World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'homogeneous_DUO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_update_gradual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_deltat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_logging_timestep_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instantaneous_TT_timestep_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hard_deterministic_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.uxsim.</span></span><span class="sig-name descname"><span class="pre">World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_update_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duo_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_principle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'homogeneous_DUO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_choice_update_gradual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instantaneous_TT_timestep_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress_deltat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle_logging_timestep_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce_memory_delete_vehicle_route_pref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hard_deterministic_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World" title="Link to this definition">¶</a></dt>
 <dd><p>World (i.e., simulation environment). A World object is consistently referred to as <cite>W</cite> in this code.</p>
 <p>Create a World.</p>
 <dl class="field-list simple">
@@ -1035,6 +1029,7 @@ Setting large intervel (2 or more) or turn off the logging makes the simulation 
 <li><p><strong>instantaneous_TT_timestep_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval for computing instantaneous travel time of each link. Default is 5.
 If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.</p></li>
 <li><p><strong>hard_deterministic_mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with <cite>hard_deterministic_mode=False</cite>.</p></li>
+<li><p><strong>reduce_memory_delete_vehicle_route_pref</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the simulation will delete the route preference of vehicles after its ends. This is useful when the route preference is not needed after the simulation ends.</p></li>
 <li><p><strong>meta_data</strong> (<em>dict</em><em>, </em><em>optinal</em>) – Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optinal</em>) – Optinonal meta attributes that can be freely defined by a user.</p></li>
 <li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
@@ -1172,7 +1167,30 @@ It passes all given arguments and keyword arguments to the Vehicle class initial
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.World.adddemand_area2area">
 <span class="sig-name descname"><span class="pre">adddemand_area2area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radious_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radious_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct_call</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.adddemand_area2area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.adddemand_area2area" title="Link to this definition">¶</a></dt>
-<dd><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas.</p>
+<dd><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas. <cite>adddemand_area2area()</cite> is not recommended as it may truncate demand. Consider to use new <cite>adddemand_area2area2()</cite> which is more accurate, smooth, and fast.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_orig</strong> (<em>float</em>) – The x-coordinate of the center of the origin area.</p></li>
+<li><p><strong>y_orig</strong> (<em>float</em>) – The y-coordinate of the center of the origin area.</p></li>
+<li><p><strong>radious_orig</strong> (<em>float</em>) – The radious of the origin area. Note that too large radious may generate too sparse demand that is rounded to zero.</p></li>
+<li><p><strong>x_dest</strong> (<em>float</em>) – The x-coordinate of the center of the destination area.</p></li>
+<li><p><strong>y_dest</strong> (<em>float</em>) – The y-coordinate of the center of the destination area.</p></li>
+<li><p><strong>radious_dest</strong> (<em>float</em>) – The radious of the destination area.</p></li>
+<li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
+<li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
+<li><p><strong>flow</strong> (<em>float</em><em>, </em><em>optional</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>
+<li><p><strong>volume</strong> (<em>float</em><em>, </em><em>optional</em>) – The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</p></li>
+<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.adddemand_area2area2">
+<span class="sig-name descname"><span class="pre">adddemand_area2area2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radious_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radious_dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct_call</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.adddemand_area2area2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.adddemand_area2area2" title="Link to this definition">¶</a></dt>
+<dd><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas. This is new version of <cite>adddemand_area2area</cite>, more efficient, more smooth, and more accurate. However, it introduces some randomness.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1194,8 +1212,27 @@ It passes all given arguments and keyword arguments to the Vehicle class initial
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.World.adddemand_nodes2nodes">
-<span class="sig-name descname"><span class="pre">adddemand_nodes2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.adddemand_nodes2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.adddemand_nodes2nodes" title="Link to this definition">¶</a></dt>
-<dd><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one.</p>
+<span class="sig-name descname"><span class="pre">adddemand_nodes2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct_call</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.adddemand_nodes2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.adddemand_nodes2nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one. <cite>adddemand_nodes2nodes()</cite> is not recommended as it may truncate demand. Consider to use new <a href="#id5"><span class="problematic" id="id6">`</span></a>adddemand_nodes2nodes2() which is more accurate, smooth, and fast.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origs</strong> (<em>list</em>) – The list of origin nodes. The items can be Node objects or names of Nodes.</p></li>
+<li><p><strong>dests</strong> (<em>list</em>) – The list of destination nodes. The items can be Node objects or names of Nodes.</p></li>
+<li><p><strong>t_start</strong> (<em>float</em>) – The start time for the demand in seconds.</p></li>
+<li><p><strong>t_end</strong> (<em>float</em>) – The end time for the demand in seconds.</p></li>
+<li><p><strong>flow</strong> (<em>float</em><em>, </em><em>optional</em>) – The flow rate from the origin to the destination in vehicles per second.</p></li>
+<li><p><strong>volume</strong> (<em>float</em><em>, </em><em>optional</em>) – The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</p></li>
+<li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.adddemand_nodes2nodes2">
+<span class="sig-name descname"><span class="pre">adddemand_nodes2nodes2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct_call</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.adddemand_nodes2nodes2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.adddemand_nodes2nodes2" title="Link to this definition">¶</a></dt>
+<dd><p>Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one. This is new version of <cite>adddemand_nodes2nodes</cite>, more efficient, more smooth, and more accurate. However, it introduces some randomness.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1256,6 +1293,21 @@ It passes all given arguments and keyword arguments to the Vehicle class initial
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>World object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.defRoute">
+<span class="sig-name descname"><span class="pre">defRoute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.defRoute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.defRoute" title="Link to this definition">¶</a></dt>
+<dd><p>Define Route object for this World.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>links</strong> (<em>list</em>) – List of links (Link object or str)</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the route.</p></li>
+<li><p><strong>trust_input</strong> (<em>bool</em>) – True if you trust the <cite>links</cite> in order to reduce the computation cost by omitting verification.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1455,6 +1507,12 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.print_scenario_stats">
+<span class="sig-name descname"><span class="pre">print_scenario_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.print_scenario_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.print_scenario_stats" title="Link to this definition">¶</a></dt>
+<dd><p>Print scenario stats</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.World.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.save" title="Link to this definition">¶</a></dt>
 <dd><p>Save the World object.</p>
@@ -1593,9 +1651,6 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#uxsim.uxsim.Route"><code class="docutils literal notranslate"><span class="pre">Route</span></code></a><ul>
-<li><a class="reference internal" href="#uxsim.uxsim.Route.links"><code class="docutils literal notranslate"><span class="pre">Route.links</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.uxsim.Route.links_name"><code class="docutils literal notranslate"><span class="pre">Route.links_name</span></code></a></li>
-<li><a class="reference internal" href="#uxsim.uxsim.Route.trust_input"><code class="docutils literal notranslate"><span class="pre">Route.trust_input</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.Route.actual_travel_time"><code class="docutils literal notranslate"><span class="pre">Route.actual_travel_time()</span></code></a></li>
 </ul>
 </li>
@@ -1609,6 +1664,7 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 <li><a class="reference internal" href="#uxsim.uxsim.Vehicle.add_dests"><code class="docutils literal notranslate"><span class="pre">Vehicle.add_dests()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.Vehicle.carfollow"><code class="docutils literal notranslate"><span class="pre">Vehicle.carfollow()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.Vehicle.end_trip"><code class="docutils literal notranslate"><span class="pre">Vehicle.end_trip()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.uxsim.Vehicle.enforce_route"><code class="docutils literal notranslate"><span class="pre">Vehicle.enforce_route()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.Vehicle.get_xy_coords"><code class="docutils literal notranslate"><span class="pre">Vehicle.get_xy_coords()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.Vehicle.record_log"><code class="docutils literal notranslate"><span class="pre">Vehicle.record_log()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.Vehicle.route_next_link_choice"><code class="docutils literal notranslate"><span class="pre">Vehicle.route_next_link_choice()</span></code></a></li>
@@ -1625,10 +1681,13 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 <li><a class="reference internal" href="#uxsim.uxsim.World.addVehicle"><code class="docutils literal notranslate"><span class="pre">World.addVehicle()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.adddemand"><code class="docutils literal notranslate"><span class="pre">World.adddemand()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.adddemand_area2area"><code class="docutils literal notranslate"><span class="pre">World.adddemand_area2area()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.uxsim.World.adddemand_area2area2"><code class="docutils literal notranslate"><span class="pre">World.adddemand_area2area2()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.adddemand_nodes2nodes"><code class="docutils literal notranslate"><span class="pre">World.adddemand_nodes2nodes()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.uxsim.World.adddemand_nodes2nodes2"><code class="docutils literal notranslate"><span class="pre">World.adddemand_nodes2nodes2()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.adddemand_point2point"><code class="docutils literal notranslate"><span class="pre">World.adddemand_point2point()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.check_simulation_ongoing"><code class="docutils literal notranslate"><span class="pre">World.check_simulation_ongoing()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.copy"><code class="docutils literal notranslate"><span class="pre">World.copy()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.uxsim.World.defRoute"><code class="docutils literal notranslate"><span class="pre">World.defRoute()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.exec_simulation"><code class="docutils literal notranslate"><span class="pre">World.exec_simulation()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.finalize_scenario"><code class="docutils literal notranslate"><span class="pre">World.finalize_scenario()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.generate_Links_from_csv"><code class="docutils literal notranslate"><span class="pre">World.generate_Links_from_csv()</span></code></a></li>
@@ -1641,6 +1700,7 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 <li><a class="reference internal" href="#uxsim.uxsim.World.load_scenario"><code class="docutils literal notranslate"><span class="pre">World.load_scenario()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.load_scenario_from_csv"><code class="docutils literal notranslate"><span class="pre">World.load_scenario_from_csv()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.on_time"><code class="docutils literal notranslate"><span class="pre">World.on_time()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.uxsim.World.print_scenario_stats"><code class="docutils literal notranslate"><span class="pre">World.print_scenario_stats()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.save"><code class="docutils literal notranslate"><span class="pre">World.save()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.save_scenario"><code class="docutils literal notranslate"><span class="pre">World.save_scenario()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.show_network"><code class="docutils literal notranslate"><span class="pre">World.show_network()</span></code></a></li>
@@ -1661,8 +1721,8 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 </div><script src="../_static/documentation_options.js?v=5cb08e4e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

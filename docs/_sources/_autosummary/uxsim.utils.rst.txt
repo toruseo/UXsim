@@ -4,11 +4,6 @@
 .. automodule:: uxsim.utils
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -20,21 +15,9 @@
       print_columns
       printtry
    
-   
-
-   
-   
-   
-
-   
-   
    .. rubric:: Exceptions
 
    .. autosummary::
    
       LoggingWarning
    
-   
-
-
-

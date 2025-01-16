@@ -1,23 +1,14 @@
-uxsim.ResultGUIViewer.ResultGUIViewer
+﻿uxsim.ResultGUIViewer.ResultGUIViewer
 =====================================
 
 .. automodule:: uxsim.ResultGUIViewer.ResultGUIViewer
 
-   
-   
-   
-
-   
    
    .. rubric:: Functions
 
    .. autosummary::
    
       launch_World_viewer
-   
-   
-
-   
    
    .. rubric:: Classes
 
@@ -31,11 +22,3 @@ uxsim.ResultGUIViewer.ResultGUIViewer
       PandasModel
       VehicleItem
    
-   
-
-   
-   
-   
-
-
-

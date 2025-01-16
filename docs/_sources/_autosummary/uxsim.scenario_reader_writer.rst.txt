@@ -4,11 +4,6 @@
 .. automodule:: uxsim.scenario_reader_writer
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -18,15 +13,3 @@
       load_scenario
       save_scenario
    
-   
-
-   
-   
-   
-
-   
-   
-   
-
-
-

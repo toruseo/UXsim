@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="uxsim.scenario_reader_writer" href="uxsim.scenario_reader_writer.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>uxsim.Utilities.Utilities - UXsim: Traffic Simulation in Python v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     
     
 
@@ -97,19 +97,6 @@ gtag('config', 'UA-111714220-1');
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
-    </svg>
-  </symbol>
   <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
     <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -150,7 +137,7 @@ gtag('config', 'UA-111714220-1');
       <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
       <path d="M13.5 6.5l4 4" />
       <path d="M20 21l2 -2l-2 -2" />
-      <path d="M17 17l-2 2l2 2" /
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
   <symbol id="svg-eye" viewBox="0 0 24 24">
@@ -224,6 +211,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_01en.html">Step-by-step Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_10en_traffic_signal_tutorial.html">Tutorial on Traffic Signal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
@@ -312,6 +300,15 @@ This contains functions that are not essential for simulation but useful to spec
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network" title="uxsim.Utilities.Utilities.generate_grid_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_grid_network</span></code></a>(W, imax, jmax, **kwargs)</p></td>
 <td><p>Generate a grid network with imax x jmax nodes.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes" title="uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_shortest_path_distance_between_all_nodes</span></code></a>(W)</p></td>
+<td><p>Get the shortest distances (in meters) between all node pairs based on link lengths</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes" title="uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_shortest_path_instantaneous_travel_time_between_all_nodes</span></code></a>(W)</p></td>
+<td><p>Get the shortest instantaneous travel time (in seconds) between all node pairs based on the current instantaneous travel time of each link.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t" title="uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t</span></code></a>(W, t)</p></td>
+<td><p>Get the shortest instantaneous travel time (in seconds) between all node pairs based on the instantaneous travel time of each link near time t (based on the route choice update interval).</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -384,6 +381,72 @@ This contains functions that are not essential for simulation but useful to spec
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes">
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">get_shortest_path_distance_between_all_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#get_shortest_path_distance_between_all_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Get the shortest distances (in meters) between all node pairs based on link lengths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>return_matrix</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the distance matrix as a numpy array. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns a dictionary of distances between nodes whose key is node pair if <cite>return_matrix</cite> is False.
+Returns a numpy array of distances between nodes whose index is node.id pair if <cite>return_matrix</cite> is True.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes">
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">get_shortest_path_instantaneous_travel_time_between_all_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#get_shortest_path_instantaneous_travel_time_between_all_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Get the shortest instantaneous travel time (in seconds) between all node pairs based on the current instantaneous travel time of each link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>return_matrix</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the distance matrix as a numpy array. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns a dictionary of distances between nodes whose key is node pair if <cite>return_matrix</cite> is False.
+Returns a numpy array of distances between nodes whose index is node.id pair if <cite>return_matrix</cite> is True.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t">
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t" title="Link to this definition">¶</a></dt>
+<dd><p>Get the shortest instantaneous travel time (in seconds) between all node pairs based on the instantaneous travel time of each link near time t (based on the route choice update interval).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>t</strong> (<em>float</em>) – The time point to compute shortest travel time.</p></li>
+<li><p><strong>return_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the actual time of computing shortest path cost. Default is False.</p></li>
+<li><p><strong>return_matrix</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the distance matrix as a numpy array. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns a dictionary of distances between nodes whose key is node pair if <cite>return_matrix</cite> is False and <cite>return_time</cite> is False.
+Returns a numpy array of distances between nodes whose index is node.id pair if <cite>return_matrix</cite> is True and <cite>return_time</cite> is False.
+Returns a tuple of the abode distances and the actual time of computing shortest path cost if <cite>return_time</cite> is True.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or numpy array or tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -437,6 +500,9 @@ This contains functions that are not essential for simulation but useful to spec
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes"><code class="docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t"><code class="docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes_on_t()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network"><code class="docutils literal notranslate"><span class="pre">generate_grid_network()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes"><code class="docutils literal notranslate"><span class="pre">get_shortest_path_distance_between_all_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes"><code class="docutils literal notranslate"><span class="pre">get_shortest_path_instantaneous_travel_time_between_all_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t"><code class="docutils literal notranslate"><span class="pre">get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -451,8 +517,8 @@ This contains functions that are not essential for simulation but useful to spec
 </div><script src="../_static/documentation_options.js?v=5cb08e4e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

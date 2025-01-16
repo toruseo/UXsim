@@ -18,6 +18,7 @@
       ~Vehicle.add_dests
       ~Vehicle.carfollow
       ~Vehicle.end_trip
+      ~Vehicle.enforce_route
       ~Vehicle.get_xy_coords
       ~Vehicle.record_log
       ~Vehicle.route_next_link_choice

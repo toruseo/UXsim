@@ -4,11 +4,6 @@
 .. automodule:: uxsim.Utilities.Utilities
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -16,16 +11,7 @@
       enumerate_k_shortest_routes
       enumerate_k_shortest_routes_on_t
       generate_grid_network
+      get_shortest_path_distance_between_all_nodes
+      get_shortest_path_instantaneous_travel_time_between_all_nodes
+      get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t
    
-   
-
-   
-   
-   
-
-   
-   
-   
-
-
-

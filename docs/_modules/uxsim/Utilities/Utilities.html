@@ -4,11 +4,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>uxsim.Utilities.Utilities - UXsim: Traffic Simulation in Python v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
     
     
 
@@ -96,19 +96,6 @@ gtag('config', 'UA-111714220-1');
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
-    </svg>
-  </symbol>
   <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
     <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -149,7 +136,7 @@ gtag('config', 'UA-111714220-1');
       <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
       <path d="M13.5 6.5l4 4" />
       <path d="M20 21l2 -2l-2 -2" />
-      <path d="M17 17l-2 2l2 2" /
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
   <symbol id="svg-eye" viewBox="0 0 24 24">
@@ -223,6 +210,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_01en.html">Step-by-step Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_10en_traffic_signal_tutorial.html">Tutorial on Traffic Signal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
@@ -294,6 +282,9 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">This contains functions that are not essential for simulation but useful to specific analysis.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse.csgraph</span> <span class="kn">import</span> <span class="n">dijkstra</span>
 
 <div class="viewcode-block" id="generate_grid_network">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.generate_grid_network">[docs]</a>
@@ -453,6 +444,127 @@ gtag('config', 'UA-111714220-1');
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">routes</span></div>
 
+
+<div class="viewcode-block" id="get_shortest_path_distance_between_all_nodes">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">get_shortest_path_distance_between_all_nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the shortest distances (in meters) between all node pairs based on link lengths</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : World</span>
+<span class="sd">        The World object.</span>
+<span class="sd">    return_matrix : bool, optional</span>
+<span class="sd">        Whether to return the distance matrix as a numpy array. Default is False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict or numpy array</span>
+<span class="sd">        Returns a dictionary of distances between nodes whose key is node pair if `return_matrix` is False.</span>
+<span class="sd">        Returns a numpy array of distances between nodes whose index is node.id pair if `return_matrix` is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">)</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># Initialize with infinity</span>
+
+    <span class="c1"># Fill in the distances based on the link lengths</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">link</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
+
+    <span class="c1"># Use Dijkstra algorithm to compute shortest distances</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">dijkstra</span><span class="p">(</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_predecessors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_matrix</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">distances</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">distances_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node1</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+                <span class="n">distances_dict</span><span class="p">[</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">]</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="n">distances_dict</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">distances_dict</span></div>
+
+
+<div class="viewcode-block" id="get_shortest_path_instantaneous_travel_time_between_all_nodes">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">get_shortest_path_instantaneous_travel_time_between_all_nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the shortest instantaneous travel time (in seconds) between all node pairs based on the current instantaneous travel time of each link.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : World</span>
+<span class="sd">        The World object.</span>
+<span class="sd">    return_matrix : bool, optional</span>
+<span class="sd">        Whether to return the distance matrix as a numpy array. Default is False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict or numpy array</span>
+<span class="sd">        Returns a dictionary of distances between nodes whose key is node pair if `return_matrix` is False.</span>
+<span class="sd">        Returns a numpy array of distances between nodes whose index is node.id pair if `return_matrix` is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">ROUTECHOICE</span><span class="o">.</span><span class="n">dist</span>
+
+    <span class="k">if</span> <span class="n">return_matrix</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">distances</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">distances_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node1</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+                <span class="n">distances_dict</span><span class="p">[</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">]</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="n">distances_dict</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">distances_dict</span></div>
+
+    
+<div class="viewcode-block" id="get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t">[docs]</a>
+<span class="k">def</span> <span class="nf">get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">return_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the shortest instantaneous travel time (in seconds) between all node pairs based on the instantaneous travel time of each link near time t (based on the route choice update interval).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : World</span>
+<span class="sd">        The World object.</span>
+<span class="sd">    t : float</span>
+<span class="sd">        The time point to compute shortest travel time.</span>
+<span class="sd">    return_time : bool, optional</span>
+<span class="sd">        Whether to return the actual time of computing shortest path cost. Default is False.</span>
+<span class="sd">    return_matrix : bool, optional</span>
+<span class="sd">        Whether to return the distance matrix as a numpy array. Default is False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict or numpy array or tuple</span>
+<span class="sd">        Returns a dictionary of distances between nodes whose key is node pair if `return_matrix` is False and `return_time` is False.</span>
+<span class="sd">        Returns a numpy array of distances between nodes whose index is node.id pair if `return_matrix` is True and `return_time` is False.</span>
+<span class="sd">        Returns a tuple of the abode distances and the actual time of computing shortest path cost if `return_time` is True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="o">-</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
+    <span class="n">duo_t</span> <span class="o">=</span> <span class="n">t</span><span class="o">//</span><span class="n">W</span><span class="o">.</span><span class="n">DUO_UPDATE_TIME</span>
+    <span class="n">duo_timestep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duo_t</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">DUO_UPDATE_TIME</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
+
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">ROUTECHOICE</span><span class="o">.</span><span class="n">dist_record</span><span class="p">[</span><span class="n">duo_timestep</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">return_matrix</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">distances</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">distances_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node1</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">node2</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+                <span class="n">distances_dict</span><span class="p">[</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">]</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="n">distances_dict</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">node2</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">distances_dict</span>
+
+    <span class="k">if</span> <span class="n">return_time</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ret</span><span class="p">,</span> <span class="n">duo_t</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
 </pre></div>
         </article>
       </div>
@@ -488,8 +600,8 @@ gtag('config', 'UA-111714220-1');
 </div><script src="../../../_static/documentation_options.js?v=5cb08e4e"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

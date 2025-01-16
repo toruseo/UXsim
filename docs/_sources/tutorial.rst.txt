@@ -13,6 +13,7 @@ The original Jupyter Notebook can be obtained from https://github.com/toruseo/UX
    :maxdepth: 2
    
    ../notebooks/demo_notebook_01en.ipynb
+   ../notebooks/demo_notebook_10en_traffic_signal_tutorial.ipynb
    ../notebooks/demo_notebook_02en.ipynb
    ../notebooks/demo_notebook_03en_pytorch.ipynb
    ../notebooks/demo_notebook_04en_OpenStreetMap.ipynb

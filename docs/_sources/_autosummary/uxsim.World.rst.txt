@@ -19,10 +19,13 @@
       ~World.addVehicle
       ~World.adddemand
       ~World.adddemand_area2area
+      ~World.adddemand_area2area2
       ~World.adddemand_nodes2nodes
+      ~World.adddemand_nodes2nodes2
       ~World.adddemand_point2point
       ~World.check_simulation_ongoing
       ~World.copy
+      ~World.defRoute
       ~World.exec_simulation
       ~World.finalize_scenario
       ~World.generate_Links_from_csv
@@ -35,6 +38,7 @@
       ~World.load_scenario
       ~World.load_scenario_from_csv
       ~World.on_time
+      ~World.print_scenario_stats
       ~World.save
       ~World.save_scenario
       ~World.show_network
