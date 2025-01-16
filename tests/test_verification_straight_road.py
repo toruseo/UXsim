@@ -1034,7 +1034,7 @@ def test_iterative_exec_rigorous_random_size_old():
             maxt = 200
 
         while W.check_simulation_ongoing():
-            duration_t = random.randint(1, maxt)
+            duration_t = random.randint(0, maxt)
             # if hasattr(W, "T"):
             #     print(W.T, "\t", W.TIME, "\t", duration_t, "\t", W.check_simulation_ongoing())
             # else:
@@ -1092,7 +1092,7 @@ def test_iterative_exec_rigorous_random_size_duration_t2():
             maxt = 200
 
         while W.check_simulation_ongoing():
-            duration_t2 = random.randint(1, maxt)
+            duration_t2 = random.randint(deltan, maxt)
             # if hasattr(W, "T"):
             #     print(W.T, "\t", W.TIME, "\t", duration_t2, "\t", W.check_simulation_ongoing())
             # else:
