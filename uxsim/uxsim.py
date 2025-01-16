@@ -2149,11 +2149,11 @@ class World:
             The time until the simulation is to be executed in seconds. 
             If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None.
         duration_t : float or None, optional
-            The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t+1` seconds for a technical reason.
-            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None.
+            The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t+1` seconds for a technical reason. Old setting, not recommended.
+            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None. Recommended. 
         duration_t2 : float or None, optional
             The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t2` seconds.
-            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None.
+            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None. 
 
         Returns
         -------
