@@ -100,7 +100,7 @@ Detailed explanations of the mathematics and algorithms behind *UXsim* are descr
 # Examples
 
 Various examples and demos are available as Python scripts and Jupyter notebooks in the GitHub repository of *UXsim*.
-This section introduces 3 examples to illustrate some of the key features of *UXsim*: simplicity, controllability, and scalability.
+This section introduces three examples to illustrate some of the key features of *UXsim*: simplicity, controllability, and scalability.
 
 ## Simple example
 
@@ -109,7 +109,7 @@ This section introduces 3 examples to illustrate some of the key features of *UX
 The following code executes *UXsim* in a simple setting.
 
 ```python
-from uxsim import *
+from uxsim import World
 
 # Define the main simulation
 # Units are standardized to seconds (s) and meters (m)
@@ -136,7 +136,7 @@ W.addLink("link3", "merge", "dest",
           length=1000, free_flow_speed=20, number_of_lanes=1)
 ## Create OD traffic demand between nodes
 W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
-W.adddemand("orig2", "dest", 400, 1000, 0.6)
+W.adddemand(orig="orig2", dest="dest", t_start=400, t_end=1000, flow=0.6)
 
 # Run the simulation to the end
 W.exec_simulation()
@@ -151,7 +151,7 @@ W.analyzer.network(800, detailed=1, network_font_size=12)
 ```
 
 The meaning of each function would be intuitive for Python users.
-It simulates traffic flow in Y-shaped network with 4 nodes (intersections) and 3 links (roads).
+It simulates traffic flow in a Y-shaped network with four nodes (intersections) and three links (roads).
 
 ### Results
 
@@ -184,17 +184,17 @@ results:
 ```
 The simulation of 810 vehicles for 20 minutes duration was finished in 0.06 seconds.
 
-It also outputs figures shown in \autoref{simple_example_res} that visualize the network traffic states.
+It also outputs the figures shown in \autoref{simple_example_res} that visualize the network traffic states.
 In the figures, vehicles travel from left to right.
 A light-colored segment is with free-flowing traffic, and dark-colored one is with traffic jam.
-Therefore, it means traffic jam occurred at the upper link "link2" due to a merge at "merge" node.
+Therefore, it means traffic jam occurred at the upper link "link2" due to a merge at the "merge" node.
 
 ![Network traffic states in the simple example.\label{simple_example_res}](simple_example_res.png)
 
 ## Traffic signal control by deep reinforcement learning 
 
 In this example, we optimize traffic signal setting (which direction should have green light under what conditions) using *UXsim* and deep reinforcement learning (more specifically, Deep-Q Network [@dqn]) implemented by *PyTorch*.
-Small road network with 4 signalized intersections with given traffic demand is simulated.
+A small road network with 4 signalized intersections with given traffic demand is simulated.
 \autoref{DQNepisodes} shows the learning progress.
 \autoref{figDQN} shows typical network traffic states in some episodes.
 We can confirm that it converged to a very efficient traffic situation where vehicles are not delayed significantly by the traffic signals.
@@ -207,20 +207,20 @@ We can confirm that it converged to a very efficient traffic situation where veh
 ## Metropolitan-scale simulation
 
 In this example, trips of nearly 1 million vehicles during a rush hour in Chicago metropolitan area are simulated, just in 40 seconds.
-It uses a dataset called "Chicago-Sketch" [@transpnetwork] that have been widely utilized for transportation research.
-\autoref{chicago} shows some of the vehicle trajectories on a certain time step in the simulation.
+We use a dataset called "Chicago-Sketch" [@transpnetwork] that has been widely utilized for transportation research.
+\autoref{chicago} shows some of the vehicle trajectories at a certain time step in the simulation.
 
 ![Snapshot of vehicle trajectories in Chicago simulation.\label{chicago}](chicago.png){ width=70% }
 
-"Chicago-Sketch" dataset contains a reference traffic data such as link traffic volume and travel time.
+The "Chicago-Sketch" dataset contains reference traffic data such as link traffic volume and travel time.
 The comparison of *UXsim* results and the reference values are shown in \autoref{chicago_compare}.
-Because these values were computed by different methods, we cannot draw precise conclusion about the accuracy of *UXsim*, but at least we can say that the results were well correlated and *UXsim* output plausible results.
+Because these values were computed by different methods, we cannot draw precise conclusions about the accuracy of *UXsim*, but at least we can say that the results are well correlated and *UXsim* outputs plausible results.
 
 ![Comparison of *UXsim* results and the reference values. left: traffic volume, right: travel time. \label{chicago_compare}](chicago_compare.png){ width=75% }
 
 # Acknowledgements
 
-The author would like thank contributions from Ewout ter Hoeven and various feedbacks from them and other users.
+The author would like to thank contributions from Ewout ter Hoeven and various feedbacks from them and other users.
 
 
 # References
