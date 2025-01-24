@@ -29,6 +29,7 @@ If you are interested, please see:
 - Visualization of simulation results using `Matplotlib`; interactive GUI is also available
 - Flexible and customizable thanks to pure Python implementation; can also be directly integrated with other Python-based frameworks, such as `PyTorch` for deep reinforcement learning traffic control
 - The main code `uxsim.py` is only about 2300 lines of code. Users may easily understand and customize it
+- Python version: 3.9 or later
 
 ## Simulation Examples
 
@@ -133,7 +134,7 @@ W = World(
 
 # Define the scenario
 ## Create nodes
-W.addNode(name="orig1", x=0, y=0)
+W.addNode(name="orig1", x=0, y=0)    #xy coords are dummy and for visualization only
 W.addNode("orig2", 0, 2)
 W.addNode("merge", 1, 1)
 W.addNode("dest", 2, 1)

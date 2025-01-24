@@ -14,6 +14,8 @@ def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     return abs(val - check) <= abs(check*rel_tol) + abs_tol
 
 def test_analyzer():
+    import matplotlib
+    matplotlib.use('Agg')
     # Define the main simulation
     # Units are standardized to seconds (s) and meters (m)
     W = World(
@@ -985,6 +987,10 @@ def test_reduce_memory_delete_vehicle_route_pref():
     assert df1["total_travel_time"][0] == df2["total_travel_time"][0]
 
 def test_route_definition():
+    
+    import matplotlib
+    matplotlib.use('Agg')
+    
     W = World(
         name="",
         deltan=5,
