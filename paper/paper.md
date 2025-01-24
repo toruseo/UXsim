@@ -36,7 +36,7 @@ In general, traffic flow simulators are divided into two major categories: micro
 The former focuses on detailed individual vehicle behaviors, whereas the latter focuses on the collective behavior of large-scale (e.g., city-scale) traffic.
 Mesoscopic traffic flow simulators, which is sometimes categorized into macroscopic ones, are a mixture of the two; while they describe individual vehicle behaviors to some extent, their primary intention is to simulate the collective behavior of large-scale traffic.
 Mesoscopic simulators are particularly useful for modeling large-scale traffic management and operations, such as congestion pricing, ridesharing, and automated vehicle fleet management, which are increasingly prominent these days.
-Several microscopic traffic flow simulators are published as open source software, such as SUMO [@sumo].
+Several microscopic traffic flow simulators are published as open source software, such as *SUMO* [@sumo].
 However, to the author's knowledge, the availability of mesoscopic and macroscopic simulators is limited.
 
 *UXsim* is a mesoscopic (or macroscopic depending on the technical terminology) traffic flow simulator.
@@ -66,12 +66,12 @@ There are several other open source microscopic traffic simulators, for example,
 However, the primary objectives of microscopic simulators are significantly different from those of macroscopic or mesoscopic ones.
 They aim to describe detailed driving behaviors of individual vehicles to simulate microscopic interactions, such as lane-changing and conflicts at intersections.
 While these microscopic phenomena are very important for some purposes, they may not be essential when evaluating city-wide traffic management.
-Additionally, microscopic simulators generally require extensive information, such as detailed road geometry and a large number of model parameters.
+Additionally, microscopic simulators generally require extensive information, such as detailed road geometry and a large number of model parameters, which makes preparations and calibrations difficult.
 
 *MATSim* [@matsim] is a more strategic-level transportation simulator that aims to simulate activity-travel behavior.
-In fact, a certain mode of *MATSim* uses models that are equivalent to those in *UXsim*.
+In fact, a certain mode (`kinematicWaves`) of *MATSim* uses models that are equivalent to those in *UXsim*.
 However, *MATSim* focuses more on holistic mobility, including people's travel decisions and mode choices in multi-modal transportation systems.
-*UXsim* focuses on traffic flow simulation, making it simpler and easier to use and integrate with other packages.
+*UXsim* focuses on traffic flow simulation, making it simpler and easier to use and integrate with other codes.
 
 *dyntapy* [@dyntapy] is a macroscopic traffic simulator in Python.
 While it shares several features with *UXsim*, there are some distinct differences.
@@ -102,7 +102,7 @@ Detailed explanations of the mathematics and algorithms behind *UXsim* are descr
 
 Various examples and demos are available as Python scripts and Jupyter notebooks in the GitHub repository of *UXsim*.
 This section introduces three examples to illustrate some of the key features of *UXsim*: simplicity, controllability, and scalability.
-They are also available at the GitHub repository in executable notebooks.
+They are also available at the GitHub repository in executable notebooks, with detailed explanations.
 
 ## Simple example
 
