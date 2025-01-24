@@ -109,7 +109,7 @@ This section introduces three examples to illustrate some of the key features of
 The following code executes *UXsim* in a simple setting.
 
 ```python
-from uxsim import World
+from uxsim import *
 
 # Define the main simulation
 # Units are standardized to seconds (s) and meters (m)
@@ -136,7 +136,7 @@ W.addLink("link3", "merge", "dest",
           length=1000, free_flow_speed=20, number_of_lanes=1)
 ## Create OD traffic demand between nodes
 W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
-W.adddemand(orig="orig2", dest="dest", t_start=400, t_end=1000, flow=0.6)
+W.adddemand("orig2", "dest", 400, 1000, flow=0.6)
 
 # Run the simulation to the end
 W.exec_simulation()
