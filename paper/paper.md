@@ -102,6 +102,7 @@ Detailed explanations of the mathematics and algorithms behind *UXsim* are descr
 
 Various examples and demos are available as Python scripts and Jupyter notebooks in the GitHub repository of *UXsim*.
 This section introduces three examples to illustrate some of the key features of *UXsim*: simplicity, controllability, and scalability.
+They are also available at the GitHub repository in executable notebooks.
 
 ## Simple example
 
@@ -183,7 +184,7 @@ results:
  average delay of trips:         62.6 s
  delay ratio:                    0.385
 ```
-The simulation of 810 vehicles for 20 minutes duration was finished in 0.06 seconds.
+The simulation of 810 vehicles for 20 minutes duration was finished in 0.06 seconds a standard office PC.
 
 It also outputs the figures shown in \autoref{simple_example_res} that visualize the network traffic states.
 In the figures, vehicles travel from left to right.
@@ -217,11 +218,11 @@ The "Chicago-Sketch" dataset contains reference traffic data such as link traffi
 The comparison of *UXsim* results and the reference values are shown in \autoref{chicago_compare}.
 Because these values were computed by different methods, we cannot draw precise conclusions about the accuracy of *UXsim*, but at least we can say that the results are well correlated and *UXsim* outputs plausible results.
 
-![Comparison of *UXsim* results and the reference values. left: traffic volume, right: travel time. \label{chicago_compare}](chicago_compare.png){ width=75% }
+![Comparison of *UXsim* results and the reference values. left: traffic volume, right: travel time. \label{chicago_compare}](chicago_compare.png){ width=80% }
 
 # Acknowledgements
 
-The author would like to thank contributions from [Ewout ter Hoeven](https://github.com/EwoutH) and various feedbacks from they and other users.
+The author would like to thank contributions from [Ewout ter Hoeven](https://github.com/EwoutH) and various feedbacks from they, the reviewers, and other users.
 
 
 # References
