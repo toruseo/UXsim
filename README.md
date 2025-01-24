@@ -134,7 +134,7 @@ W = World(
 
 # Define the scenario
 ## Create nodes
-W.addNode(name="orig1", x=0, y=0)
+W.addNode(name="orig1", x=0, y=0)    #xy coords are dummy and for visualization only
 W.addNode("orig2", 0, 2)
 W.addNode("merge", 1, 1)
 W.addNode("dest", 2, 1)
