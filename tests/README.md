@@ -18,4 +18,4 @@ your_project_directory/
 ├── ... 	# Other files or test codes if necessary
 ```
 and run `pytest test_spam.py --durations=0 -v`.
-Note that these some of the tests require optional packages. For the details, please see yml files in `.github/workflows`.
+Note that some of the tests require optional packages. For the details, please see yml files in https://github.com/toruseo/UXsim/tree/main/.github/workflows.
