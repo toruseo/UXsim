@@ -53,7 +53,7 @@ Nevertheless, the computation speed is not too slow, leveraging mesoscopic traff
 
 *UXsim* can be used by any user who has basic Python skills and an interest in traffic.
 It can be used for various purposes, such as university education and as an experimental environment for researchers in fields like civil engineering, urban planning, operations research, computer science, and others.
-It has already been used in a number of scientific publications such as Large Language Model-based system control [@microsofttrace] and traffic signal optimization [@iizuka].
+It has already been used in a number of scientific publications such as Large Language Model-based system control [@microsofttrace], traffic signal optimization in a network [@iizuka], and strategic impact evaluation of automated vehicles on a regional scale [@terHoeven2024master].
 
 # Related works
 
@@ -70,7 +70,8 @@ Additionally, microscopic simulators generally require extensive information, su
 
 *MATSim* [@matsim] is a more strategic-level transportation simulator that aims to simulate activity-travel behavior.
 In fact, a certain mode of *MATSim* uses models that are equivalent to those in *UXsim*.
-However, *MATSim* focuses more on holistic mobility, including people's travel decisions and mode choices in multi-modal transportation systems, rather than just traffic flow.
+However, *MATSim* focuses more on holistic mobility, including people's travel decisions and mode choices in multi-modal transportation systems.
+*UXsim* focuses on traffic flow simulation, making it simpler and easier to use and integrate with other packages.
 
 *dyntapy* [@dyntapy] is a macroscopic traffic simulator in Python.
 While it shares several features with *UXsim*, there are some distinct differences.
@@ -123,7 +124,7 @@ W = World(
 
 # Define the scenario
 ## Create nodes
-W.addNode(name="orig1", x=0, y=0)
+W.addNode(name="orig1", x=0, y=0)  #xy coords are for visualization 
 W.addNode("orig2", 0, 2)
 W.addNode("merge", 1, 1)
 W.addNode("dest", 2, 1)
