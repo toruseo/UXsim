@@ -5,6 +5,8 @@ Demonstration of dynamic traffic assginment (DTA) in a simple network.
 - Dynamic System Optimum (DSO)
 """
 
+'''temporally disabled due to unknown random error.
+
 from pylab import *
 import uxsim
 from uxsim.DTAsolvers import *
@@ -104,3 +106,4 @@ solver_DSO.plot_vehicle_stats(orig="4", dest="7")
 solver_DSO.plot_convergence()
 solver_DSO.plot_link_stats()
 solver_DSO.plot_vehicle_stats(orig="4", dest="7")
+'''
