@@ -1,7 +1,7 @@
 # UXsim: Network traffic flow simulator in pure Python
 
 [![PyPi](https://img.shields.io/pypi/v/uxsim.svg)](https://pypi.python.org/pypi/uxsim)
-[![Conda Version](https://img.shields.io/conda/vn/conda-forge/uxsim.svg)](https://anaconda.org/conda-forge/uxsim)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/uxsim.svg)](https://anaconda.org/conda-forge/uxsim)<!-- ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/uxsim)-->
 [![Demo in Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb)
 [![codecov](https://codecov.io/gh/toruseo/UXsim/graph/badge.svg?token=DK77Y1Y5AT)](https://codecov.io/gh/toruseo/UXsim)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/uxsim)
@@ -29,7 +29,6 @@ If you are interested, please see:
 - Visualization of simulation results using `Matplotlib`; interactive GUI is also available
 - Flexible and customizable thanks to pure Python implementation; can also be directly integrated with other Python-based frameworks, such as `PyTorch` for deep reinforcement learning traffic control
 - The main code `uxsim.py` is only about 2300 lines of code. Users may easily understand and customize it
-- Python version: 3.9 or later
 
 ## Simulation Examples
 
@@ -63,6 +62,8 @@ A [Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/
 https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127196d9
 
 ## Install
+
+UXsim is available for Python version 3.9 or later.
 
 ### Using pip
 
