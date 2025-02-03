@@ -133,6 +133,7 @@ demos_and_examples/out/
 demos_and_examples/out*/
 cache/
 _private_files/*
+_private_files*
 dev*.ipynb
 _*.ps1
 p*_*.py
