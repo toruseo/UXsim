@@ -184,7 +184,7 @@ results:
  average delay of trips:         62.6 s
  delay ratio:                    0.385
 ```
-The simulation of 810 vehicles for 20 minutes duration was finished in 0.06 seconds a standard office PC.
+The simulation of 810 vehicles for 20 minutes duration was finished in 0.06 seconds on a standard office PC.
 
 It also outputs the figures shown in \autoref{simple_example_res} that visualize the network traffic states.
 In the figures, vehicles travel from left to right.
@@ -222,7 +222,7 @@ Because these values were computed by different methods, we cannot draw precise 
 
 # Acknowledgements
 
-The author would like to thank contributions from [Ewout ter Hoeven](https://github.com/EwoutH) and various feedbacks from they, the reviewers, and other users.
+The author would like to thank contributions from [Ewout ter Hoeven](https://github.com/EwoutH) and various feedbacks from them, the reviewers, and other users.
 
 
 # References
