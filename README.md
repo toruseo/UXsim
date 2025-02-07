@@ -6,6 +6,7 @@
 [![codecov](https://codecov.io/gh/toruseo/UXsim/graph/badge.svg?token=DK77Y1Y5AT)](https://codecov.io/gh/toruseo/UXsim)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/uxsim)
 [![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07617/status.svg)](https://doi.org/10.21105/joss.07617)
 [![Static Badge](https://img.shields.io/badge/readme-%E6%97%A5%E6%9C%AC%E8%AA%9E%20%F0%9F%87%AF%F0%9F%87%B5%20-pink)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
 
 *UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator written in Python.
@@ -216,9 +217,26 @@ To learn more about UXsim, please see:
 UXsim is released under the MIT License. You are free to use it as long as the source is acknowledged.
 
 When publishing works based on UXsim, please cite:
+- Toru Seo. [UXsim: lightweight mesoscopic traffic flow simulator in pure Python](https://doi.org/10.21105/joss.07617). Journal of Open Source Software, Vol. 10, No. 106, p. 7617, 2025.
 
+```
+@Article{seo2025joss,
+  author    = {Toru Seo},
+  journal   = {Journal of Open Source Software},
+  title     = {{UXsim}: lightweight mesoscopic traffic flow simulator in pure {Python}},
+  year      = {2025},
+  number    = {106},
+  pages     = {7617},
+  volume    = {10},
+  doi       = {10.21105/joss.07617},
+  publisher = {The Open Journal},
+  url       = {https://doi.org/10.21105/joss.07617},
+}
+```
+
+If you need more detailed information, please also cite:
 - Toru Seo. [Macroscopic Traffic Flow Simulation: Fundamental Mathematical Theory and Python Implementation](https://toruseo.github.io/misc/MacroTrafficSim_English_summary.pdf). Corona Publishing Co., Ltd., 2023.
-- Toru Seo. [UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview](http://dx.doi.org/10.48550/arXiv.2309.17114). arXiv preprint arXiv: 2309.17114, 2023
+- Toru Seo. [UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview](http://dx.doi.org/10.48550/arXiv.2309.17114). arXiv preprint arXiv: 2309.17114, 2023.
 
 Works using UXsim is summarized on the [Github Wiki page](https://github.com/toruseo/UXsim/wiki). Please feel free to edit.
 

@@ -6,6 +6,7 @@
 [![codecov](https://codecov.io/gh/toruseo/UXsim/graph/badge.svg?token=DK77Y1Y5AT)](https://codecov.io/gh/toruseo/UXsim)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/uxsim)
 [![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07617/status.svg)](https://doi.org/10.21105/joss.07617)
 [![Static Badge](https://img.shields.io/badge/readme-English%20%F0%9F%87%BA%F0%9F%87%B8%20-%20darkblue)](https://github.com/toruseo/UXsim/blob/main/README.md)
 
 *UXsim*はPython製のオープンソース・フリーなマクロ・メソ交通流シミュレータです．
@@ -61,6 +62,8 @@ UXsimは単純，軽量，柔軟であるため，研究・教育上の目的に
 https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127196d9
 
 ## インストール
+
+Python 3.9以降に対応しています．
 
 ### pipを使用
 
@@ -213,8 +216,11 @@ UXsimはMIT Licenseのもとで公開しています．
 
 使用された成果を発表される際は，参考文献として以下を引用してください：
 
-- 瀬尾亨. [マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/). コロナ社, 2023
-- Toru Seo. [UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview](http://dx.doi.org/10.48550/arXiv.2309.17114). arXiv preprint arXiv: 2309.17114, 2023
+- Toru Seo. [UXsim: lightweight mesoscopic traffic flow simulator in pure Python](https://doi.org/10.21105/joss.07617). Journal of Open Source Software, Vol. 10, No. 106, p. 7617, 2025.
+
+より詳細な説明が必要であれば以下も引用してください：
+- 瀬尾亨. [マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/). コロナ社, 2023.
+- Toru Seo. [UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview](http://dx.doi.org/10.48550/arXiv.2309.17114). arXiv preprint arXiv: 2309.17114, 2023.
 
 UXsimを使用した研究は[Githubのwikiページ](https://github.com/toruseo/UXsim/wiki)にまとめられています．自由に編集してください．
 
