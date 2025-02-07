@@ -258,7 +258,7 @@ Specifically, UXsim directly uses the following works:
 - [Incremental Node Model](https://doi.org/10.1016/j.trb.2011.04.001) and its [mesoscopic version](https://ubiquitypress.com/site/chapters/e/10.5334/baw.50/)
 - [Dynamic User Optimum](https://doi.org/10.1016/S0191-2615(00)00005-9)-type Route Choice Model
 
-## Related Links & Further Reading
+## Related Links
 
 - [Toru Seo (Author)](https://toruseo.jp/index_en.html)
 - [Seo Laboratory, Tokyo Institute of Technology](http://seo.cv.ens.titech.ac.jp/en/)
