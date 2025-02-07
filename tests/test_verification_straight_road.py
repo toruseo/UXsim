@@ -6,11 +6,6 @@ import pytest
 import random
 from uxsim import *
 
-def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
-    if check == 0 and abs_tol == 0:
-        abs_tol = 0.1
-    return abs(val - check) <= abs(check*rel_tol) + abs_tol
-
 """
 default FD:
     u = 20
@@ -1116,3 +1111,51 @@ def test_iterative_exec_rigorous_random_size_duration_t2():
         assert W.VEHICLES["0"].x == (tmax//W.DELTAT-1)*W.DELTAT*link_u
 
         print()
+
+def test_vehicle_speed_at_node_transfer():
+    for i in range(10):    
+        if i == 0:
+            deltan = 5
+            free_flow_speed = 10
+            length1 = 1000
+            length2 = random.randint(500,1000)
+            length3 = 1000
+            lanes1 = 1
+            lanes2 = 1
+            lanes3 = 1
+        else:
+            deltan = random.randint(1,10)
+            free_flow_speed = random.randint(5,25)
+            length1 = random.randint(500,1000)
+            length2 = random.randint(500,1000)
+            length3 = random.randint(500,1000)
+            lanes1 = random.randint(1,5)
+            lanes2 = random.randint(1,5)
+            lanes3 = random.randint(1,5)
+            
+        W = World(
+            name="",
+            deltan=deltan,
+            tmax=3600,
+            print_mode=1, save_mode=0, show_mode=0,
+            random_seed=0
+        )
+
+        W.addNode("orig", 0, 0)
+        W.addNode("mid1", 1, 1)
+        W.addNode("mid2", 1, 1)
+        W.addNode("dest", 2, 1)
+        W.addLink(f"link1-{length1}", "orig", "mid1", length=length1, free_flow_speed=free_flow_speed, number_of_lanes=lanes1)
+        W.addLink(f"link2-{length2}", "mid1", "mid2", length=length2, free_flow_speed=free_flow_speed, number_of_lanes=lanes2)
+        W.addLink(f"link3-{length3}", "mid2", "dest", length=length3, free_flow_speed=free_flow_speed, number_of_lanes=lanes3)
+        W.adddemand("orig", "dest", 0, 1000, 0.1)
+        W.exec_simulation()
+
+        W.analyzer.print_simple_stats()
+        df = W.analyzer.vehicles_to_pandas()
+        df = df[(df["name"]=="0") & (df["x"]!=-1)]
+        print(df)
+        vs = df["v"]
+        for v in list(vs):
+            assert equal_tolerance(v, free_flow_speed, rel_tol=0, abs_tol=0.01)
+                    

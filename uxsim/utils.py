@@ -182,3 +182,12 @@ def plot_multiple_y(x=None, ys=None, labels=None, **kwarg):
 
     plt.ylabel("normalized to [0, 1]")
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+
+def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
+    """
+    function for tests
+    """
+    if check == 0 and abs_tol == 0:
+        abs_tol = 0.1
+    return abs(val - check) <= abs(check*rel_tol) + abs_tol
