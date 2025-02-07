@@ -217,7 +217,10 @@ UXsimはMIT Licenseのもとで公開しています．
 使用された成果を発表される際は，参考文献として以下を引用してください：
 
 - Toru Seo. [UXsim: lightweight mesoscopic traffic flow simulator in pure Python](https://doi.org/10.21105/joss.07617). Journal of Open Source Software, Vol. 10, No. 106, p. 7617, 2025.
+
+より詳細な説明が必要であれば以下も引用してください：
 - 瀬尾亨. [マクロ交通流シミュレーション：数学的基礎理論とPythonによる実装](https://www.coronasha.co.jp/np/isbn/9784339052794/). コロナ社, 2023.
+- Toru Seo. [UXsim: An open source macroscopic and mesoscopic traffic simulator in Python-a technical overview](http://dx.doi.org/10.48550/arXiv.2309.17114). arXiv preprint arXiv: 2309.17114, 2023.
 
 UXsimを使用した研究は[Githubのwikiページ](https://github.com/toruseo/UXsim/wiki)にまとめられています．自由に編集してください．
 
