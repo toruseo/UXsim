@@ -316,6 +316,8 @@ class Node:
                     if x_next >= outlink.length:
                         x_next = outlink.length
                 veh.x = x_next
+                veh.v += veh.x/s.W.DELTAT
+                veh.move_remain = 0
 
                 #今移動した車両の後続車両がトリップ終了待ちの場合，トリップ終了させる
                 if len(inlink.vehicles) and inlink.vehicles[0].flag_waiting_for_trip_end:
@@ -919,7 +921,7 @@ class Vehicle:
         s.flag_waiting_for_trip_end = 0
 
         #リンク端部の走り残し処理
-        s.move_remain = 0
+        s.move_remain = 0   #リンク移動後に走り続ける余力
 
         #経路選択
         if route_choice_principle == None:

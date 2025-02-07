@@ -8,10 +8,6 @@ from uxsim import *
 from uxsim.Utilities import *
 
 
-def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
-    if check == 0 and abs_tol == 0:
-        abs_tol = 0.1
-    return abs(val - check) <= abs(check*rel_tol) + abs_tol
 
 def test_analyzer():
     import matplotlib
@@ -1188,5 +1184,5 @@ def test_construct_time_space_network():
 
     construct_time_space_network(W)
 
-    assert W.TSN_paths["4", 0]["7", "end"][-2] == ('7', 320)
+    assert W.TSN_paths["4", 0]["7", "end"][-2] == ('7', 340)
     assert equal_tolerance(W.TSN_costs["4", 0]["7", "end"], W.TSN_paths["4", 0]["7", "end"][-2][1])
