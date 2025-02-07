@@ -1,0 +1,28 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Seo
+  given-names: Toru
+  orcid: "https://orcid.org/0000-0001-9767-7218"
+doi: 10.5281/zenodo.14799163
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Seo
+    given-names: Toru
+    orcid: "https://orcid.org/0000-0001-9767-7218"
+  date-published: 2025-02-06
+  doi: 10.21105/joss.07617
+  issn: 2475-9066
+  issue: 106
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 7617
+  title: "UXsim: lightweight mesoscopic traffic flow simulator in pure
+    Python"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.07617"
+  volume: 10
+title: "UXsim: lightweight mesoscopic traffic flow simulator in pure
+  Python"
