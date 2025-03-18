@@ -579,7 +579,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=4, node_size=2):
+    def network(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
         """
         Visualizes the entire transportation network and its current traffic conditions.
 
@@ -605,6 +605,8 @@ class Analyzer:
             The font size for the network labels. Default is 4.
         node_size : int, optional
             The size of the nodes in the visualization. Default is 2.
+        legend : bool, optional
+            If set to True, the legend will be displayed. Default is True.  
 
         Notes
         -----
@@ -664,6 +666,7 @@ class Analyzer:
         minx = min([n.x for n in s.W.NODES])
         maxy = max([n.y for n in s.W.NODES])
         miny = min([n.y for n in s.W.NODES])
+
         buffx, buffy = (maxx-minx)/10, (maxy-miny)/10
         if buffx == 0:
             buffx = buffy
@@ -671,6 +674,39 @@ class Analyzer:
             buffy = buffx
         plt.xlim([minx-buffx, maxx+buffx])
         plt.ylim([miny-buffy, maxy+buffy])
+        
+        if legend:
+            lypad = (maxy-(miny-buffy))*0.14
+            lx00 = minx + (maxx-minx)*0.25
+            lx01 = minx + (maxx-minx)*0.35
+            lx10 = minx + (maxx-minx)*0.65
+            lx11 = minx + (maxx-minx)*0.75
+            ly0 =  miny-buffy-lypad*0.0
+            ly1 = miny-buffy-lypad*0.35
+            ly2 = miny-buffy-lypad*0.7
+            lxpad = (maxx-minx)*0.01
+
+            lny = miny-buffy+lypad*0.2
+            lsy = miny-buffy-lypad*0.9
+            lex = minx + (maxx-minx)*0.15
+            lwx = minx + (maxx-minx)*0.87
+            plt.plot([lex,lwx,lwx,lex,lex], [lny,lny,lsy,lsy,lny], "k-", lw=0.5)
+
+            plt.text((lx00+lx01)/2, ly0, "color: speed", va="center", ha="center", fontsize=12)
+            plt.plot([lx00, lx01], [ly1, ly1], "-", c=plt.colormaps["viridis"](1.0), lw=(maxwidth+minwidth)/2, solid_capstyle="butt")
+            plt.plot([lx00, lx01], [ly2, ly2], "-", c=plt.colormaps["viridis"](0.0), lw=(maxwidth+minwidth)/2, solid_capstyle="butt")
+            plt.text(lx01+lxpad, ly1, "max", va="center", fontsize=12)
+            plt.text(lx01+lxpad, ly2, "0", va="center", fontsize=12)
+
+            plt.text((lx10+lx11)/2, ly0, "width: density", va="center", ha="center", fontsize=12)
+            plt.plot([lx10, lx11], [ly1, ly1], "-", c="k", lw=minwidth, solid_capstyle="butt")
+            plt.plot([lx10, lx11], [ly2, ly2], "-", c="k", lw=maxwidth, solid_capstyle="butt")
+            plt.text(lx11+lxpad, ly1, "0", va="center", fontsize=12)
+            plt.text(lx11+lxpad, ly2, "max", va="center", fontsize=12)
+            
+            plt.xlim([minx-buffx, maxx+buffx])
+            plt.ylim([miny-buffy-lypad, maxy+buffy])
+
         plt.tight_layout()
         if tmp_anim:
             plt.savefig(f"out{s.W.name}/tmp_anim_{t}.png")
@@ -684,7 +720,43 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=4, node_size=2):
+    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
+        """
+        Visualizes the average traffic conditions of the network.
+        This function generates a network visualization where links are colored based on congestion levels (travel time ratio) and sized according to traffic volume.
+
+        Parameters
+        ----------
+        s : Simulator
+            Simulator object containing the network and simulation results.
+        minwidth : float, optional
+            Minimum width of links in the visualization. Default is 0.5.
+        maxwidth : float, optional
+            Maximum width of links in the visualization. Default is 12.
+        left_handed : int, optional
+            If 1, offsets the links to the left side of the road. If 0, to the right. Default is 1.
+        figsize : tuple, optional
+            Size of the figure (width, height) in inches. Default is (6, 6).
+        network_font_size : int, optional
+            Font size for node and link labels. If 0, no labels are shown. Default is 4.
+        node_size : int, optional
+            Size of the nodes in the visualization. Default is 2.
+        legend : bool, optional
+            Whether to show the legend. Default is True (currently not implemented).
+
+        Returns
+        -------
+        None
+            Saves the visualization to a file if save_mode is True and/or displays it if show_mode is True.
+
+        Notes
+        -----
+        Links are colored according to the following delay ratio categories:
+        - Blue: Free-flow (delay ratio < 1.1)
+        - Yellow: Slightly congested (1.1 <= delay ratio < 1.666)
+        - Red: Congested (1.666 <= delay ratio < 3)
+        - Dark Red: Extremely congested (delay ratio >= 3)
+        """
         df = s.link_to_pandas()
 
         plt.figure(figsize=figsize)
@@ -727,6 +799,41 @@ class Analyzer:
         buffxy = max([(maxx-minx)/10, (maxy-miny)/10])
         plt.xlim([minx-buffxy, maxx+buffxy])
         plt.ylim([miny-buffxy, maxy+buffxy])
+
+        if legend:
+            lypad = (maxy-(miny-buffxy))*0.14
+            lx00 = minx + (maxx-minx)*0.15
+            lx01 = minx + (maxx-minx)*0.25
+            lx10 = minx + (maxx-minx)*0.65
+            lx11 = minx + (maxx-minx)*0.75
+            ly0 =  miny-buffxy-lypad*0.0
+            ly1 = miny-buffxy-lypad*0.35
+            ly2 = miny-buffxy-lypad*0.7
+            lxpad = (maxx-minx)*0.01
+
+            lny = miny-buffxy+lypad*0.2
+            lsy = miny-buffxy-lypad*0.9
+            lex = minx + (maxx-minx)*0.12
+            lwx = minx + (maxx-minx)*0.87
+            plt.plot([lex,lwx,lwx,lex,lex], [lny,lny,lsy,lsy,lny], "k-", lw=0.5)
+
+            # Color legend for delay ratio
+            plt.text(minx + (maxx-minx)*0.3, ly0, "color: speed", va="center", ha="center", fontsize=network_font_size)
+            plt.plot([lx00, lx01], [ly1, ly1], "-", c="b", lw=3, solid_capstyle="butt")
+            plt.plot([lx00, lx01], [ly2, ly2], "-", c="r", lw=3, solid_capstyle="butt")
+            plt.text(lx01+lxpad, ly1, "free-flow", va="center", fontsize=network_font_size)
+            plt.text(lx01+lxpad, ly2, "congested", va="center", fontsize=network_font_size)
+
+            # Width legend for traffic volume
+            plt.text((lx10+lx11)/2, ly0, "width: volume", va="center", ha="center", fontsize=network_font_size)
+            plt.plot([lx10, lx11], [ly1, ly1], "-", c="k", lw=minwidth, solid_capstyle="butt")
+            plt.plot([lx10, lx11], [ly2, ly2], "-", c="k", lw=maxwidth, solid_capstyle="butt")
+            plt.text(lx11+lxpad, ly1, "0", va="center", fontsize=network_font_size)
+            plt.text(lx11+lxpad, ly2, "max", va="center", fontsize=network_font_size)
+            
+            plt.xlim([minx-buffxy, maxx+buffxy])
+            plt.ylim([miny-buffxy-lypad, maxy+buffxy])
+
         plt.tight_layout()
 
         if s.W.save_mode:
@@ -738,7 +845,7 @@ class Analyzer:
 
 
     @catch_exceptions_and_warn()
-    def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0):
+    def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0, legend=True):
         """
         Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.
 
@@ -764,6 +871,10 @@ class Analyzer:
             The font size for the network labels. Default is 4.
         node_size : int, optional
             The size of the nodes in the visualization. Default is 2.
+        image_return : int, optional
+            If set to 1, the function returns the image. Default is 0.
+        legend : bool, optional
+            If set to True, the legend will be displayed. Default is True.
 
         Notes
         -----
@@ -841,6 +952,7 @@ class Analyzer:
         else:
             if s.W.save_mode:
                 img.save(f"out{s.W.name}/network{detailed}_{t}.png")
+
 
     @catch_exceptions_and_warn()
     def show_simulation_progress(s):
