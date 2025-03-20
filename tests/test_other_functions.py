@@ -52,10 +52,12 @@ def test_analyzer():
     W.analyzer.plot_vehicles_log(["100", "110"])
     W.analyzer.macroscopic_fundamental_diagram()
     W.analyzer.network_average()
-    for t in list(range(0,W.TMAX,int(W.TMAX/6))):
+    for t in list(range(0,W.TMAX,int(W.TMAX/3))):
         W.analyzer.network(t, detailed=0, network_font_size=0, figsize=(4,4))
-    for t in list(range(0,W.TMAX,int(W.TMAX/6))):
+        W.analyzer.network(t, detailed=0, network_font_size=0, figsize=(4,4), state_variables="flow_speed", legend=False)
+    for t in list(range(0,W.TMAX,int(W.TMAX/3))):
         W.analyzer.network(t, detailed=1, network_font_size=0)
+        W.analyzer.network(t, detailed=1, network_font_size=0, state_variables="flow_speed", legend=False)
     W.analyzer.network_anim(animation_speed_inverse=15, detailed=0, network_font_size=0)
     W.analyzer.network_anim(detailed=1, network_font_size=0, figsize=(12,12))
     W.analyzer.network_fancy(animation_speed_inverse=15, sample_ratio=0.3, interval=5, trace_length=5)
