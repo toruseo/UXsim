@@ -5,6 +5,7 @@ This module is automatically loaded when you import the `uxsim` module.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import glob, os, csv, time
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
@@ -579,7 +580,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=4, node_size=2):
+    def network(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
         """
         Visualizes the entire transportation network and its current traffic conditions.
 
@@ -605,6 +606,8 @@ class Analyzer:
             The font size for the network labels. Default is 4.
         node_size : int, optional
             The size of the nodes in the visualization. Default is 2.
+        legend : bool, optional
+            If set to True, the legend will be displayed. Default is True.  
 
         Notes
         -----
@@ -614,7 +617,7 @@ class Analyzer:
         """
         s.compute_edie_state()
 
-        plt.figure(figsize=figsize)
+        plt.figure(figsize=figsize, facecolor='white')
         plt.subplot(111, aspect="equal")
         plt.title(f"t = {t :>8} (s)")
         for n in s.W.NODES:
@@ -664,6 +667,7 @@ class Analyzer:
         minx = min([n.x for n in s.W.NODES])
         maxy = max([n.y for n in s.W.NODES])
         miny = min([n.y for n in s.W.NODES])
+
         buffx, buffy = (maxx-minx)/10, (maxy-miny)/10
         if buffx == 0:
             buffx = buffy
@@ -671,6 +675,30 @@ class Analyzer:
             buffy = buffx
         plt.xlim([minx-buffx, maxx+buffx])
         plt.ylim([miny-buffy, maxy+buffy])
+        
+        if legend:
+            # ヘッダー用のdummyアーティスト（凡例上はテキストだけを表示）
+            dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
+            dummy_density = Line2D([], [], linestyle='', color='none', label="Density")
+
+            speed_handles = [
+                Line2D([0], [0], color=plt.colormaps["viridis"](0.0), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color=plt.colormaps["viridis"](1.0), lw=(minwidth+maxwidth)/2, solid_capstyle="butt")
+            ]
+            speed_labels = ["0", "max"]
+
+            density_handles = [
+                Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
+                Line2D([0], [0], color='black', lw=maxwidth, solid_capstyle="butt")
+            ]
+            density_labels = ["0", "max (1lane)"]
+
+            handles = [dummy_speed] + speed_handles + [dummy_density] + density_handles
+            labels  = [dummy_speed.get_label()] + speed_labels + [dummy_density.get_label()] + density_labels
+
+            plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+
+
         plt.tight_layout()
         if tmp_anim:
             plt.savefig(f"out{s.W.name}/tmp_anim_{t}.png")
@@ -684,7 +712,43 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=4, node_size=2):
+    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
+        """
+        Visualizes the average traffic conditions of the network.
+        This function generates a network visualization where links are colored based on congestion levels (travel time ratio) and sized according to traffic volume.
+
+        Parameters
+        ----------
+        s : Simulator
+            Simulator object containing the network and simulation results.
+        minwidth : float, optional
+            Minimum width of links in the visualization. Default is 0.5.
+        maxwidth : float, optional
+            Maximum width of links in the visualization. Default is 12.
+        left_handed : int, optional
+            If 1, offsets the links to the left side of the road. If 0, to the right. Default is 1.
+        figsize : tuple, optional
+            Size of the figure (width, height) in inches. Default is (6, 6).
+        network_font_size : int, optional
+            Font size for node and link labels. If 0, no labels are shown. Default is 4.
+        node_size : int, optional
+            Size of the nodes in the visualization. Default is 2.
+        legend : bool, optional
+            Whether to show the legend. Default is True (currently not implemented).
+
+        Returns
+        -------
+        None
+            Saves the visualization to a file if save_mode is True and/or displays it if show_mode is True.
+
+        Notes
+        -----
+        Links are colored according to the following delay ratio categories:
+        - Blue: Free-flow (delay ratio < 1.1)
+        - Yellow: Slightly congested (1.1 <= delay ratio < 1.666)
+        - Red: Congested (1.666 <= delay ratio < 3)
+        - Dark Red: Extremely congested (delay ratio >= 3)
+        """
         df = s.link_to_pandas()
 
         plt.figure(figsize=figsize)
@@ -727,6 +791,32 @@ class Analyzer:
         buffxy = max([(maxx-minx)/10, (maxy-miny)/10])
         plt.xlim([minx-buffxy, maxx+buffxy])
         plt.ylim([miny-buffxy, maxy+buffxy])
+
+        if legend:
+            # ヘッダー用のdummyアーティスト（凡例上はテキストだけを表示）
+            dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
+            dummy_volume = Line2D([], [], linestyle='', color='none', label="Volume")
+
+            speed_handles = [
+                Line2D([0], [0], color="b", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color="y", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color="r", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color="#880000", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+            ]
+            speed_labels = ["free-flow", "slightly slow", "slow", "very slow"]
+
+            volume_handles = [
+                Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
+                Line2D([0], [0], color='black', lw=maxwidth, solid_capstyle="butt")
+            ]
+            volume_labels = ["0", "max"]
+
+            handles = [dummy_speed] + speed_handles + [dummy_volume] + volume_handles
+            labels  = [dummy_speed.get_label()] + speed_labels + [dummy_volume.get_label()] + volume_labels
+
+            plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+
+
         plt.tight_layout()
 
         if s.W.save_mode:
@@ -736,9 +826,8 @@ class Analyzer:
         else:
             plt.close("all")
 
-
     @catch_exceptions_and_warn()
-    def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0):
+    def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0, legend=True):
         """
         Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.
 
@@ -764,6 +853,10 @@ class Analyzer:
             The font size for the network labels. Default is 4.
         node_size : int, optional
             The size of the nodes in the visualization. Default is 2.
+        image_return : int, optional
+            If set to 1, the function returns the image. Default is 0.
+        legend : bool, optional
+            If set to True, the legend will be displayed. Default is True.
 
         Notes
         -----
@@ -794,7 +887,11 @@ class Analyzer:
         minx -= buffer
         maxy += buffer
         miny -= buffer
-
+        
+        lypad = 0
+        if legend:
+            lypad = buffer*1.5
+            miny -= lypad
         img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
         draw = ImageDraw.Draw(img)
         
@@ -832,6 +929,39 @@ class Analyzer:
         font_file_like = io.BytesIO(font_data)
         font = ImageFont.truetype(font_file_like, int(30))
         draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
+
+        if legend:
+            
+            lx00 = (maxx-minx)*0.25
+            lx01 = (maxx-minx)*0.35
+            lx10 = (maxx-minx)*0.65
+            lx11 = (maxx-minx)*0.75
+            ly0 = -buffer-miny
+            ly1 = -buffer-lypad*0.35-miny
+            ly2 = -buffer-lypad*0.7-miny
+
+            lny = flip(-buffer+lypad*0.2-miny)
+            lsy = flip(-buffer-lypad*0.9-miny)
+            lex = (maxx-minx)*0.15
+            lwx = (maxx-minx)*0.87
+
+            c1 = tuple(int(c*255) for c in plt.colormaps["viridis"](1.0))[:3]
+            c2 = tuple(int(c*255) for c in plt.colormaps["viridis"](0.0))[:3]
+
+            draw.text(((lx00+lx01)/2, flip(ly0)), "color: speed", font=font, fill="black", anchor="mm")
+            draw.line([(lx00, flip(ly1)), (lx01, flip(ly1))], fill=c1, width=int((maxwidth-minwidth)/2))
+            draw.line([(lx00, flip(ly2)), (lx01, flip(ly2))], fill=c2, width=int((maxwidth-minwidth)/2))            
+            draw.text((lx01+10, flip(ly1)), "max", font=font, fill="black", anchor="lm")
+            draw.text((lx01+10, flip(ly2)), "0", font=font, fill="black", anchor="lm")
+
+            draw.text(((lx10+lx11)/2, flip(ly0)), "width: density", font=font, fill="black", anchor="mm")    
+            draw.line([(lx10, flip(ly1)), (lx11, flip(ly1))], fill="black", width=int(minwidth))
+            draw.line([(lx10, flip(ly2)), (lx11, flip(ly2))], fill="black", width=int(maxwidth))            
+            draw.text((lx11+10, flip(ly1)), "0", font=font, fill="black", anchor="lm")
+            draw.text((lx11+10, flip(ly2)), "max", font=font, fill="black", anchor="lm")
+
+            draw.line([(lwx, lny), (lex, lny), (lex, lsy), (lwx, lsy), (lwx, lny)], fill="black", width=1)
+
 
         img = img.resize((int((maxx-minx)/scale), int((maxy-miny)/scale)), resample=Resampling.LANCZOS)
         if image_return:
