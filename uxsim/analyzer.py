@@ -617,7 +617,7 @@ class Analyzer:
         """
         s.compute_edie_state()
 
-        plt.figure(figsize=figsize, dpi=100)
+        plt.figure(figsize=figsize, facecolor='white')
         plt.subplot(111, aspect="equal")
         plt.title(f"t = {t :>8} (s)")
         for n in s.W.NODES:
