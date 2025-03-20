@@ -5,6 +5,7 @@ This module is automatically loaded when you import the `uxsim` module.
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import glob, os, csv, time
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
@@ -616,7 +617,7 @@ class Analyzer:
         """
         s.compute_edie_state()
 
-        plt.figure(figsize=figsize, dpi=150)
+        plt.figure(figsize=figsize, dpi=100)
         plt.subplot(111, aspect="equal")
         plt.title(f"t = {t :>8} (s)")
         for n in s.W.NODES:
@@ -676,38 +677,27 @@ class Analyzer:
         plt.ylim([miny-buffy, maxy+buffy])
         
         if legend:
-            lypad = (maxy-(miny-buffy))*0.14
-            lx00 = minx + (maxx-minx)*0.28
-            lx01 = minx + (maxx-minx)*0.38
-            lx10 = minx + (maxx-minx)*0.65
-            lx11 = minx + (maxx-minx)*0.75
-            ly0 =  miny-buffy-lypad*0.0
-            ly1 = miny-buffy-lypad*0.35
-            ly2 = miny-buffy-lypad*0.7
-            lxpad = (maxx-minx)*0.01
+            # ヘッダー用のdummyアーティスト（凡例上はテキストだけを表示）
+            dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
+            dummy_density = Line2D([], [], linestyle='', color='none', label="Density")
 
-            lny = miny-buffy+lypad*0.2
-            lsy = miny-buffy-lypad*0.9
-            lex = minx + (maxx-minx)*0.18
-            lwx = minx + (maxx-minx)*0.87
-            
-            #plt.fill([lex,lwx,lwx,lex,lex], [lny,lny,lsy,lsy,lny], color="#eee", alpha=0.5)
-            plt.plot([lex,lwx,lwx,lex,lex], [lny,lny,lsy,lsy,lny], "k-", lw=0.5)
+            speed_handles = [
+                Line2D([0], [0], color=plt.colormaps["viridis"](0.0), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color=plt.colormaps["viridis"](1.0), lw=(minwidth+maxwidth)/2, solid_capstyle="butt")
+            ]
+            speed_labels = ["0", "max"]
 
-            plt.text((lx00+lx01)/2, ly0, "color: speed", va="center", ha="center", fontsize=12)
-            plt.plot([lx00, lx01], [ly1, ly1], "-", c=plt.colormaps["viridis"](1.0), lw=(maxwidth+minwidth)/2, solid_capstyle="butt")
-            plt.plot([lx00, lx01], [ly2, ly2], "-", c=plt.colormaps["viridis"](0.0), lw=(maxwidth+minwidth)/2, solid_capstyle="butt")
-            plt.text(lx01+lxpad, ly1, "max", va="center", fontsize=12)
-            plt.text(lx01+lxpad, ly2, "0", va="center", fontsize=12)
+            density_handles = [
+                Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
+                Line2D([0], [0], color='black', lw=maxwidth, solid_capstyle="butt")
+            ]
+            density_labels = ["0", "max (1lane)"]
 
-            plt.text((lx10+lx11)/2, ly0, "width: density", va="center", ha="center", fontsize=12)
-            plt.plot([lx10, lx11], [ly1, ly1], "-", c="k", lw=minwidth, solid_capstyle="butt")
-            plt.plot([lx10, lx11], [ly2, ly2], "-", c="k", lw=maxwidth, solid_capstyle="butt")
-            plt.text(lx11+lxpad, ly1, "0", va="center", fontsize=12)
-            plt.text(lx11+lxpad, ly2, "max", va="center", fontsize=12)
-            
-            plt.xlim([minx-buffx, maxx+buffx])
-            plt.ylim([miny-buffy-lypad, maxy+buffy])
+            handles = [dummy_speed] + speed_handles + [dummy_density] + density_handles
+            labels  = [dummy_speed.get_label()] + speed_labels + [dummy_density.get_label()] + density_labels
+
+            plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+
 
         plt.tight_layout()
         if tmp_anim:
@@ -803,38 +793,29 @@ class Analyzer:
         plt.ylim([miny-buffxy, maxy+buffxy])
 
         if legend:
-            lypad = (maxy-(miny-buffxy))*0.14
-            lx00 = minx + (maxx-minx)*0.15
-            lx01 = minx + (maxx-minx)*0.25
-            lx10 = minx + (maxx-minx)*0.65
-            lx11 = minx + (maxx-minx)*0.75
-            ly0 =  miny-buffxy-lypad*0.0
-            ly1 = miny-buffxy-lypad*0.35
-            ly2 = miny-buffxy-lypad*0.7
-            lxpad = (maxx-minx)*0.01
+            # ヘッダー用のdummyアーティスト（凡例上はテキストだけを表示）
+            dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
+            dummy_volume = Line2D([], [], linestyle='', color='none', label="Volume")
 
-            lny = miny-buffxy+lypad*0.2
-            lsy = miny-buffxy-lypad*0.9
-            lex = minx + (maxx-minx)*0.12
-            lwx = minx + (maxx-minx)*0.87
-            plt.plot([lex,lwx,lwx,lex,lex], [lny,lny,lsy,lsy,lny], "k-", lw=0.5)
+            speed_handles = [
+                Line2D([0], [0], color="b", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color="y", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color="r", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color="#880000", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+            ]
+            speed_labels = ["free-flow", "slightly slow", "slow", "very slow"]
 
-            # Color legend for delay ratio
-            plt.text(minx + (maxx-minx)*0.3, ly0, "color: speed", va="center", ha="center", fontsize=network_font_size)
-            plt.plot([lx00, lx01], [ly1, ly1], "-", c="b", lw=3, solid_capstyle="butt")
-            plt.plot([lx00, lx01], [ly2, ly2], "-", c="r", lw=3, solid_capstyle="butt")
-            plt.text(lx01+lxpad, ly1, "free-flow", va="center", fontsize=network_font_size)
-            plt.text(lx01+lxpad, ly2, "congested", va="center", fontsize=network_font_size)
+            volume_handles = [
+                Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
+                Line2D([0], [0], color='black', lw=maxwidth, solid_capstyle="butt")
+            ]
+            volume_labels = ["0", "max"]
 
-            # Width legend for traffic volume
-            plt.text((lx10+lx11)/2, ly0, "width: volume", va="center", ha="center", fontsize=network_font_size)
-            plt.plot([lx10, lx11], [ly1, ly1], "-", c="k", lw=minwidth, solid_capstyle="butt")
-            plt.plot([lx10, lx11], [ly2, ly2], "-", c="k", lw=maxwidth, solid_capstyle="butt")
-            plt.text(lx11+lxpad, ly1, "0", va="center", fontsize=network_font_size)
-            plt.text(lx11+lxpad, ly2, "max", va="center", fontsize=network_font_size)
-            
-            plt.xlim([minx-buffxy, maxx+buffxy])
-            plt.ylim([miny-buffxy-lypad, maxy+buffxy])
+            handles = [dummy_speed] + speed_handles + [dummy_volume] + volume_handles
+            labels  = [dummy_speed.get_label()] + speed_labels + [dummy_volume.get_label()] + volume_labels
+
+            plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+
 
         plt.tight_layout()
 
@@ -845,7 +826,7 @@ class Analyzer:
         else:
             plt.close("all")
 
-    # @catch_exceptions_and_warn()
+    @catch_exceptions_and_warn()
     def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0, legend=True):
         """
         Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.
