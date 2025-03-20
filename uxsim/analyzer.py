@@ -580,7 +580,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
+    def network(s, t=None, detailed=1, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
         """
         Visualizes the entire transportation network and its current traffic conditions.
 
@@ -592,6 +592,9 @@ class Analyzer:
             Determines the level of detail in the visualization.
             If set to 1, the link internals (cell) are displayed in detail.
             If set to 0, the visualization is simplified to link-level. Default is 1.
+        state_variables : str, optional
+            Traffic state variables to be visualized. Default is "density_speed".
+            The other option is "flow_speed". Anything other than "density_speed" is considered as "flow_speed" mode.
         minwidth : float, optional
             The minimum width of the link visualization. Default is 0.5.
         maxwidth : float, optional
@@ -614,6 +617,13 @@ class Analyzer:
         This method visualizes the entire transportation network and its current traffic conditions.
         The visualization provides information on vehicle density, velocity, link names, node locations, and more.
         The plots are saved to the directory `out<W.name>` with filenames depending on the `detailed` and `t` parameters.
+
+        In the default mode (`state_variables="density_speed"`), the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic density (thicker links indicate higher densities).Although this combination of density and speed is intuitive, they are strongly correlated, so it is not very informative. Thus alternatively, with `state_variables="flow_speed"` mode, the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic flow (thicker links indicate higher flows).
+        Specific meaning of the colors:
+        - blue: free-flow (travel time is almost the same as the free-flow travel time)
+        - yellow: slightly congested (travel time is 1.1-1.666 times longer than free-flow)
+        - red: congested (travel time is 1.666-3 times longer than free-flow)
+        - dark red: extremely congested (travel time is 3 times longer than free-flow)
         """
         s.compute_edie_state()
 
@@ -636,14 +646,33 @@ class Analyzer:
                 c = ["k" for i in range(xsize)]
                 lw = [1 for i in range(xsize)]
                 for i in range(xsize):
-                    try:
-                        k = l.k_mat[int(t/l.edie_dt), i+1]
-                        v = l.v_mat[int(t/l.edie_dt), i+1]
-                    except:
-                        warnings.warn(f"invalid time {t} is specified for network visualization", UserWarning)
-                        return -1
-                    lw[i] = k*l.delta*(maxwidth*l.number_of_lanes-minwidth)+minwidth
-                    c[i] = plt.colormaps["viridis"](v/l.u)
+                    if state_variables == "density_speed":
+                        try:
+                            k = l.k_mat[int(t/l.edie_dt), i+1]
+                            v = l.v_mat[int(t/l.edie_dt), i+1]
+                        except:
+                            warnings.warn(f"invalid time {t} is specified for network visualization", UserWarning)
+                            return -1
+                        lw[i] = k*l.delta*(maxwidth*l.number_of_lanes-minwidth)+minwidth
+                        c[i] = plt.colormaps["viridis"](v/l.u)
+                    else: #"flow_speed" mode
+                        try:
+                            q = l.q_mat[int(t/l.edie_dt), i+1]
+                            v = l.v_mat[int(t/l.edie_dt), i+1]
+                        except:
+                            warnings.warn(f"invalid time {t} is specified for network visualization", UserWarning)
+                            return -1
+                        lw[i] = q/l.capacity*(maxwidth*l.number_of_lanes-minwidth)+minwidth
+                        delay_ratio = l.u/v
+                        if delay_ratio < 1.1: #free-flow
+                            c[i] = "b"
+                        elif delay_ratio < 1.666: #slightly congested
+                            c[i] = "y"
+                        elif delay_ratio < 3: #congested
+                            c[i] = "r"
+                        else: #extremely congested
+                            c[i] = "#880000"
+
                 xmid = [((xsize-i)*x1+(i+1)*x2)/(xsize+1)+vx for i in range(xsize)]
                 ymid = [((xsize-i)*y1+(i+1)*y2)/(xsize+1)+vy for i in range(xsize)]
                 plt.plot([x1]+xmid+[x2], [y1]+ymid+[y2], "k--", lw=0.25, zorder=5)
@@ -653,10 +682,25 @@ class Analyzer:
                     plt.text(xmid[int(len(xmid)/2)], ymid[int(len(xmid)/2)], l.name, c="b", zorder=20, fontsize=network_font_size)
             else:
                 #簡略モード
-                k = (l.cum_arrival[int(t/s.W.DELTAT)]-l.cum_departure[int(t/s.W.DELTAT)])/l.length
-                v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
-                width = k*l.delta*(maxwidth*l.number_of_lanes-minwidth)+minwidth
-                c = plt.colormaps["viridis"](v/l.u)
+                if state_variables == "density_speed":
+                    k = (l.cum_arrival[int(t/s.W.DELTAT)]-l.cum_departure[int(t/s.W.DELTAT)])/l.length
+                    v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
+                    width = k*l.delta*(maxwidth*l.number_of_lanes-minwidth)+minwidth
+                    c = plt.colormaps["viridis"](v/l.u)
+                else: #"flow_speed" mode
+                    k = (l.cum_arrival[int(t/s.W.DELTAT)]-l.cum_departure[int(t/s.W.DELTAT)])/l.length
+                    v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
+                    q = k*v
+                    width = q/l.capacity*(maxwidth*l.number_of_lanes-minwidth)+minwidth
+                    delay_ratio = l.u/v
+                    if delay_ratio < 1.1: #free-flow
+                        c = "b"
+                    elif delay_ratio < 1.666: #slightly congested
+                        c = "y"
+                    elif delay_ratio < 3: #congested
+                        c = "r"
+                    else: #extremely congested
+                        c = "#880000"
                 xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
                 xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
                 plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "k--", lw=0.25, zorder=5)
@@ -678,23 +722,45 @@ class Analyzer:
         
         if legend:
             # ヘッダー用のdummyアーティスト（凡例上はテキストだけを表示）
-            dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
-            dummy_density = Line2D([], [], linestyle='', color='none', label="Density")
+            if state_variables == "density_speed":
+                dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
+                dummy_density = Line2D([], [], linestyle='', color='none', label="Density")
 
-            speed_handles = [
-                Line2D([0], [0], color=plt.colormaps["viridis"](0.0), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
-                Line2D([0], [0], color=plt.colormaps["viridis"](1.0), lw=(minwidth+maxwidth)/2, solid_capstyle="butt")
-            ]
-            speed_labels = ["0", "max"]
+                speed_handles = [
+                    Line2D([0], [0], color=plt.colormaps["viridis"](0.0), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                    Line2D([0], [0], color=plt.colormaps["viridis"](1.0), lw=(minwidth+maxwidth)/2, solid_capstyle="butt")
+                ]
+                speed_labels = ["0", "max"]
 
-            density_handles = [
-                Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
-                Line2D([0], [0], color='black', lw=maxwidth, solid_capstyle="butt")
-            ]
-            density_labels = ["0", "max (1lane)"]
+                density_handles = [
+                    Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
+                    Line2D([0], [0], color='black', lw=maxwidth, solid_capstyle="butt")
+                ]
+                density_labels = ["0", "max (1lane)"]
 
-            handles = [dummy_speed] + speed_handles + [dummy_density] + density_handles
-            labels  = [dummy_speed.get_label()] + speed_labels + [dummy_density.get_label()] + density_labels
+                handles = [dummy_speed] + speed_handles + [dummy_density] + density_handles
+                labels  = [dummy_speed.get_label()] + speed_labels + [dummy_density.get_label()] + density_labels
+            else:
+                dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
+                dummy_volume = Line2D([], [], linestyle='', color='none', label="Volume")
+
+                speed_handles = [
+                    Line2D([0], [0], color="b", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                    Line2D([0], [0], color="y", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                    Line2D([0], [0], color="r", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                    Line2D([0], [0], color="#880000", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                ]
+                speed_labels = ["free-flow", "slightly slow", "slow", "very slow"]
+
+                volume_handles = [
+                    Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
+                    Line2D([0], [0], color='black', lw=maxwidth, solid_capstyle="butt")
+                ]
+                volume_labels = ["0", "max"]
+
+                handles = [dummy_speed] + speed_handles + [dummy_volume] + volume_handles
+                labels  = [dummy_speed.get_label()] + speed_labels + [dummy_volume.get_label()] + volume_labels
+
 
             plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
 
@@ -827,7 +893,7 @@ class Analyzer:
             plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0, legend=True):
+    def network_pillow(s, t=None, detailed=1, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0, legend=True):
         """
         Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.
 
@@ -839,6 +905,9 @@ class Analyzer:
             Determines the level of detail in the visualization.
             If set to 1, the link internals (cell) are displayed in detail.
             If set to 0, the visualization is simplified to link-level. Default is 1.
+        state_variables : str, optional
+            Traffic state variables to be visualized. Default is "density_speed".
+            The other option is "flow_speed". Anything other than "density_speed" is considered as "flow_speed" mode.
         minwidth : float, optional
             The minimum width of the link visualization. Default is 0.5.
         maxwidth : float, optional
@@ -863,6 +932,13 @@ class Analyzer:
         This method visualizes the entire transportation network and its current traffic conditions.
         The visualization provides information on vehicle density, velocity, link names, node locations, and more.
         The plots are saved to the directory `out<W.name>` with filenames depending on the `detailed` and `t` parameters.
+        
+        In the default mode (`state_variables="density_speed"`), the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic density (thicker links indicate higher densities).Although this combination of density and speed is intuitive, they are strongly correlated, so it is not very informative. Thus alternatively, with `state_variables="flow_speed"` mode, the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic flow (thicker links indicate higher flows).
+        Specific meaning of the colors:
+        - blue: free-flow (travel time is almost the same as the free-flow travel time)
+        - yellow: slightly congested (travel time is 1.1-1.666 times longer than free-flow)
+        - red: congested (travel time is 1.666-3 times longer than free-flow)
+        - dark red: extremely congested (travel time is 3 times longer than free-flow)
         """
 
         maxx = max([n.x for n in s.W.NODES])
@@ -909,10 +985,26 @@ class Analyzer:
             vx, vy = (y1-y2)*0.05, (x2-x1)*0.05
             if not left_handed:
                 vx, vy = -vx, -vy
-            k = (l.cum_arrival[int(t/s.W.DELTAT)]-l.cum_departure[int(t/s.W.DELTAT)])/l.length
-            v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
-            width = k*l.delta*(maxwidth-minwidth)+minwidth
-            c = plt.colormaps["viridis"](v/l.u)
+            if state_variables == "density_speed":
+                k = (l.cum_arrival[int(t/s.W.DELTAT)]-l.cum_departure[int(t/s.W.DELTAT)])/l.length
+                v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
+                width = k*l.delta*(maxwidth-minwidth)+minwidth
+                c = plt.colormaps["viridis"](v/l.u)
+            else: #"flow_speed" mode
+                k = (l.cum_arrival[int(t/s.W.DELTAT)]-l.cum_departure[int(t/s.W.DELTAT)])/l.length
+                v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
+                q = k*v
+                width = q/l.capacity*(maxwidth-minwidth)+minwidth
+                delay_ratio = l.u/v
+                if delay_ratio < 1.1: #free-flow
+                    c = (0, 0, 1) # blue
+                elif delay_ratio < 1.666: #slightly congested
+                    c = (1, 1, 0) # yellow
+                elif delay_ratio < 3: #congested
+                    c = (1, 0, 0) # red
+                else: #extremely congested
+                    c = (0.53, 0, 0) # dark red (#880000)
+                
             xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
             xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
             draw.line([(x1, flip(y1)), (xmid1, flip(ymid1)), (xmid2, flip(ymid2)), (x2, flip(y2))], fill=(int(c[0]*255), int(c[1]*255), int(c[2]*255)), width=int(width), joint="curve")
@@ -944,24 +1036,40 @@ class Analyzer:
             lsy = flip(-buffer-lypad*0.9-miny)
             lex = (maxx-minx)*0.15
             lwx = (maxx-minx)*0.87
+            
+            if state_variables == "density_speed":
+                c1 = tuple(int(c*255) for c in plt.colormaps["viridis"](1.0))[:3]
+                c2 = tuple(int(c*255) for c in plt.colormaps["viridis"](0.0))[:3]
 
-            c1 = tuple(int(c*255) for c in plt.colormaps["viridis"](1.0))[:3]
-            c2 = tuple(int(c*255) for c in plt.colormaps["viridis"](0.0))[:3]
+                draw.text(((lx00+lx01)/2, flip(ly0)), "color: speed", font=font, fill="black", anchor="mm")
+                draw.line([(lx00, flip(ly1)), (lx01, flip(ly1))], fill=c1, width=int((maxwidth-minwidth)/2))
+                draw.line([(lx00, flip(ly2)), (lx01, flip(ly2))], fill=c2, width=int((maxwidth-minwidth)/2))            
+                draw.text((lx01+10, flip(ly1)), "max", font=font, fill="black", anchor="lm")
+                draw.text((lx01+10, flip(ly2)), "0", font=font, fill="black", anchor="lm")
 
-            draw.text(((lx00+lx01)/2, flip(ly0)), "color: speed", font=font, fill="black", anchor="mm")
-            draw.line([(lx00, flip(ly1)), (lx01, flip(ly1))], fill=c1, width=int((maxwidth-minwidth)/2))
-            draw.line([(lx00, flip(ly2)), (lx01, flip(ly2))], fill=c2, width=int((maxwidth-minwidth)/2))            
-            draw.text((lx01+10, flip(ly1)), "max", font=font, fill="black", anchor="lm")
-            draw.text((lx01+10, flip(ly2)), "0", font=font, fill="black", anchor="lm")
+                draw.text(((lx10+lx11)/2, flip(ly0)), "width: density", font=font, fill="black", anchor="mm")    
+                draw.line([(lx10, flip(ly1)), (lx11, flip(ly1))], fill="black", width=int(minwidth))
+                draw.line([(lx10, flip(ly2)), (lx11, flip(ly2))], fill="black", width=int(maxwidth))            
+                draw.text((lx11+10, flip(ly1)), "0", font=font, fill="black", anchor="lm")
+                draw.text((lx11+10, flip(ly2)), "max", font=font, fill="black", anchor="lm")
 
-            draw.text(((lx10+lx11)/2, flip(ly0)), "width: density", font=font, fill="black", anchor="mm")    
-            draw.line([(lx10, flip(ly1)), (lx11, flip(ly1))], fill="black", width=int(minwidth))
-            draw.line([(lx10, flip(ly2)), (lx11, flip(ly2))], fill="black", width=int(maxwidth))            
-            draw.text((lx11+10, flip(ly1)), "0", font=font, fill="black", anchor="lm")
-            draw.text((lx11+10, flip(ly2)), "max", font=font, fill="black", anchor="lm")
+            else:
+                c1 = (0, 0, 255)
+                c2 = (255, 0, 0)
+
+                draw.text(((lx00+lx01)/2, flip(ly0)), "color: speed", font=font, fill="black", anchor="mm")
+                draw.line([(lx00, flip(ly1)), (lx01, flip(ly1))], fill=c1, width=int((maxwidth-minwidth)/2))
+                draw.line([(lx00, flip(ly2)), (lx01, flip(ly2))], fill=c2, width=int((maxwidth-minwidth)/2))            
+                draw.text((lx01+10, flip(ly1)), "max", font=font, fill="black", anchor="lm")
+                draw.text((lx01+10, flip(ly2)), "slow", font=font, fill="black", anchor="lm")
+
+                draw.text(((lx10+lx11)/2, flip(ly0)), "width: flow", font=font, fill="black", anchor="mm")    
+                draw.line([(lx10, flip(ly1)), (lx11, flip(ly1))], fill="black", width=int(minwidth))
+                draw.line([(lx10, flip(ly2)), (lx11, flip(ly2))], fill="black", width=int(maxwidth))            
+                draw.text((lx11+10, flip(ly1)), "0", font=font, fill="black", anchor="lm")
+                draw.text((lx11+10, flip(ly2)), "max", font=font, fill="black", anchor="lm")
 
             draw.line([(lwx, lny), (lex, lny), (lex, lsy), (lwx, lsy), (lwx, lny)], fill="black", width=1)
-
 
         img = img.resize((int((maxx-minx)/scale), int((maxy-miny)/scale)), resample=Resampling.LANCZOS)
         if image_return:
@@ -990,7 +1098,7 @@ class Analyzer:
             print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
 
     @catch_exceptions_and_warn()
-    def network_anim(s, animation_speed_inverse=10, detailed=0, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24, file_name=None):
+    def network_anim(s, animation_speed_inverse=10, detailed=0, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24, file_name=None):
         """
         Generates an animation of the entire transportation network and its traffic states over time.
 
@@ -1003,6 +1111,9 @@ class Analyzer:
             If set to 1, the link internals (cell) are displayed in detail.
             Under some conditions, the detailed mode will produce inappropriate visualization.
             If set to 0, the visualization is simplified to link-level. Default is 0.
+        state_variables : str, optional
+            Traffic state variables to be visualized. Default is "density_speed".
+            The other option is "flow_speed". Anything other than "density_speed" is considered as "flow_speed" mode.
         minwidth : float, optional
             The minimum width of the link visualization in the animation. Default is 0.5.
         maxwidth : float, optional
@@ -1027,6 +1138,13 @@ class Analyzer:
         The generated animation is saved to the directory `out<W.name>` with a filename based on the `detailed` parameter.
 
         Temporary images used to create the animation are removed after the animation is generated.
+        
+        In the default mode (`state_variables="density_speed"`), the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic density (thicker links indicate higher densities).Although this combination of density and speed is intuitive, they are strongly correlated, so it is not very informative. Thus alternatively, with `state_variables="flow_speed"` mode, the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic flow (thicker links indicate higher flows).
+        Specific meaning of the colors:
+        - blue: free-flow (travel time is almost the same as the free-flow travel time)
+        - yellow: slightly congested (travel time is 1.1-1.666 times longer than free-flow)
+        - red: congested (travel time is 1.666-3 times longer than free-flow)
+        - dark red: extremely congested (travel time is 3 times longer than free-flow)
         """
         s.W.print(" generating animation...")
         pics = []
@@ -1034,9 +1152,9 @@ class Analyzer:
             if int(t/s.W.LINKS[0].edie_dt) < s.W.LINKS[0].k_mat.shape[0]:
                 if detailed:
                     #todo_later: 今後はこちらもpillowにする
-                    s.network(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+                    s.network(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 else:
-                    s.network_pillow(int(t), detailed=detailed, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+                    s.network_pillow(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
                 pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
         
         fname = f"out{s.W.name}/anim_network{detailed}.gif"
