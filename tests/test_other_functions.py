@@ -57,9 +57,10 @@ def test_analyzer():
         W.analyzer.network(t, detailed=0, network_font_size=0, figsize=(4,4), state_variables="flow_speed", legend=False)
     for t in list(range(0,W.TMAX,int(W.TMAX/3))):
         W.analyzer.network(t, detailed=1, network_font_size=0)
-        W.analyzer.network(t, detailed=1, network_font_size=0, state_variables="flow_speed", legend=False)
-    W.analyzer.network_anim(animation_speed_inverse=15, detailed=0, network_font_size=0)
+        W.analyzer.network(t, detailed=1, network_font_size=0, state_variables="flow_speed", legend=True)
+    W.analyzer.network_anim(animation_speed_inverse=15, detailed=0, network_font_size=0, legend=False)
     W.analyzer.network_anim(detailed=1, network_font_size=0, figsize=(12,12))
+    W.analyzer.network_anim(detailed=0, network_font_size=0, figsize=(12,12), state_variables="flow_speed")
     W.analyzer.network_fancy(animation_speed_inverse=15, sample_ratio=0.3, interval=5, trace_length=5)
 
     # Convert results to pandas.DataFrame for easier analysis
