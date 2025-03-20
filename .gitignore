@@ -128,6 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+out*/
 out/
 demos_and_examples/out/
 demos_and_examples/out*/
