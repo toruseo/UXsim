@@ -616,7 +616,7 @@ class Analyzer:
         """
         s.compute_edie_state()
 
-        plt.figure(figsize=figsize)
+        plt.figure(figsize=figsize, dpi=150)
         plt.subplot(111, aspect="equal")
         plt.title(f"t = {t :>8} (s)")
         for n in s.W.NODES:
@@ -677,8 +677,8 @@ class Analyzer:
         
         if legend:
             lypad = (maxy-(miny-buffy))*0.14
-            lx00 = minx + (maxx-minx)*0.25
-            lx01 = minx + (maxx-minx)*0.35
+            lx00 = minx + (maxx-minx)*0.28
+            lx01 = minx + (maxx-minx)*0.38
             lx10 = minx + (maxx-minx)*0.65
             lx11 = minx + (maxx-minx)*0.75
             ly0 =  miny-buffy-lypad*0.0
@@ -688,8 +688,10 @@ class Analyzer:
 
             lny = miny-buffy+lypad*0.2
             lsy = miny-buffy-lypad*0.9
-            lex = minx + (maxx-minx)*0.15
+            lex = minx + (maxx-minx)*0.18
             lwx = minx + (maxx-minx)*0.87
+            
+            #plt.fill([lex,lwx,lwx,lex,lex], [lny,lny,lsy,lsy,lny], color="#eee", alpha=0.5)
             plt.plot([lex,lwx,lwx,lex,lex], [lny,lny,lsy,lsy,lny], "k-", lw=0.5)
 
             plt.text((lx00+lx01)/2, ly0, "color: speed", va="center", ha="center", fontsize=12)
@@ -843,8 +845,7 @@ class Analyzer:
         else:
             plt.close("all")
 
-
-    @catch_exceptions_and_warn()
+    # @catch_exceptions_and_warn()
     def network_pillow(s, t=None, detailed=1, minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=6, network_font_size=20, node_size=2, image_return=0, legend=True):
         """
         Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.
@@ -905,7 +906,11 @@ class Analyzer:
         minx -= buffer
         maxy += buffer
         miny -= buffer
-
+        
+        lypad = 0
+        if legend:
+            lypad = buffer*1.5
+            miny -= lypad
         img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
         draw = ImageDraw.Draw(img)
         
@@ -944,6 +949,39 @@ class Analyzer:
         font = ImageFont.truetype(font_file_like, int(30))
         draw.text((img.size[0]/2,20), f"t = {t :>8} (s)", font=font, fill="black", anchor="mm")
 
+        if legend:
+            
+            lx00 = (maxx-minx)*0.25
+            lx01 = (maxx-minx)*0.35
+            lx10 = (maxx-minx)*0.65
+            lx11 = (maxx-minx)*0.75
+            ly0 = -buffer-miny
+            ly1 = -buffer-lypad*0.35-miny
+            ly2 = -buffer-lypad*0.7-miny
+
+            lny = flip(-buffer+lypad*0.2-miny)
+            lsy = flip(-buffer-lypad*0.9-miny)
+            lex = (maxx-minx)*0.15
+            lwx = (maxx-minx)*0.87
+
+            c1 = tuple(int(c*255) for c in plt.colormaps["viridis"](1.0))[:3]
+            c2 = tuple(int(c*255) for c in plt.colormaps["viridis"](0.0))[:3]
+
+            draw.text(((lx00+lx01)/2, flip(ly0)), "color: speed", font=font, fill="black", anchor="mm")
+            draw.line([(lx00, flip(ly1)), (lx01, flip(ly1))], fill=c1, width=int((maxwidth-minwidth)/2))
+            draw.line([(lx00, flip(ly2)), (lx01, flip(ly2))], fill=c2, width=int((maxwidth-minwidth)/2))            
+            draw.text((lx01+10, flip(ly1)), "max", font=font, fill="black", anchor="lm")
+            draw.text((lx01+10, flip(ly2)), "0", font=font, fill="black", anchor="lm")
+
+            draw.text(((lx10+lx11)/2, flip(ly0)), "width: density", font=font, fill="black", anchor="mm")    
+            draw.line([(lx10, flip(ly1)), (lx11, flip(ly1))], fill="black", width=int(minwidth))
+            draw.line([(lx10, flip(ly2)), (lx11, flip(ly2))], fill="black", width=int(maxwidth))            
+            draw.text((lx11+10, flip(ly1)), "0", font=font, fill="black", anchor="lm")
+            draw.text((lx11+10, flip(ly2)), "max", font=font, fill="black", anchor="lm")
+
+            draw.line([(lwx, lny), (lex, lny), (lex, lsy), (lwx, lsy), (lwx, lny)], fill="black", width=1)
+
+
         img = img.resize((int((maxx-minx)/scale), int((maxy-miny)/scale)), resample=Resampling.LANCZOS)
         if image_return:
             return img
@@ -952,7 +990,6 @@ class Analyzer:
         else:
             if s.W.save_mode:
                 img.save(f"out{s.W.name}/network{detailed}_{t}.png")
-
 
     @catch_exceptions_and_warn()
     def show_simulation_progress(s):
