@@ -237,6 +237,7 @@ class Node:
         -----
         This method handles the transfer of vehicles from one link to another at the node.
         A vehicle is eligible for transfer if:
+        
         - The next link it intends to move to has space.
         - The vehicle has the right signal phase to proceed.
         - The current link has enough capacity to allow the vehicle to exit.
