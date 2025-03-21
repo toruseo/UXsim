@@ -1,6 +1,6 @@
 """
-This script test `demo_notebook_01en.ipynb`, `demo_notebook_01jp.ipynb`, and `demo_notebook_05en_for_google_colab.ipynb` can run without error.
-Implementation is awkward, but it works. Other jupyter notebook demos are not tested.
+This script test essential Jupyter notebook demos, namely `demo_notebook_01en.ipynb`, `demo_notebook_01jp.ipynb`, and `demo_notebook_05en_for_google_colab.ipynb`, can run without error.
+Implementation is awkward, but it works. Other jupyter notebook demos are optionally tested by `test_notebook_demos_extra.py`.
 """
 
 

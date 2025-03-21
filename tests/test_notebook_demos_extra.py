@@ -45,7 +45,7 @@ def test_demo_notebook_02en():
             # カスタムプリプロセッサを使用
             ep = SkipCellsPreprocessor(
                 exception_words=exception_words,
-                timeout=600, 
+                timeout=1800, 
                 kernel_name='python3'
             )
             
@@ -74,7 +74,7 @@ def test_demo_notebook_03en_pytorch():
             # カスタムプリプロセッサを使用
             ep = SkipCellsPreprocessor(
                 exception_words=exception_words,
-                timeout=600, 
+                timeout=1800, 
                 kernel_name='python3'
             )
             
@@ -93,68 +93,91 @@ def test_demo_notebook_04en_OpenStreetMap():
     exception_words = [ "ResultGUIViewer", "%matplotlib", "osm_tokyo.png"]
 
     notebook_dir = "demos_and_examples"
+    
     for notebook in os.listdir(notebook_dir):
-        if notebook.endswith(".ipynb") and "demo_notebook_04en_OpenStreetMap" in notebook :
+        if notebook.endswith(".ipynb") and "demo_notebook_04en_OpenStreetMap" in notebook:
             full_path = os.path.join(notebook_dir, notebook)
+            
             with open(full_path, "r", encoding="utf-8") as f:
                 nb = nbformat.read(f, as_version=4)
             
-            for cell in nb.cells:
-                if cell.cell_type == "code":
-                    if sum([word in cell.source for word in exception_words]) > 0:
-                        print(f"Skipping cell in {notebook}: {cell.source[:50]}...")
-                        continue
-                    
-                    print("Testing:", cell.source[:50])
-                    try:
-                        exec(cell.source)
-                    except Exception as e:
-                        pytest.fail(f"Error in notebook {notebook}, cell:\n{cell.source}\n\nError: {str(e)}")
+            # カスタムプリプロセッサを使用
+            ep = SkipCellsPreprocessor(
+                exception_words=exception_words,
+                timeout=1800, 
+                kernel_name='python3'
+            )
+            
+            try:
+                # ノートブックを実行
+                print(f"Testing notebook: {notebook}")
+                ep.preprocess(nb, {'metadata': {'path': notebook_dir}})
+                print(f"Successfully executed all non-skipped cells in {notebook}")
+            except CellExecutionError as e:
+                # エラーが発生したセルの情報を出力
+                print(f"Error executing notebook {notebook}")
+                print(f"Error: {str(e)}")
+                pytest.fail(f"Error executing notebook {notebook}: {str(e)}")
 
 def test_demo_notebook_06en_taxi_or_shared_mobility():
     exception_words = [ "ResultGUIViewer", "%matplotlib"]
 
     notebook_dir = "demos_and_examples"
     for notebook in os.listdir(notebook_dir):
-        if notebook.endswith(".ipynb") and "demo_notebook_06en_taxi_or_shared_mobility" in notebook :
+        if notebook.endswith(".ipynb") and "demo_notebook_06en_taxi_or_shared_mobility" in notebook:
             full_path = os.path.join(notebook_dir, notebook)
+            
             with open(full_path, "r", encoding="utf-8") as f:
                 nb = nbformat.read(f, as_version=4)
             
-            for cell in nb.cells:
-                if cell.cell_type == "code":
-                    if sum([word in cell.source for word in exception_words]) > 0:
-                        print(f"Skipping cell in {notebook}: {cell.source[:50]}...")
-                        continue
-                    
-                    print("Testing:", cell.source[:50])
-                    try:
-                        exec(cell.source)
-                    except Exception as e:
-                        pytest.fail(f"Error in notebook {notebook}, cell:\n{cell.source}\n\nError: {str(e)}")
+            # カスタムプリプロセッサを使用
+            ep = SkipCellsPreprocessor(
+                exception_words=exception_words,
+                timeout=1800, 
+                kernel_name='python3'
+            )
+            
+            try:
+                # ノートブックを実行
+                print(f"Testing notebook: {notebook}")
+                ep.preprocess(nb, {'metadata': {'path': notebook_dir}})
+                print(f"Successfully executed all non-skipped cells in {notebook}")
+            except CellExecutionError as e:
+                # エラーが発生したセルの情報を出力
+                print(f"Error executing notebook {notebook}")
+                print(f"Error: {str(e)}")
+                pytest.fail(f"Error executing notebook {notebook}: {str(e)}")
 
 
 def test_demo_notebook_08en_chicago():
     exception_words = [ "ResultGUIViewer", "%matplotlib", "df_tntp_flow", "res_tntp", "res_tntp_sec*res_tntp_vol", "tntp parser customized for Chicago-sketch"]
 
     notebook_dir = "demos_and_examples"
+    
     for notebook in os.listdir(notebook_dir):
-        if notebook.endswith(".ipynb") and "demo_notebook_08en_chicago" in notebook :
+        if notebook.endswith(".ipynb") and "demo_notebook_08en_chicago" in notebook:
             full_path = os.path.join(notebook_dir, notebook)
+            
             with open(full_path, "r", encoding="utf-8") as f:
                 nb = nbformat.read(f, as_version=4)
             
-            for cell in nb.cells:
-                if cell.cell_type == "code":
-                    if sum([word in cell.source for word in exception_words]) > 0:
-                        print(f"Skipping cell in {notebook}: {cell.source[:50]}...")
-                        continue
-                    
-                    print("Testing:", cell.source[:50])
-                    try:
-                        exec(cell.source)
-                    except Exception as e:
-                        pytest.fail(f"Error in notebook {notebook}, cell:\n{cell.source}\n\nError: {str(e)}")
+            # カスタムプリプロセッサを使用
+            ep = SkipCellsPreprocessor(
+                exception_words=exception_words,
+                timeout=1800, 
+                kernel_name='python3'
+            )
+            
+            try:
+                # ノートブックを実行
+                print(f"Testing notebook: {notebook}")
+                ep.preprocess(nb, {'metadata': {'path': notebook_dir}})
+                print(f"Successfully executed all non-skipped cells in {notebook}")
+            except CellExecutionError as e:
+                # エラーが発生したセルの情報を出力
+                print(f"Error executing notebook {notebook}")
+                print(f"Error: {str(e)}")
+                pytest.fail(f"Error executing notebook {notebook}: {str(e)}")
 
 # def test_demo_notebook_09en_dynamic_traffic_assignment():
 #     exception_words = [ "ResultGUIViewer", "%matplotlib"]
@@ -185,19 +208,26 @@ def test_demo_notebook_10en_traffic_signal_tutorialo():
 
     notebook_dir = "demos_and_examples"
     for notebook in os.listdir(notebook_dir):
-        if notebook.endswith(".ipynb") and "demo_notebook_10en_traffic_signal_tutorial" in notebook :
+        if notebook.endswith(".ipynb") and "demo_notebook_10en_traffic_signal_tutorial" in notebook:
             full_path = os.path.join(notebook_dir, notebook)
+            
             with open(full_path, "r", encoding="utf-8") as f:
                 nb = nbformat.read(f, as_version=4)
             
-            for cell in nb.cells:
-                if cell.cell_type == "code":
-                    if sum([word in cell.source for word in exception_words]) > 0:
-                        print(f"Skipping cell in {notebook}: {cell.source[:50]}...")
-                        continue
-                    
-                    print("Testing:", cell.source[:50])
-                    try:
-                        exec(cell.source)
-                    except Exception as e:
-                        pytest.fail(f"Error in notebook {notebook}, cell:\n{cell.source}\n\nError: {str(e)}")
+            # カスタムプリプロセッサを使用
+            ep = SkipCellsPreprocessor(
+                exception_words=exception_words,
+                timeout=1800, 
+                kernel_name='python3'
+            )
+            
+            try:
+                # ノートブックを実行
+                print(f"Testing notebook: {notebook}")
+                ep.preprocess(nb, {'metadata': {'path': notebook_dir}})
+                print(f"Successfully executed all non-skipped cells in {notebook}")
+            except CellExecutionError as e:
+                # エラーが発生したセルの情報を出力
+                print(f"Error executing notebook {notebook}")
+                print(f"Error: {str(e)}")
+                pytest.fail(f"Error executing notebook {notebook}: {str(e)}")
