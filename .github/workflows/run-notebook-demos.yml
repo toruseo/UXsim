@@ -24,4 +24,4 @@ jobs:
         pip install pytest jupyter nbformat
         pip install .
     - name: Run tests
-      run: pytest tests/test_notebook_demos.py -s -v
+      run: pytest -n auto tests/test_notebook_demos.py --durations=0 -s -v

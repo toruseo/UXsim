@@ -24,4 +24,4 @@ jobs:
         pip install pytest jupyter nbformat setuptools gymnasium torch osmnx deap
         pip install .
     - name: Run tests
-      run: pytest tests/test_notebook_demos_extra.py -s -v
+      run: pytest -n auto tests/test_notebook_demos_extra.py --durations=0 -s -v
