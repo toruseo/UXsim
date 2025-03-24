@@ -8,7 +8,7 @@ on:
     - cron: '0 6 * * 1'
 
 jobs:
-  run-notebook-demos:
+  run-notebook-demos-extra:
     runs-on: ubuntu-latest
     env:
       JUPYTER_PLATFORM_DIRS: 1
