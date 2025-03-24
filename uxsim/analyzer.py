@@ -619,11 +619,10 @@ class Analyzer:
         The plots are saved to the directory `out<W.name>` with filenames depending on the `detailed` and `t` parameters.
 
         In the default mode (`state_variables="density_speed"`), the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic density (thicker links indicate higher densities).Although this combination of density and speed is intuitive, they are strongly correlated, so it is not very informative. Thus alternatively, with `state_variables="flow_speed"` mode, the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic flow (thicker links indicate higher flows).
-        Specific meaning of the colors:
-        - blue: free-flow (travel time is almost the same as the free-flow travel time)
-        - yellow: slightly congested (travel time is 1.1-1.666 times longer than free-flow)
-        - red: congested (travel time is 1.666-3 times longer than free-flow)
-        - dark red: extremely congested (travel time is 3 times longer than free-flow)
+        Specific meaning of the colors (truncated "jet" colormap):
+
+        - dark blue: free-flow (delay=free_flow_speed/speed-1 < 10%)
+        - red: very congested (delay > 90%)
         """
         s.compute_edie_state()
 
@@ -663,15 +662,16 @@ class Analyzer:
                             warnings.warn(f"invalid time {t} is specified for network visualization", UserWarning)
                             return -1
                         lw[i] = q/l.capacity*(maxwidth*l.number_of_lanes-minwidth)+minwidth
-                        delay_ratio = l.u/v
-                        if delay_ratio < 1.1: #free-flow
-                            c[i] = "b"
-                        elif delay_ratio < 1.666: #slightly congested
-                            c[i] = "y"
-                        elif delay_ratio < 3: #congested
-                            c[i] = "r"
-                        else: #extremely congested
-                            c[i] = "#880000"
+                        pace_ratio = l.u/v
+                        pace_max = 3.0
+                        pace_min = 1.0
+                        color_coef = (pace_ratio-pace_min)/(pace_max-pace_min)
+                        if color_coef < 0.1:    #delay_ratio < 20%
+                            color_coef = 0.1
+                        if color_coef > 0.9:    #delay_ratio > 180%
+                            color_coef = 0.9
+
+                        c[i] = plt.colormaps["jet"](color_coef)
 
                 xmid = [((xsize-i)*x1+(i+1)*x2)/(xsize+1)+vx for i in range(xsize)]
                 ymid = [((xsize-i)*y1+(i+1)*y2)/(xsize+1)+vy for i in range(xsize)]
@@ -692,15 +692,18 @@ class Analyzer:
                     v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
                     q = k*v
                     width = q/l.capacity*(maxwidth*l.number_of_lanes-minwidth)+minwidth
-                    delay_ratio = l.u/v
-                    if delay_ratio < 1.1: #free-flow
-                        c = "b"
-                    elif delay_ratio < 1.666: #slightly congested
-                        c = "y"
-                    elif delay_ratio < 3: #congested
-                        c = "r"
-                    else: #extremely congested
-                        c = "#880000"
+                    pace_ratio = l.u/v
+                                
+                    pace_max = 2.0
+                    pace_min = 1.0
+                    color_coef = (pace_ratio-pace_min)/(pace_max-pace_min)
+                    if color_coef < 0.1:    #delay_ratio < 10%
+                        color_coef = 0.1
+                    if color_coef > 0.9:    #delay_ratio > 90%
+                        color_coef = 0.9
+
+                    c = plt.colormaps["jet"](color_coef)
+
                 xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
                 xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
                 plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], "k--", lw=0.25, zorder=5)
@@ -741,16 +744,15 @@ class Analyzer:
                 handles = [dummy_speed] + speed_handles + [dummy_density] + density_handles
                 labels  = [dummy_speed.get_label()] + speed_labels + [dummy_density.get_label()] + density_labels
             else:
-                dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
-                dummy_volume = Line2D([], [], linestyle='', color='none', label="Volume")
+                dummy_speed = Line2D([], [], linestyle='', color='none', label="Delay")
+                dummy_volume = Line2D([], [], linestyle='', color='none', label="Flow")
 
                 speed_handles = [
-                    Line2D([0], [0], color="b", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
-                    Line2D([0], [0], color="y", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
-                    Line2D([0], [0], color="r", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
-                    Line2D([0], [0], color="#880000", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                    Line2D([0], [0], color=plt.colormaps["jet"](0.1), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                    Line2D([0], [0], color=plt.colormaps["jet"](0.5), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                    Line2D([0], [0], color=plt.colormaps["jet"](0.9), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
                 ]
-                speed_labels = ["free-flow", "slightly slow", "slow", "very slow"]
+                speed_labels = ["< 10%", "= 50%", "> 90%"]
 
                 volume_handles = [
                     Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
@@ -809,11 +811,10 @@ class Analyzer:
 
         Notes
         -----
-        Links are colored according to the following delay ratio categories:
-        - Blue: Free-flow (delay ratio < 1.1)
-        - Yellow: Slightly congested (1.1 <= delay ratio < 1.666)
-        - Red: Congested (1.666 <= delay ratio < 3)
-        - Dark Red: Extremely congested (delay ratio >= 3)
+        Links are colored according to the delay ratio as follows (using truncated "jet" colormap):
+
+        - dark blue: free-flow (delay=free_flow_speed/speed-1 < 10%)
+        - red: very congested (delay > 90%)
         """
         df = s.link_to_pandas()
 
@@ -832,17 +833,19 @@ class Analyzer:
                 vx, vy = -vx, -vy
             
             volume = df[df["link"]==l.name]["traffic_volume"].values[0]
-            delay_ratio = df[df["link"]==l.name]["average_travel_time"].values[0]/df[df["link"]==l.name]["free_travel_time"].values[0]
+            pace_ratio = df[df["link"]==l.name]["average_travel_time"].values[0]/df[df["link"]==l.name]["free_travel_time"].values[0]
 
             width = volume/volume_max*maxwidth + minwidth
-            if delay_ratio < 1.1: #free-flow
-                c = "b"
-            elif delay_ratio < 1.666: #slightly congested
-                c = "y"
-            elif delay_ratio < 3: #congested
-                c = "r"
-            else: #extremely congested
-                c = "#880000"
+            
+            pace_max = 2.0
+            pace_min = 1.0
+            color_coef = (pace_ratio-pace_min)/(pace_max-pace_min)
+            if color_coef < 0.1:    #delay_ratio < 10%
+                color_coef = 0.1
+            if color_coef > 0.9:    #delay_ratio > 90%
+                color_coef = 0.9
+
+            c = plt.colormaps["jet"](color_coef)
 
             xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
             xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
@@ -850,6 +853,7 @@ class Analyzer:
             plt.plot([x1, xmid1, xmid2, x2], [y1, ymid1, ymid2, y2], c=c, lw=width, zorder=6, solid_capstyle="butt")
             if network_font_size > 0:
                 plt.text(xmid1, ymid1, l.name, c="b", zorder=20, fontsize=network_font_size)
+        
         maxx = max([n.x for n in s.W.NODES])
         minx = min([n.x for n in s.W.NODES])
         maxy = max([n.y for n in s.W.NODES])
@@ -860,16 +864,15 @@ class Analyzer:
 
         if legend:
             # ヘッダー用のdummyアーティスト（凡例上はテキストだけを表示）
-            dummy_speed = Line2D([], [], linestyle='', color='none', label="Speed")
-            dummy_volume = Line2D([], [], linestyle='', color='none', label="Volume")
+            dummy_speed = Line2D([], [], linestyle='', color='none', label="Delay")
+            dummy_volume = Line2D([], [], linestyle='', color='none', label="Flow")
 
             speed_handles = [
-                Line2D([0], [0], color="b", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
-                Line2D([0], [0], color="y", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
-                Line2D([0], [0], color="r", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
-                Line2D([0], [0], color="#880000", lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color=plt.colormaps["jet"](0.1), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color=plt.colormaps["jet"](0.5), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
+                Line2D([0], [0], color=plt.colormaps["jet"](0.9), lw=(minwidth+maxwidth)/2, solid_capstyle="butt"),
             ]
-            speed_labels = ["free-flow", "slightly slow", "slow", "very slow"]
+            speed_labels = ["< 10%", "= 50%", "> 90%"]
 
             volume_handles = [
                 Line2D([0], [0], color='black', lw=minwidth, solid_capstyle="butt"),
@@ -934,11 +937,10 @@ class Analyzer:
         The plots are saved to the directory `out<W.name>` with filenames depending on the `detailed` and `t` parameters.
         
         In the default mode (`state_variables="density_speed"`), the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic density (thicker links indicate higher densities).Although this combination of density and speed is intuitive, they are strongly correlated, so it is not very informative. Thus alternatively, with `state_variables="flow_speed"` mode, the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic flow (thicker links indicate higher flows).
-        Specific meaning of the colors:
-        - blue: free-flow (travel time is almost the same as the free-flow travel time)
-        - yellow: slightly congested (travel time is 1.1-1.666 times longer than free-flow)
-        - red: congested (travel time is 1.666-3 times longer than free-flow)
-        - dark red: extremely congested (travel time is 3 times longer than free-flow)
+        Specific meaning of the colors (truncated "jet" colormap):
+
+        - dark blue: free-flow (delay=free_flow_speed/speed-1 < 10%)
+        - red: very congested (delay > 90%)
         """
 
         maxx = max([n.x for n in s.W.NODES])
@@ -995,15 +997,17 @@ class Analyzer:
                 v = l.length/l.traveltime_instant[int(t/s.W.DELTAT)]
                 q = k*v
                 width = q/l.capacity*(maxwidth-minwidth)+minwidth
-                delay_ratio = l.u/v
-                if delay_ratio < 1.1: #free-flow
-                    c = (0, 0, 1) # blue
-                elif delay_ratio < 1.666: #slightly congested
-                    c = (1, 1, 0) # yellow
-                elif delay_ratio < 3: #congested
-                    c = (1, 0, 0) # red
-                else: #extremely congested
-                    c = (0.53, 0, 0) # dark red (#880000)
+
+                pace_ratio = l.u/v    #pace (inverse of speed) is more intuitive
+                pace_max = 2.0
+                pace_min = 1.0
+                color_coef = (pace_ratio-pace_min)/(pace_max-pace_min)
+                if color_coef < 0.1:    #delay_ratio < 10%
+                    color_coef = 0.1
+                if color_coef > 0.9:    #delay_ratio > 90%
+                    color_coef = 0.9
+
+                c = plt.colormaps["jet"](color_coef)
                 
             xmid1, ymid1 = (2*x1+x2)/3+vx, (2*y1+y2)/3+vy
             xmid2, ymid2 = (x1+2*x2)/3+vx, (y1+2*y2)/3+vy
@@ -1054,14 +1058,14 @@ class Analyzer:
                 draw.text((lx11+10, flip(ly2)), "max", font=font, fill="black", anchor="lm")
 
             else:
-                c1 = (0, 0, 255)
-                c2 = (255, 0, 0)
+                c1 = tuple(int(c*255) for c in plt.colormaps["jet"](0.1))[:3]
+                c2 = tuple(int(c*255) for c in plt.colormaps["jet"](0.9))[:3]
 
-                draw.text(((lx00+lx01)/2, flip(ly0)), "color: speed", font=font, fill="black", anchor="mm")
+                draw.text(((lx00+lx01)/2, flip(ly0)), "color: delay", font=font, fill="black", anchor="mm")
                 draw.line([(lx00, flip(ly1)), (lx01, flip(ly1))], fill=c1, width=int((maxwidth-minwidth)/2))
                 draw.line([(lx00, flip(ly2)), (lx01, flip(ly2))], fill=c2, width=int((maxwidth-minwidth)/2))            
-                draw.text((lx01+10, flip(ly1)), "max", font=font, fill="black", anchor="lm")
-                draw.text((lx01+10, flip(ly2)), "slow", font=font, fill="black", anchor="lm")
+                draw.text((lx01+10, flip(ly1)), "< 10%", font=font, fill="black", anchor="lm")
+                draw.text((lx01+10, flip(ly2)), "> 90%", font=font, fill="black", anchor="lm")
 
                 draw.text(((lx10+lx11)/2, flip(ly0)), "width: flow", font=font, fill="black", anchor="mm")    
                 draw.line([(lx10, flip(ly1)), (lx11, flip(ly1))], fill="black", width=int(minwidth))
@@ -1140,11 +1144,10 @@ class Analyzer:
         Temporary images used to create the animation are removed after the animation is generated.
         
         In the default mode (`state_variables="density_speed"`), the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic density (thicker links indicate higher densities).Although this combination of density and speed is intuitive, they are strongly correlated, so it is not very informative. Thus alternatively, with `state_variables="flow_speed"` mode, the color of the links represents the traffic speed (lighter colors indicate higher speeds), and the width of the links represents the traffic flow (thicker links indicate higher flows).
-        Specific meaning of the colors:
-        - blue: free-flow (travel time is almost the same as the free-flow travel time)
-        - yellow: slightly congested (travel time is 1.1-1.666 times longer than free-flow)
-        - red: congested (travel time is 1.666-3 times longer than free-flow)
-        - dark red: extremely congested (travel time is 3 times longer than free-flow)
+        Specific meaning of the colors (truncated "jet" colormap):
+
+        - dark blue: free-flow (delay=free_flow_speed/speed-1 < 10%)
+        - red: very congested (delay > 90%)
         """
         s.W.print(" generating animation...")
         pics = []
