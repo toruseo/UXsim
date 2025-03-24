@@ -203,7 +203,7 @@ def test_demo_notebook_08en_chicago():
 
 
 
-def test_demo_notebook_10en_traffic_signal_tutorialo():
+def test_demo_notebook_10en_traffic_signal_tutorial():
     exception_words = [ "ResultGUIViewer", "%matplotlib", "df_tntp_flow", "res_tntp", "res_tntp_sec*res_tntp_vol", "tntp parser customized for Chicago-sketch"]
 
     notebook_dir = "demos_and_examples"
