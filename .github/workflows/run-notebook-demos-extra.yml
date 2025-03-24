@@ -21,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest jupyter nbformat setuptools gymnasium torch osmnx deap
+        pip install pytest pytest-xdist jupyter nbformat setuptools gymnasium torch osmnx deap
         pip install .
     - name: Run tests
       run: pytest -n auto tests/test_notebook_demos_extra.py --durations=0 -s -v
