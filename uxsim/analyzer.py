@@ -1185,10 +1185,11 @@ class Analyzer:
                 if detailed:
                     #todo_later: 今後はこちらもpillowにする
                     s.network(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+                    pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
                 else:
-                    s.network_pillow(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
-                pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
-        
+                    img_ret = s.network_pillow(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size, image_return=True)
+                    pics.append(img_ret)
+                
         fname = f"out{s.W.name}/anim_network{detailed}.gif"
         if file_name != None:
             fname = file_name

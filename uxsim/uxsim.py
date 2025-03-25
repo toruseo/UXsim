@@ -2513,6 +2513,24 @@ class World:
         else:
             return False
 
+    def change_print_mode(W, print_mode):
+        """
+        Change the print mode.
+
+        Parameters
+        ----------
+        print_mode : bool
+            The print mode. If True, the print function is enabled. If False, the print function is disabled.
+        """
+
+        W.print_mode = print_mode
+        if print_mode:
+            W.print = print
+        else:
+            def noprint(*args, **kwargs):
+                pass
+            W.print = noprint
+
     @catch_exceptions_and_warn()
     def show_network(W, width=1, left_handed=1, figsize=(6,6), network_font_size=10, node_size=6, show_id=True):
         """
