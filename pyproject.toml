@@ -7,10 +7,9 @@ name = "uxsim"
 description = "UXsim: traffic flow simulator"
 readme = "README.md"
 authors = [{name = "Toru Seo", email = "seo.t.aa@m.titech.ac.jp"}]
-license = {text = "MIT License"}
+license = "MIT"
 classifiers = [
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
