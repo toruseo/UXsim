@@ -709,11 +709,13 @@ The choice of the outgoing link is based on the vehicle’s route preference for
 <dd><p>Transfers vehicles between links at the node.</p>
 <p class="rubric">Notes</p>
 <p>This method handles the transfer of vehicles from one link to another at the node.
-A vehicle is eligible for transfer if:
-- The next link it intends to move to has space.
-- The vehicle has the right signal phase to proceed.
-- The current link has enough capacity to allow the vehicle to exit.
-- The node capacity is not exceeded.</p>
+A vehicle is eligible for transfer if:</p>
+<ul class="simple">
+<li><p>The next link it intends to move to has space.</p></li>
+<li><p>The vehicle has the right signal phase to proceed.</p></li>
+<li><p>The current link has enough capacity to allow the vehicle to exit.</p></li>
+<li><p>The node capacity is not exceeded.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -1024,8 +1026,6 @@ Should be in the range [0, 1], where 0 means the old preferences are fully retai
 <li><p><strong>tmax</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The simulation duration, default is None (automatically determined).</p></li>
 <li><p><strong>vehicle_logging_timestep_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval for logging vehicle data, default is 1. Logging is off if set to -1.
 Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.</p></li>
-<li><p><strong>vehicle_logging_timestep_interval</strong> – The interval for logging vehicle data, default is 1. Logging is off if set to -1.
-Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.</p></li>
 <li><p><strong>instantaneous_TT_timestep_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – The interval for computing instantaneous travel time of each link. Default is 5.
 If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.</p></li>
 <li><p><strong>hard_deterministic_mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with <cite>hard_deterministic_mode=False</cite>.</p></li>
@@ -1270,6 +1270,17 @@ It passes all given arguments and keyword arguments to the Vehicle class initial
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.uxsim.World.change_print_mode">
+<span class="sig-name descname"><span class="pre">change_print_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.change_print_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.change_print_mode" title="Link to this definition">¶</a></dt>
+<dd><p>Change the print mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>print_mode</strong> (<em>bool</em>) – The print mode. If True, the print function is enabled. If False, the print function is disabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.World.check_simulation_ongoing">
 <span class="sig-name descname"><span class="pre">check_simulation_ongoing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.check_simulation_ongoing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.check_simulation_ongoing" title="Link to this definition">¶</a></dt>
 <dd><p>Check whether the simulation is has not reached its final time.</p>
@@ -1314,13 +1325,17 @@ It passes all given arguments and keyword arguments to the Vehicle class initial
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.World.exec_simulation">
-<span class="sig-name descname"><span class="pre">exec_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">until_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.exec_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.exec_simulation" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">exec_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">until_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_t2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.exec_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.exec_simulation" title="Link to this definition">¶</a></dt>
 <dd><p>Execute the main loop of the simulation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>until_t</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The time until the simulation is to be executed in seconds. If both <cite>until_t</cite> and <cite>duration_t</cite> are None, the simulation is executed until the end. Default is None.</p></li>
-<li><p><strong>duration_t</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The duration for which the simulation is to be executed in seconds. If both <cite>until_t</cite> and <cite>duration_t</cite> are None, the simulation is executed until the end. Default is None.</p></li>
+<li><p><strong>until_t</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The time until the simulation is to be executed in seconds.
+If all of <cite>until_t</cite> and <cite>duration_t</cite> and <cite>duration_t2</cite> are None, the simulation is executed until the end. Default is None.</p></li>
+<li><p><strong>duration_t</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The duration for which the simulation is to be executed in seconds. Simulation runs <cite>duration_t+1</cite> seconds for a technical reason. Old setting, not recommended.
+If all of <cite>until_t</cite> and <cite>duration_t</cite> and <cite>duration_t2</cite> are None, the simulation is executed until the end. Default is None. Recommended.</p></li>
+<li><p><strong>duration_t2</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The duration for which the simulation is to be executed in seconds. Simulation runs <cite>duration_t2</cite> seconds.
+If all of <cite>until_t</cite> and <cite>duration_t</cite> and <cite>duration_t2</cite> are None, the simulation is executed until the end. Default is None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1537,7 +1552,7 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.uxsim.World.show_network">
-<span class="sig-name descname"><span class="pre">show_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.show_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.show_network" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">show_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_handed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_font_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#World.show_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.uxsim.World.show_network" title="Link to this definition">¶</a></dt>
 <dd><p>Visualizes the entire transportation network shape.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1685,6 +1700,7 @@ The nodes, links, and vehicles must be defined before calling this function.</p>
 <li><a class="reference internal" href="#uxsim.uxsim.World.adddemand_nodes2nodes"><code class="docutils literal notranslate"><span class="pre">World.adddemand_nodes2nodes()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.adddemand_nodes2nodes2"><code class="docutils literal notranslate"><span class="pre">World.adddemand_nodes2nodes2()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.adddemand_point2point"><code class="docutils literal notranslate"><span class="pre">World.adddemand_point2point()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.uxsim.World.change_print_mode"><code class="docutils literal notranslate"><span class="pre">World.change_print_mode()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.check_simulation_ongoing"><code class="docutils literal notranslate"><span class="pre">World.check_simulation_ongoing()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.copy"><code class="docutils literal notranslate"><span class="pre">World.copy()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.uxsim.World.defRoute"><code class="docutils literal notranslate"><span class="pre">World.defRoute()</span></code></a></li>

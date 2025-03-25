@@ -532,6 +532,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        -----</span>
 <span class="sd">        This method handles the transfer of vehicles from one link to another at the node.</span>
 <span class="sd">        A vehicle is eligible for transfer if:</span>
+<span class="sd">        </span>
 <span class="sd">        - The next link it intends to move to has space.</span>
 <span class="sd">        - The vehicle has the right signal phase to proceed.</span>
 <span class="sd">        - The current link has enough capacity to allow the vehicle to exit.</span>
@@ -611,6 +612,8 @@ gtag('config', 'UA-111714220-1');
                     <span class="k">if</span> <span class="n">x_next</span> <span class="o">&gt;=</span> <span class="n">outlink</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
                         <span class="n">x_next</span> <span class="o">=</span> <span class="n">outlink</span><span class="o">.</span><span class="n">length</span>
                 <span class="n">veh</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x_next</span>
+                <span class="n">veh</span><span class="o">.</span><span class="n">v</span> <span class="o">+=</span> <span class="n">veh</span><span class="o">.</span><span class="n">x</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
+                <span class="n">veh</span><span class="o">.</span><span class="n">move_remain</span> <span class="o">=</span> <span class="mi">0</span>
 
                 <span class="c1">#今移動した車両の後続車両がトリップ終了待ちの場合，トリップ終了させる</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inlink</span><span class="o">.</span><span class="n">vehicles</span><span class="p">)</span> <span class="ow">and</span> <span class="n">inlink</span><span class="o">.</span><span class="n">vehicles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flag_waiting_for_trip_end</span><span class="p">:</span>
@@ -1253,7 +1256,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">flag_waiting_for_trip_end</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1">#リンク端部の走り残し処理</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">move_remain</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">move_remain</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1">#リンク移動後に走り続ける余力</span>
 
         <span class="c1">#経路選択</span>
         <span class="k">if</span> <span class="n">route_choice_principle</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
@@ -1285,7 +1288,6 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">flag_trip_aborted</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1">#log</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span>
         <span class="n">s</span><span class="o">.</span><span class="n">log_t</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#時刻</span>
         <span class="n">s</span><span class="o">.</span><span class="n">log_state</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#状態</span>
         <span class="n">s</span><span class="o">.</span><span class="n">log_link</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#リンク</span>
@@ -1707,8 +1709,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        enforce_log : bool, optional</span>
 <span class="sd">            Record log regardless of the logging interval, default is 0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="o">%</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">enforce_log</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="o">%</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">enforce_log</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span>
                     <span class="c1"># if s.state == &quot;end&quot; and s.log_t_link[-1][1] != &quot;end&quot;:</span>
                     <span class="c1">#     s.log_t_link.append([t, &quot;end&quot;])</span>
@@ -1925,9 +1927,6 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The time interval for showing network progress, default is 600 seconds.</span>
 <span class="sd">        tmax : float or None, optional</span>
 <span class="sd">            The simulation duration, default is None (automatically determined).</span>
-<span class="sd">        vehicle_logging_timestep_interval : int, optional</span>
-<span class="sd">            The interval for logging vehicle data, default is 1. Logging is off if set to -1.</span>
-<span class="sd">            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.</span>
 <span class="sd">        vehicle_logging_timestep_interval : int, optional</span>
 <span class="sd">            The interval for logging vehicle data, default is 1. Logging is off if set to -1.</span>
 <span class="sd">            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.</span>
@@ -2518,15 +2517,17 @@ gtag('config', 'UA-111714220-1');
         <span class="n">W</span><span class="o">.</span><span class="n">ROUTECHOICE</span> <span class="o">=</span> <span class="n">RouteChoice</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
         <span class="n">W</span><span class="o">.</span><span class="n">ADJ_MAT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">)])</span>
         <span class="n">W</span><span class="o">.</span><span class="n">ADJ_MAT_LINKS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="c1">#リンクオブジェクトが入った隣接行列（的な辞書）</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">NODE_PAIR_LINKS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="c1">#リンクオブジェクトが入った隣接行列（的な辞書）．キーはノード名</span>
         <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="n">link</span><span class="o">.</span><span class="n">start_node</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">start_node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">start_node</span> <span class="o">==</span> <span class="n">link</span><span class="o">.</span><span class="n">start_node</span><span class="p">:</span>
                     <span class="k">break</span>
-            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="n">link</span><span class="o">.</span><span class="n">end_node</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">end_node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">end_node</span> <span class="o">==</span> <span class="n">link</span><span class="o">.</span><span class="n">end_node</span><span class="p">:</span>
                     <span class="k">break</span>
             <span class="n">W</span><span class="o">.</span><span class="n">ADJ_MAT</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">W</span><span class="o">.</span><span class="n">ADJ_MAT_LINKS</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">link</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">NODE_PAIR_LINKS</span><span class="p">[</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">link</span>
 
         <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
 
@@ -2568,16 +2569,21 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.exec_simulation">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.exec_simulation">[docs]</a>
-    <span class="k">def</span> <span class="nf">exec_simulation</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">until_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">exec_simulation</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">until_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the main loop of the simulation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        until_t : float or None, optional</span>
-<span class="sd">            The time until the simulation is to be executed in seconds. If both `until_t` and `duration_t` are None, the simulation is executed until the end. Default is None.</span>
+<span class="sd">            The time until the simulation is to be executed in seconds. </span>
+<span class="sd">            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None.</span>
 <span class="sd">        duration_t : float or None, optional</span>
-<span class="sd">            The duration for which the simulation is to be executed in seconds. If both `until_t` and `duration_t` are None, the simulation is executed until the end. Default is None.</span>
+<span class="sd">            The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t+1` seconds for a technical reason. Old setting, not recommended.</span>
+<span class="sd">            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None. Recommended. </span>
+<span class="sd">        duration_t2 : float or None, optional</span>
+<span class="sd">            The duration for which the simulation is to be executed in seconds. Simulation runs `duration_t2` seconds.</span>
+<span class="sd">            If all of `until_t` and `duration_t` and `duration_t2` are None, the simulation is executed until the end. Default is None. </span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2600,6 +2606,8 @@ gtag('config', 'UA-111714220-1');
         <span class="n">start_ts</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span>
         <span class="k">if</span> <span class="n">until_t</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">end_ts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">until_t</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">duration_t2</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">end_ts</span> <span class="o">=</span> <span class="n">start_ts</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration_t2</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
         <span class="k">elif</span> <span class="n">duration_t</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">end_ts</span> <span class="o">=</span> <span class="n">start_ts</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration_t</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2613,7 +2621,7 @@ gtag('config', 'UA-111714220-1');
             <span class="n">W</span><span class="o">.</span><span class="n">simulation_terminated</span><span class="p">()</span>
             <span class="k">return</span> <span class="mi">1</span> <span class="c1">#end of simulation</span>
         <span class="k">if</span> <span class="n">end_ts</span> <span class="o">&lt;</span> <span class="n">start_ts</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;exec_simulation error: Simulation duration is negative. Check until_t or duration_t&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;exec_simulation error: Simulation duration is not positive. Check until_t or duration_t or duration_t2&quot;</span><span class="p">)</span>
 
         <span class="c1">#the main loop</span>
         <span class="c1">#print(&quot;preping:&quot;, W.T, start_ts, end_ts, W.check_simulation_ongoing())</span>
@@ -2663,6 +2671,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="k">break</span>
 
         <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">TIME</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
 
         <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">==</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">print_mode</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
@@ -2949,7 +2958,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        demand : bool, optional</span>
 <span class="sd">            Whether to load the demand data, default is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">load_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">demand</span><span class="p">)</span></div>
+        <span class="n">load_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="n">demand</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="World.on_time">
@@ -2974,10 +2983,31 @@ gtag('config', 'UA-111714220-1');
             <span class="k">return</span> <span class="kc">False</span></div>
 
 
+<div class="viewcode-block" id="World.change_print_mode">
+<a class="viewcode-back" href="../../uxsim.html#uxsim.World.change_print_mode">[docs]</a>
+    <span class="k">def</span> <span class="nf">change_print_mode</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">print_mode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the print mode.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        print_mode : bool</span>
+<span class="sd">            The print mode. If True, the print function is enabled. If False, the print function is disabled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">W</span><span class="o">.</span><span class="n">print_mode</span> <span class="o">=</span> <span class="n">print_mode</span>
+        <span class="k">if</span> <span class="n">print_mode</span><span class="p">:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="nb">print</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">noprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="n">noprint</span></div>
+
+
 <div class="viewcode-block" id="World.show_network">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.show_network">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">show_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">show_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">show_id</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualizes the entire transportation network shape.</span>
 
@@ -3006,7 +3036,11 @@ gtag('config', 'UA-111714220-1');
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="n">node_size</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">network_font_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">network_font_size</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">show_id</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">network_font_size</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
             <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">y</span>
             <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">y</span>
@@ -3018,18 +3052,18 @@ gtag('config', 'UA-111714220-1');
             <span class="n">xmid2</span><span class="p">,</span> <span class="n">ymid2</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">x2</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="o">+</span><span class="n">vx</span><span class="p">,</span> <span class="p">(</span><span class="n">y1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">y2</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="o">+</span><span class="n">vy</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">xmid1</span><span class="p">,</span> <span class="n">xmid2</span><span class="p">,</span> <span class="n">x2</span><span class="p">],</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="n">ymid1</span><span class="p">,</span> <span class="n">ymid2</span><span class="p">,</span> <span class="n">y2</span><span class="p">],</span> <span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">solid_capstyle</span><span class="o">=</span><span class="s2">&quot;butt&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">network_font_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xmid1</span><span class="p">,</span> <span class="n">ymid1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">l</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">network_font_size</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">show_id</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">l</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xmid1</span><span class="p">,</span> <span class="n">ymid1</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">network_font_size</span><span class="p">)</span>
         <span class="n">maxx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">])</span>
         <span class="n">minx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">])</span>
         <span class="n">maxy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">y</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">])</span>
         <span class="n">miny</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">y</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">])</span>
-        <span class="n">buffx</span><span class="p">,</span> <span class="n">buffy</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxx</span><span class="o">-</span><span class="n">minx</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">maxy</span><span class="o">-</span><span class="n">miny</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span>
-        <span class="k">if</span> <span class="n">buffx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">buffx</span> <span class="o">=</span> <span class="n">buffy</span>
-        <span class="k">if</span> <span class="n">buffy</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">buffy</span> <span class="o">=</span> <span class="n">buffx</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="n">minx</span><span class="o">-</span><span class="n">buffx</span><span class="p">,</span> <span class="n">maxx</span><span class="o">+</span><span class="n">buffx</span><span class="p">])</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">miny</span><span class="o">-</span><span class="n">buffy</span><span class="p">,</span> <span class="n">maxy</span><span class="o">+</span><span class="n">buffy</span><span class="p">])</span>
+        <span class="n">buffxy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([(</span><span class="n">maxx</span><span class="o">-</span><span class="n">minx</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">maxy</span><span class="o">-</span><span class="n">miny</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="n">minx</span><span class="o">-</span><span class="n">buffxy</span><span class="p">,</span> <span class="n">maxx</span><span class="o">+</span><span class="n">buffxy</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">miny</span><span class="o">-</span><span class="n">buffxy</span><span class="p">,</span> <span class="n">maxy</span><span class="o">+</span><span class="n">buffxy</span><span class="p">])</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">save_mode</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;out</span><span class="si">{</span><span class="n">W</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/network.png&quot;</span><span class="p">)</span>

@@ -10,8 +10,10 @@
    
       catch_exceptions_and_warn
       display_image_in_notebook
+      equal_tolerance
       get_font_for_matplotlib
       lange
+      plot_multiple_y
       print_columns
       printtry
    

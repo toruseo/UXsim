@@ -296,11 +296,17 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-even"><td><p><a class="reference internal" href="../utils.html#uxsim.utils.display_image_in_notebook" title="uxsim.utils.display_image_in_notebook"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display_image_in_notebook</span></code></a>(image_path)</p></td>
 <td><p>Display an image in Jupyter Notebook.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../utils.html#uxsim.utils.get_font_for_matplotlib" title="uxsim.utils.get_font_for_matplotlib"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_font_for_matplotlib</span></code></a>([fname])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../utils.html#uxsim.utils.equal_tolerance" title="uxsim.utils.equal_tolerance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">equal_tolerance</span></code></a>(val, check[, rel_tol, abs_tol])</p></td>
+<td><p>function for tests</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../utils.html#uxsim.utils.get_font_for_matplotlib" title="uxsim.utils.get_font_for_matplotlib"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_font_for_matplotlib</span></code></a>([fname])</p></td>
 <td><p>Get a multi-language (currently Japanese only) font for matplotlib.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../utils.html#uxsim.utils.lange" title="uxsim.utils.lange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lange</span></code></a>(l)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../utils.html#uxsim.utils.lange" title="uxsim.utils.lange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lange</span></code></a>(l)</p></td>
 <td><p>Super lazy function for abbreviating range(len(l))</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../utils.html#uxsim.utils.plot_multiple_y" title="uxsim.utils.plot_multiple_y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_multiple_y</span></code></a>([x, ys, labels])</p></td>
+<td><p>Plot multiple y values on the same plot, normalizing each value to [0, 1].</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../utils.html#uxsim.utils.print_columns" title="uxsim.utils.print_columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_columns</span></code></a>(*lists)</p></td>
 <td><p>Convinient function to check contents of 1d lists.</p></td>
@@ -364,6 +370,12 @@ gtag('config', 'UA-111714220-1');
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="uxsim.utils.equal_tolerance">
+<span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">equal_tolerance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/utils.html#equal_tolerance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.equal_tolerance" title="Link to this definition">¶</a></dt>
+<dd><p>function for tests</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="uxsim.utils.get_font_for_matplotlib">
 <span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">get_font_for_matplotlib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/utils.html#get_font_for_matplotlib"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.get_font_for_matplotlib" title="Link to this definition">¶</a></dt>
 <dd><p>Get a multi-language (currently Japanese only) font for matplotlib.
@@ -386,6 +398,22 @@ TODO: explore if it can be extended for other languages.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>l</strong> (<em>list</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.utils.plot_multiple_y">
+<span class="sig-prename descclassname"><span class="pre">uxsim.utils.</span></span><span class="sig-name descname"><span class="pre">plot_multiple_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/utils.html#plot_multiple_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.utils.plot_multiple_y" title="Link to this definition">¶</a></dt>
+<dd><p>Plot multiple y values on the same plot, normalizing each value to [0, 1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array-like</em><em>, </em><em>optional</em>) – The x values to plot. If None, the indices of the y values are used. Default is None.</p></li>
+<li><p><strong>ys</strong> (<em>list</em><em> of </em><em>array-like</em>) – The y values to plot.</p></li>
+<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The labels for each y value.</p></li>
+<li><p><strong>**kwarg</strong> (<em>any</em>) – Additional keyword arguments to pass to the plt.plot function</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -476,8 +504,10 @@ TODO: explore if it can be extended for other languages.</p>
 <li><a class="reference internal" href="#uxsim.utils.LoggingWarning"><code class="docutils literal notranslate"><span class="pre">LoggingWarning</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.utils.catch_exceptions_and_warn"><code class="docutils literal notranslate"><span class="pre">catch_exceptions_and_warn()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.utils.display_image_in_notebook"><code class="docutils literal notranslate"><span class="pre">display_image_in_notebook()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.utils.equal_tolerance"><code class="docutils literal notranslate"><span class="pre">equal_tolerance()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.utils.get_font_for_matplotlib"><code class="docutils literal notranslate"><span class="pre">get_font_for_matplotlib()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.utils.lange"><code class="docutils literal notranslate"><span class="pre">lange()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.utils.plot_multiple_y"><code class="docutils literal notranslate"><span class="pre">plot_multiple_y()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.utils.print_columns"><code class="docutils literal notranslate"><span class="pre">print_columns()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.utils.printtry"><code class="docutils literal notranslate"><span class="pre">printtry()</span></code></a></li>
 </ul>

@@ -8,6 +8,8 @@
 
    .. autosummary::
    
+      construct_time_space_network
+      enumerate_k_random_routes
       enumerate_k_shortest_routes
       enumerate_k_shortest_routes_on_t
       generate_grid_network

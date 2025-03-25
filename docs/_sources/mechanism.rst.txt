@@ -10,9 +10,9 @@ Models
 
 UXsim computes network traffic flow dynamics by combining following models:
 
-* The mesoscopic version of `Newell's simplified car-following model <https://doi.org/10.1016/S0191-2615(00)00044-8>`_ (aka. `X-model <https://doi.org/10.1016/j.trb.2013.02.008>`_) for link and vehicle dynamics.
-* The `mesoscopic version of the incremental node model <https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/>`_ for inter-link transfer at nodes.
-* `Dynamic user optimum <https://doi.org/10.1016/S0191-2615(00)00005-9>`_ (aka. reactive assignment) with stochasticity and delay for route choice of travelers.
+* The mesoscopic version of `Newell's simplified car-following model <https://doi.org/10.1016/S0191-2615(00)00044-8>`_ (aka. `X-model <https://doi.org/10.1016/j.trb.2013.02.008>`_) for vehicle behavior in link.
+* The `mesoscopic version of the incremental node model <https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/>`_ for inter-link transfer at nodes. It includes bottlenecks and traffic signals.
+* A modified `dynamic user optimum <https://doi.org/10.1016/S0191-2615(00)00005-9>`_ (aka. reactive assignment) for route choice of travelers. Basically, travelers choose the minimum travel time route considering the latest traffic situation.
 
 Key Inputs
 ----------
@@ -27,15 +27,18 @@ UXsim's key inputs (i.e., simulation scenario parameters) are as follows:
 * Parameters of each node. For example, position (`x` and `y`) and traffic signal setting (`signal`).
 * Demand. For example, origin, destination, and departure time of each vehicle are specified.
 
+Simulation Framework
+--------------------
+
 Program Structure
------------------
+~~~~~~~~~~~~~~~~~
 
 Class diagram of UXsim: the relationship between classes and their key properties.
 
 .. image:: img/class_diagram.png
 
 Computation Procedure
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 Activity diagram of UXsim: the overall computation procedure of UXsim.
 
@@ -45,9 +48,11 @@ Activity diagram of a specific vehicle in UXsim: the computation procedure for e
 
 .. image:: img/activity_diagram_veh.png
 
+Traffic Flow Model
+------------------
 
-Traffic Flow Model Parameters
------------------------------
+Model Parameters
+~~~~~~~~~~~~~~~~
 
 The following parameters are used in UXsim, defined through `Link`, `World`, and `Node` (\*: input, \*\*: alternative input).
 If you are not familiar with the traffic flow theory, it is recommended that you adjust only ``free_flow_speed`` and ``number_of_lanes`` for the traffic flow model parameters, leaving the other parameters at their default values.
@@ -69,3 +74,70 @@ If you are not familiar with the traffic flow theory, it is recommended that you
 - \* ``Node.flow_capacity``: node flow capacity (veh/s/LINK-LIKE)
 
 .. image:: img/fundamental_diagram.png
+
+Newell's Simplified Car-Following Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Newell's simplified car-following model is a simple yet essential traffic flow model that describes vehicle movement based on the principle that drivers maintain a safe following distance from the vehicle ahead. It's known for its simplicity and computational efficiency.
+
+Key Variables
+^^^^^^^^^^^^^
+
+- **Position**: :math:`x_n^t` represents the position of vehicle :math:`n` at time :math:`t`
+- **Speed**: :math:`v_n^t` represents the speed of vehicle :math:`n` at time :math:`t`
+
+  - Mathematically: :math:`v_n^t = \frac{x_n^{t-1} - x_n^t}{\tau}`
+
+- **Spacing**: :math:`s_n^t` represents the spacing between vehicle :math:`n` and the leading vehicle :math:`n-1` at time :math:`t`
+
+  - Mathematically: :math:`s_n^t = x_{n-1}^t - x_n^t`
+
+- **Reaction time**: :math:`\tau` is the driver's reaction time
+- **Minimum spacing**: :math:`\delta` is the minimum distance between vehicles when stationary
+- **Free-flow speed**: :math:`u` is the maximum speed a vehicle can travel in uncongested conditions
+
+.. image:: img/newell_model.png
+
+Basic Mechanism
+^^^^^^^^^^^^^^^
+
+The Newell model determines a vehicle's position based on the position of the vehicle ahead, with a time delay to account for reaction time. The model assumes that:
+
+1. Each driver attempts to maintain a safe following distance
+2. The vehicle will travel at free-flow speed if there is sufficient spacing
+3. Otherwise, the vehicle adjusts its speed to maintain safety
+
+The core equation of the Newell model is:
+
+.. math::
+
+   x_n^{t+\tau} = \min\{x_n^t + u\tau, x_{n-1}^t - \delta\}
+
+This means:
+
+- The position of vehicle :math:`n` at time :math:`t+\tau` is determined by taking the minimum of:
+
+  - The position it would reach traveling at free-flow speed (:math:`x_n^t + u\tau`)
+  - The position of the leading vehicle minus the minimum spacing (:math:`x_{n-1}^t - \delta`), meaning that vehicle :math:`n` is following its leading vehicle. In this case, vehicle :math:`n` may be slowed down due to the leading vehicle, and traffic may be congested
+
+Mesoscopic Newell Model
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By considering :math:`\Delta n` consecutive vehicles as a single entity like a platoon or packet, the Newell model can be computed very efficiently. We call it the mesoscopic version of Newell model 
+
+.. image:: img/newell_model_meso.png
+
+The model formula is:
+
+.. math::
+
+   x_n^{t+\tau\Delta n} = \min\{x_n^t + u\tau, x_{n-\Delta n}^t - \delta\Delta n\}
+
+The advantage of this model:
+
+- Exactly accurate for link-level traffic: No numerical error compared with the original model. There is a theory reason.
+- Computationally efficient: Now we only compute 1 vehicle per :math:`\Delta n` vehicles. Furthermore, timestep width is :math:`\tau\Delta n`. Thus, the computational cost is proportional to :math:`1/\Delta n ^2`.
+
+The limitation:
+
+- Aggregation error at network-level traffic: All vehicles in single platoon must have the same OD pair and travel the same route consecutively. This can be a source of errors at node merging/diverging and route choice behaviors.

@@ -291,6 +291,12 @@ This contains functions that are not essential for simulation but useful to spec
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.construct_time_space_network" title="uxsim.Utilities.Utilities.construct_time_space_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">construct_time_space_network</span></code></a>(W[, dt, ...])</p></td>
+<td><p>Construct a time-space network (TSN) that includes the time-dependent shortest path infomation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_random_routes" title="uxsim.Utilities.Utilities.enumerate_k_random_routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_k_random_routes</span></code></a>(W, k)</p></td>
+<td><p>Enumerate k random routes between all node pairs in a network.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes" title="uxsim.Utilities.Utilities.enumerate_k_shortest_routes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes</span></code></a>(W, source, target)</p></td>
 <td><p>Enumerate the k shortest routes between two nodes in a network.</p></td>
 </tr>
@@ -312,6 +318,44 @@ This contains functions that are not essential for simulation but useful to spec
 </tbody>
 </table>
 </div>
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.Utilities.Utilities.construct_time_space_network">
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">construct_time_space_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_origin_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#construct_time_space_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.construct_time_space_network" title="Link to this definition">¶</a></dt>
+<dd><p>Construct a time-space network (TSN) that includes the time-dependent shortest path infomation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>dt</strong> (<em>int</em><em>, </em><em>optional</em>) – The time interval to construct the TSN. Default is None, which sets to the simulation timestep.</p></li>
+<li><p><strong>from_origin_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to compute the shortest path from the origin only. Default is True</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>In the default setting, <cite>W.TSN_paths</cite> contains time-dependent shortest paths from the origin nodes to all nodes, for all departure time. The time-dependent link cost is based on the actual travel time. For example, <cite>W.TSN_paths[“orig_node_name”, 0]</cite> contains the shortest path from the node “orig_node_name” with departure time 0. <cite>W.TSN_paths[“orig_node_name”, 0][“dest_node_name”, “end”]</cite> contains the shortest path from the node “orig_node_name” to “dest_node_name” with departure time 0. The travel time between these nodes on this time can be obtained by <cite>W.TSN_costs[“orig_node_name”, 0][“dest_node_name”, “end”]</cite>.</p>
+<p>Not efficient for large networks.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.Utilities.Utilities.enumerate_k_random_routes">
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">enumerate_k_random_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#enumerate_k_random_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.enumerate_k_random_routes" title="Link to this definition">¶</a></dt>
+<dd><p>Enumerate k random routes between all node pairs in a network. The shortest path with free flow travel time is always included. This is much faster than <cite>enumerate_k_shortest_routes</cite> and could be useful for a plausible choice set generation for route choice problems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The number of random routes to enumerate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dict_routes</strong> – A dictionary of k random routes. The key is a tuple of the origin and destination nodes. The value is a list of link names.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="uxsim.Utilities.Utilities.enumerate_k_shortest_routes">
 <span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">enumerate_k_shortest_routes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_function=&lt;function</span> <span class="pre">&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_stats=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_cost=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#enumerate_k_shortest_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes" title="Link to this definition">¶</a></dt>
@@ -497,6 +541,8 @@ Returns a tuple of the abode distances and the actual time of computing shortest
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">uxsim.Utilities.Utilities</a><ul>
+<li><a class="reference internal" href="#uxsim.Utilities.Utilities.construct_time_space_network"><code class="docutils literal notranslate"><span class="pre">construct_time_space_network()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_random_routes"><code class="docutils literal notranslate"><span class="pre">enumerate_k_random_routes()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes"><code class="docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t"><code class="docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes_on_t()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network"><code class="docutils literal notranslate"><span class="pre">generate_grid_network()</span></code></a></li>

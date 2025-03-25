@@ -285,6 +285,9 @@ gtag('config', 'UA-111714220-1');
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
 <span class="kn">from</span> <span class="nn">scipy.sparse.csgraph</span> <span class="kn">import</span> <span class="n">dijkstra</span>
+<span class="kn">import</span> <span class="nn">tqdm</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <div class="viewcode-block" id="generate_grid_network">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.generate_grid_network">[docs]</a>
@@ -445,6 +448,63 @@ gtag('config', 'UA-111714220-1');
         <span class="k">return</span> <span class="n">routes</span></div>
 
 
+<div class="viewcode-block" id="enumerate_k_random_routes">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.enumerate_k_random_routes">[docs]</a>
+<span class="k">def</span> <span class="nf">enumerate_k_random_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enumerate k random routes between all node pairs in a network. The shortest path with free flow travel time is always included. This is much faster than `enumerate_k_shortest_routes` and could be useful for a plausible choice set generation for route choice problems.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : World</span>
+<span class="sd">        The world object containing the network.   </span>
+<span class="sd">    k : int</span>
+<span class="sd">        The number of random routes to enumerate.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict_routes : dict</span>
+<span class="sd">        A dictionary of k random routes. The key is a tuple of the origin and destination nodes. The value is a list of link names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dict_routes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">average_n_routes_old</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">l</span><span class="o">.</span><span class="n">u</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">l</span><span class="o">.</span><span class="n">u</span><span class="o">*</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+
+        <span class="n">paths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">all_pairs_dijkstra_path</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">dest</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">[</span><span class="n">source</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dict_routes</span><span class="p">[</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">dest</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="n">l</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">NODE_PAIR_LINKS</span><span class="p">[</span><span class="n">paths</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">dest</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">paths</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">dest</span><span class="p">][</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+                        <span class="c1">#print(W.NODE_PAIR_LINKS[paths[source][dest][i], paths[source][dest][i+1]], end=&quot;&quot;)</span>
+                        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_routes</span><span class="p">[</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">]:</span>
+                        <span class="n">dict_routes</span><span class="p">[</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">average_n_routes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">dict_routes</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">dict_routes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">average_n_routes</span> <span class="o">==</span> <span class="n">average_n_routes_old</span><span class="p">:</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">average_n_routes_old</span> <span class="o">=</span> <span class="n">average_n_routes</span>
+        
+        <span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">counter</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">dict_routes</span></div>
+
+
+
 <div class="viewcode-block" id="get_shortest_path_distance_between_all_nodes">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes">[docs]</a>
 <span class="k">def</span> <span class="nf">get_shortest_path_distance_between_all_nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -564,6 +624,103 @@ gtag('config', 'UA-111714220-1');
         <span class="k">return</span> <span class="n">ret</span><span class="p">,</span> <span class="n">duo_t</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="construct_time_space_network">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.construct_time_space_network">[docs]</a>
+<span class="k">def</span> <span class="nf">construct_time_space_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_origin_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct a time-space network (TSN) that includes the time-dependent shortest path infomation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : World</span>
+<span class="sd">        The World object.</span>
+<span class="sd">    dt : int, optional</span>
+<span class="sd">        The time interval to construct the TSN. Default is None, which sets to the simulation timestep.</span>
+<span class="sd">    from_origin_only : bool, optional</span>
+<span class="sd">        Whether to compute the shortest path from the origin only. Default is True</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">        In the default setting, `W.TSN_paths` contains time-dependent shortest paths from the origin nodes to all nodes, for all departure time. The time-dependent link cost is based on the actual travel time. For example, `W.TSN_paths[&quot;orig_node_name&quot;, 0]` contains the shortest path from the node &quot;orig_node_name&quot; with departure time 0. `W.TSN_paths[&quot;orig_node_name&quot;, 0][&quot;dest_node_name&quot;, &quot;end&quot;]` contains the shortest path from the node &quot;orig_node_name&quot; to &quot;dest_node_name&quot; with departure time 0. The travel time between these nodes on this time can be obtained by `W.TSN_costs[&quot;orig_node_name&quot;, 0][&quot;dest_node_name&quot;, &quot;end&quot;]`.</span>
+
+<span class="sd">        Not efficient for large networks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
+    <span class="n">tmax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">)</span>
+    <span class="n">coef_t_to_xy</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">10000</span>  <span class="c1">#for visualization</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">t</span><span class="o">*</span><span class="n">coef_t_to_xy</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="n">t</span><span class="o">*</span><span class="n">coef_t_to_xy</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">outlinks</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">travel_time</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)]</span>
+                <span class="n">t_arrival</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">t</span> <span class="o">+</span> <span class="n">travel_time</span><span class="p">)</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span>
+                <span class="k">if</span> <span class="n">t_arrival</span> <span class="o">&lt;</span> <span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">:</span>
+                    <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t_arrival</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">has_node</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="ow">and</span> <span class="n">G</span><span class="o">.</span><span class="n">has_node</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                        <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">travel_time</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_node</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">),</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">tmax</span><span class="o">*</span><span class="n">coef_t_to_xy</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="n">tmax</span><span class="o">*</span><span class="n">coef_t_to_xy</span><span class="p">))</span>
+
+            <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">has_node</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="ow">and</span> <span class="n">G</span><span class="o">.</span><span class="n">has_node</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1">#print(G.number_of_nodes(), G.number_of_edges())</span>
+
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">costs</span> <span class="o">=</span> <span class="p">{}</span>     
+    <span class="k">if</span> <span class="n">from_origin_only</span><span class="p">:</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">departure_time_in_second</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">has_node</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+                <span class="n">sources</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">costs</span><span class="p">[</span><span class="n">source</span><span class="p">],</span> <span class="n">paths</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">single_source_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="p">(</span><span class="n">distance_dict</span><span class="p">,</span> <span class="n">path_dict</span><span class="p">)</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">all_pairs_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="n">costs</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance_dict</span>
+            <span class="n">paths</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_dict</span>
+
+    <span class="n">W</span><span class="o">.</span><span class="n">TSN</span> <span class="o">=</span> <span class="n">G</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">TSN_paths</span> <span class="o">=</span> <span class="n">paths</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">TSN_costs</span> <span class="o">=</span> <span class="n">costs</span></div>
+
+
+
+    <span class="c1"># # Extract positions</span>
+    <span class="c1"># pos = nx.get_node_attributes(G, &#39;pos&#39;)</span>
+    <span class="c1"># edge_labels = nx.get_edge_attributes(G, &#39;weight&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># # Create a plot</span>
+    <span class="c1"># fig, ax = plt.subplots()</span>
+    <span class="c1"># nx.draw(G, pos, with_labels=False, node_color=&#39;lightblue&#39;, edge_color=&#39;gray&#39;, node_size=50, ax=ax)</span>
+    <span class="c1"># nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color=&#39;black&#39;, bbox=dict(facecolor=&#39;none&#39;, edgecolor=&#39;none&#39;))</span>
+    <span class="c1"># plt.show()</span>
+    
+    <span class="c1"># # Display the paths and costs</span>
+    <span class="c1"># for source in paths:</span>
+    <span class="c1">#     for target in paths[source]:</span>
+    <span class="c1">#         if target[1] == &quot;end&quot;:</span>
+    <span class="c1">#             print(f&quot;Shortest path from {source[0]} to {target[0]} on t = {source[1]}: cost = {costs[source][target]}: {paths[source][target]}&quot;)</span>
+
 
 </pre></div>
         </article>

@@ -140,6 +140,7 @@ p*_*.py
 .VSCodeCounter/*
 .vscode/*
 demos_and_examples/uxsim/
+*.lnk
 
 *.prof
 

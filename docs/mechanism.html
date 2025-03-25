@@ -291,9 +291,9 @@ If you want to know more details, please refer to <a class="reference external" 
 <h2>Models<a class="headerlink" href="#models" title="Link to this heading">¶</a></h2>
 <p>UXsim computes network traffic flow dynamics by combining following models:</p>
 <ul class="simple">
-<li><p>The mesoscopic version of <a class="reference external" href="https://doi.org/10.1016/S0191-2615(00)00044-8">Newell’s simplified car-following model</a> (aka. <a class="reference external" href="https://doi.org/10.1016/j.trb.2013.02.008">X-model</a>) for link and vehicle dynamics.</p></li>
-<li><p>The <a class="reference external" href="https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/">mesoscopic version of the incremental node model</a> for inter-link transfer at nodes.</p></li>
-<li><p><a class="reference external" href="https://doi.org/10.1016/S0191-2615(00)00005-9">Dynamic user optimum</a> (aka. reactive assignment) with stochasticity and delay for route choice of travelers.</p></li>
+<li><p>The mesoscopic version of <a class="reference external" href="https://doi.org/10.1016/S0191-2615(00)00044-8">Newell’s simplified car-following model</a> (aka. <a class="reference external" href="https://doi.org/10.1016/j.trb.2013.02.008">X-model</a>) for vehicle behavior in link.</p></li>
+<li><p>The <a class="reference external" href="https://www.ubiquitypress.com/site/chapters/10.5334/baw.50/download/1518/">mesoscopic version of the incremental node model</a> for inter-link transfer at nodes. It includes bottlenecks and traffic signals.</p></li>
+<li><p>A modified <a class="reference external" href="https://doi.org/10.1016/S0191-2615(00)00005-9">dynamic user optimum</a> (aka. reactive assignment) for route choice of travelers. Basically, travelers choose the minimum travel time route considering the latest traffic situation.</p></li>
 </ul>
 </section>
 <section id="key-inputs">
@@ -309,20 +309,25 @@ If you want to know more details, please refer to <a class="reference external" 
 <li><p>Demand. For example, origin, destination, and departure time of each vehicle are specified.</p></li>
 </ul>
 </section>
+<section id="simulation-framework">
+<h2>Simulation Framework<a class="headerlink" href="#simulation-framework" title="Link to this heading">¶</a></h2>
 <section id="program-structure">
-<h2>Program Structure<a class="headerlink" href="#program-structure" title="Link to this heading">¶</a></h2>
+<h3>Program Structure<a class="headerlink" href="#program-structure" title="Link to this heading">¶</a></h3>
 <p>Class diagram of UXsim: the relationship between classes and their key properties.</p>
 <img alt="_images/class_diagram.png" src="_images/class_diagram.png" />
 </section>
 <section id="computation-procedure">
-<h2>Computation Procedure<a class="headerlink" href="#computation-procedure" title="Link to this heading">¶</a></h2>
+<h3>Computation Procedure<a class="headerlink" href="#computation-procedure" title="Link to this heading">¶</a></h3>
 <p>Activity diagram of UXsim: the overall computation procedure of UXsim.</p>
 <img alt="_images/activity_diagram.png" src="_images/activity_diagram.png" />
 <p>Activity diagram of a specific vehicle in UXsim: the computation procedure for each vehicle.</p>
 <img alt="_images/activity_diagram_veh.png" src="_images/activity_diagram_veh.png" />
 </section>
-<section id="traffic-flow-model-parameters">
-<h2>Traffic Flow Model Parameters<a class="headerlink" href="#traffic-flow-model-parameters" title="Link to this heading">¶</a></h2>
+</section>
+<section id="traffic-flow-model">
+<h2>Traffic Flow Model<a class="headerlink" href="#traffic-flow-model" title="Link to this heading">¶</a></h2>
+<section id="model-parameters">
+<h3>Model Parameters<a class="headerlink" href="#model-parameters" title="Link to this heading">¶</a></h3>
 <p>The following parameters are used in UXsim, defined through <cite>Link</cite>, <cite>World</cite>, and <cite>Node</cite> (*: input, **: alternative input).
 If you are not familiar with the traffic flow theory, it is recommended that you adjust only <code class="docutils literal notranslate"><span class="pre">free_flow_speed</span></code> and <code class="docutils literal notranslate"><span class="pre">number_of_lanes</span></code> for the traffic flow model parameters, leaving the other parameters at their default values.</p>
 <ul class="simple">
@@ -343,6 +348,73 @@ If you are not familiar with the traffic flow theory, it is recommended that you
 <li><p>* <code class="docutils literal notranslate"><span class="pre">Node.flow_capacity</span></code>: node flow capacity (veh/s/LINK-LIKE)</p></li>
 </ul>
 <img alt="_images/fundamental_diagram.png" src="_images/fundamental_diagram.png" />
+</section>
+<section id="id1">
+<h3>Newell’s Simplified Car-Following Model<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>The Newell’s simplified car-following model is a simple yet essential traffic flow model that describes vehicle movement based on the principle that drivers maintain a safe following distance from the vehicle ahead. It’s known for its simplicity and computational efficiency.</p>
+<section id="key-variables">
+<h4>Key Variables<a class="headerlink" href="#key-variables" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p><strong>Position</strong>: <span class="math notranslate nohighlight">\(x_n^t\)</span> represents the position of vehicle <span class="math notranslate nohighlight">\(n\)</span> at time <span class="math notranslate nohighlight">\(t\)</span></p></li>
+<li><p><strong>Speed</strong>: <span class="math notranslate nohighlight">\(v_n^t\)</span> represents the speed of vehicle <span class="math notranslate nohighlight">\(n\)</span> at time <span class="math notranslate nohighlight">\(t\)</span></p>
+<ul>
+<li><p>Mathematically: <span class="math notranslate nohighlight">\(v_n^t = \frac{x_n^{t-1} - x_n^t}{\tau}\)</span></p></li>
+</ul>
+</li>
+<li><p><strong>Spacing</strong>: <span class="math notranslate nohighlight">\(s_n^t\)</span> represents the spacing between vehicle <span class="math notranslate nohighlight">\(n\)</span> and the leading vehicle <span class="math notranslate nohighlight">\(n-1\)</span> at time <span class="math notranslate nohighlight">\(t\)</span></p>
+<ul>
+<li><p>Mathematically: <span class="math notranslate nohighlight">\(s_n^t = x_{n-1}^t - x_n^t\)</span></p></li>
+</ul>
+</li>
+<li><p><strong>Reaction time</strong>: <span class="math notranslate nohighlight">\(\tau\)</span> is the driver’s reaction time</p></li>
+<li><p><strong>Minimum spacing</strong>: <span class="math notranslate nohighlight">\(\delta\)</span> is the minimum distance between vehicles when stationary</p></li>
+<li><p><strong>Free-flow speed</strong>: <span class="math notranslate nohighlight">\(u\)</span> is the maximum speed a vehicle can travel in uncongested conditions</p></li>
+</ul>
+<img alt="_images/newell_model.png" src="_images/newell_model.png" />
+</section>
+<section id="basic-mechanism">
+<h4>Basic Mechanism<a class="headerlink" href="#basic-mechanism" title="Link to this heading">¶</a></h4>
+<p>The Newell model determines a vehicle’s position based on the position of the vehicle ahead, with a time delay to account for reaction time. The model assumes that:</p>
+<ol class="arabic simple">
+<li><p>Each driver attempts to maintain a safe following distance</p></li>
+<li><p>The vehicle will travel at free-flow speed if there is sufficient spacing</p></li>
+<li><p>Otherwise, the vehicle adjusts its speed to maintain safety</p></li>
+</ol>
+<p>The core equation of the Newell model is:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[x_n^{t+\tau} = \min\{x_n^t + u\tau, x_{n-1}^t - \delta\}\]</div>
+</div>
+<p>This means:</p>
+<ul class="simple">
+<li><p>The position of vehicle <span class="math notranslate nohighlight">\(n\)</span> at time <span class="math notranslate nohighlight">\(t+\tau\)</span> is determined by taking the minimum of:</p>
+<ul>
+<li><p>The position it would reach traveling at free-flow speed (<span class="math notranslate nohighlight">\(x_n^t + u\tau\)</span>)</p></li>
+<li><p>The position of the leading vehicle minus the minimum spacing (<span class="math notranslate nohighlight">\(x_{n-1}^t - \delta\)</span>), meaning that vehicle <span class="math notranslate nohighlight">\(n\)</span> is following its leading vehicle. In this case, vehicle <span class="math notranslate nohighlight">\(n\)</span> may be slowed down due to the leading vehicle, and traffic may be congested</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="mesoscopic-newell-model">
+<h4>Mesoscopic Newell Model<a class="headerlink" href="#mesoscopic-newell-model" title="Link to this heading">¶</a></h4>
+<p>By considering <span class="math notranslate nohighlight">\(\Delta n\)</span> consecutive vehicles as a single entity like a platoon or packet, the Newell model can be computed very efficiently. We call it the mesoscopic version of Newell model</p>
+<img alt="_images/newell_model_meso.png" src="_images/newell_model_meso.png" />
+<p>The model formula is:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[x_n^{t+\tau\Delta n} = \min\{x_n^t + u\tau, x_{n-\Delta n}^t - \delta\Delta n\}\]</div>
+</div>
+<p>The advantage of this model:</p>
+<ul class="simple">
+<li><p>Exactly accurate for link-level traffic: No numerical error compared with the original model. There is a theory reason.</p></li>
+<li><p>Computationally efficient: Now we only compute 1 vehicle per <span class="math notranslate nohighlight">\(\Delta n\)</span> vehicles. Furthermore, timestep width is <span class="math notranslate nohighlight">\(\tau\Delta n\)</span>. Thus, the computational cost is proportional to <span class="math notranslate nohighlight">\(1/\Delta n ^2\)</span>.</p></li>
+</ul>
+<p>The limitation:</p>
+<ul class="simple">
+<li><p>Aggregation error at network-level traffic: All vehicles in single platoon must have the same OD pair and travel the same route consecutively. This can be a source of errors at node merging/diverging and route choice behaviors.</p></li>
+</ul>
+</section>
+</section>
 </section>
 </section>
 
@@ -404,9 +476,21 @@ If you are not familiar with the traffic flow theory, it is recommended that you
 <li><a class="reference internal" href="#">Simulation Mechanism: Summary</a><ul>
 <li><a class="reference internal" href="#models">Models</a></li>
 <li><a class="reference internal" href="#key-inputs">Key Inputs</a></li>
+<li><a class="reference internal" href="#simulation-framework">Simulation Framework</a><ul>
 <li><a class="reference internal" href="#program-structure">Program Structure</a></li>
 <li><a class="reference internal" href="#computation-procedure">Computation Procedure</a></li>
-<li><a class="reference internal" href="#traffic-flow-model-parameters">Traffic Flow Model Parameters</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#traffic-flow-model">Traffic Flow Model</a><ul>
+<li><a class="reference internal" href="#model-parameters">Model Parameters</a></li>
+<li><a class="reference internal" href="#id1">Newell’s Simplified Car-Following Model</a><ul>
+<li><a class="reference internal" href="#key-variables">Key Variables</a></li>
+<li><a class="reference internal" href="#basic-mechanism">Basic Mechanism</a></li>
+<li><a class="reference internal" href="#mesoscopic-newell-model">Mesoscopic Newell Model</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -424,5 +508,7 @@ If you are not familiar with the traffic flow theory, it is recommended that you
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

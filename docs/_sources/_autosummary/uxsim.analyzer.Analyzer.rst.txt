@@ -33,6 +33,7 @@
       ~Analyzer.mfd_to_pandas
       ~Analyzer.network
       ~Analyzer.network_anim
+      ~Analyzer.network_average
       ~Analyzer.network_fancy
       ~Analyzer.network_pillow
       ~Analyzer.od_analysis

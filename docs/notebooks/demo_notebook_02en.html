@@ -285,7 +285,7 @@ gtag('config', 'UA-111714220-1');
         </div>
         <article role="main" id="furo-main-content">
           <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
@@ -296,7 +296,7 @@ gtag('config', 'UA-111714220-1');
 <h1>Advanced example<a class="headerlink" href="#Advanced-example" title="Link to this heading">¶</a></h1>
 <p>This is an advanced example of UXsim with automated network generation and traffic management. First, import and setup the simulation world.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
@@ -305,7 +305,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation definition</span>
@@ -321,7 +321,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 <p>Now we are going to define fairly large-scale simulation scenario by code. This is a grid-shaped arterial road network with diagonal highway. The traffic demand is set to travel from one end of the network to the other. We are going to test how highway toll can improve the traffic situation. Note that we specified user-defined <code class="docutils literal notranslate"><span class="pre">attribute</span></code> of Link to distinguish arterial and highway links.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scenario definition</span>
@@ -388,7 +388,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 <p>In order to compare no-toll and with-toll scenarios, we copy the scenario for later re-use.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#copy scenario for re-use (copy.deepcopy does not work for some reason)</span>
@@ -401,7 +401,7 @@ gtag('config', 'UA-111714220-1');
 <h2>No-toll scenario<a class="headerlink" href="#No-toll-scenario" title="Link to this heading">¶</a></h2>
 <p>Execute the no-toll scenario and show the results.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_notoll&quot;</span>
@@ -442,28 +442,28 @@ simulation setting:
  number of platoons:     10164
  number of links:        460
  number of nodes:        121
- setup time:             11.29 s
+ setup time:             1.67 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|     7175 vehs|  11.7 m/s|     3.63 s
-    1200 s|    13290 vehs|  10.6 m/s|     9.32 s
-    1800 s|    15685 vehs|   9.6 m/s|    15.46 s
-    2400 s|    19230 vehs|   9.1 m/s|    22.05 s
-    3000 s|    20325 vehs|   8.8 m/s|    28.21 s
-    3600 s|    22925 vehs|   7.6 m/s|    34.75 s
-    4200 s|    14525 vehs|  10.0 m/s|    39.50 s
-    4800 s|     4440 vehs|  13.9 m/s|    42.22 s
-    5400 s|       70 vehs|  15.0 m/s|    42.81 s
-    5995 s|        0 vehs|   0.0 m/s|    42.98 s
+     600 s|     7175 vehs|  11.5 m/s|     2.60 s
+    1200 s|    13205 vehs|  10.5 m/s|     6.35 s
+    1800 s|    15900 vehs|   9.8 m/s|    11.59 s
+    2400 s|    19120 vehs|   9.3 m/s|    17.39 s
+    3000 s|    20210 vehs|   8.5 m/s|    22.71 s
+    3600 s|    22780 vehs|   8.4 m/s|    31.52 s
+    4200 s|    14190 vehs|   9.6 m/s|    36.65 s
+    4800 s|     4635 vehs|  13.6 m/s|    39.18 s
+    5400 s|      125 vehs|  14.1 m/s|    42.17 s
+    6000 s|        0 vehs|   0.0 m/s|    42.36 s
  simulation finished
 results:
- average speed:  10.3 m/s
+ average speed:  10.6 m/s
  number of completed trips:      50820 / 50820
- average travel time of trips:   1413.4 s
- average delay of trips:         661.0 s
- delay ratio:                    0.468
- total distance traveled:        737340752.1 m
+ average travel time of trips:   1412.0 s
+ average delay of trips:         659.7 s
+ delay ratio:                    0.467
+ total distance traveled:        741551771.9 m
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -529,7 +529,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "065e9171fe084cf5bea7dff538ba85dd", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "da27b327ccd5471e8955a177ab86f433", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -545,7 +545,7 @@ results:
 <p>Now let’s see how highway toll can resolve this issue. We load the defined scenario to new World <code class="docutils literal notranslate"><span class="pre">W2</span></code>. Highway toll can be implemented by setting <code class="docutils literal notranslate"><span class="pre">route_choice_penalty</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Link</span></code> object. The value of it works as penalty for traveler’s route choice as virtually additional travel time (in second). 70 seconds of <code class="docutils literal notranslate"><span class="pre">route_choice_penalty</span></code> roughtly corresponds to 0.5 USD assuming the standard value of time; for example, a traveler who uses 4 highway links (or 5.7km highway road) needs
 to pay 2 USD.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W2</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">W_orig</span><span class="p">))</span>
@@ -559,7 +559,7 @@ to pay 2 USD.</p>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation execution</span>
@@ -597,28 +597,28 @@ simulation setting:
  number of platoons:     10164
  number of links:        460
  number of nodes:        121
- setup time:             94.95 s
+ setup time:             85.32 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|     7175 vehs|  11.7 m/s|     4.14 s
-    1200 s|    13260 vehs|  11.0 m/s|    10.09 s
-    1800 s|    15255 vehs|  10.5 m/s|    16.70 s
-    2400 s|    17760 vehs|  11.3 m/s|    23.60 s
-    3000 s|    16695 vehs|  11.2 m/s|    29.99 s
-    3600 s|    16970 vehs|  11.5 m/s|    35.63 s
-    4200 s|     7560 vehs|  13.9 m/s|    39.36 s
-    4800 s|      315 vehs|  15.2 m/s|    40.48 s
-    5400 s|        0 vehs|   0.0 m/s|    40.69 s
-    5995 s|        0 vehs|   0.0 m/s|    40.87 s
+     600 s|     7175 vehs|  11.5 m/s|     2.55 s
+    1200 s|    13215 vehs|  11.3 m/s|     6.58 s
+    1800 s|    15250 vehs|  10.7 m/s|    11.84 s
+    2400 s|    17610 vehs|  11.2 m/s|    18.88 s
+    3000 s|    16595 vehs|  11.2 m/s|    25.54 s
+    3600 s|    16920 vehs|  11.9 m/s|    29.91 s
+    4200 s|     7465 vehs|  14.2 m/s|    33.33 s
+    4800 s|      210 vehs|  14.6 m/s|    34.19 s
+    5400 s|        0 vehs|   0.0 m/s|    34.33 s
+    6000 s|        0 vehs|   0.0 m/s|    34.44 s
  simulation finished
 results:
- average speed:  12.1 m/s
+ average speed:  12.4 m/s
  number of completed trips:      50820 / 50820
- average travel time of trips:   1147.6 s
- average delay of trips:         395.2 s
- delay ratio:                    0.344
- total distance traveled:        701821587.2 m
+ average travel time of trips:   1140.1 s
+ average delay of trips:         387.8 s
+ delay ratio:                    0.340
+ total distance traveled:        698125872.2 m
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -684,7 +684,7 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f4534b88a02d475a89d1dde5153b3f3a", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "beca94e40a8846a89fe40fdf06354967", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -699,7 +699,7 @@ results:
 <h2>Dataframe analysis<a class="headerlink" href="#Dataframe-analysis" title="Link to this heading">¶</a></h2>
 <p>More quantitative analysis can be easily done by using pandas.Dataframe output. Here we compare some statistics between no-toll and with-toll scenarios.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Results comparison</span>
@@ -752,15 +752,15 @@ results:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 no toll case
-- average travel time: 1386.4536599763871
-- average delay: 634.0770804386239
-- # of highway link users: 44930
-- average highway link travel time: 116.6421949249966
+- average travel time: 1412.0464384100749
+- average delay: 659.6698588723114
+- # of highway link users: 42760
+- average highway link travel time: 107.4701619326083
 toll case
-- average travel time: 1114.715171192444
-- average delay: 362.33859165468067
-- # of highway link users: 38495
-- average highway link travel time: 80.60047029513257
+- average travel time: 1140.1411845730026
+- average delay: 387.7646050352395
+- # of highway link users: 39390
+- average highway link travel time: 70.02816778477828
 
 </pre></div></div>
 </div>

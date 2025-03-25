@@ -23,6 +23,7 @@
       ~World.adddemand_nodes2nodes
       ~World.adddemand_nodes2nodes2
       ~World.adddemand_point2point
+      ~World.change_print_mode
       ~World.check_simulation_ongoing
       ~World.copy
       ~World.defRoute

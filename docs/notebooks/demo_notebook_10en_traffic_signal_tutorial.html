@@ -373,12 +373,12 @@ simulation setting:
  number of platoons:     499
  number of links:        3
  number of nodes:        4
- setup time:             0.31 s
+ setup time:             0.33 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|       90 vehs|  15.6 m/s|     0.41 s
-    1200 s|        0 vehs|   0.0 m/s|     0.66 s
+     600 s|       90 vehs|  15.6 m/s|     0.42 s
+    1200 s|        0 vehs|   0.0 m/s|     0.73 s
  simulation finished
 results:
  average speed:  14.5 m/s
@@ -502,32 +502,32 @@ W2--I3--I4--E2
 simulation setting:
  scenario name:
  simulation duration:    3600 s
- number of vehicles:     4205 veh
+ number of vehicles:     3870 veh
  total road length:      12000 m
  time discret. width:    5 s
  platoon size:           5 veh
  number of timesteps:    720
- number of platoons:     841
+ number of platoons:     774
  number of links:        24
  number of nodes:        12
- setup time:             0.50 s
+ setup time:             0.51 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|      145 vehs|  14.5 m/s|     0.19 s
-    1200 s|      165 vehs|  11.8 m/s|     0.38 s
-    1800 s|      155 vehs|   9.7 m/s|     0.57 s
-    2400 s|      150 vehs|   7.3 m/s|     0.70 s
-    3000 s|      130 vehs|  17.7 m/s|     0.84 s
-    3600 s|      150 vehs|  13.3 m/s|     0.90 s
+     600 s|      145 vehs|  14.5 m/s|     0.21 s
+    1200 s|      180 vehs|   9.4 m/s|     0.36 s
+    1800 s|       95 vehs|   7.4 m/s|     0.52 s
+    2400 s|      155 vehs|   6.0 m/s|     0.64 s
+    3000 s|      165 vehs|  12.7 m/s|     0.73 s
+    3600 s|      145 vehs|  13.8 m/s|     0.79 s
  simulation finished
 results:
- average speed:  11.7 m/s
- number of completed trips:      4025 / 4205
- average travel time of trips:   130.3 s
- average delay of trips:         51.2 s
- delay ratio:                    0.393
- total distance traveled:        6592625.0 m
+ average speed:  11.6 m/s
+ number of completed trips:      3700 / 3870
+ average travel time of trips:   132.3 s
+ average delay of trips:         52.7 s
+ delay ratio:                    0.399
+ total distance traveled:        6101750.0 m
  drawing trajectories...
 </pre></div></div>
 </div>
@@ -548,7 +548,7 @@ results:
 </section>
 <section id="Adaptive-traffic-signal-control">
 <h2>Adaptive traffic signal control<a class="headerlink" href="#Adaptive-traffic-signal-control" title="Link to this heading">¶</a></h2>
-<p>Adapting signal indications in response to real-time traffic conditions to achieve efficient traffic flow is an important issue. UXsim can handle this issue, by changing traffic signal phase during simulation depending on traffic states.</p>
+<p>Adaptive traffic signal control, in which traffic light is changed in response to real-time traffic conditions to achieve efficient traffic flow, is an important task in traffic engineering. UXsim can handle this task, by changing traffic signal phase during simulation depending on traffic states.</p>
 <p>Let’s use the same scenario to the 1st example.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -584,30 +584,7 @@ results:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
-
-<span class="c1"># Definition of the main simulation</span>
-<span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="n">deltan</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">tmax</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span>
-    <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span>
-<span class="p">)</span>
-
-<span class="c1"># Scenario definition</span>
-<span class="c1"># Merging network: signal control</span>
-<span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;orig1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;orig2&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">node_signal</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">60</span><span class="p">])</span> <span class="c1"># The variable &#39;signal&#39; is a list of [duration of phase 0, duration of phase 1, ...]</span>
-<span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link1&quot;</span><span class="p">,</span> <span class="s2">&quot;orig1&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># The value of the variable &#39;signal_group&#39; (say `n`) indicates that the exit of this link will turn green during phase &#39;n&#39;</span>
-<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link2&quot;</span><span class="p">,</span> <span class="s2">&quot;orig2&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link3&quot;</span><span class="p">,</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-<span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="s2">&quot;orig1&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
-<span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="s2">&quot;orig2&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">)</span>
-
-<span class="c1"># Run the simulation iteratively</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the simulation iteratively</span>
 <span class="k">while</span> <span class="n">W</span><span class="o">.</span><span class="n">check_simulation_ongoing</span><span class="p">():</span>
     <span class="c1"># Execute the simulation in increments of 10 seconds</span>
     <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">(</span><span class="n">duration_t2</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
@@ -624,6 +601,7 @@ results:
 
     <span class="c1"># Set the signal to green for the link with the maximum number of vehicles</span>
     <span class="n">node_signal</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="n">max_vehicles_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># reset the time counter</span>
     <span class="n">node_signal</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 </div>
@@ -644,7 +622,7 @@ simulation setting:
  number of platoons:     499
  number of links:        3
  number of nodes:        4
- setup time:             0.05 s
+ setup time:             0.12 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
@@ -654,41 +632,21 @@ t = 300 s; phase 0 - number of vehicle = 10; phase 1 - number of vehicle =  0 ; 
 t = 400 s; phase 0 - number of vehicle = 10; phase 1 - number of vehicle =  0 ; green light - phase 0
 t = 500 s; phase 0 - number of vehicle = 10; phase 1 - number of vehicle =  0 ; green light - phase 0
 t = 600 s; phase 0 - number of vehicle = 26; phase 1 - number of vehicle = 30 ; green light - phase 1
-     600 s|       86 vehs|  16.0 m/s|     0.39 s
+     600 s|       86 vehs|  16.0 m/s|     0.35 s
 t = 700 s; phase 0 - number of vehicle = 30; phase 1 - number of vehicle = 30 ; green light - phase 0
 t = 800 s; phase 0 - number of vehicle = 26; phase 1 - number of vehicle = 34 ; green light - phase 1
 t = 900 s; phase 0 - number of vehicle = 30; phase 1 - number of vehicle = 30 ; green light - phase 0
 t = 1000 s; phase 0 - number of vehicle = 26; phase 1 - number of vehicle = 34 ; green light - phase 1
 t = 1100 s; phase 0 - number of vehicle =  0; phase 1 - number of vehicle =  0 ; green light - phase 0
-    1200 s|        0 vehs|   0.0 m/s|     0.65 s
+    1200 s|        0 vehs|   0.0 m/s|     0.70 s
  simulation finished
 t = 1200 s; phase 0 - number of vehicle =  0; phase 1 - number of vehicle =  0 ; green light - phase 0
 </pre></div></div>
 </div>
-<p>In the above code,</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Run the simulation iteratively
-while W.check_simulation_ongoing():
-    # Execute the simulation in increments of 10 seconds
-    W.exec_simulation(duration_t2=10)
-</pre></div>
-</div>
-<p>means that simulation is iteratively executed for 10 seconds. Thusm, users can write a code to interven the simulation. The while loop will automatically exit when the simulation is complete.</p>
-<p>This code identify which link has the largest number of vehicles.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Investigate the number of vehicles per direction
-vehicles_per_links = {}
-for l in node_signal.inlinks.values():
-    vehicles_per_links[tuple(l.signal_group)] = l.num_vehicles # l.num_vehicles: Number of vehicles on link &#39;l&#39;
-max_vehicles_group = max(vehicles_per_links, key=vehicles_per_links.get) # Returns the direction with the maximum number of vehicles
-</pre></div>
-</div>
-<p>And then, the following link change the signal. The signal phase is changed to give green light to the link with largest number of vehicles, and the time count is reset.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Set the signal to green for the link with the maximum number of vehicles
-node_signal.signal_phase = max_vehicles_group[0]
-node_signal.signal_t = 0
-</pre></div>
-</div>
+<p>The above code means that simulation is iteratively executed for 10 seconds. Thusm, users can write a code to interven the simulation. The while loop will automatically exit when the simulation is complete.</p>
+<p>During the simulation, the signal phase is specified by <code class="docutils literal notranslate"><span class="pre">Node.signal_phase</span></code> so that a link with the largest number of vehicles <code class="docutils literal notranslate"><span class="pre">Link.num_vehicles</span></code> will have a green light.</p>
 <p>You can see how this code works in the above logs. For some time points, it shows number of vehicles for each phase and determines the phase.</p>
-<p>The results are visualized as follows. You can see that, before 500 seconds, “link1” always had green light, as no vehicles were comming from “link2”. After 500 seconds, traffic started coming from “link2”. Then, traffic signal changed efficiently to keep the waiting queue minimum. The efficiency can be confirmed by comparing to the results of the 1st example in this demo: The delay was smaller, thequeues were shorter, the flow during the green time was always saturated, and so on.</p>
+<p>The results are visualized as follows. You can see that, before 500 seconds, “link1” always had green light, as no vehicles were comming from “link2”. After 500 seconds, traffic started coming from “link2”. Then, traffic signal changed efficiently to keep the waiting queue minimum. The efficiency can be confirmed by comparing to the results of the 1st example in this demo: The delay was smaller, the queues were shorter, the flow during the green time was always saturated, and so on.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
