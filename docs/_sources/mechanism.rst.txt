@@ -30,12 +30,17 @@ UXsim's key inputs (i.e., simulation scenario parameters) are as follows:
 Simulation Framework
 --------------------
 
+In this section, the logical flow of the simulation is explained.
+
 Program Structure
 ~~~~~~~~~~~~~~~~~
 
 Class diagram of UXsim: the relationship between classes and their key properties.
 
 .. image:: img/class_diagram.png
+   :width: 90%
+   :align: center
+
 
 Computation Procedure
 ~~~~~~~~~~~~~~~~~~~~~
@@ -43,13 +48,21 @@ Computation Procedure
 Activity diagram of UXsim: the overall computation procedure of UXsim.
 
 .. image:: img/activity_diagram.png
+   :width: 90%
+   :align: center
+
 
 Activity diagram of a specific vehicle in UXsim: the computation procedure for each vehicle.
 
 .. image:: img/activity_diagram_veh.png
+   :width: 90%
+   :align: center
 
 Traffic Flow Model
 ------------------
+
+In this section, the model used for vehicle driving behavior on a link is explained.
+This section may be too technical and can be skipped. 
 
 Model Parameters
 ~~~~~~~~~~~~~~~~
@@ -74,11 +87,16 @@ If you are not familiar with the traffic flow theory, it is recommended that you
 - \* ``Node.flow_capacity``: node flow capacity (veh/s/LINK-LIKE)
 
 .. image:: img/fundamental_diagram.png
+   :width: 80%
+   :align: center
 
 Newell's Simplified Car-Following Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Newell's simplified car-following model is a simple yet essential traffic flow model that describes vehicle movement based on the principle that drivers maintain a safe following distance from the vehicle ahead. It's known for its simplicity and computational efficiency.
+The Newell's simplified car-following model is a simple yet essential traffic flow model that describes vehicle movement based on the principle that drivers maintain a safe following distance from the vehicle ahead. It's known for its simplicity and computational efficiency. 
+
+The Newell model can be considered as a simple approximation of standard car-following models such as Nagel-Schreckenberg (cellar automata), Gipps (used by a commercial software), and Krauss (used by SUMO) models.
+This suggests that the Newell model captures some of the universal essence of car-following models.
 
 Key Variables
 ^^^^^^^^^^^^^
@@ -86,7 +104,7 @@ Key Variables
 - **Position**: :math:`x_n^t` represents the position of vehicle :math:`n` at time :math:`t`
 - **Speed**: :math:`v_n^t` represents the speed of vehicle :math:`n` at time :math:`t`
 
-  - Mathematically: :math:`v_n^t = \frac{x_n^{t-1} - x_n^t}{\tau}`
+  - Mathematically: :math:`v_n^t = \frac{x_n^t - x_n^{t-1}}{\tau}`
 
 - **Spacing**: :math:`s_n^t` represents the spacing between vehicle :math:`n` and the leading vehicle :math:`n-1` at time :math:`t`
 
@@ -97,6 +115,8 @@ Key Variables
 - **Free-flow speed**: :math:`u` is the maximum speed a vehicle can travel in uncongested conditions
 
 .. image:: img/newell_model.png
+   :width: 60%
+   :align: center
 
 Basic Mechanism
 ^^^^^^^^^^^^^^^
@@ -113,19 +133,25 @@ The core equation of the Newell model is:
 
    x_n^{t+\tau} = \min\{x_n^t + u\tau, x_{n-1}^t - \delta\}
 
-This means:
+This means that the position of vehicle :math:`n` at time :math:`t+\tau` is determined by taking the minimum of:
 
-- The position of vehicle :math:`n` at time :math:`t+\tau` is determined by taking the minimum of:
+- The position it would reach traveling at free-flow speed (:math:`x_n^t + u\tau`)
+- The position of the leading vehicle minus the minimum spacing (:math:`x_{n-1}^t - \delta`), meaning that vehicle :math:`n` is following its leading vehicle. In this case, vehicle :math:`n` may be slowed down due to the leading vehicle, and traffic may be congested
 
-  - The position it would reach traveling at free-flow speed (:math:`x_n^t + u\tau`)
-  - The position of the leading vehicle minus the minimum spacing (:math:`x_{n-1}^t - \delta`), meaning that vehicle :math:`n` is following its leading vehicle. In this case, vehicle :math:`n` may be slowed down due to the leading vehicle, and traffic may be congested
+In a time-space diagram, the behavior of this model can be depicted as follows.
+
+.. image:: img/newell_tsd.png
+   :width: 60%
+   :align: center
 
 Mesoscopic Newell Model
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 By considering :math:`\Delta n` consecutive vehicles as a single entity like a platoon or packet, the Newell model can be computed very efficiently. We call it the mesoscopic version of Newell model 
 
 .. image:: img/newell_model_meso.png
+   :width: 60%
+   :align: center
 
 The model formula is:
 

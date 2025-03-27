@@ -311,21 +311,27 @@ If you want to know more details, please refer to <a class="reference external" 
 </section>
 <section id="simulation-framework">
 <h2>Simulation Framework<a class="headerlink" href="#simulation-framework" title="Link to this heading">¶</a></h2>
+<p>In this section, the logical flow of the simulation is explained.</p>
 <section id="program-structure">
 <h3>Program Structure<a class="headerlink" href="#program-structure" title="Link to this heading">¶</a></h3>
 <p>Class diagram of UXsim: the relationship between classes and their key properties.</p>
-<img alt="_images/class_diagram.png" src="_images/class_diagram.png" />
+<a class="reference internal image-reference" href="_images/class_diagram.png"><img alt="_images/class_diagram.png" class="align-center" src="_images/class_diagram.png" style="width: 90%;" />
+</a>
 </section>
 <section id="computation-procedure">
 <h3>Computation Procedure<a class="headerlink" href="#computation-procedure" title="Link to this heading">¶</a></h3>
 <p>Activity diagram of UXsim: the overall computation procedure of UXsim.</p>
-<img alt="_images/activity_diagram.png" src="_images/activity_diagram.png" />
+<a class="reference internal image-reference" href="_images/activity_diagram.png"><img alt="_images/activity_diagram.png" class="align-center" src="_images/activity_diagram.png" style="width: 90%;" />
+</a>
 <p>Activity diagram of a specific vehicle in UXsim: the computation procedure for each vehicle.</p>
-<img alt="_images/activity_diagram_veh.png" src="_images/activity_diagram_veh.png" />
+<a class="reference internal image-reference" href="_images/activity_diagram_veh.png"><img alt="_images/activity_diagram_veh.png" class="align-center" src="_images/activity_diagram_veh.png" style="width: 90%;" />
+</a>
 </section>
 </section>
 <section id="traffic-flow-model">
 <h2>Traffic Flow Model<a class="headerlink" href="#traffic-flow-model" title="Link to this heading">¶</a></h2>
+<p>In this section, the model used for vehicle driving behavior on a link is explained.
+This section may be too technical and can be skipped.</p>
 <section id="model-parameters">
 <h3>Model Parameters<a class="headerlink" href="#model-parameters" title="Link to this heading">¶</a></h3>
 <p>The following parameters are used in UXsim, defined through <cite>Link</cite>, <cite>World</cite>, and <cite>Node</cite> (*: input, **: alternative input).
@@ -347,18 +353,21 @@ If you are not familiar with the traffic flow theory, it is recommended that you
 <li><p>* <code class="docutils literal notranslate"><span class="pre">capacity_in</span></code>, <code class="docutils literal notranslate"><span class="pre">capacity_out</span></code>: bottleneck capacity at beginning/end of link (veh/s/LINK)</p></li>
 <li><p>* <code class="docutils literal notranslate"><span class="pre">Node.flow_capacity</span></code>: node flow capacity (veh/s/LINK-LIKE)</p></li>
 </ul>
-<img alt="_images/fundamental_diagram.png" src="_images/fundamental_diagram.png" />
+<a class="reference internal image-reference" href="_images/fundamental_diagram.png"><img alt="_images/fundamental_diagram.png" class="align-center" src="_images/fundamental_diagram.png" style="width: 80%;" />
+</a>
 </section>
 <section id="id1">
 <h3>Newell’s Simplified Car-Following Model<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <p>The Newell’s simplified car-following model is a simple yet essential traffic flow model that describes vehicle movement based on the principle that drivers maintain a safe following distance from the vehicle ahead. It’s known for its simplicity and computational efficiency.</p>
+<p>The Newell model can be considered as a simple approximation of standard car-following models such as Nagel-Schreckenberg (cellar automata), Gipps (used by a commercial software), and Krauss (used by SUMO) models.
+This suggests that the Newell model captures some of the universal essence of car-following models.</p>
 <section id="key-variables">
 <h4>Key Variables<a class="headerlink" href="#key-variables" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><strong>Position</strong>: <span class="math notranslate nohighlight">\(x_n^t\)</span> represents the position of vehicle <span class="math notranslate nohighlight">\(n\)</span> at time <span class="math notranslate nohighlight">\(t\)</span></p></li>
 <li><p><strong>Speed</strong>: <span class="math notranslate nohighlight">\(v_n^t\)</span> represents the speed of vehicle <span class="math notranslate nohighlight">\(n\)</span> at time <span class="math notranslate nohighlight">\(t\)</span></p>
 <ul>
-<li><p>Mathematically: <span class="math notranslate nohighlight">\(v_n^t = \frac{x_n^{t-1} - x_n^t}{\tau}\)</span></p></li>
+<li><p>Mathematically: <span class="math notranslate nohighlight">\(v_n^t = \frac{x_n^t - x_n^{t-1}}{\tau}\)</span></p></li>
 </ul>
 </li>
 <li><p><strong>Spacing</strong>: <span class="math notranslate nohighlight">\(s_n^t\)</span> represents the spacing between vehicle <span class="math notranslate nohighlight">\(n\)</span> and the leading vehicle <span class="math notranslate nohighlight">\(n-1\)</span> at time <span class="math notranslate nohighlight">\(t\)</span></p>
@@ -370,7 +379,8 @@ If you are not familiar with the traffic flow theory, it is recommended that you
 <li><p><strong>Minimum spacing</strong>: <span class="math notranslate nohighlight">\(\delta\)</span> is the minimum distance between vehicles when stationary</p></li>
 <li><p><strong>Free-flow speed</strong>: <span class="math notranslate nohighlight">\(u\)</span> is the maximum speed a vehicle can travel in uncongested conditions</p></li>
 </ul>
-<img alt="_images/newell_model.png" src="_images/newell_model.png" />
+<a class="reference internal image-reference" href="_images/newell_model.png"><img alt="_images/newell_model.png" class="align-center" src="_images/newell_model.png" style="width: 60%;" />
+</a>
 </section>
 <section id="basic-mechanism">
 <h4>Basic Mechanism<a class="headerlink" href="#basic-mechanism" title="Link to this heading">¶</a></h4>
@@ -385,20 +395,20 @@ If you are not familiar with the traffic flow theory, it is recommended that you
 <div class="math notranslate nohighlight">
 \[x_n^{t+\tau} = \min\{x_n^t + u\tau, x_{n-1}^t - \delta\}\]</div>
 </div>
-<p>This means:</p>
+<p>This means that the position of vehicle <span class="math notranslate nohighlight">\(n\)</span> at time <span class="math notranslate nohighlight">\(t+\tau\)</span> is determined by taking the minimum of:</p>
 <ul class="simple">
-<li><p>The position of vehicle <span class="math notranslate nohighlight">\(n\)</span> at time <span class="math notranslate nohighlight">\(t+\tau\)</span> is determined by taking the minimum of:</p>
-<ul>
 <li><p>The position it would reach traveling at free-flow speed (<span class="math notranslate nohighlight">\(x_n^t + u\tau\)</span>)</p></li>
 <li><p>The position of the leading vehicle minus the minimum spacing (<span class="math notranslate nohighlight">\(x_{n-1}^t - \delta\)</span>), meaning that vehicle <span class="math notranslate nohighlight">\(n\)</span> is following its leading vehicle. In this case, vehicle <span class="math notranslate nohighlight">\(n\)</span> may be slowed down due to the leading vehicle, and traffic may be congested</p></li>
 </ul>
-</li>
-</ul>
+<p>In a time-space diagram, the behavior of this model can be depicted as follows.</p>
+<a class="reference internal image-reference" href="_images/newell_tsd.png"><img alt="_images/newell_tsd.png" class="align-center" src="_images/newell_tsd.png" style="width: 60%;" />
+</a>
 </section>
 <section id="mesoscopic-newell-model">
 <h4>Mesoscopic Newell Model<a class="headerlink" href="#mesoscopic-newell-model" title="Link to this heading">¶</a></h4>
 <p>By considering <span class="math notranslate nohighlight">\(\Delta n\)</span> consecutive vehicles as a single entity like a platoon or packet, the Newell model can be computed very efficiently. We call it the mesoscopic version of Newell model</p>
-<img alt="_images/newell_model_meso.png" src="_images/newell_model_meso.png" />
+<a class="reference internal image-reference" href="_images/newell_model_meso.png"><img alt="_images/newell_model_meso.png" class="align-center" src="_images/newell_model_meso.png" style="width: 60%;" />
+</a>
 <p>The model formula is:</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
