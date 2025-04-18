@@ -974,9 +974,10 @@ class SolverDUE_departure_time_choice:
 
         s.W_sol = None  #final solution
         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution algorithm
+        s.W_minimum_cost_gap = None #solution with minimum cost gap, considered as one closest to equilibrium state.
         s.dfs_link = []
 
-        warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
+        warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable. `SolverDUE_departure_time_choice` is alpha-stage.")
     
     def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, print_progress=True, callback=None):
         """
@@ -1038,14 +1039,15 @@ class SolverDUE_departure_time_choice:
         s.route_log = []
         s.dep_t_log = []
         s.cost_log = []
+        cost_gap_minimum = 9999999999999999999999
         swap_prob = swap_prob
         max_iter = max_iter
 
         print("solving DUE...")
         for i in range(max_iter):
             W = s.func_World()
-            # if i != max_iter-1:
-            #     W.vehicle_logging_timestep_interval = -1
+            if i != max_iter-1:
+                W.vehicle_logging_timestep_interval = 3
 
             if i != 0:
                 for key in W.VEHICLES:
@@ -1126,8 +1128,7 @@ class SolverDUE_departure_time_choice:
                 #     change_possibility = False
                 
                 actual_cost = s.alpha*r.actual_travel_time(ts[0]) + schedule_cost(dep_time_actual[key]+r.actual_travel_time(ts[0]))
-                #print("time:", r.actual_travel_time(ts[0]), "+", dep_time_actual[key], "=", dep_time_actual[key]+r.actual_travel_time(ts[0]), "; cost:", actual_cost)
-                chosen_cost = actual_cost
+
                 best_cost = actual_cost #現在の選択と最適選択のコスト差cost_gap算出用．均衡に近いとコスト差が小さい
                 
                 for j,t1 in enumerate(s.time_windows[:-1]):
@@ -1141,22 +1142,22 @@ class SolverDUE_departure_time_choice:
 
                     for alt_route in route_set[o,d]:
                         alt_cost = s.alpha*alt_route.actual_travel_time(alt_t_dep) + schedule_cost(alt_t_dep+alt_route.actual_travel_time(alt_t_dep))
-                        
-                        #print("time:", s.alpha*alt_route.actual_travel_time(ts[0]), "+", alt_t_dep, "=", alt_t_dep+alt_route.actual_travel_time(ts[0]), "; cost:", alt_cost)
-                        
-                        if alt_cost < chosen_cost:
-                            if alt_cost < best_cost:
-                                best_cost = alt_cost
+  
+                        if alt_cost < best_cost:
+                            best_cost = alt_cost
 
-                                if actual_cost - alt_cost > actual_cost*s.insensitive_ratio:
-                                    #stabilization technique: bounded rational behavior. insensitve to difference smaller than x%
-                                    flag_potential_change = 1
-                                    
-                                    if change_possibility and change_possibility_time:
-                                        flag_changed = True
-                                        route_changed = alt_route
-                                        dep_t_changed = alt_t_dep
-                                        chosen_cost = alt_cost
+                            # if i > 50:
+                            #     print("actual:", dep_time_actual[key], "; cost:", actual_cost)
+                            #     print(f"change: {alt_t_dep:.1f},  ; cost: {alt_cost:.1f}", "\t", actual_cost - alt_cost > actual_cost*s.insensitive_ratio, change_possibility, change_possibility_time)
+
+                            if actual_cost - alt_cost > actual_cost*s.insensitive_ratio:
+                                #stabilization technique: bounded rational behavior. insensitve to difference smaller than x%
+                                flag_potential_change = 1
+                                
+                                if change_possibility and change_possibility_time:
+                                    flag_changed = True
+                                    route_changed = alt_route
+                                    dep_t_changed = alt_t_dep
 
                 total_cost_gap += actual_cost-best_cost
                 routes_specified[key] = r
@@ -1174,8 +1175,13 @@ class SolverDUE_departure_time_choice:
             if print_progress:
                 print(f' iter {i}: cost gap: {cost_gap_per_vehicle:.1f}, potential change: {potential_n_swap}, change: {n_swap}, total travel time: {W.analyzer.total_travel_time: .1f}, delay ratio: {W.analyzer.average_delay/W.analyzer.average_travel_time: .3f}')
             
+            if cost_gap_per_vehicle < cost_gap_minimum:
+                s.W_minimum_cost_gap = W
+                cost_gap_minimum = cost_gap_per_vehicle
+            
             if callback:
                 callback(i, W)
+
 
             s.route_log.append(route_actual)
             s.dep_t_log.append(dep_time_actual)
@@ -1194,7 +1200,9 @@ class SolverDUE_departure_time_choice:
         print(f" total travel time: initial {s.ttts[0]:.1f} -> average of last {last_iters} iters {np.average(s.ttts[-last_iters:]):.1f}")
         print(f" number of potential changes: initial {s.potential_swaps[0]:.1f} -> average of last {last_iters} iters {np.average(s.potential_swaps[-last_iters:]):.1f}")
         print(f" cost gap: initial {s.cost_gaps[0]:.1f} -> average of last {last_iters} iters {np.average(s.cost_gaps[-last_iters:]):.1f}")
+        print(f" minimum cost gap {cost_gap_minimum:.1f}")
         print(f" computation time: {s.end_time - s.start_time:.1f} seconds")
+
 
         s.W_sol = W
         return s.W_sol
