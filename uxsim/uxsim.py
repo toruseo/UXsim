@@ -314,8 +314,10 @@ class Node:
                         x_cong = veh.x
                     if x_next > x_cong:
                         x_next = x_cong
-                    if x_next >= outlink.length:
-                        x_next = outlink.length
+
+                if x_next >= outlink.length:
+                    x_next = outlink.length
+                    
                 veh.x = x_next
                 veh.v += veh.x/s.W.DELTAT
                 veh.move_remain = 0
