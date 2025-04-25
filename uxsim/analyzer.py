@@ -1131,7 +1131,7 @@ class Analyzer:
             print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
 
     @catch_exceptions_and_warn()
-    def network_anim(s, animation_speed_inverse=10, detailed=0, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24, file_name=None):
+    def network_anim(s, animation_speed_inverse=10, detailed=0, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24, file_name=None, legend=True):
         """
         Generates an animation of the entire transportation network and its traffic states over time.
 
@@ -1163,6 +1163,8 @@ class Analyzer:
             How many timesteps are skipped per frame. Large value means coarse and lightweight animation. Default is 8.
         file_name : str, optional
             The name of the file to which the animation is saved. It overrides the defauld name. Default is None.
+        legend : bool, optional
+            If set to True, the legend will be displayed. Default is True.  
 
         Notes
         -----
@@ -1184,10 +1186,10 @@ class Analyzer:
             if int(t/s.W.LINKS[0].edie_dt) < s.W.LINKS[0].k_mat.shape[0]:
                 if detailed:
                     #todo_later: 今後はこちらもpillowにする
-                    s.network(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+                    s.network(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size, legend=legend)
                     pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
                 else:
-                    img_ret = s.network_pillow(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size, image_return=True)
+                    img_ret = s.network_pillow(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size, image_return=True, legend=legend)
                     pics.append(img_ret)
                 
         fname = f"out{s.W.name}/anim_network{detailed}.gif"
