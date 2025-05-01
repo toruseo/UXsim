@@ -33,6 +33,14 @@ dependencies = [
 ]
 dynamic = ["version"] # Version is read from uxsim/__init__.py
 
+[project.optional-dependencies]
+advanced = [
+    "neatnet>=0.1.0; python_version >= '3.11'",
+    "osmnx>=2.0.0",
+    "geopandas>=1.0.0",
+    "shapely>=2.1.0"
+]
+
 [project.urls]
 Homepage = "https://github.com/toruseo/UXsim"
 Documentation = "https://toruseo.jp/UXsim/docs"
