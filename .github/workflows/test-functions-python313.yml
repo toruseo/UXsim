@@ -1,4 +1,4 @@
-name: Test functions
+name: Test optional functions
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     - cron: '0 6 * * 1'
 
 jobs:
-  test-functions:
+  test-optional-functions:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
