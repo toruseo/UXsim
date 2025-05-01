@@ -5,33 +5,39 @@ Work in progress. Import from OSM is experimental and may not work as expected. 
 Confirmed version: neatnet 0.1.0
 """
 
+import sys
 import warnings
 from collections import defaultdict, Counter
 import numpy as np
 import pandas as pd
 
+
+if 1: #to avoid edior's failure
+    if sys.version_info < (3, 11):
+        raise RuntimeError("Python 3.11 or higher is required to use 'OSMImporter2'.")
+
 try:
     import osmnx as ox
 except:
-    raise ImportError("Optional module 'osmnx' is not installed.")
+    raise ImportError("Optional module 'osmnx' is not installed. Use 'pip install uxsim[advanced]'.")
 
 try:
     import neatnet
 except:
-    raise ImportError("Optional module 'neatnet' is not installed. Note that 'neatnet' requires Python 3.11 or later.")
+    raise ImportError("Optional module 'neatnet' is not installed. Use 'pip install uxsim[advanced]'. Note that 'neatnet' requires Python 3.11 or later.")
 
 try:
     import geopandas as gpd
 except:
-    raise ImportError("Optional module 'geopandas' is not installed.")
+    raise ImportError("Optional module 'geopandas' is not installed. Use 'pip install uxsim[advanced]'.")
 
 try:
     from shapely.geometry import Point, LineString
 except:
-    raise ImportError("Optional module 'shapely' is not installed.")
+    raise ImportError("Optional module 'shapely' is not installed. Use 'pip install uxsim[advanced]'.")
 
 
-def _obtain_simplify_osm_by_osmnx_neatnet(bbox, custom_filter, kwargs_dict_for_osmnx_graph_from_bbox, kwargs_dict_for_osmnx_project_graph, kwargs_dict_for_neatnet_neatify):
+def _obtain_simplify_osm_by_osmnx_neatnet(bbox, custom_filter, simplification, kwargs_dict_for_osmnx_graph_from_bbox, kwargs_dict_for_osmnx_project_graph, kwargs_dict_for_neatnet_neatify):
     """
     Obtains and simplifies OSM data using OSMnx and neatnet libraries. This function retrieves a road network from OpenStreetMap within the specified bounding box, applies projection, and then simplifies the network links using the neatnet library's neatify algorithm.
 
@@ -56,7 +62,10 @@ def _obtain_simplify_osm_by_osmnx_neatnet(bbox, custom_filter, kwargs_dict_for_o
     G = ox.graph.graph_from_bbox(bbox=bbox, network_type="drive", custom_filter=custom_filter, **kwargs_dict_for_osmnx_graph_from_bbox)
     G_projected = ox.project_graph(G, **kwargs_dict_for_osmnx_project_graph)
 
-    simplified_links = neatnet.neatify(ox.graph_to_gdfs(G_projected)[1], **kwargs_dict_for_neatnet_neatify)
+    if simplification:
+        simplified_links = neatnet.neatify(ox.graph_to_gdfs(G_projected)[1], **kwargs_dict_for_neatnet_neatify)
+    else:
+        simplified_links = ox.graph_to_gdfs(G_projected)[1]
     
     return simplified_links
 
@@ -304,7 +313,10 @@ def _attach_osm_nodes_links(W, nodes, links, set_node_capacity, maxspeed_by_road
                 node.number_of_lanes = max_lanes*2
 
 
-def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=None, custom_filter='["highway"~"trunk|primary"]', set_node_capacity=True, maxspeed_by_road_type={}, lanes_by_road_type={}, kwargs_dict_for_osmnx_graph_from_bbox={}, kwargs_dict_for_osmnx_project_graph={}, kwargs_dict_for_neatnet_neatify={}):
+def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=None, custom_filter='["highway"~"trunk|primary"]', 
+                         simplification=True, 
+                         set_node_capacity=True, 
+                         maxspeed_by_road_type={}, lanes_by_road_type={}, kwargs_dict_for_osmnx_graph_from_bbox={}, kwargs_dict_for_osmnx_project_graph={}, kwargs_dict_for_neatnet_neatify={}):
     """
     Imports OpenStreetMap (OSM) network data into a World object. This function retrieves OSM road network data within the specified bounding box, simplifies the network, and extracts nodes and links using OSMnx and neatnet. Then it attaches them to the World object.
 
@@ -322,6 +334,9 @@ def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=N
         Examples:
         - '["highway"~"motorway"]' - highways only
         - '["highway"~"motorway|trunk|primary|secondary|tertiary"]' - highways and major/mid arterials
+    simplification : bool, default=True
+        If True, the network is simplified using neatnet's neatify function.
+        If False, the original network is used.
     set_node_capacity : bool, default=True
         If True, automatically determines flow capacity of nodes based on connected links.
         If False, the capacity is unbounded. This simulates traffic signals in a continuous manner.
@@ -355,7 +370,7 @@ def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=N
     if bbox == None:
         bbox = [west,south,east,north]
         
-    simplified_links = _obtain_simplify_osm_by_osmnx_neatnet(bbox, custom_filter, 
+    simplified_links = _obtain_simplify_osm_by_osmnx_neatnet(bbox, custom_filter, simplification,
                                                              kwargs_dict_for_osmnx_graph_from_bbox, kwargs_dict_for_osmnx_project_graph, kwargs_dict_for_neatnet_neatify)
     nodes, links = _extract_network_from_geodataframe(simplified_links)  
     _attach_osm_nodes_links(W, nodes, links, set_node_capacity, maxspeed_by_road_type=maxspeed_by_road_type, lanes_by_road_type=lanes_by_road_type)
@@ -375,3 +390,4 @@ def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=N
     print(f"Imported {len(nodes)} nodes and {sum([val for val in stats_count.values()])} links from OSM")
     for key in stats_count:
         print(f" '{key}' links:\t {stats_count[key]} with total length {stats_length[key]:.0f} m")
+
