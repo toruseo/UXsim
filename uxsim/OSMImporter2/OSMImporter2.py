@@ -22,7 +22,7 @@ except:
     raise ImportError("Optional module 'osmnx' is not installed. Use 'pip install uxsim[advanced]'.")
 
 try:
-    import neatnet
+    import neatnet # type: ignore
 except:
     raise ImportError("Optional module 'neatnet' is not installed. Use 'pip install uxsim[advanced]'. Note that 'neatnet' requires Python 3.11 or later.")
 
