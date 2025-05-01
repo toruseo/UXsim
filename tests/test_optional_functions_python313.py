@@ -37,4 +37,4 @@ def test_osm_import2():
 
     #W.analyzer.network_average(network_font_size=0)
 
-    assert equal_tolerance(W.analyzer.basic_to_pandas()["average_travel_time"], 327, rel_tol=0.2)
+    assert equal_tolerance(W.analyzer.basic_to_pandas()["average_travel_time"][0], 327, rel_tol=0.2)
