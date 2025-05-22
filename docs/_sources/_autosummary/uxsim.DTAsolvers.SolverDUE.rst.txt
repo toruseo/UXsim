@@ -1,0 +1,26 @@
+﻿uxsim.DTAsolvers.SolverDUE
+==========================
+
+.. currentmodule:: uxsim.DTAsolvers
+
+.. autoclass:: SolverDUE
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SolverDUE.__init__
+      ~SolverDUE.plot_convergence
+      ~SolverDUE.plot_link_stats
+      ~SolverDUE.plot_vehicle_stats
+      ~SolverDUE.solve
+   
+   
+
+   
+   
+   

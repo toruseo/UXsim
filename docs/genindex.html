@@ -214,7 +214,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_09en_dynamic_traffic_assignment.html">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
@@ -232,6 +232,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html">uxsim.DTAsolvers.SolverDSO_GA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.utils.html">uxsim.utils</a></li>
@@ -287,6 +289,10 @@ gtag('config', 'UA-111714220-1');
         <li><a href="_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.__init__">__init__() (uxsim.analyzer.Analyzer method)</a>
 
         <ul>
+          <li><a href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.__init__">(uxsim.DTAsolvers.SolverDSO_GA method)</a>
+</li>
+          <li><a href="_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.__init__">(uxsim.DTAsolvers.SolverDUE method)</a>
+</li>
           <li><a href="_autosummary/uxsim.Link.html#uxsim.Link.__init__">(uxsim.Link method)</a>
 </li>
           <li><a href="_autosummary/uxsim.Node.html#uxsim.Node.__init__">(uxsim.Node method)</a>
@@ -864,6 +870,8 @@ gtag('config', 'UA-111714220-1');
 </li>
           <li><a href="_autosummary/uxsim.Analyzer.html#module-uxsim.analyzer">uxsim.analyzer</a>
 </li>
+          <li><a href="_autosummary/uxsim.DTAsolvers.DTAsolvers.html#module-uxsim.DTAsolvers.DTAsolvers">uxsim.DTAsolvers.DTAsolvers</a>
+</li>
           <li><a href="_autosummary/uxsim.OSMImporter.html#module-uxsim.OSMImporter">uxsim.OSMImporter</a>
 </li>
           <li><a href="_autosummary/uxsim.ResultGUIViewer.html#module-uxsim.ResultGUIViewer">uxsim.ResultGUIViewer</a>
@@ -971,14 +979,32 @@ gtag('config', 'UA-111714220-1');
         </ul></li>
         <li><a href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.PandasModel">PandasModel (class in uxsim.ResultGUIViewer.ResultGUIViewer)</a>
 </li>
+        <li><a href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.plot_convergence">plot_convergence() (uxsim.DTAsolvers.SolverDSO_GA method)</a>
+
+        <ul>
+          <li><a href="_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.plot_convergence">(uxsim.DTAsolvers.SolverDUE method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.plot_link_stats">plot_link_stats() (uxsim.DTAsolvers.SolverDSO_GA method)</a>
+
+        <ul>
+          <li><a href="_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.plot_link_stats">(uxsim.DTAsolvers.SolverDUE method)</a>
+</li>
+        </ul></li>
         <li><a href="_autosummary/uxsim.utils.html#uxsim.utils.plot_multiple_y">plot_multiple_y() (in module uxsim.utils)</a>, <a href="utils.html#uxsim.utils.plot_multiple_y">[1]</a>
 </li>
         <li><a href="_autosummary/uxsim.Analyzer.html#uxsim.analyzer.Analyzer.plot_vehicle_log">plot_vehicle_log() (uxsim.analyzer.Analyzer method)</a>, <a href="_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.plot_vehicle_log">[1]</a>
 </li>
-        <li><a href="_autosummary/uxsim.Analyzer.html#uxsim.analyzer.Analyzer.plot_vehicles_log">plot_vehicles_log() (uxsim.analyzer.Analyzer method)</a>, <a href="_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.plot_vehicles_log">[1]</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.plot_vehicle_stats">plot_vehicle_stats() (uxsim.DTAsolvers.SolverDSO_GA method)</a>
+
+        <ul>
+          <li><a href="_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.plot_vehicle_stats">(uxsim.DTAsolvers.SolverDUE method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/uxsim.Analyzer.html#uxsim.analyzer.Analyzer.plot_vehicles_log">plot_vehicles_log() (uxsim.analyzer.Analyzer method)</a>, <a href="_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.plot_vehicles_log">[1]</a>
+</li>
         <li><a href="_autosummary/uxsim.utils.html#uxsim.utils.print_columns">print_columns() (in module uxsim.utils)</a>, <a href="utils.html#uxsim.utils.print_columns">[1]</a>
 </li>
         <li><a href="_autosummary/uxsim.uxsim.World.html#uxsim.uxsim.World.print_scenario_stats">print_scenario_stats() (uxsim.uxsim.World method)</a>, <a href="_autosummary/uxsim.uxsim.html#uxsim.uxsim.World.print_scenario_stats">[1]</a>, <a href="uxsim.html#uxsim.uxsim.World.print_scenario_stats">[2]</a>
@@ -1087,14 +1113,14 @@ gtag('config', 'UA-111714220-1');
         </ul></li>
         <li><a href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.EdgeItem.shape">shape() (uxsim.ResultGUIViewer.ResultGUIViewer.EdgeItem method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="_autosummary/uxsim.uxsim.World.html#uxsim.uxsim.World.show_network">show_network() (uxsim.uxsim.World method)</a>, <a href="_autosummary/uxsim.uxsim.html#uxsim.uxsim.World.show_network">[1]</a>, <a href="uxsim.html#uxsim.uxsim.World.show_network">[2]</a>
 
         <ul>
           <li><a href="_autosummary/uxsim.World.html#uxsim.World.show_network">(uxsim.World method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="_autosummary/uxsim.Analyzer.html#uxsim.analyzer.Analyzer.show_simulation_progress">show_simulation_progress() (uxsim.analyzer.Analyzer method)</a>, <a href="_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.show_simulation_progress">[1]</a>
 </li>
         <li><a href="_autosummary/uxsim.Node.html#uxsim.Node.signal_control">signal_control() (uxsim.Node method)</a>
@@ -1121,6 +1147,16 @@ gtag('config', 'UA-111714220-1');
           <li><a href="_autosummary/uxsim.World.html#uxsim.World.simulation_terminated">(uxsim.World method)</a>
 </li>
         </ul></li>
+        <li><a href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.solve">solve() (uxsim.DTAsolvers.SolverDSO_GA method)</a>
+
+        <ul>
+          <li><a href="_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.solve">(uxsim.DTAsolvers.SolverDUE method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA">SolverDSO_GA (class in uxsim.DTAsolvers)</a>
+</li>
+        <li><a href="_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE">SolverDUE (class in uxsim.DTAsolvers)</a>
+</li>
         <li><a href="_autosummary/uxsim.Link.html#id0">speed (uxsim.Link attribute)</a>, <a href="_autosummary/uxsim.Link.html#uxsim.Link.speed">[1]</a>
 
         <ul>
@@ -1209,6 +1245,13 @@ gtag('config', 'UA-111714220-1');
 
         <ul>
           <li><a href="_autosummary/uxsim.Analyzer.html#module-uxsim.analyzer">module</a>
+</li>
+        </ul></li>
+        <li>
+    uxsim.DTAsolvers.DTAsolvers
+
+        <ul>
+          <li><a href="_autosummary/uxsim.DTAsolvers.DTAsolvers.html#module-uxsim.DTAsolvers.DTAsolvers">module</a>
 </li>
         </ul></li>
         <li>

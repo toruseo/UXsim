@@ -1,0 +1,1724 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Huge-scale simulation using Chicago-Sketch dataset" href="demo_notebook_08en_chicago.html" /><link rel="prev" title="Taxi / Shared mobility" href="demo_notebook_06en_taxi_or_shared_mobility.html" />
+
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+        <title>Dynamic Traffic Assignments: DUO, DUE, DSO - UXsim: Traffic Simulation in Python v1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111714220-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-111714220-1');
+</script>
+  
+</head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">UXsim: Traffic Simulation in Python v1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_01en.html">Step-by-step Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_10en_traffic_signal_tutorial.html">Tutorial on Traffic Signal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_02en.html">Advanced example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism: Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.World.html">uxsim.World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Link.html">uxsim.Link</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Vehicle.html">uxsim.Vehicle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Route.html">uxsim.Route</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html">uxsim.DTAsolvers.SolverDSO_GA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.utils.html">uxsim.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.scenario_reader_writer.html">uxsim.scenario_reader_writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Utilities.Utilities.html">uxsim.Utilities.Utilities</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/notebooks/demo_notebook_09en_dynamic_traffic_assignment.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="Dynamic-Traffic-Assignments:-DUO,-DUE,-DSO">
+<h1>Dynamic Traffic Assignments: DUO, DUE, DSO<a class="headerlink" href="#Dynamic-Traffic-Assignments:-DUO,-DUE,-DSO" title="Link to this heading">¶</a></h1>
+<p>There are 3 famous route choice principles for dynamic traffic assignments (DTA) (the definition varies depending on the terminology).</p>
+<ul class="simple">
+<li><p>Dynamic User Optimal (DUO): Travelers choose the shortest path based on the instantaneous travel time (the current average speed).</p></li>
+<li><p>Dynamic User Equilibrium (DUE): Travelers choose the shortest path based on the actual travel time.</p></li>
+<li><p>Dynamic System Optimal (DSO): Travelers choose the path so that the total travel time is minimized.</p></li>
+</ul>
+<p>The important point of DTA is that travel time may change as the time progresses. Therefore, in the DUO, the chosen route may turn out not to be the actual shortest path after the traveler completes their trip, as the travel time may change during their trip. Similarly, in the DUE, the “actual travel time” is unknown when the traveler choose the route, as it depends on the future travel time. Likewise, in the DSO, it is not obvious which path minimizes the total travel time.</p>
+<p>The default routing principle of UXsim is based on DUO, because it is reasonable and very easy to compute.</p>
+<p>DUE and DSO are also important as theoretical benchmarks. Due to the aforementioned complexity, it is known that they are difficult to solve especially when the network is large. But, for small or mid scale networks with relatively small number of platoons, their approximate solutions can be obtained by UXsim. The solvers for DTA problems are implemented as <code class="docutils literal notranslate"><span class="pre">uxsim.DTAsolvers</span></code> submodule. In this notebook, we demonstrate their behaviors.</p>
+<p>Techical notes for experienced readers. In this demonstration, we consider the route choice problem only. In the other words, we do not consider the departure time problem, and the departure time of each traveler is assumed to be fixed.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">uxsim</span>
+<span class="kn">from</span> <span class="nn">uxsim.DTAsolvers</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<section id="Two-route-network-with-parallel-highway-and-arterial">
+<h2>Two route network with parallel highway and arterial<a class="headerlink" href="#Two-route-network-with-parallel-highway-and-arterial" title="Link to this heading">¶</a></h2>
+<p>We simulate a simple toy network with a route choice option. In order to use the identical scenario in multiple simulations efficiently, we define the following function that setup a World object with the identical conditions.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># scenario definition</span>
+<span class="k">def</span> <span class="nf">create_World</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function that returns World object with scenario informaiton. This is faster way to reuse the same scenario, as `World.copy` or `World.load_scenario` takes some computation time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">uxsim</span><span class="o">.</span><span class="n">World</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">deltan</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">tmax</span><span class="o">=</span><span class="mi">6000</span><span class="p">,</span>
+        <span class="n">print_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">vehicle_logging_timestep_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">hard_deterministic_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">)</span>
+
+    <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;highway12&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;highway23&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">capacity_out</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;highway37&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;onramp&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;arterial45&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;arterial56&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;arterial67&quot;</span><span class="p">,</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;7&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mf">0.4</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">W</span>
+</pre></div>
+</div>
+</div>
+<p>The network structure is as follows. Vehicles travel from nodes “1” and “4” at the left to node “7” at the right. The upper route is a <em>highway</em>, and the bottom is an <em>arterial road</em>. The highway has faster maximum speed but smaller traffic capacity compared with the arterial road. Vehicles from “3” can choose either highway or arterial, depending on the traffic condition.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span> <span class="o">=</span> <span class="n">create_World</span><span class="p">()</span>
+<span class="n">W</span><span class="o">.</span><span class="n">show_network</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_6_0.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_6_0.png" />
+</div>
+</div>
+<p>For later use, we define the following visualization function to visualize simulation results.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">visualizaion_helper_function</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_average</span><span class="p">(</span><span class="n">legend_outside</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">defRoute</span><span class="p">([</span><span class="s2">&quot;arterial45&quot;</span><span class="p">,</span> <span class="s2">&quot;onramp&quot;</span><span class="p">,</span> <span class="s2">&quot;highway23&quot;</span><span class="p">,</span> <span class="s2">&quot;highway37&quot;</span><span class="p">])</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">defRoute</span><span class="p">([</span><span class="s2">&quot;arterial45&quot;</span><span class="p">,</span> <span class="s2">&quot;arterial56&quot;</span><span class="p">,</span> <span class="s2">&quot;arterial67&quot;</span><span class="p">])</span>
+
+    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">(</span><span class="n">r1</span><span class="o">.</span><span class="n">links</span><span class="p">)</span>
+    <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">time_space_diagram_traj_links</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">links</span><span class="p">)</span>
+
+    <span class="n">ttt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">TIME</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="p">)</span>
+    <span class="n">tt1</span> <span class="o">=</span> <span class="p">[</span><span class="n">r1</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ttt</span><span class="p">]</span>
+    <span class="n">tt2</span> <span class="o">=</span> <span class="p">[</span><span class="n">r2</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ttt</span><span class="p">]</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ttt</span><span class="p">,</span> <span class="n">tt1</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;r1&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ttt</span><span class="p">,</span> <span class="n">tt2</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;r2&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;travel time&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;cumlative count&quot;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ttt</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="s2">&quot;onramp&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;highway (r1)&quot;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ttt</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="s2">&quot;arterial56&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;arterial (r2)&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">),</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<section id="DUO">
+<h3>DUO<a class="headerlink" href="#DUO" title="Link to this heading">¶</a></h3>
+<p>DUO can be simulated by the default procedure of UXsim as follows.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># DUO (default)</span>
+
+<span class="n">W_DUO</span> <span class="o">=</span> <span class="n">create_World</span><span class="p">()</span>
+<span class="n">W_DUO</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+<span class="n">W_DUO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df_DUO</span> <span class="o">=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
+
+<span class="n">visualizaion_helper_function</span><span class="p">(</span><span class="n">W_DUO</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+results:
+ average speed:  9.6 m/s
+ number of completed trips:      4500 / 4500
+ average travel time of trips:   899.2 s
+ average delay of trips:         569.2 s
+ delay ratio:                    0.633
+ total distance traveled:        23580000.0 m
+results:
+ average speed:  9.6 m/s
+ number of completed trips:      4500 / 4500
+ average travel time of trips:   899.2 s
+ average delay of trips:         569.2 s
+ delay ratio:                    0.633
+ total distance traveled:        23580000.0 m
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_10_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_10_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_10_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_10_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_10_3.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_10_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_10_4.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_10_4.png" />
+</div>
+</div>
+<p>In DUO, you can see that many vehicles chose the highway route at the early stage of the simulation due to the fast maximum speed. It then caused a significant traffic jam, resulting a longer travel time. This demonstrates the myopic nature of DUO routing principle.</p>
+</section>
+<section id="DUE">
+<h3>DUE<a class="headerlink" href="#DUE" title="Link to this heading">¶</a></h3>
+<p>Approximate solution of DUE can be obtained by <code class="docutils literal notranslate"><span class="pre">SolverDUE</span></code> function as follows. The solution is not exact as exact DUE (in which every driver chooses the route with least travel cost) is very difficult to compute. In easy terms, the approximate DUE means that each driver chooses routes with the least expected cost when the cost is averaged for several days.</p>
+<p>More specifically (you can skip the following explanation as it is a bit technical), this function computes a near dynamic user equilibrium state as a steady state of day-to-day dynamical routing game. On day <code class="docutils literal notranslate"><span class="pre">i</span></code>, vehicles choose their route based on actual travel time on day <code class="docutils literal notranslate"><span class="pre">i-1</span></code> with the same departure time. If there are shorter travel time route, they will change with probability <code class="docutils literal notranslate"><span class="pre">swap_prob</span></code>. This process is repeated until <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> day. It is expected that this process eventually
+reach a steady state. Due to the problem complexity, it does not necessarily reach or converge to Nash equilibrium or any other stationary points. However, in the literature, it is argued that the steady state can be considered as a reasonable proxy for Nash equilibrium or dynamic equilibrium state. There are some theoretical background for it; but intuitively speaking, the steady state can be considered as a realistic state that people’s rational behavior will reach.</p>
+<p>This method is based on the following literature:</p>
+<ul class="simple">
+<li><p>Ishihara, M., &amp; Iryo, T. (2015). Dynamic Traffic Assignment by Markov Chain. Journal of Japan Society of Civil Engineers, Ser. D3 (Infrastructure Planning and Management), 71(5), I_503-I_509. (in Japanese). <a class="reference external" href="https://doi.org/10.2208/jscejipm.71.I_503">https://doi.org/10.2208/jscejipm.71.I_503</a></p></li>
+<li><p>Iryo, T., Urata, J., &amp; Kawase, R. (2024). Traffic Flow Simulator and Travel Demand Simulators for Assessing Congestion on Roads After a Major Earthquake. In APPLICATION OF HIGH-PERFORMANCE COMPUTING TO EARTHQUAKE-RELATED PROBLEMS (pp. 413-447). <a class="reference external" href="https://doi.org/10.1142/9781800614635_0007">https://doi.org/10.1142/9781800614635_0007</a></p></li>
+<li><p>Iryo, T., Watling, D., &amp; Hazelton, M. (2024). Estimating Markov Chain Mixing Times: Convergence Rate Towards Equilibrium of a Stochastic Process Traffic Assignment Model. Transportation Science. <a class="reference external" href="https://doi.org/10.1287/trsc.2024.0523">https://doi.org/10.1287/trsc.2024.0523</a></p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># DUE</span>
+<span class="n">solver_DUE</span> <span class="o">=</span> <span class="n">SolverDUE</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
+<span class="n">solver_DUE</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">W_DUE</span> <span class="o">=</span> <span class="n">solver_DUE</span><span class="o">.</span><span class="n">W_sol</span>
+<span class="n">W_DUE</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df_DUE</span> <span class="o">=</span> <span class="n">W_DUE</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+solving DUE...
+DUE summary:
+ total travel time: initial 4046400.0 -&gt; average of last 25 iters 3203344.0
+ number of potential route changes: initial 1580.0 -&gt; average of last 25 iters 1099.2
+ route travel time gap: initial 57.2 -&gt; average of last 25 iters 16.6
+ computation time: 13.4 seconds
+results:
+ average speed:  11.5 m/s
+ number of completed trips:      4500 / 4500
+ average travel time of trips:   697.8 s
+ average delay of trips:         367.8 s
+ delay ratio:                    0.527
+ total distance traveled:        23820000.0 m
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizaion_helper_function</span><span class="p">(</span><span class="n">W_DUE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+results:
+ average speed:  11.5 m/s
+ number of completed trips:      4500 / 4500
+ average travel time of trips:   697.8 s
+ average delay of trips:         367.8 s
+ delay ratio:                    0.527
+ total distance traveled:        23820000.0 m
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_14_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_14_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_14_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_14_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_14_3.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_14_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_14_4.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_14_4.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DUE</span><span class="o">.</span><span class="n">plot_convergence</span><span class="p">()</span>
+<span class="n">solver_DUE</span><span class="o">.</span><span class="n">plot_link_stats</span><span class="p">()</span>
+<span class="n">solver_DUE</span><span class="o">.</span><span class="n">plot_vehicle_stats</span><span class="p">(</span><span class="n">orig</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;7&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_0.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_3.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_4.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_4.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_5.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_15_5.png" />
+</div>
+</div>
+<p>In DUE, you can see that cost is more balanced than DUO. For example, the plot “travel time difference between chosen route and minimum cost route” shows that it is reduced from 60 sec in DUO (the initial solution) to 10-20 sec in the final solution.</p>
+<p>As a result of the travelers’ smart decision making, the total travel time of DUE is reduced to about 3 200 000 sec from 4 000 000 sec in the DUO where travelers are myopic. Note that these numbers may be different for each simulation as the algorithm is stochastic.</p>
+</section>
+<section id="DSO">
+<h3>DSO<a class="headerlink" href="#DSO" title="Link to this heading">¶</a></h3>
+<p>Now we compute DSO solution. Here we use standard Genetic Algorithm (GA). This is not very smart method, but it works well for small-mid scale scenarios. Implementation of sophisticated algorithms is ongoing.</p>
+<p>The objective function for GA is</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>total_travel_time + simulation_duration*number_of_vehicles_that_could_not_complete_their_trip
+</pre></div>
+</div>
+<p>The second term should be zero for reasonable results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># DSO by GA</span>
+<span class="n">solver_DSO_GA</span> <span class="o">=</span> <span class="n">SolverDSO_GA</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
+<span class="n">solver_DSO_GA</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">W_DSO_GA</span> <span class="o">=</span> <span class="n">solver_DSO_GA</span><span class="o">.</span><span class="n">W_sol</span>
+<span class="n">W_DSO_GA</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df_DSO_GA</span> <span class="o">=</span> <span class="n">W_DSO_GA</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+solving DSO by GA...
+DSO summary:
+ total travel time: initial 3760000.0 -&gt; last 2939600.0
+ computation time: 122.3 seconds
+results:
+ average speed:  12.6 m/s
+ number of completed trips:      4500 / 4500
+ average travel time of trips:   653.2 s
+ average delay of trips:         323.2 s
+ delay ratio:                    0.495
+ total distance traveled:        23740000.0 m
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizaion_helper_function</span><span class="p">(</span><span class="n">W_DSO_GA</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+results:
+ average speed:  12.6 m/s
+ number of completed trips:      4500 / 4500
+ average travel time of trips:   653.2 s
+ average delay of trips:         323.2 s
+ delay ratio:                    0.495
+ total distance traveled:        23740000.0 m
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_3.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_4.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_4.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DSO_GA</span><span class="o">.</span><span class="n">plot_convergence</span><span class="p">()</span>
+<span class="n">solver_DSO_GA</span><span class="o">.</span><span class="n">plot_link_stats</span><span class="p">()</span>
+<span class="n">solver_DSO_GA</span><span class="o">.</span><span class="n">plot_vehicle_stats</span><span class="p">(</span><span class="n">orig</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;7&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_20_0.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_20_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_20_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_20_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_20_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_20_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_20_3.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_20_3.png" />
+</div>
+</div>
+<p>You can see that the congestion is almost eliminated. The total travel time is 3 000 000 sec in DSO. This is more efficient than DUE (with about 3 200 000 sec) or DUO (with about 4 000 000 sec).</p>
+<p>However, some travelers are enforced to choose routes with longer travel time to improve the efficiency of the entire system.</p>
+</section>
+<section id="Comparison">
+<h3>Comparison<a class="headerlink" href="#Comparison" title="Link to this heading">¶</a></h3>
+<p>Comparison of 3 cases.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DUO&quot;</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_DUO</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DUE&quot;</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_DUE</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DSO&quot;</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_DSO_GA</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DUO
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>total_trips</th>
+      <th>completed_trips</th>
+      <th>total_travel_time</th>
+      <th>average_travel_time</th>
+      <th>total_delay</th>
+      <th>average_delay</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>4500</td>
+      <td>4500</td>
+      <td>4046400.0</td>
+      <td>899.2</td>
+      <td>2561400.0</td>
+      <td>569.2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DUE
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>total_trips</th>
+      <th>completed_trips</th>
+      <th>total_travel_time</th>
+      <th>average_travel_time</th>
+      <th>total_delay</th>
+      <th>average_delay</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>4500</td>
+      <td>4500</td>
+      <td>3140000.0</td>
+      <td>697.777778</td>
+      <td>1655000.0</td>
+      <td>367.777778</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DSO
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>total_trips</th>
+      <th>completed_trips</th>
+      <th>total_travel_time</th>
+      <th>average_travel_time</th>
+      <th>total_delay</th>
+      <th>average_delay</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>4500</td>
+      <td>4500</td>
+      <td>2939600.0</td>
+      <td>653.244444</td>
+      <td>1454600.0</td>
+      <td>323.244444</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+</section>
+<section id="Large-scale-scenario">
+<h2>Large-scale scenario<a class="headerlink" href="#Large-scale-scenario" title="Link to this heading">¶</a></h2>
+<p>Now we show larger example.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">uxsim</span>
+<span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="n">DTAsolvers</span>
+
+<span class="k">def</span> <span class="nf">create_World</span><span class="p">():</span>
+    <span class="c1"># simulation world</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">uxsim</span><span class="o">.</span><span class="n">World</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">deltan</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">tmax</span><span class="o">=</span><span class="mi">4800</span><span class="p">,</span>
+        <span class="n">duo_update_time</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">print_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># scenario</span>
+    <span class="c1">#automated network generation</span>
+    <span class="c1">#deploy nodes as an imax x jmax grid</span>
+    <span class="n">imax</span> <span class="o">=</span> <span class="mi">9</span>
+    <span class="n">jmax</span> <span class="o">=</span> <span class="mi">9</span>
+    <span class="n">id_center</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
+            <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="mf">1.6</span><span class="p">)</span>
+
+    <span class="c1">#create links between neighborhood nodes</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">imax</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jmax</span><span class="p">):</span>
+            <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="mi">10</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">id_center</span><span class="p">:</span>
+                    <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="mi">20</span>
+                <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">free_flow_speed</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">id_center</span><span class="p">:</span>
+                    <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="mi">20</span>
+                <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">free_flow_speed</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">jmax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">id_center</span><span class="p">:</span>
+                    <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="mi">20</span>
+                <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">free_flow_speed</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">id_center</span><span class="p">:</span>
+                    <span class="n">free_flow_speed</span> <span class="o">=</span> <span class="mi">20</span>
+                <span class="n">links</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;l</span><span class="si">{</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">free_flow_speed</span><span class="p">)</span>
+
+    <span class="c1">#generate traffic demand between the boundary nodes</span>
+    <span class="n">demand_flow</span> <span class="o">=</span> <span class="mf">0.08</span>
+    <span class="n">demand_duration</span> <span class="o">=</span> <span class="mi">2400</span>
+    <span class="n">outer_ids</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">outer_ids</span><span class="p">,</span> <span class="n">jmax</span><span class="o">-</span><span class="n">outer_ids</span><span class="p">)]:</span>
+        <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">outer_ids</span><span class="p">,</span><span class="n">jmax</span><span class="o">-</span><span class="n">outer_ids</span><span class="p">)]:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">demand_duration</span><span class="p">,</span> <span class="n">demand_flow</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">jmax</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">outer_ids</span><span class="p">,</span> <span class="n">imax</span><span class="o">-</span><span class="n">outer_ids</span><span class="p">)]:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">demand_duration</span><span class="p">,</span> <span class="n">demand_flow</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">outer_ids</span><span class="p">,</span> <span class="n">imax</span><span class="o">-</span><span class="n">outer_ids</span><span class="p">)]:</span>
+        <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">jmax</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">outer_ids</span><span class="p">,</span> <span class="n">imax</span><span class="o">-</span><span class="n">outer_ids</span><span class="p">)]:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">demand_duration</span><span class="p">,</span> <span class="n">demand_flow</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">imax</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">outer_ids</span><span class="p">,</span><span class="n">jmax</span><span class="o">-</span><span class="n">outer_ids</span><span class="p">)]:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">adddemand</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n2</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">demand_duration</span><span class="p">,</span> <span class="n">demand_flow</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">W</span>
+
+<span class="n">W</span> <span class="o">=</span> <span class="n">create_World</span><span class="p">()</span>
+<span class="n">W</span><span class="o">.</span><span class="n">change_print_mode</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">show_network</span><span class="p">(</span><span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_25_0.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_25_0.png" />
+</div>
+</div>
+<p>In this grid network, central links (links at x=4 and y=4) have faster free-flow speed of 20 m/s. The rest of links are with free-flow speed of 10 m/s. And the following four types of demands are generated:</p>
+<ul class="simple">
+<li><p>bottom edge (3 nodes at (3,0), (4,0), (5,0)) to top (3 nodes at (3,8), (4,8), (5,8))</p></li>
+<li><p>bottom edge to right</p></li>
+<li><p>left edge to top</p></li>
+<li><p>left to right</p></li>
+</ul>
+<p>This is a deliberately inefficient setting that causes congestion. In a free-flowing condition, travelers tend to choose the central links. However, because traffic capacity of central links is limited, it may cause congestion although many other links are empty. To enhance system’s performance, some travelers need to be distributed to slower links to efficiently utilize the network capacity.</p>
+<section id="id1">
+<h3>DUO<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>First, let’s compute DUO solution.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># execute simulation</span>
+<span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+
+<span class="c1"># visualize</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_average</span><span class="p">(</span><span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_outside</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">W_DUO</span> <span class="o">=</span> <span class="n">W</span>
+<span class="n">df_DUO</span> <span class="o">=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
+
+<span class="n">W_DUO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;flow_speed&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;out/anim_DUO.gif&quot;</span><span class="p">)</span>
+<span class="n">uxsim</span><span class="o">.</span><span class="n">display_image_in_notebook</span><span class="p">(</span><span class="s2">&quot;out/anim_DUO.gif&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    4800 s|        0 vehs|   0.0 m/s|    23.75 s
+ simulation finished
+results:
+ average speed:  9.6 m/s
+ number of completed trips:      6840 / 6840
+ average travel time of trips:   974.1 s
+ average delay of trips:         457.5 s
+ delay ratio:                    0.470
+ total distance traveled:        62120000.0 m
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_27_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_27_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ generating animation...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c4fcfb3ed1c940a3be713522f62575fb", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_27_4.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_27_4.png" />
+</div>
+</div>
+<p>The aforementioned expected behaviors are confirmed. Many travelers choose the central links first (thick width = high flow) and created congestion (red color = congestion). After that, some travelers avoided the center links. However, the overall efficiency is not good, with 0.470 delay ratio.</p>
+</section>
+<section id="id2">
+<h3>DUE<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p>Now we compute DUE solution.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DUE</span> <span class="o">=</span> <span class="n">DTAsolvers</span><span class="o">.</span><span class="n">SolverDUE</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
+<span class="n">solver_DUE</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">W_DUE</span> <span class="o">=</span> <span class="n">solver_DUE</span><span class="o">.</span><span class="n">W_sol</span>
+<span class="n">W_DUE</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">W_DUE</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_average</span><span class="p">(</span><span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df_DUE</span> <span class="o">=</span> <span class="n">W_DUE</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
+
+<span class="n">W_DUE</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;flow_speed&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;out/anim_DUE.gif&quot;</span><span class="p">)</span>
+<span class="n">uxsim</span><span class="o">.</span><span class="n">display_image_in_notebook</span><span class="p">(</span><span class="s2">&quot;out/anim_DUE.gif&quot;</span><span class="p">)</span>
+
+<span class="n">solver_DUE</span><span class="o">.</span><span class="n">plot_convergence</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+simulation setting (not finalized):
+ scenario name:
+ simulation duration:    4800 s
+ number of vehicles:     6840 veh
+ total road length:      288000 m
+ time discret. width:    10 s
+ platoon size:           10 veh
+ number of timesteps:    480.0
+ number of platoons:     684
+ number of links:        288
+ number of nodes:        81
+ setup time:             0.01 s
+number of OD pairs: 6561, number of routes: 123595
+solving DUE...
+ iter 0: time gap: 137.6, potential route change: 30110, route change: 1400, total travel time:  6663000.0, delay ratio:  0.470
+ iter 1: time gap: 110.2, potential route change: 25770, route change: 1230, total travel time:  6733200.0, delay ratio:  0.475
+ iter 2: time gap: 79.6, potential route change: 26790, route change: 1290, total travel time:  6179800.0, delay ratio:  0.428
+ iter 3: time gap: 74.2, potential route change: 25280, route change: 1060, total travel time:  6000500.0, delay ratio:  0.411
+ iter 4: time gap: 53.6, potential route change: 26990, route change: 1310, total travel time:  5603900.0, delay ratio:  0.369
+ iter 5: time gap: 42.9, potential route change: 22920, route change: 1030, total travel time:  5647500.0, delay ratio:  0.374
+ iter 6: time gap: 43.0, potential route change: 19590, route change: 940, total travel time:  5670700.0, delay ratio:  0.377
+ iter 7: time gap: 43.0, potential route change: 18700, route change: 940, total travel time:  5629800.0, delay ratio:  0.372
+ iter 8: time gap: 52.2, potential route change: 21050, route change: 940, total travel time:  5902400.0, delay ratio:  0.401
+ iter 9: time gap: 56.0, potential route change: 20730, route change: 990, total travel time:  5972500.0, delay ratio:  0.408
+ iter 10: time gap: 43.3, potential route change: 18390, route change: 800, total travel time:  5760100.0, delay ratio:  0.386
+ iter 11: time gap: 35.8, potential route change: 16290, route change: 730, total travel time:  5619200.0, delay ratio:  0.371
+ iter 12: time gap: 40.7, potential route change: 17650, route change: 820, total travel time:  5734800.0, delay ratio:  0.384
+ iter 13: time gap: 38.1, potential route change: 18750, route change: 840, total travel time:  5534200.0, delay ratio:  0.361
+ iter 14: time gap: 43.0, potential route change: 17740, route change: 850, total travel time:  5673600.0, delay ratio:  0.377
+ iter 15: time gap: 42.7, potential route change: 18230, route change: 740, total travel time:  5862200.0, delay ratio:  0.397
+ iter 16: time gap: 46.7, potential route change: 18140, route change: 760, total travel time:  5993300.0, delay ratio:  0.410
+ iter 17: time gap: 35.4, potential route change: 16230, route change: 800, total travel time:  5781200.0, delay ratio:  0.389
+ iter 18: time gap: 35.1, potential route change: 15680, route change: 790, total travel time:  5776500.0, delay ratio:  0.388
+ iter 19: time gap: 39.5, potential route change: 15310, route change: 870, total travel time:  5753100.0, delay ratio:  0.386
+ iter 20: time gap: 38.8, potential route change: 16510, route change: 840, total travel time:  5771500.0, delay ratio:  0.388
+ iter 21: time gap: 44.7, potential route change: 16520, route change: 810, total travel time:  5849000.0, delay ratio:  0.396
+ iter 22: time gap: 34.8, potential route change: 15910, route change: 750, total travel time:  5588100.0, delay ratio:  0.368
+ iter 23: time gap: 59.3, potential route change: 18450, route change: 930, total travel time:  5833300.0, delay ratio:  0.394
+ iter 24: time gap: 39.6, potential route change: 15800, route change: 780, total travel time:  5697000.0, delay ratio:  0.380
+ iter 25: time gap: 34.5, potential route change: 14870, route change: 690, total travel time:  5772500.0, delay ratio:  0.388
+ iter 26: time gap: 33.2, potential route change: 15010, route change: 730, total travel time:  5659500.0, delay ratio:  0.376
+ iter 27: time gap: 32.1, potential route change: 15620, route change: 850, total travel time:  5559800.0, delay ratio:  0.364
+ iter 28: time gap: 38.2, potential route change: 15750, route change: 700, total travel time:  5801800.0, delay ratio:  0.391
+ iter 29: time gap: 46.3, potential route change: 16640, route change: 800, total travel time:  5844300.0, delay ratio:  0.395
+ iter 30: time gap: 38.7, potential route change: 15890, route change: 810, total travel time:  5586300.0, delay ratio:  0.367
+ iter 31: time gap: 45.6, potential route change: 17710, route change: 910, total travel time:  5702100.0, delay ratio:  0.380
+ iter 32: time gap: 35.2, potential route change: 17130, route change: 870, total travel time:  5549900.0, delay ratio:  0.363
+ iter 33: time gap: 35.6, potential route change: 15400, route change: 820, total travel time:  5666600.0, delay ratio:  0.376
+ iter 34: time gap: 35.7, potential route change: 18320, route change: 780, total travel time:  5613400.0, delay ratio:  0.370
+ iter 35: time gap: 29.6, potential route change: 15290, route change: 630, total travel time:  5718600.0, delay ratio:  0.382
+ iter 36: time gap: 32.3, potential route change: 15380, route change: 780, total travel time:  5626400.0, delay ratio:  0.372
+ iter 37: time gap: 32.3, potential route change: 15460, route change: 710, total travel time:  5643600.0, delay ratio:  0.374
+ iter 38: time gap: 40.0, potential route change: 15300, route change: 660, total travel time:  5839600.0, delay ratio:  0.395
+ iter 39: time gap: 37.5, potential route change: 14930, route change: 710, total travel time:  5789200.0, delay ratio:  0.390
+ iter 40: time gap: 26.9, potential route change: 15220, route change: 940, total travel time:  5581200.0, delay ratio:  0.367
+ iter 41: time gap: 37.0, potential route change: 15140, route change: 750, total travel time:  5651300.0, delay ratio:  0.375
+ iter 42: time gap: 30.1, potential route change: 16090, route change: 670, total travel time:  5679600.0, delay ratio:  0.378
+ iter 43: time gap: 32.1, potential route change: 16130, route change: 720, total travel time:  5685900.0, delay ratio:  0.378
+ iter 44: time gap: 42.0, potential route change: 17430, route change: 790, total travel time:  5807600.0, delay ratio:  0.391
+ iter 45: time gap: 33.7, potential route change: 14730, route change: 710, total travel time:  5664500.0, delay ratio:  0.376
+ iter 46: time gap: 27.9, potential route change: 14480, route change: 580, total travel time:  5646900.0, delay ratio:  0.374
+ iter 47: time gap: 36.9, potential route change: 15800, route change: 840, total travel time:  5703600.0, delay ratio:  0.380
+ iter 48: time gap: 32.7, potential route change: 16510, route change: 720, total travel time:  5668600.0, delay ratio:  0.377
+ iter 49: time gap: 29.9, potential route change: 14240, route change: 620, total travel time:  5691200.0, delay ratio:  0.379
+DUE summary:
+ total travel time: initial 6663000.0 -&gt; average of last 12 iters 5700766.7
+ number of potential route changes: initial 30110.0 -&gt; average of last 12 iters 15500.0
+ route travel time gap: initial 137.6 -&gt; average of last 12 iters 33.9
+ computation time: 129.5 seconds
+results:
+ average speed:  10.8 m/s
+ number of completed trips:      6840 / 6840
+ average travel time of trips:   832.0 s
+ average delay of trips:         315.4 s
+ delay ratio:                    0.379
+ total distance traveled:        59140000.0 m
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_3.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_4.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_4.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_5.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_5.png" />
+</div>
+</div>
+<p>The algorithm successfully converged to a steady state, and it can be considered as a quasi-DUE state.</p>
+<p>According to “time gap” coefficient, the DUO solution has about 140 s of time gap. This is the average time difference of route chosen by travelers and the actual minimum cost route. Since travelers in DUO are myopic, it is reasonable to have large time gap value. In the quasi-DUE state, the average time gap was reduced to about 40 s. Travelers are much smarter than DUO.</p>
+<p>In the network animation, you can see that some travelers choose non-central links from the beginning. They anticipated that the central link would be congested and took action to avoid it in advance.</p>
+<p>As a result, the total delay ratio was reduced to about 0.38 from 0.47 of DUO.</p>
+<p>However, since travelers in DUE is still selfish, this is not optimal for the entire system.</p>
+</section>
+<section id="id3">
+<h3>DSO<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<p>Now, we compute DSO solution. This will take some time.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DSO_GA</span> <span class="o">=</span> <span class="n">DTAsolvers</span><span class="o">.</span><span class="n">SolverDSO_GA</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
+<span class="n">solver_DSO_GA</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">initial_solution_World</span><span class="o">=</span><span class="n">W_DUE</span><span class="p">)</span>
+
+<span class="n">W_DSO_GA</span> <span class="o">=</span> <span class="n">solver_DSO_GA</span><span class="o">.</span><span class="n">W_sol</span>
+<span class="n">W_DSO_GA</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">W_DSO_GA</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_average</span><span class="p">(</span><span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df_DSO_GA</span> <span class="o">=</span> <span class="n">W_DSO_GA</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
+
+<span class="n">W_DSO_GA</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;flow_speed&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;out/anim_DSO_GA.gif&quot;</span><span class="p">)</span>
+<span class="n">uxsim</span><span class="o">.</span><span class="n">display_image_in_notebook</span><span class="p">(</span><span class="s2">&quot;out/anim_DSO_GA.gif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+simulation setting:
+ scenario name:
+ simulation duration:    4800 s
+ number of vehicles:     6840 veh
+ total road length:      288000 m
+ time discret. width:    10 s
+ platoon size:           10 veh
+ number of timesteps:    480
+ number of platoons:     684
+ number of links:        288
+ number of nodes:        81
+ setup time:             20.51 s
+init sol used
+solving DSO by GA...
+Generation 0
+ total travel times: 5788900.0 5871500.0 5818400.0 5893100.0 5797200.0 5787600.0 5946200.0 5773300.0 5819500.0 5835300.0 5831500.0 5779700.0 5909300.0 5949800.0 5961400.0 5899500.0 5809600.0 5804600.0 5873000.0 6156200.0 5762500.0 5973900.0 5957500.0 5796200.0 5760800.0 7730900.0 7431500.0 6744800.0 6529200.0 7300300.0 6775400.0 7030500.0 6947300.0 6901200.0 6912600.0 7495500.0 6421700.0 7295300.0 7237100.0 6674900.0 6797100.0 7228300.0 8154700.0 6515100.0 7111900.0 7134500.0 7563300.0 7526400.0 6914600.0 7212300.0
+ Best fitness = -5760800.0, TTT = 5760800.0, completed trips: 6840
+Generation 1
+ total travel times: 5760800.0 5762500.0 7163300.0 6848300.0 6294100.0 6043600.0 5691000.0 5874600.0 5832400.0 5963100.0 5686800.0 5917800.0 5953200.0 6053000.0 5678300.0 5879000.0 6336800.0 6052100.0 5999400.0 5901900.0 5754500.0 5837000.0 6051700.0 5841800.0 5867500.0 5731700.0 5797200.0 5797200.0 5955900.0 6195300.0 5803600.0 6278600.0 6270900.0 5934900.0 5847300.0 5980600.0 7082100.0 5856000.0 5910300.0 5777800.0 5922800.0 6074600.0 5721700.0 5828800.0 5808000.0 5775200.0 5909500.0 5800600.0 6090000.0 5629500.0
+ Best fitness = -5629500.0, TTT = 5629500.0, completed trips: 6840
+Generation 2
+ total travel times: 5629500.0 5678300.0 5772600.0 5961300.0 5740000.0 5844000.0 5665300.0 5809900.0 5857100.0 5803200.0 6151500.0 5911100.0 5726600.0 5907700.0 5855300.0 6351800.0 5851200.0 5589400.0 5776700.0 6100800.0 5930500.0 5716900.0 5785500.0 6164600.0 5886900.0 5746800.0 5614900.0 5905200.0 6011100.0 5731500.0 5873700.0 5752900.0 6021600.0 5809200.0 6123400.0 5963000.0 5995000.0 5803000.0 5802100.0 6311900.0 5996800.0 5834900.0 5758800.0 5812100.0 5691000.0 5731700.0 6095300.0 5763100.0 5566800.0 5700400.0
+ Best fitness = -5566800.0, TTT = 5566800.0, completed trips: 6840
+Generation 3
+ total travel times: 5566800.0 5589400.0 5692000.0 5702700.0 5790100.0 5707900.0 5775100.0 6056800.0 5808600.0 5714900.0 5700700.0 5689500.0 5915800.0 5582600.0 5675300.0 5658500.0 5592400.0 5948700.0 5929500.0 5851800.0 5841800.0 5737800.0 5881500.0 5848000.0 6397500.0 5749500.0 5869700.0 5790700.0 5986800.0 5734100.0 5691000.0 5691000.0 5847700.0 5788000.0 5802900.0 5935300.0 5945900.0 5773300.0 5892300.0 5826400.0 5736500.0 5788000.0 5873900.0 5634600.0 5643300.0 5841300.0 5700500.0 5649400.0 5855200.0 5824900.0
+ Best fitness = -5566800.0, TTT = 5566800.0, completed trips: 6840
+Generation 4
+ total travel times: 5566800.0 5582600.0 5799300.0 5652000.0 5775800.0 5770600.0 5683900.0 5654400.0 5934700.0 5606600.0 5596700.0 5773200.0 5635400.0 5805100.0 5705900.0 5634600.0 5702400.0 5837200.0 5616000.0 5667800.0 5694000.0 5897200.0 5855700.0 5595400.0 5730900.0 5745900.0 5859300.0 5647800.0 5655600.0 5630900.0 5672700.0 5655900.0 5675800.0 5696600.0 5704000.0 5806300.0 5716700.0 5725500.0 5680100.0 5789700.0 5658400.0 5676000.0 5666400.0 5596800.0 5675900.0 5701500.0 5792200.0 5583900.0 5737200.0 5514000.0
+ Best fitness = -5514000.0, TTT = 5514000.0, completed trips: 6840
+Generation 5
+ total travel times: 5514000.0 5566800.0 5694000.0 5606600.0 5671600.0 5732400.0 5667600.0 5612400.0 6173400.0 5666200.0 5544300.0 5913300.0 5665000.0 5901000.0 5662500.0 5683600.0 5740000.0 5606400.0 5657900.0 5751100.0 5828700.0 5780300.0 5738500.0 5828800.0 5611500.0 5621200.0 5601400.0 5657400.0 5618400.0 5897100.0 5690400.0 5585700.0 5620500.0 5709600.0 5584600.0 5665200.0 5582600.0 5582600.0 5805300.0 5684900.0 5683200.0 5575900.0 5655600.0 5655600.0 5595400.0 5595400.0 5627000.0 5606900.0 5749200.0 5632000.0
+ Best fitness = -5514000.0, TTT = 5514000.0, completed trips: 6840
+Generation 6
+ total travel times: 5514000.0 5544300.0 5620500.0 5719700.0 5617900.0 5466300.0 5614000.0 5790400.0 5679000.0 5489000.0 5735200.0 5613900.0 5625100.0 5677400.0 5552300.0 5508800.0 5549200.0 5664400.0 5597000.0 5584100.0 5582600.0 5582600.0 5627300.0 5653200.0 5646600.0 5613200.0 5832200.0 5685600.0 5687400.0 5637600.0 5541900.0 5700700.0 5710900.0 5655300.0 5569500.0 5629200.0 5592700.0 5548800.0 5543200.0 5747300.0 5546000.0 5632600.0 5570200.0 5744500.0 5567600.0 5584600.0 5614100.0 5630500.0 5768700.0 5661000.0
+ Best fitness = -5466300.0, TTT = 5466300.0, completed trips: 6840
+Generation 7
+ total travel times: 5466300.0 5489000.0 5669600.0 5703400.0 5574900.0 5645900.0 5488200.0 5599000.0 5597400.0 5646100.0 5661600.0 5783500.0 5630800.0 5609100.0 5771900.0 5706500.0 5779100.0 5666400.0 5572500.0 5577200.0 5694900.0 5582500.0 5718200.0 5678500.0 5595000.0 5730700.0 5701200.0 5615800.0 5541900.0 5543200.0 5678200.0 5489800.0 5618700.0 5587300.0 5516500.0 5677600.0 5747100.0 5562300.0 5576500.0 5608600.0 5519800.0 5668700.0 5649400.0 5566700.0 5584300.0 5582000.0 5567900.0 5651100.0 5557600.0 5561500.0
+ Best fitness = -5466300.0, TTT = 5466300.0, completed trips: 6840
+Generation 8
+ total travel times: 5466300.0 5488200.0 5565500.0 5452200.0 5531000.0 5636000.0 5606900.0 5527100.0 5543300.0 5697400.0 5617200.0 5594100.0 5637700.0 5629100.0 5717100.0 5643000.0 5567800.0 5555500.0 5621200.0 5478200.0 5516500.0 5566900.0 5823000.0 5595600.0 5583900.0 5509400.0 5586900.0 5559100.0 5546400.0 5554400.0 5584300.0 5543200.0 5673000.0 5701700.0 5471600.0 5477400.0 5636600.0 5564200.0 5626900.0 5533000.0 5717600.0 5579100.0 5595800.0 5600800.0 5657800.0 5830100.0 5790300.0 5519800.0 5703600.0 5489800.0
+ Best fitness = -5452200.0, TTT = 5452200.0, completed trips: 6840
+Generation 9
+ total travel times: 5452200.0 5466300.0 5592700.0 5676100.0 5456900.0 5629300.0 5648100.0 5558700.0 5440800.0 5712900.0 5492000.0 5544200.0 5525100.0 5704300.0 5490900.0 5674200.0 5555500.0 5555500.0 5570400.0 5614800.0 5653400.0 5584100.0 5514900.0 5575200.0 5605400.0 5537700.0 5517200.0 5510100.0 5587400.0 5437900.0 5653100.0 5512300.0 5821900.0 5707600.0 5489800.0 5507100.0 5504600.0 5538800.0 5545700.0 5635800.0 5533900.0 5495900.0 5690100.0 5772500.0 5585800.0 5578000.0 5665300.0 5479600.0 5546500.0 5585500.0
+ Best fitness = -5437900.0, TTT = 5437900.0, completed trips: 6840
+Generation 10
+ total travel times: 5437900.0 5440800.0 5505200.0 5429300.0 5569200.0 5502800.0 5442900.0 5489800.0 5608300.0 5492000.0 5687700.0 5400500.0 5603300.0 5452600.0 5510800.0 5648800.0 5511100.0 5479000.0 5508900.0 5603900.0 5412100.0 5449000.0 5540800.0 5456700.0 5477900.0 5541600.0 5550800.0 5500900.0 5442500.0 5501200.0 5466300.0 5479600.0 5537900.0 5537400.0 5595900.0 5499100.0 5472600.0 5584100.0 5601800.0 5567100.0 5623400.0 5426200.0 5607500.0 5582400.0 5462100.0 5549800.0 5626600.0 5496900.0 5493000.0 5456900.0
+ Best fitness = -5400500.0, TTT = 5400500.0, completed trips: 6840
+Generation 11
+ total travel times: 5400500.0 5412100.0 5338100.0 5472600.0 5502800.0 5549800.0 5442500.0 5437900.0 5456900.0 5500900.0 5536800.0 5511300.0 5567400.0 5439700.0 5554000.0 5439900.0 5662300.0 5412500.0 5448000.0 5495800.0 5551000.0 5447900.0 5496500.0 5445700.0 5398000.0 5688800.0 5450900.0 5495500.0 5455800.0 5646800.0 5579000.0 5461800.0 5479200.0 5507400.0 5479600.0 5398300.0 5479000.0 5782600.0 5489800.0 5442900.0 5431700.0 5649900.0 5468600.0 5492000.0 5555000.0 5413900.0 5592800.0 5607700.0 5405400.0 5500800.0
+ Best fitness = -5338100.0, TTT = 5338100.0, completed trips: 6840
+Generation 12
+ total travel times: 5338100.0 5398000.0 5686800.0 5390300.0 5704600.0 5624100.0 5479200.0 5412500.0 5457600.0 5488600.0 5472600.0 5497300.0 5478800.0 5539400.0 5466300.0 5449700.0 5436900.0 5495800.0 5439500.0 5518500.0 5467400.0 5442500.0 5405400.0 5400500.0 5392700.0 5603700.0 5499100.0 5446800.0 5520200.0 5415100.0 5419600.0 5448300.0 5442500.0 5353400.0 5429400.0 5489400.0 5518500.0 5504800.0 5369000.0 5530900.0 5477300.0 5475300.0 5598400.0 5419100.0 5503900.0 5523600.0 5387000.0 5403800.0 5459400.0 5468400.0
+ Best fitness = -5338100.0, TTT = 5338100.0, completed trips: 6840
+Generation 13
+ total travel times: 5338100.0 5353400.0 5496000.0 5520400.0 5394600.0 5437200.0 5519200.0 5446200.0 5514600.0 5391100.0 5520700.0 5419600.0 5472700.0 5537500.0 5392700.0 5449700.0 5427900.0 5518800.0 5359700.0 5464200.0 5418300.0 5536500.0 5415500.0 5388900.0 5446500.0 5464900.0 5468900.0 5388500.0 5401900.0 5423900.0 5493500.0 5367200.0 5489800.0 5536400.0 5475600.0 5414200.0 5464700.0 5426100.0 5500900.0 5648500.0 5456500.0 5485600.0 5461500.0 5564600.0 5600400.0 5522200.0 5390300.0 5573600.0 5839000.0 5386700.0
+ Best fitness = -5338100.0, TTT = 5338100.0, completed trips: 6840
+Generation 14
+ total travel times: 5338100.0 5353400.0 5437100.0 5398700.0 5381700.0 5352900.0 5467300.0 5405900.0 5403800.0 5456800.0 5491300.0 5408700.0 5426100.0 5426100.0 5447000.0 5371500.0 5464300.0 5348200.0 5485500.0 5368200.0 5548200.0 5405100.0 5500200.0 5467300.0 5378200.0 5435500.0 5409600.0 5428500.0 5513900.0 5614800.0 5636400.0 5430700.0 5498800.0 5384800.0 5495800.0 5396900.0 5463000.0 5420000.0 5394600.0 5388500.0 5430900.0 5413300.0 5392800.0 5472200.0 5338000.0 5321400.0 5387600.0 5469600.0 5469000.0 5510100.0
+ Best fitness = -5321400.0, TTT = 5321400.0, completed trips: 6840
+Generation 15
+ total travel times: 5321400.0 5338000.0 5368200.0 5353400.0 5437400.0 5427200.0 5306100.0 5466700.0 5419300.0 5375600.0 5333500.0 5360800.0 5377400.0 5277900.0 5408200.0 5407100.0 5410100.0 5425500.0 5320700.0 5547100.0 5411800.0 5342700.0 5314000.0 5408900.0 5512100.0 5450800.0 5410600.0 5363300.0 5401600.0 5402800.0 5428800.0 5413900.0 5420200.0 5366700.0 5430700.0 5377800.0 5365500.0 5371400.0 5409300.0 5343200.0 5405900.0 5405900.0 5440200.0 5634600.0 5264800.0 5404900.0 5345300.0 5447600.0 5396900.0 5396900.0
+ Best fitness = -5264800.0, TTT = 5264800.0, completed trips: 6840
+Generation 16
+ total travel times: 5264800.0 5277900.0 5509300.0 5394400.0 5352500.0 5328700.0 5333700.0 5363900.0 5286000.0 5324000.0 5336400.0 5379300.0 5329300.0 5279000.0 5339200.0 5302900.0 5354800.0 5340500.0 5451400.0 5417700.0 5440900.0 5370700.0 5494700.0 5392200.0 5536200.0 5661300.0 5458500.0 5393200.0 5422200.0 5385300.0 5399900.0 5255600.0 5402700.0 5210300.0 5440100.0 5396200.0 5380000.0 5385200.0 5363900.0 5461400.0 5368100.0 5518500.0 5396900.0 5306100.0 5367400.0 5524300.0 5402300.0 5395600.0 5370100.0 5351900.0
+ Best fitness = -5210300.0, TTT = 5210300.0, completed trips: 6840
+Generation 17
+ total travel times: 5210300.0 5255600.0 5353900.0 5324900.0 5458700.0 5398400.0 5437700.0 5395000.0 5373900.0 5423200.0 5426800.0 5261200.0 5531800.0 5421500.0 5358500.0 5347500.0 5369500.0 5455900.0 5366000.0 5409100.0 5330200.0 5329900.0 5363800.0 5364200.0 5329900.0 5389800.0 5393100.0 5358100.0 5314800.0 5382700.0 5450400.0 5278500.0 5304600.0 5283700.0 5304500.0 5392600.0 5277600.0 5463800.0 5333700.0 5336400.0 5381500.0 5383200.0 5302900.0 5380000.0 5447600.0 5409200.0 5479700.0 5305500.0 5411400.0 5388300.0
+ Best fitness = -5210300.0, TTT = 5210300.0, completed trips: 6840
+Generation 18
+ total travel times: 5210300.0 5255600.0 5455200.0 5224500.0 5250400.0 5186700.0 5350200.0 5318300.0 5415500.0 5610100.0 5599000.0 5384600.0 5271800.0 5447400.0 5393800.0 5403700.0 5324900.0 5388300.0 5396800.0 5372000.0 5277600.0 5277600.0 5304600.0 5347500.0 5423600.0 5384600.0 5297600.0 5341000.0 5472600.0 5483600.0 5429000.0 5241600.0 5250100.0 5659100.0 5279400.0 5409600.0 5275000.0 5248000.0 5309900.0 5331200.0 5345400.0 5442200.0 5409900.0 5319900.0 5332200.0 5284200.0 5315100.0 5476200.0 5372300.0 5378200.0
+ Best fitness = -5186700.0, TTT = 5186700.0, completed trips: 6840
+Generation 19
+ total travel times: 5186700.0 5210300.0 5374600.0 5343200.0 5271500.0 5348000.0 5265900.0 5297100.0 5349000.0 5341300.0 5304500.0 5277900.0 5523600.0 5384800.0 5222800.0 5256400.0 5311400.0 5313300.0 5376100.0 5251700.0 5430400.0 5234300.0 5275000.0 5275000.0 5300000.0 5243000.0 5271800.0 5271800.0 5277600.0 5277600.0 5334000.0 5214100.0 5197900.0 5343900.0 5267100.0 5261600.0 5224500.0 5463300.0 5236500.0 5280400.0 5273800.0 5299900.0 5398200.0 5212000.0 5336700.0 5279600.0 5282800.0 5248000.0 5608400.0 5430700.0
+ Best fitness = -5186700.0, TTT = 5186700.0, completed trips: 6840
+Generation 20
+ total travel times: 5186700.0 5197900.0 5224500.0 5364600.0 5290700.0 5278800.0 5250600.0 5218900.0 5212000.0 5277600.0 5263900.0 5264500.0 5244000.0 5222000.0 5290200.0 5309800.0 5214200.0 5230600.0 5324000.0 5438100.0 5254300.0 5284000.0 5236900.0 5215900.0 5286500.0 5185200.0 5247400.0 5210200.0 5235200.0 5222800.0 5259200.0 5269600.0 5245200.0 5276900.0 5252000.0 5256600.0 5483700.0 5301700.0 5261600.0 5265900.0 5296900.0 5239800.0 5274400.0 5279800.0 5277900.0 5337000.0 5208300.0 5253000.0 5275600.0 5339200.0
+ Best fitness = -5185200.0, TTT = 5185200.0, completed trips: 6840
+Generation 21
+ total travel times: 5185200.0 5186700.0 5250600.0 5212000.0 5189900.0 5273300.0 5303900.0 5196800.0 5211500.0 5413300.0 5230600.0 5191200.0 5194500.0 5263600.0 5433300.0 5256600.0 5221100.0 5159100.0 5222800.0 5404500.0 5215900.0 5214200.0 5334500.0 5294800.0 5318500.0 5248200.0 5187100.0 5236400.0 5195400.0 5233400.0 5280600.0 5440200.0 5380000.0 5501900.0 5332500.0 5197900.0 5260400.0 5281300.0 5244000.0 5222000.0 5209700.0 5200000.0 5239900.0 5277000.0 5216200.0 5309900.0 5239800.0 5259700.0 5210200.0 5210200.0
+ Best fitness = -5159100.0, TTT = 5159100.0, completed trips: 6840
+Generation 22
+ total travel times: 5159100.0 5185200.0 5527100.0 5346500.0 5184500.0 5223200.0 5155500.0 5226700.0 5230600.0 5212000.0 5221100.0 5210200.0 5281800.0 5348200.0 5279200.0 5214200.0 5289300.0 5298400.0 5214600.0 5204800.0 5221600.0 5222100.0 5191200.0 5284100.0 5188100.0 5202000.0 5212200.0 5216900.0 5214000.0 5209700.0 5260100.0 5189900.0 5196800.0 5197900.0 5256400.0 5213100.0 5292700.0 5271200.0 5218400.0 5184700.0 5195400.0 5200000.0 5364900.0 5521500.0 5324400.0 5378500.0 5211900.0 5256200.0 5232800.0 5221300.0
+ Best fitness = -5155500.0, TTT = 5155500.0, completed trips: 6840
+Generation 23
+ total travel times: 5155500.0 5159100.0 5185100.0 5189200.0 5274100.0 5347300.0 5229400.0 5290500.0 5231700.0 5158000.0 5216900.0 5401000.0 5189900.0 5218400.0 5185200.0 5422500.0 5197900.0 5214600.0 5409600.0 5477600.0 5255700.0 5180500.0 5219900.0 5247300.0 5237500.0 5222800.0 5248100.0 5232100.0 5196800.0 5211900.0 5174000.0 5328100.0 5291400.0 5237000.0 5405200.0 5384200.0 5186700.0 5240400.0 5171000.0 5236800.0 5361100.0 5202000.0 5204800.0 5502800.0 5209600.0 5293300.0 5252800.0 5415400.0 5210100.0 5269600.0
+ Best fitness = -5155500.0, TTT = 5155500.0, completed trips: 6840
+Generation 24
+ total travel times: 5155500.0 5158000.0 5240100.0 5228300.0 5217200.0 5323400.0 5337800.0 5272800.0 5179100.0 5258200.0 5519500.0 5299300.0 5247300.0 5318300.0 5187100.0 5175500.0 5329600.0 5546200.0 5204400.0 5187600.0 5502000.0 5377100.0 5218400.0 5242900.0 5174000.0 5159100.0 5171000.0 5171000.0 5210500.0 5202100.0 5177500.0 5207600.0 5184900.0 5241500.0 5212300.0 5186000.0 5233200.0 5201200.0 5244100.0 5166500.0 5201000.0 5191900.0 5287000.0 5334400.0 5197600.0 5260800.0 5267200.0 5189200.0 5183200.0 5189800.0
+ Best fitness = -5155500.0, TTT = 5155500.0, completed trips: 6840
+Generation 25
+ total travel times: 5155500.0 5158000.0 5171000.0 5166500.0 5251000.0 5222800.0 5163100.0 5183000.0 5208800.0 5197600.0 5159100.0 5159100.0 5196300.0 5285200.0 5242900.0 5145200.0 5245600.0 5171300.0 5197200.0 5215500.0 5418300.0 5312300.0 5203700.0 5179600.0 5171900.0 5214500.0 5175500.0 5175500.0 5176900.0 5154200.0 5426700.0 5252800.0 5176000.0 5168900.0 5343900.0 5243400.0 5178900.0 5214800.0 5273300.0 5347500.0 5263500.0 5336400.0 5291200.0 5176800.0 5218400.0 5176400.0 5334700.0 5252000.0 5187600.0 5154900.0
+ Best fitness = -5145200.0, TTT = 5145200.0, completed trips: 6840
+Generation 26
+ total travel times: 5145200.0 5154200.0 5176500.0 5193100.0 5208800.0 5154500.0 5171900.0 5171900.0 5186700.0 5234700.0 5328900.0 5273300.0 5187600.0 5196300.0 5335000.0 5247300.0 5217800.0 5216300.0 5155200.0 5233100.0 5168900.0 5168900.0 5176400.0 5382500.0 5175600.0 5163100.0 5212500.0 5149100.0 5200200.0 5323500.0 5257100.0 5159100.0 5178900.0 5162700.0 5166500.0 5155500.0 5340200.0 5258600.0 5292600.0 5164900.0 5393300.0 5273500.0 5283800.0 5310200.0 5304000.0 5245600.0 5218400.0 5204800.0 5191700.0 5206800.0
+ Best fitness = -5145200.0, TTT = 5145200.0, completed trips: 6840
+Generation 27
+ total travel times: 5145200.0 5149100.0 5164900.0 5171900.0 5151900.0 5189300.0 5186500.0 5202600.0 5176400.0 5168900.0 5227700.0 5211800.0 5289100.0 5163100.0 5163100.0 5167100.0 5304900.0 5201700.0 5269400.0 5164500.0 5154500.0 5258700.0 5276800.0 5193000.0 5176500.0 5152800.0 5155500.0 5233100.0 5187300.0 5197700.0 5159100.0 5179800.0 5226300.0 5186700.0 5303800.0 5167100.0 5192400.0 5166000.0 5166200.0 5260500.0 5257400.0 5206700.0 5278800.0 5239600.0 5171000.0 5393300.0 5249400.0 5152700.0 5151700.0 5217700.0
+ Best fitness = -5145200.0, TTT = 5145200.0, completed trips: 6840
+Generation 28
+ total travel times: 5145200.0 5149100.0 5152700.0 5179800.0 5461400.0 5163100.0 5154000.0 5162800.0 5179400.0 5161100.0 5176400.0 5306300.0 5218800.0 5385900.0 5153800.0 5143900.0 5165800.0 5176500.0 5193000.0 5167100.0 5175600.0 5189100.0 5175800.0 5200900.0 5378500.0 5280300.0 5151900.0 5167100.0 5187600.0 5283800.0 5335900.0 5328900.0 5410500.0 5152500.0 5153400.0 5292100.0 5141800.0 5176800.0 5151000.0 5191400.0 5164900.0 5297600.0 5144100.0 5156100.0 5313900.0 5275500.0 5163100.0 5163900.0 5187200.0 5165200.0
+ Best fitness = -5141800.0, TTT = 5141800.0, completed trips: 6840
+Generation 29
+ total travel times: 5141800.0 5143900.0 5163100.0 5145200.0 5337200.0 5332600.0 5176500.0 5165800.0 5179800.0 5167100.0 5151000.0 5189100.0 5152800.0 5152300.0 5163900.0 5153800.0 5317700.0 5418000.0 5337900.0 5152500.0 5269400.0 5165200.0 5151900.0 5153300.0 5392400.0 5163100.0 5252700.0 5170300.0 5266700.0 5152700.0 5239900.0 5271300.0 5276700.0 5270600.0 5201200.0 5575600.0 5167100.0 5169500.0 5504900.0 5328600.0 5335300.0 5272400.0 5256300.0 5154500.0 5182100.0 5184500.0 5299400.0 5339500.0 5258800.0 5248800.0
+ Best fitness = -5141800.0, TTT = 5141800.0, completed trips: 6840
+Generation 30
+ total travel times: 5141800.0 5143900.0 5162800.0 5145200.0 5242000.0 5428000.0 5153300.0 5151000.0 5278000.0 5153800.0 5201600.0 5158900.0 5167900.0 5154500.0 5126300.0 5161100.0 5167100.0 5152700.0 5152800.0 5384300.0 5262700.0 5152300.0 5186600.0 5167100.0 5220700.0 5293700.0 5163900.0 5163900.0 5159100.0 5144000.0 5181500.0 5185800.0 5160300.0 5174700.0 5279800.0 5163100.0 5269400.0 5279800.0 5459900.0 5435300.0 5376800.0 5231900.0 5190000.0 5277800.0 5200000.0 5215200.0 5164900.0 5283100.0 5255000.0 5249900.0
+ Best fitness = -5126300.0, TTT = 5126300.0, completed trips: 6840
+Generation 31
+ total travel times: 5126300.0 5141800.0 5156100.0 5158300.0 5176500.0 5154300.0 5144000.0 5145200.0 5549500.0 5324700.0 5151000.0 5174700.0 5208000.0 5143900.0 5184800.0 5194200.0 5266500.0 5196100.0 5271300.0 5185700.0 5161100.0 5154500.0 5340800.0 5383700.0 5153400.0 5145800.0 5149100.0 5126100.0 5153800.0 5194300.0 5334400.0 5154800.0 5147400.0 5185300.0 5344900.0 5233900.0 5319800.0 5165800.0 5247900.0 5216000.0 5245800.0 5170500.0 5166600.0 5167900.0 5327200.0 5294700.0 5170800.0 5350100.0 5148800.0 5134800.0
+ Best fitness = -5126100.0, TTT = 5126100.0, completed trips: 6840
+Generation 32
+ total travel times: 5126100.0 5126300.0 5176500.0 5199100.0 5143400.0 5208300.0 5152800.0 5150600.0 5145200.0 5126400.0 5377400.0 5278000.0 5152700.0 5271900.0 5184800.0 5154800.0 5149100.0 5156100.0 5142400.0 5481100.0 5245300.0 5297400.0 5287900.0 5160100.0 5147800.0 5158300.0 5243000.0 5167900.0 5298600.0 5362100.0 5340300.0 5151000.0 5311900.0 5308500.0 5249100.0 5308400.0 5166300.0 5174800.0 5219100.0 5490500.0 5261000.0 5303500.0 5266900.0 5148800.0 5424600.0 5135600.0 5394000.0 5253500.0 5165500.0 5189000.0
+ Best fitness = -5126100.0, TTT = 5126100.0, completed trips: 6840
+Generation 33
+ total travel times: 5126100.0 5126300.0 5135600.0 5126400.0 5138200.0 5203800.0 5183400.0 5144000.0 5152700.0 5143400.0 5223800.0 5154800.0 5149100.0 5151000.0 5168600.0 5159200.0 5168700.0 5169900.0 5148800.0 5377300.0 5168200.0 5273800.0 5135000.0 5170300.0 5166600.0 5178800.0 5221500.0 5174800.0 5165600.0 5275000.0 5158300.0 5138400.0 5185300.0 5165100.0 5160100.0 5334100.0 5332500.0 5420700.0 5143100.0 5127400.0 5406800.0 5299000.0 5260000.0 5150600.0 5295700.0 5380300.0 5109600.0 5142400.0 5154300.0 5161300.0
+ Best fitness = -5109600.0, TTT = 5109600.0, completed trips: 6840
+Generation 34
+ total travel times: 5109600.0 5126100.0 5126300.0 5165100.0 5184600.0 5184000.0 5173600.0 5138600.0 5134800.0 5334000.0 5221400.0 5277900.0 5153800.0 5148500.0 5126000.0 5165100.0 5163500.0 5145200.0 5174800.0 5126400.0 5150600.0 5158300.0 5138200.0 5138200.0 5135600.0 5135600.0 5158800.0 5123400.0 5171100.0 5141400.0 5228100.0 5212800.0 5126400.0 5155500.0 5162400.0 5305500.0 5167100.0 5159700.0 5147100.0 5170700.0 5277300.0 5527900.0 5181300.0 5168300.0 5273400.0 5218200.0 5203800.0 5347100.0 5229800.0 5331900.0
+ Best fitness = -5109600.0, TTT = 5109600.0, completed trips: 6840
+Generation 35
+ total travel times: 5109600.0 5123400.0 5167200.0 5165300.0 5135400.0 5135100.0 5162400.0 5147100.0 5212600.0 5122000.0 5340600.0 5138600.0 5202200.0 5249200.0 5302800.0 5323900.0 5153100.0 5136800.0 5127000.0 5312000.0 5399100.0 5126400.0 5208900.0 5350400.0 5418700.0 5356300.0 5149400.0 5240500.0 5152800.0 5158300.0 5181300.0 5145200.0 5170700.0 5293800.0 5133600.0 5126100.0 5235000.0 5194700.0 5187800.0 5160600.0 5153800.0 5164900.0 5294000.0 5144500.0 5135600.0 5134800.0 5126300.0 5258800.0 5148500.0 5148500.0
+ Best fitness = -5109600.0, TTT = 5109600.0, completed trips: 6840
+Generation 36
+ total travel times: 5109600.0 5122000.0 5152800.0 5148500.0 5216700.0 5298400.0 5192100.0 5254800.0 5153800.0 5135100.0 5123400.0 5126100.0 5136100.0 5156100.0 5264600.0 5207700.0 5158300.0 5151900.0 5442900.0 5133600.0 5289500.0 5397200.0 5120800.0 5143900.0 5137000.0 5138200.0 5135400.0 5236500.0 5138900.0 5172000.0 5306400.0 5271400.0 5144100.0 5166900.0 5495000.0 5510300.0 5135600.0 5132200.0 5134800.0 5232100.0 5196400.0 5120300.0 5304400.0 5268700.0 5317600.0 5282500.0 5301700.0 5210400.0 5356500.0 5306200.0
+ Best fitness = -5109600.0, TTT = 5109600.0, completed trips: 6840
+Generation 37
+ total travel times: 5109600.0 5120300.0 5144100.0 5122000.0 5172000.0 5156100.0 5372500.0 5229400.0 5117300.0 5161900.0 5138200.0 5135600.0 5150300.0 5188400.0 5208900.0 5246500.0 5236900.0 5258500.0 5166900.0 5248900.0 5133600.0 5123400.0 5204000.0 5150500.0 5135400.0 5263600.0 5220200.0 5136100.0 5322000.0 5308300.0 5268800.0 5160100.0 5117600.0 5138300.0 5145200.0 5177800.0 5187600.0 5274000.0 5226900.0 5231800.0 5156500.0 5120800.0 5137600.0 5130600.0 5247800.0 5189900.0 5153800.0 5210900.0 5146700.0 5227600.0
+ Best fitness = -5109600.0, TTT = 5109600.0, completed trips: 6840
+Generation 38
+ total travel times: 5109600.0 5117300.0 5115100.0 5126400.0 5161900.0 5136100.0 5154400.0 5143300.0 5126100.0 5210000.0 5144500.0 5158300.0 5201500.0 5308600.0 5487900.0 5135400.0 5202800.0 5260500.0 5150400.0 5140100.0 5284800.0 5210900.0 5122000.0 5246000.0 5108100.0 5126300.0 5264700.0 5133900.0 5232600.0 5120300.0 5446100.0 5146700.0 5160600.0 5121300.0 5325200.0 5311000.0 5217100.0 5310500.0 5150600.0 5123400.0 5156500.0 5156500.0 5145000.0 5109600.0 5135600.0 5156100.0 5188400.0 5202300.0 5209900.0 5214900.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 39
+ total travel times: 5108100.0 5109600.0 5144900.0 5158300.0 5117300.0 5149700.0 5115100.0 5123400.0 5156100.0 5156500.0 5118800.0 5160700.0 5120300.0 5321900.0 5131600.0 5126400.0 5161900.0 5310500.0 5305500.0 5339400.0 5142900.0 5336700.0 5200900.0 5372100.0 5126100.0 5128300.0 5292000.0 5145000.0 5324400.0 5150600.0 5271800.0 5152800.0 5205400.0 5152200.0 5226800.0 5354500.0 5334000.0 5198000.0 5163200.0 5278400.0 5121300.0 5225800.0 5272000.0 5153700.0 5368900.0 5302400.0 5264100.0 5155400.0 5175300.0 5151600.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 40
+ total travel times: 5108100.0 5109600.0 5170900.0 5152600.0 5126100.0 5123400.0 5132200.0 5126300.0 5201200.0 5229100.0 5150600.0 5205600.0 5157100.0 5152000.0 5133600.0 5158000.0 5205800.0 5123800.0 5153800.0 5161900.0 5279100.0 5605500.0 5345100.0 5115400.0 5121300.0 5564600.0 5118800.0 5156500.0 5395800.0 5242900.0 5117300.0 5380500.0 5144900.0 5152200.0 5328700.0 5256300.0 5198300.0 5244100.0 5308000.0 5155400.0 5264400.0 5298800.0 5258700.0 5180900.0 5313800.0 5179200.0 5213700.0 5232100.0 5149300.0 5193500.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 41
+ total travel times: 5108100.0 5109600.0 5196000.0 5216900.0 5121300.0 5153800.0 5152400.0 5175700.0 5182600.0 5200200.0 5126300.0 5230800.0 5133600.0 5115400.0 5144900.0 5118800.0 5185300.0 5280100.0 5206900.0 5261700.0 5175700.0 5207100.0 5151900.0 5169000.0 5111700.0 5154600.0 5290500.0 5254100.0 5130800.0 5267400.0 5227500.0 5300000.0 5136700.0 5161800.0 5223200.0 5211900.0 5117300.0 5232300.0 5163100.0 5130100.0 5123400.0 5125700.0 5166500.0 5266100.0 5277600.0 5180000.0 5132500.0 5259300.0 5161500.0 5181800.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 42
+ total travel times: 5108100.0 5109600.0 5179100.0 5131600.0 5147600.0 5143400.0 5273500.0 5243300.0 5152400.0 5152400.0 5144900.0 5154600.0 5282100.0 5163100.0 5144300.0 5137700.0 5218700.0 5195600.0 5126100.0 5182200.0 5125700.0 5195500.0 5162400.0 5169600.0 5197200.0 5259400.0 5323600.0 5161500.0 5126300.0 5161800.0 5402400.0 5196700.0 5237400.0 5159600.0 5183300.0 5147100.0 5398000.0 5121300.0 5117300.0 5239500.0 5215100.0 5326800.0 5136400.0 5154900.0 5275200.0 5430300.0 5150700.0 5177100.0 5250200.0 5190900.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 43
+ total travel times: 5108100.0 5109600.0 5144300.0 5126100.0 5121400.0 5181700.0 5137700.0 5195600.0 5163500.0 5186200.0 5196000.0 5199700.0 5183400.0 5157400.0 5182900.0 5168600.0 5195000.0 5197700.0 5247000.0 5173000.0 5202700.0 5219400.0 5209300.0 5416600.0 5308900.0 5128300.0 5121300.0 5179100.0 5130400.0 5133600.0 5197200.0 5147600.0 5316700.0 5325500.0 5565900.0 5136400.0 5269100.0 5233000.0 5123600.0 5150300.0 5284400.0 5312700.0 5177100.0 5164800.0 5131600.0 5125700.0 5150400.0 5114200.0 5147100.0 5162400.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 44
+ total travel times: 5108100.0 5109600.0 5164800.0 5162400.0 5177100.0 5332100.0 5115400.0 5122800.0 5121300.0 5128300.0 5383200.0 5244300.0 5490400.0 5173000.0 5137300.0 5117900.0 5114200.0 5232000.0 5449100.0 5114800.0 5151200.0 5161200.0 5137700.0 5185000.0 5126100.0 5159900.0 5151300.0 5188200.0 5120600.0 5117300.0 5160500.0 5249000.0 5259000.0 5463900.0 5147600.0 5147600.0 5178400.0 5108900.0 5158600.0 5157100.0 5191400.0 5270700.0 5130000.0 5110900.0 5513000.0 5330200.0 5118800.0 5181900.0 5125700.0 5214700.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 45
+ total travel times: 5108100.0 5108900.0 5158600.0 5117300.0 5114800.0 5287200.0 5186800.0 5197900.0 5125700.0 5109600.0 5256600.0 5289300.0 5128300.0 5233000.0 5200100.0 5153400.0 5205000.0 5349000.0 5114200.0 5336100.0 5258700.0 5356500.0 5173000.0 5355200.0 5119200.0 5155100.0 5257600.0 5235800.0 5187200.0 5114400.0 5340900.0 5319500.0 5235900.0 5181900.0 5116600.0 5126400.0 5160500.0 5337100.0 5276800.0 5360600.0 5215400.0 5303700.0 5223800.0 5115400.0 5120400.0 5188200.0 5348200.0 5235700.0 5379800.0 5276000.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 46
+ total travel times: 5108100.0 5108900.0 5306200.0 5116600.0 5221200.0 5158600.0 5237100.0 5146400.0 5115400.0 5185400.0 5114200.0 5109600.0 5153300.0 5227900.0 5154600.0 5121300.0 5158800.0 5154700.0 5405800.0 5119300.0 5128300.0 5128300.0 5120400.0 5313800.0 5187200.0 5187200.0 5124900.0 5161100.0 5165800.0 5114800.0 5251000.0 5114800.0 5196400.0 5236400.0 5289700.0 5154500.0 5112400.0 5108100.0 5204500.0 5247400.0 5288700.0 5275600.0 5161100.0 5212200.0 5189400.0 5173000.0 5117900.0 5116700.0 5303600.0 5255000.0
+ Best fitness = -5108100.0, TTT = 5108100.0, completed trips: 6840
+Generation 47
+ total travel times: 5108100.0 5108100.0 5155300.0 5346100.0 5120600.0 5116600.0 5126100.0 5157900.0 5498200.0 5310600.0 5116700.0 5154700.0 5190900.0 5165800.0 5266000.0 5244100.0 5120200.0 5196900.0 5154600.0 5114800.0 5117300.0 5183800.0 5108900.0 5109600.0 5327800.0 5310800.0 5280400.0 5104800.0 5389200.0 5173000.0 5318700.0 5289000.0 5121300.0 5131700.0 5118400.0 5446000.0 5119500.0 5153800.0 5206900.0 5135000.0 5266400.0 5119300.0 5122200.0 5212100.0 5184400.0 5227700.0 5148700.0 5199400.0 5126900.0 5143200.0
+ Best fitness = -5104800.0, TTT = 5104800.0, completed trips: 6840
+Generation 48
+ total travel times: 5104800.0 5108100.0 5143700.0 5112400.0 5118100.0 5125500.0 5210100.0 5294500.0 5136500.0 5127500.0 5116600.0 5108900.0 5294700.0 5154700.0 5121300.0 5114800.0 5117800.0 5131300.0 5370000.0 5115400.0 5109600.0 5117300.0 5170500.0 5150400.0 5113000.0 5136500.0 5126900.0 5118400.0 5108100.0 5108100.0 5126400.0 5345100.0 5131700.0 5119500.0 5128100.0 5120300.0 5124700.0 5146000.0 5241000.0 5423700.0 5285000.0 5290000.0 5120200.0 5243300.0 5114800.0 5157700.0 5130500.0 5132500.0 5309200.0 5523400.0
+ Best fitness = -5104800.0, TTT = 5104800.0, completed trips: 6840
+Generation 49
+ total travel times: 5104800.0 5108100.0 5117800.0 5117300.0 5108100.0 5108100.0 5299700.0 5114800.0 5122300.0 5115700.0 5204300.0 5351300.0 5141100.0 5179200.0 5124200.0 5117900.0 5287600.0 5108900.0 5114800.0 5290000.0 5118100.0 5327600.0 5123100.0 5115300.0 5329100.0 5198800.0 5136000.0 5120900.0 5173000.0 5120600.0 5321600.0 5155500.0 5120200.0 5223800.0 5131800.0 5114100.0 5114200.0 5197300.0 5130800.0 5321900.0 5114900.0 5109800.0 5112400.0 5118900.0 5136500.0 5109600.0 5121400.0 5122800.0 5265100.0 5119500.0
+ Best fitness = -5104800.0, TTT = 5104800.0, completed trips: 6840
+DSO summary:
+ total travel time: initial 5760800.0 -&gt; last 5104800.0
+ computation time: 2576.6 seconds
+results:
+ average speed:  12.3 m/s
+ number of completed trips:      6840 / 6840
+ average travel time of trips:   748.5 s
+ average delay of trips:         231.8 s
+ delay ratio:                    0.310
+ total distance traveled:        60500000.0 m
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_2.png" />
+</div>
+</div>
+<p>Now the traffic situation is much better, with 0.31 delay ratio. According to the network animation, traffic was distributed to many routes. Most of traffic congestion observed in DUO/DUE solutions were eliminated.</p>
+<p>Below is the summary of the 3 scenarios.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_DUO</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DUO&#39;</span>
+<span class="n">df_DUE</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DUE&#39;</span>
+<span class="n">df_DSO_GA</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DSO&#39;</span>
+
+<span class="n">df_combined</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_DUO</span><span class="p">,</span> <span class="n">df_DUE</span><span class="p">,</span> <span class="n">df_DSO_GA</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df_combined</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s1">&#39;Name&#39;</span><span class="p">]</span>
+<span class="n">df_combined</span> <span class="o">=</span> <span class="n">df_combined</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_combined</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>total_trips</th>
+      <th>completed_trips</th>
+      <th>total_travel_time</th>
+      <th>average_travel_time</th>
+      <th>total_delay</th>
+      <th>average_delay</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>DUO</td>
+      <td>6840</td>
+      <td>6840</td>
+      <td>6663000.0</td>
+      <td>974.122807</td>
+      <td>3129000.0</td>
+      <td>457.456140</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>DUE</td>
+      <td>6840</td>
+      <td>6840</td>
+      <td>5691200.0</td>
+      <td>832.046784</td>
+      <td>2157200.0</td>
+      <td>315.380117</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>DSO</td>
+      <td>6840</td>
+      <td>6840</td>
+      <td>5119500.0</td>
+      <td>748.464912</td>
+      <td>1585500.0</td>
+      <td>231.798246</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Below is some vehicle-level analysis</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">travel_time_per_vehicle_duo</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+<span class="n">travel_time_per_vehicle_due</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DUE</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+<span class="n">travel_time_per_vehicle_dso</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DSO_GA</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="p">()</span>
+<span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">title</span><span class="p">(</span><span class="s2">&quot;travel time of each vehicle&quot;</span><span class="p">)</span>
+<span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">travel_time_per_vehicle_duo</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">travel_time_per_vehicle_due</span><span class="p">))</span>
+<span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="s2">&quot;k--&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">travel_time_per_vehicle_duo</span><span class="p">,</span> <span class="n">travel_time_per_vehicle_due</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">]],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;number of vehicles&quot;</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;DUO&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;DUE&quot;</span><span class="p">)</span>
+<span class="n">show</span><span class="p">()</span>
+
+<span class="n">figure</span><span class="p">()</span>
+<span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">title</span><span class="p">(</span><span class="s2">&quot;travel time of each vehicle&quot;</span><span class="p">)</span>
+<span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">travel_time_per_vehicle_due</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">travel_time_per_vehicle_dso</span><span class="p">))</span>
+<span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="s2">&quot;k--&quot;</span><span class="p">)</span>
+<span class="n">hist2d</span><span class="p">(</span><span class="n">travel_time_per_vehicle_due</span><span class="p">,</span> <span class="n">travel_time_per_vehicle_dso</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">]],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">)</span>
+<span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;number of vehicles&quot;</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;DUE&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;DSO&quot;</span><span class="p">)</span>
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_36_0.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_36_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_36_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_36_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">route_of_vehicle_duo</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+<span class="n">route_of_vehicle_due</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DUE</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+<span class="n">route_of_vehicle_dso</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DSO_GA</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;number of vehicles that choose different routes in different scenarios&quot;</span><span class="p">)</span>
+
+<span class="n">changed</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lange</span><span class="p">(</span><span class="n">route_of_vehicle_duo</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">route_of_vehicle_duo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">route_of_vehicle_due</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+        <span class="n">changed</span> <span class="o">+=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">DELTAN</span>
+    <span class="n">total</span> <span class="o">+=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">DELTAN</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DUO vs DUE:&quot;</span><span class="p">,</span> <span class="n">changed</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
+
+<span class="n">changed</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lange</span><span class="p">(</span><span class="n">route_of_vehicle_duo</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">route_of_vehicle_due</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">route_of_vehicle_dso</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+        <span class="n">changed</span> <span class="o">+=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">DELTAN</span>
+    <span class="n">total</span> <span class="o">+=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">DELTAN</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DUE vs DSO:&quot;</span><span class="p">,</span> <span class="n">changed</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+number of vehicles that choose different routes in different scenarios
+DUO vs DUE: 5550 / 6840
+DUE vs DSO: 1170 / 6840
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="demo_notebook_08en_chicago.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Huge-scale simulation using Chicago-Sketch dataset</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="demo_notebook_06en_taxi_or_shared_mobility.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Taxi / Shared mobility</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023 Toru Seo
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Dynamic Traffic Assignments: DUO, DUE, DSO</a><ul>
+<li><a class="reference internal" href="#Two-route-network-with-parallel-highway-and-arterial">Two route network with parallel highway and arterial</a><ul>
+<li><a class="reference internal" href="#DUO">DUO</a></li>
+<li><a class="reference internal" href="#DUE">DUE</a></li>
+<li><a class="reference internal" href="#DSO">DSO</a></li>
+<li><a class="reference internal" href="#Comparison">Comparison</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Large-scale-scenario">Large-scale scenario</a><ul>
+<li><a class="reference internal" href="#id1">DUO</a></li>
+<li><a class="reference internal" href="#id2">DUE</a></li>
+<li><a class="reference internal" href="#id3">DSO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5cb08e4e"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

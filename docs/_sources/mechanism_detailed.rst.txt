@@ -3,6 +3,9 @@ Simulation Mechanism: Details
 
 The below is further details on the mechanism and program structure with reference to the code elements.
 
+`Deepwiki <https://deepwiki.com/toruseo/UXsim>`_ is also available.
+I have checked its contents, and it looks mostly okey.
+
 Overall Structure
 -----------------
 

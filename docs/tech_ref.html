@@ -216,7 +216,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_07en_optimal_routing.html">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_09en_dynamic_traffic_assignment.html">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
@@ -234,6 +234,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html">uxsim.DTAsolvers.SolverDSO_GA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/uxsim.utils.html">uxsim.utils</a></li>
@@ -340,6 +342,12 @@ Thus, for basic usage, users do not need to access them directly.
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.OSMImporter.OSMImporter.html#uxsim.OSMImporter.OSMImporter" title="uxsim.OSMImporter.OSMImporter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.OSMImporter.OSMImporter</span></code></a></p></td>
 <td><p>OpenStreetMap importer using OSMnx.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE" title="uxsim.DTAsolvers.SolverDUE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.DTAsolvers.SolverDUE</span></code></a></p></td>
+<td><p>Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA" title="uxsim.DTAsolvers.SolverDSO_GA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.DTAsolvers.SolverDSO_GA</span></code></a></p></td>
+<td><p>Solve Dynamic System Optimum (DSO) problem using genetic algorithm.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#module-uxsim.ResultGUIViewer.ResultGUIViewer" title="uxsim.ResultGUIViewer.ResultGUIViewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uxsim.ResultGUIViewer.ResultGUIViewer</span></code></a></p></td>
 <td><p>Interactive viewer for UXsim simulation results using PyQt5.</p></td>

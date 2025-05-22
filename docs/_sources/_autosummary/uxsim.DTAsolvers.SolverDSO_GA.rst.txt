@@ -1,0 +1,26 @@
+﻿uxsim.DTAsolvers.SolverDSO\_GA
+==============================
+
+.. currentmodule:: uxsim.DTAsolvers
+
+.. autoclass:: SolverDSO_GA
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SolverDSO_GA.__init__
+      ~SolverDSO_GA.plot_convergence
+      ~SolverDSO_GA.plot_link_stats
+      ~SolverDSO_GA.plot_vehicle_stats
+      ~SolverDSO_GA.solve
+   
+   
+
+   
+   
+   

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Huge-scale simulation using Chicago-Sketch dataset" href="demo_notebook_08en_chicago.html" /><link rel="prev" title="Taxi / Shared mobility" href="demo_notebook_06en_taxi_or_shared_mobility.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Vehicle routing and its optimization - UXsim: Traffic Simulation in Python v1 documentation</title>
@@ -208,16 +208,16 @@ gtag('config', 'UA-111714220-1');
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorial.html">Tutorial and Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorial and Examples</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_01en.html">Step-by-step Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_10en_traffic_signal_tutorial.html">Tutorial on Traffic Signal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_02en.html">Advanced example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_03en_pytorch.html">Signal control by PyTorch (DQN)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_04en_OpenStreetMap.html">Network data import from OpenStreetMap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Vehicle routing and its optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="demo_notebook_09en_dynamic_traffic_assignment.html">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
@@ -235,6 +235,8 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html">uxsim.DTAsolvers.SolverDSO_GA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.utils.html">uxsim.utils</a></li>
@@ -2933,26 +2935,8 @@ Vehicle comparison
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="demo_notebook_08en_chicago.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Huge-scale simulation using Chicago-Sketch dataset</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="demo_notebook_06en_taxi_or_shared_mobility.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Taxi / Shared mobility</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">

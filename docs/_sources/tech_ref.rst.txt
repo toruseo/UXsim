@@ -41,6 +41,8 @@ These classes are not necessary for the basic usage of UXsim, but useful for spe
    uxsim.TaxiHandler.TaxiHandler
    uxsim.TaxiHandler.TaxiHandler_nearest
    uxsim.OSMImporter.OSMImporter
+   uxsim.DTAsolvers.SolverDUE
+   uxsim.DTAsolvers.SolverDSO_GA
    uxsim.ResultGUIViewer.ResultGUIViewer
 
 

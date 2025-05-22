@@ -1,0 +1,13 @@
+﻿uxsim.DTAsolvers.DTAsolvers
+===========================
+
+.. automodule:: uxsim.DTAsolvers.DTAsolvers
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      SolverDSO_GA
+      SolverDUE
+   
