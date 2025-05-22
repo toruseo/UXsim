@@ -209,6 +209,14 @@ class SolverDUE:
         return s.W_sol
 
     def plot_convergence(s):
+        """
+        Plots convergence metrics for a Dynamic Traffic Assignment (DTA) solution.
+        This function creates three separate plots:
+        1. Total travel time across iterations
+        2. Number of route changes (swaps) across iterations
+        3. Travel time gap between chosen routes and minimum cost routes across iterations 
+        """
+
         # iteration plot
         plt.figure(figsize=(6,2))
         plt.title("total travel time")
@@ -235,6 +243,12 @@ class SolverDUE:
         # plt.show()
 
     def plot_link_stats(s):
+        """
+        Generate two plots to visualize the evolution of link-level traffic statistics across iterations.
+        The first plot shows traffic volume changes for each link over iterations.
+        The second plot shows average travel time changes for each link over iterations.
+        """
+
         plt.figure()
         plt.title("traffic volume")
         for i in range(len(s.dfs_link[0])):
@@ -256,6 +270,27 @@ class SolverDUE:
         plt.show()
     
     def plot_vehicle_stats(s, orig=None, dest=None):
+        """
+        Plot travel time statistics for vehicles based on their origin and destination.
+        This function visualizes the average travel time and standard deviation for vehicles
+        matching the specified origin and destination criteria. The data is plotted against 
+        the departure time of each vehicle.
+
+        Parameters
+        ----------
+        orig : str, optional
+            Filter vehicles by origin. If None, vehicles from all origins are included.
+        dest : str, optional
+            Filter vehicles by destination. If None, vehicles to all destinations are included.
+            
+        Notes
+        -----
+        - The function uses the second half of the available data (from length/2 to length)
+          from the cost_log to compute statistics.
+        - The plot shows departure time on the x-axis and average travel time on the y-axis,
+          with error bars representing the standard deviation.
+        """
+
         ave_TT = []
         std_TT = []
         depature_time = []
@@ -862,6 +897,13 @@ class SolverDSO_GA:
         return s.W_sol
     
     def plot_convergence(s):
+        """
+        Plot the convergence of total travel time across iterations.
+        This method generates a plot showing how the total travel time changes
+        throughout the solution iterations, which helps visualize the convergence
+        of the traffic assignment algorithm.
+        """
+
         plt.figure(figsize=(6,2))
         plt.title("total travel time")
         plt.plot(s.ttts)
@@ -869,6 +911,12 @@ class SolverDSO_GA:
         plt.show()
 
     def plot_link_stats(s):
+        """
+        Plot the traffic volume and average travel time for each link across iterations.
+        This function creates two separate figures: one for traffic volume and one for average travel time.
+        For each link, it plots the values across all iterations and adds a legend with link identifiers.
+        """
+
         plt.figure()
         plt.title("traffic volume")
         for i in range(len(s.dfs_link[0])):
@@ -890,6 +938,19 @@ class SolverDSO_GA:
         plt.show()
     
     def plot_vehicle_stats(s, orig=None, dest=None):
+        """
+        Plot vehicle travel time statistics based on route logs.
+        This function generates a plot that shows average travel times with standard deviations
+        for vehicles, filtered by optional origin and destination locations.
+
+        Parameters
+        ----------
+        orig : str, optional
+            Origin location name to filter vehicles. If None, all origins are included.
+        dest : str, optional
+            Destination location name to filter vehicles. If None, all destinations are included.
+        """
+
         ave_TT = []
         std_TT = []
         depature_time = []
