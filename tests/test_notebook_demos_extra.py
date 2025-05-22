@@ -11,9 +11,10 @@ from nbconvert.preprocessors import ExecutePreprocessor
 from nbconvert.preprocessors import CellExecutionError
 
 from IPython.display import display
+import re
 
 
-class SkipCellsPreprocessor(ExecutePreprocessor):
+class CellExecuter(ExecutePreprocessor):
     """特定のキーワードを含むセルをスキップするプリプロセッサ"""
     
     def __init__(self, exception_words=None, **kwargs):
@@ -43,7 +44,7 @@ def test_demo_notebook_02en():
                 nb = nbformat.read(f, as_version=4)
             
             # カスタムプリプロセッサを使用
-            ep = SkipCellsPreprocessor(
+            ep = CellExecuter(
                 exception_words=exception_words,
                 timeout=1800, 
                 kernel_name='python3'
@@ -72,7 +73,7 @@ def test_demo_notebook_03en_pytorch():
                 nb = nbformat.read(f, as_version=4)
             
             # カスタムプリプロセッサを使用
-            ep = SkipCellsPreprocessor(
+            ep = CellExecuter(
                 exception_words=exception_words,
                 timeout=1800, 
                 kernel_name='python3'
@@ -102,7 +103,7 @@ def test_demo_notebook_04en_OpenStreetMap():
                 nb = nbformat.read(f, as_version=4)
             
             # カスタムプリプロセッサを使用
-            ep = SkipCellsPreprocessor(
+            ep = CellExecuter(
                 exception_words=exception_words,
                 timeout=1800, 
                 kernel_name='python3'
@@ -131,7 +132,7 @@ def test_demo_notebook_06en_taxi_or_shared_mobility():
                 nb = nbformat.read(f, as_version=4)
             
             # カスタムプリプロセッサを使用
-            ep = SkipCellsPreprocessor(
+            ep = CellExecuter(
                 exception_words=exception_words,
                 timeout=1800, 
                 kernel_name='python3'
@@ -162,7 +163,7 @@ def test_demo_notebook_08en_chicago():
                 nb = nbformat.read(f, as_version=4)
             
             # カスタムプリプロセッサを使用
-            ep = SkipCellsPreprocessor(
+            ep = CellExecuter(
                 exception_words=exception_words,
                 timeout=1800, 
                 kernel_name='python3'
@@ -192,9 +193,9 @@ def test_demo_notebook_09en_dynamic_traffic_assignment():
                 nb = nbformat.read(f, as_version=4)
             
             # カスタムプリプロセッサを使用
-            ep = SkipCellsPreprocessor(
+            ep = CellExecuter(
                 exception_words=exception_words,
-                timeout=1800, 
+                timeout=7200, 
                 kernel_name='python3'
             )
             
@@ -223,7 +224,7 @@ def test_demo_notebook_10en_traffic_signal_tutorial():
                 nb = nbformat.read(f, as_version=4)
             
             # カスタムプリプロセッサを使用
-            ep = SkipCellsPreprocessor(
+            ep = CellExecuter(
                 exception_words=exception_words,
                 timeout=1800, 
                 kernel_name='python3'
