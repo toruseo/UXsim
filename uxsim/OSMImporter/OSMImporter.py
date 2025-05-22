@@ -1,5 +1,6 @@
 """
 OpenStreetMap importer using OSMnx.
+`OSMImporter` is deprecated. Please consider to user `OSMImporter2`
 Work in progress. Import from OSM is experimental and may not work as expected. It is functional but may produce inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.
 
 
@@ -16,10 +17,14 @@ Import highway in Tokyo:
     >>> W.exec_simulation()
 """
 
-
 import matplotlib.pyplot as plt
 import math
 import warnings
+
+warnings.warn(
+    "`OSMImporter` is deprecated. If you are using Python 3.11 or later, please consider to user `OSMImporter2` which has more sophisticated functionalities.",
+    DeprecationWarning
+)
 
 class OSMImporter:
     """

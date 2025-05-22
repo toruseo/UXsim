@@ -10,6 +10,7 @@ import warnings
 from collections import defaultdict, Counter
 import numpy as np
 import pandas as pd
+import networkx as nx
 
 
 if 1: #to avoid edior's failure
@@ -158,7 +159,8 @@ def _extract_network_from_geodataframe(gdf):
     
     return nodes_gdf, links_gdf
 
-def _attach_osm_nodes_links(W, nodes, links, set_node_capacity, maxspeed_by_road_type={}, lanes_by_road_type={}):
+
+def _attach_osm_nodes_links(W, nodes, links, set_node_capacity, override_osm_attributes=False, maxspeed_by_road_type={}, lanes_by_road_type={}):
     """
     Adds OSM nodes and links to the network. This function processes the OSM nodes and links dataframes and adds them to the provided network object (W). For nodes, it extracts coordinates and ID. For links, it processes attributes like speed limits, number of lanes, and handles one-way/two-way streets accordingly.
 
@@ -168,11 +170,14 @@ def _attach_osm_nodes_links(W, nodes, links, set_node_capacity, maxspeed_by_road
         The network object to which nodes and links will be added.
     nodes : pandas.DataFrame
         DataFrame containing node information with columns:
+
         - node_id: unique identifier for each node
         - x: x-coordinate
         - y: y-coordinate
+
     links : pandas.DataFrame
         DataFrame containing link information with columns:
+
         - from_node: source node ID
         - to_node: destination node ID
         - length: length of the link
@@ -260,48 +265,54 @@ def _attach_osm_nodes_links(W, nodes, links, set_node_capacity, maxspeed_by_road
                 
         except Exception as e:
             highway_type = "None"
-            warnings.warn(f"Link {name} - Could not parse highway_type: {links.at[i, "highway"]}, due to '{e}' error. Using default value of {'None'}", UserWarning)
+            warnings.warn(f"Link {name} - Could not parse highway_type: {links.at[i, 'highway']}, due to '{e}' error. Using default value of {'None'}", UserWarning)
 
         maxspeed = links.at[i, "maxspeed"]
         try:
-            if type(maxspeed) is list:
+            if type(maxspeed) is str and not override_osm_attributes:
+                maxspeed = float(maxspeed)/3.6
+            elif type(maxspeed) is list and not override_osm_attributes:
                 maxspeed = np.average([float(v) for v in maxspeed])/3.6
-            if maxspeed is None:
+            else:
                 maxspeed = maxspeed_dict["others"]
                 for key in maxspeed_dict:
                     if key in highway_type:
                         maxspeed = maxspeed_dict[key]
                         break
-            if type(maxspeed) is str:
-                maxspeed = float(maxspeed)/3.6
         except Exception as e:
             maxspeed = maxspeed_dict["others"]
-            warnings.warn(f"Link {name} - Could not parse maxspeed: {links.at[i, "maxspeed"]}, due to '{e}' error. Using default value of {maxspeed_dict['others']} m/s", UserWarning)
+            warnings.warn(f"Link {name} - Could not parse maxspeed: {links.at[i, 'maxspeed']}, due to '{e}' error. Using default value of {maxspeed_dict['others']} m/s", UserWarning)
+        
 
-        #TODO: check how oneway and lanes are determined by OSM and neatnet
+        """
+        東京の一般道で確認できた範囲では，oneway=Falseの時のlanesは両方向の総和で，oneway=Trueの時のlanesはその方向のみの数
+        """
         oneway = links.at[i, "oneway"]
         lanes = links.at[i, "lanes"]
         try:
-            if type(lanes) is list:
+            if type(lanes) is str and not override_osm_attributes:
+                lanes = int(lanes)
+            elif type(lanes) is list and not override_osm_attributes:
                 lanes = max([int(l) for l in lanes])
-            if lanes is None:
+            else:
                 lanes = lanes_dict["others"]
                 for key in lanes_dict:
                     if key in highway_type:
-                        lanes = lanes_dict[key]
+                        if oneway:
+                            lanes = lanes_dict[key]
+                        else:
+                            lanes = lanes_dict[key]*2
                         break
-            
-            lanes = int(lanes)
         except Exception as e:
             lanes = lanes_dict["others"]
-            warnings.warn(f"Link {name} - Could not parse number of lane: {lanes}, due to '{e}' error. Using default value of {lanes_dict['others']}", UserWarning)
+            warnings.warn(f"Link {name} - Could not parse number of lane: {links.at[i, 'lanes']}, due to '{e}' error. Using default value of {lanes_dict['others']}", UserWarning)
 
         if oneway:
             W.addLink(name=name, start_node=start_node, end_node=end_node, length=length, free_flow_speed=maxspeed, number_of_lanes=lanes, auto_rename=True)
         else:
-            # lanes = int(lanes/2)
-            # if lanes <= 0:
-            #     lanes = 1
+            lanes = int(lanes/2)
+            if lanes <= 0:
+                lanes = 1
             W.addLink(name=name, start_node=start_node, end_node=end_node, length=length, free_flow_speed=maxspeed, number_of_lanes=lanes, auto_rename=True)
             W.addLink(name=name+"-reverse", start_node=end_node, end_node=start_node, length=length, free_flow_speed=maxspeed, number_of_lanes=lanes, auto_rename=True)
     
@@ -314,7 +325,7 @@ def _attach_osm_nodes_links(W, nodes, links, set_node_capacity, maxspeed_by_road
 
 
 def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=None, custom_filter='["highway"~"trunk|primary"]', 
-                         simplification=True, 
+                         simplification=True, override_osm_attributes=False,
                          set_node_capacity=True, 
                          maxspeed_by_road_type={}, lanes_by_road_type={}, kwargs_dict_for_osmnx_graph_from_bbox={}, kwargs_dict_for_osmnx_project_graph={}, kwargs_dict_for_neatnet_neatify={}):
     """
@@ -332,11 +343,16 @@ def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=N
     custom_filter : str, default='["highway"~"trunk|primary"]'
         The OSM filter to be used for importing the data.
         Examples:
-        - '["highway"~"motorway"]' - highways only
-        - '["highway"~"motorway|trunk|primary|secondary|tertiary"]' - highways and major/mid arterials
+
+        - '["highway"~"motorway"]': highways only
+        - '["highway"~"motorway|trunk|primary|secondary|tertiary"]': highways and major/mid arterials
+
     simplification : bool, default=True
         If True, the network is simplified using neatnet's neatify function.
         If False, the original network is used.
+    override_osm_attributes : bool, default=False
+        If True, the function will override OSM attributes (maxspeed, lanes) with default values. This can be useful when OSM data is erroneous or inconsistent.
+        If False, it will use the attributes from the OSM data.
     set_node_capacity : bool, default=True
         If True, automatically determines flow capacity of nodes based on connected links.
         If False, the capacity is unbounded. This simulates traffic signals in a continuous manner.
@@ -359,9 +375,11 @@ def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=N
     Notes
     -----
     The function performs three main steps:
+
     1. Obtains and simplifies the OSM network using OSMnx and neatnet
     2. Extracts node and link information from the simplified network
     3. Attaches the extracted nodes and links to the World object
+
     """
     print("Started network import from OSM. It may take some time...")
     
@@ -373,7 +391,7 @@ def osm_network_to_World(W, north=None, south=None, east=None, west=None, bbox=N
     simplified_links = _obtain_simplify_osm_by_osmnx_neatnet(bbox, custom_filter, simplification,
                                                              kwargs_dict_for_osmnx_graph_from_bbox, kwargs_dict_for_osmnx_project_graph, kwargs_dict_for_neatnet_neatify)
     nodes, links = _extract_network_from_geodataframe(simplified_links)  
-    _attach_osm_nodes_links(W, nodes, links, set_node_capacity, maxspeed_by_road_type=maxspeed_by_road_type, lanes_by_road_type=lanes_by_road_type)
+    _attach_osm_nodes_links(W, nodes, links, set_node_capacity, override_osm_attributes=override_osm_attributes, maxspeed_by_road_type=maxspeed_by_road_type, lanes_by_road_type=lanes_by_road_type)
 
     stats_count = defaultdict(lambda: 0)
     stats_length = defaultdict(lambda: 0)
