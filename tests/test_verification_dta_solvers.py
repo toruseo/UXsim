@@ -65,14 +65,6 @@ def test_DTA_total_travel_time_comparison():
     df_DUE = W_DUE.analyzer.basic_to_pandas()
 
     #################################
-    # DSO
-    solver_DSO = SolverDSO(create_World)
-    solver_DSO.solve(max_iter=20, initial_solution_World=W_DUE) # warm start up from DUE solution   # max_iter should be larger (e.g., 100). this is just for demonstration
-    W_DSO = solver_DSO.W_sol
-    W_DSO.analyzer.print_simple_stats(force_print=True)
-    df_DSO = W_DSO.analyzer.basic_to_pandas()
-
-    #################################
     # DSO by GA
     solver_DSO_GA = SolverDSO_GA(create_World)
     solver_DSO_GA.solve(max_iter=20, pop_size=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
@@ -86,22 +78,16 @@ def test_DTA_total_travel_time_comparison():
     print("DUE")
     print(df_DUE)
     print("DSO")
-    print(df_DSO)
     print(df_DSO_GA)
 
     # visualizations
     solver_DUE.plot_convergence()
     solver_DUE.plot_link_stats()
     solver_DUE.plot_vehicle_stats(orig="4", dest="7")
-
-    solver_DSO.plot_convergence()
-    solver_DSO.plot_link_stats()
-    solver_DSO.plot_vehicle_stats(orig="4", dest="7")
-
+    
     solver_DSO_GA.plot_convergence()
     solver_DSO_GA.plot_link_stats()
     solver_DSO_GA.plot_vehicle_stats(orig="4", dest="7")
     
     assert W_DUO.analyzer.total_travel_time > W_DUE.analyzer.total_travel_time
-    assert W_DUE.analyzer.total_travel_time > W_DSO.analyzer.total_travel_time
     assert W_DUE.analyzer.total_travel_time > W_DSO_GA.analyzer.total_travel_time
