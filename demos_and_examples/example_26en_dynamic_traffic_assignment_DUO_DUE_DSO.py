@@ -5,8 +5,6 @@ Demonstration of dynamic traffic assginment (DTA) in a simple network.
 - Dynamic System Optimum (DSO)
 """
 
-'''temporally disabled due to unknown random error.
-
 from pylab import *
 import uxsim
 from uxsim.DTAsolvers import *
@@ -65,21 +63,14 @@ W_DUE = solver_DUE.W_sol
 W_DUE.analyzer.print_simple_stats(force_print=True)
 df_DUE = W_DUE.analyzer.basic_to_pandas()
 
+
 #################################
 # DSO
-solver_DSO = SolverDSO(create_World)
-solver_DSO.solve(max_iter=20, initial_solution_World=W_DUE) # warm start up from DUE solution   # max_iter should be larger (e.g., 100) for a better result. this is just for demonstration
+solver_DSO = SolverDSO_GA(create_World)
+solver_DSO.solve(max_iter=20, pop_size=20)   # max_iter should be larger (e.g., 100) for a better result. this is just for demonstration
 W_DSO = solver_DSO.W_sol
 W_DSO.analyzer.print_simple_stats(force_print=True)
 df_DSO = W_DSO.analyzer.basic_to_pandas()
-
-#################################
-# DSO by GA
-solver_DSO_GA = SolverDSO_GA(create_World)
-solver_DSO_GA.solve(max_iter=20, pop_size=20)   # max_iter should be larger (e.g., 100) for a better result. this is just for demonstration
-W_DSO_GA = solver_DSO_GA.W_sol
-W_DSO_GA.analyzer.print_simple_stats(force_print=True)
-df_DSO_GA = W_DSO_GA.analyzer.basic_to_pandas()
 
 #################################
 # Results
@@ -91,7 +82,6 @@ print("DUE")
 print(df_DUE)
 print("DSO")
 print(df_DSO)
-print(df_DSO_GA)
 
 
 # visualizations
@@ -106,4 +96,3 @@ solver_DSO.plot_vehicle_stats(orig="4", dest="7")
 solver_DSO.plot_convergence()
 solver_DSO.plot_link_stats()
 solver_DSO.plot_vehicle_stats(orig="4", dest="7")
-'''
