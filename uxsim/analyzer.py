@@ -580,7 +580,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network(s, t=None, detailed=1, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
+    def network(s, t=None, detailed=1, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=12, node_size=2, legend=True, legend_outside=False):
         """
         Visualizes the entire transportation network and its current traffic conditions.
 
@@ -611,6 +611,8 @@ class Analyzer:
             The size of the nodes in the visualization. Default is 2.
         legend : bool, optional
             If set to True, the legend will be displayed. Default is True.  
+        legend_outside : bool, optional
+            If set to True, the legend will be placed outside the plot. Default is False.
 
         Notes
         -----
@@ -764,7 +766,11 @@ class Analyzer:
                 labels  = [dummy_speed.get_label()] + speed_labels + [dummy_volume.get_label()] + volume_labels
 
 
-            plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+            if not legend_outside:
+                plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+            else:
+                plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, frameon=True, loc='center left', bbox_to_anchor=(1, 0.5))
+
 
 
         plt.tight_layout()
@@ -780,7 +786,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
+    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=12, node_size=2, legend=True, legend_outside=False):
         """
         Visualizes the average traffic conditions of the network.
         This function generates a network visualization where links are colored based on congestion levels (travel time ratio) and sized according to traffic volume.
@@ -802,7 +808,9 @@ class Analyzer:
         node_size : int, optional
             Size of the nodes in the visualization. Default is 2.
         legend : bool, optional
-            Whether to show the legend. Default is True (currently not implemented).
+            Whether to show the legend. Default is True.
+        legend_outside : bool, optional
+            If True, places the legend outside the plot. Default is False.
 
         Returns
         -------
@@ -883,7 +891,10 @@ class Analyzer:
             handles = [dummy_speed] + speed_handles + [dummy_volume] + volume_handles
             labels  = [dummy_speed.get_label()] + speed_labels + [dummy_volume.get_label()] + volume_labels
 
-            plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+            if not legend_outside:
+                plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+            else:
+                plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, frameon=True, loc='center left', bbox_to_anchor=(1, 0.5))
 
 
         plt.tight_layout()
