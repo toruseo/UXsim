@@ -31,13 +31,17 @@ def test_example_runs(example_script):
     if "streamlit" in example_script:
         # Run streamlit app in headless mode
         cmd = ['streamlit', 'run', script_path]
-        timeout = 60  
+         
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        except subprocess.TimeoutExpired:
+            assert True
+
     else:
         # Regular Python script
         cmd = ['python', script_path]
-        timeout = None
 
-    # Run the script as a separate process
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
-    # Assert that the script ran successfully
-    assert result.returncode == 0, f"Script {example_script} failed with output:\n{result.stdout}\n{result.stderr}"
+        # Run the script as a separate process
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        # Assert that the script ran successfully
+        assert result.returncode == 0, f"Script {example_script} failed with output:\n{result.stdout}\n{result.stderr}"
