@@ -30,7 +30,7 @@ def test_example_runs(example_script):
     
     if "streamlit" in example_script:
         # Run streamlit app in headless mode
-        cmd = ['streamlit', 'run', script_path, '--headless', '--server.port=8501', '--server.enableCORS=false']
+        cmd = ['streamlit', 'run', script_path]
         timeout = 60  
     else:
         # Regular Python script
