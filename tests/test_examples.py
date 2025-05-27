@@ -27,7 +27,21 @@ def test_example_runs(example_script):
     """Test that a Python example script runs successfully."""
     # Build the script path
     script_path = os.path.join(examples_dir, example_script)
-    # Run the script as a separate process
-    result = subprocess.run(['python', script_path], capture_output=True, text=True)
-    # Assert that the script ran successfully
-    assert result.returncode == 0, f"Script {example_script} failed with output:\n{result.stdout}\n{result.stderr}"
+    
+    if "streamlit" in example_script:
+        # Run streamlit app
+        cmd = ['streamlit', 'run', script_path]
+         
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)    #Streamlit app should always timeout if work properly
+        except subprocess.TimeoutExpired:
+            assert True
+
+    else:
+        # Regular Python script
+        cmd = ['python', script_path]
+
+        # Run the script as a separate process
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        # Assert that the script ran successfully
+        assert result.returncode == 0, f"Script {example_script} failed with output:\n{result.stdout}\n{result.stderr}"

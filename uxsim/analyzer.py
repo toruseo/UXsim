@@ -517,6 +517,7 @@ class Analyzer:
                 plt.show()
             else:
                 plt.close("all")
+            
 
     @catch_exceptions_and_warn()
     def cumulative_curves(s, links=None, figsize=(6,4)):
