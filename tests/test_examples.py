@@ -29,11 +29,11 @@ def test_example_runs(example_script):
     script_path = os.path.join(examples_dir, example_script)
     
     if "streamlit" in example_script:
-        # Run streamlit app in headless mode
+        # Run streamlit app
         cmd = ['streamlit', 'run', script_path]
          
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)    #Streamlit app should always timeout if work properly
         except subprocess.TimeoutExpired:
             assert True
 
