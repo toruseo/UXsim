@@ -131,6 +131,11 @@ class SolverDUE:
             W.analyzer.print_simple_stats()
             #W.analyzer.network_average()
 
+            # trip completion check
+            unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
+            if unfinished_trips > 0:
+                warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DUE solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
+
             # attach route choice set to W object for later re-use at different solvers like DSO-GA
             W.dict_od_to_routes = dict_od_to_routes
             
@@ -169,7 +174,6 @@ class SolverDUE:
                             if random.random() < swap_prob:
                                 flag_route_changed = True
                                 route_changed = alt_route
-
                 
                 total_t_gap += t_gap
                 routes_specified[key] = r
