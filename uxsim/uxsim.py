@@ -22,7 +22,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None, user_attribute=None, user_function=None):
+    def __init__(s, W, name, x, y, signal=[0], signal_offset=0, signal_offset_old=None, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None, user_attribute=None, user_function=None):
         """
         Create a node
 
@@ -42,6 +42,8 @@ class Node:
             For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.
         signal_offset : float, optional
             The offset of the signal. Default is 0.
+        signal_offset_old : float, optional
+            The old parameter used to set offset of the signal prior to v1.8.1. This is the opposite of the usual definition of offset. Default is None, meaning it is `signal_offset` is used.
         flow_capacity : float, optional
             The maximum flow capacity of the node. Default is None, meaning infinite capacity.
         auto_rename : bool, optional
@@ -93,10 +95,14 @@ class Node:
         #If this node does not have a signal, set `signal=[0]`
         #If this node has a signal, set `signal=[green time for group0, green time for group1. ...]`
         s.signal = signal
+        s.cycle_length = sum(s.signal)
         s.signal_phase = 0
         s.signal_t = 0
         s.signal_offset = signal_offset
-        offset = s.signal_offset
+        if signal_offset_old != None:
+            s.signal_offset = s.cycle_length-signal_offset_old
+        
+        offset = s.cycle_length-s.signal_offset
         if s.signal != [0]:
             i = 0
             while 1:
@@ -152,6 +158,7 @@ class Node:
             if s.signal_phase >= len(s.signal):
                 s.signal_phase = 0
         s.signal_t += s.W.DELTAT
+        s.cycle_length = sum(s.signal)
 
         s.signal_log.append(s.signal_phase)
 

@@ -40,7 +40,7 @@ class UXsim_model:
                     signal = [self.cycle * 0.5, self.cycle * 0.5]
             else:
                 signal = [0]
-            self.W.addNode(f"node{i}", 0, i, signal=signal, signal_offset=self.cycle-self.offsets[i])
+            self.W.addNode(f"node{i}", 0, i, signal=signal, signal_offset=self.offsets[i])
         
         # リンク作成
         for i in range(self.n_nodes - 1):
