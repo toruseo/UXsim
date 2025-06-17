@@ -2667,8 +2667,10 @@ class Route:
                     #todo: interpolation based on shotest path
             if len(links) >= 2:
                 s.links.append(l2)
-            else:
+            elif len(links) >= 1:
                 s.links.append(W.get_link(links[0]))
+            else:
+                s.links = []
         else:
             #検査せずそのまま使用（計算コスト削減）
             s.links = links
