@@ -1,233 +1,289 @@
 """
-Mixed-Control ALNS with Periodic Injection & Convergence Check
-==============================================================
+Adaptive Large Neighborhood Search (ALNS) for DSO
 
-- Initially coded by GPT-5, refined by human and Claude Code. Unfortunately, this code is unnecessarily redundant and not in my style, but I confirm it works.
+- Initially coded by GPT-5, refined by human and Claude Code. 
 
-概要
-----
-- デフォルトの小近傍（kflip / swap / shuffle）で自動探索（auto）
-- n ステップごとにユーザー定義の候補を**注入**（external）
-- 収束判定（停滞 + 低受理率 + 低温度）で早期停止（オプション）
-
-主API
------
-init_alns(x, obj, **params) -> ALNSState
-    状態を初期化（温度・適応重み・ログなど）。
-auto_step(state) -> StepLog
-    自動近傍で 1 ステップ。
-run_auto(state, n, time_limit_s=None) -> list[StepLog]
-    自動近傍で n ステップ連続実行。
-external_step(state, x_cand, move='external', changed_idx=None,
-              accept_policy='metropolis'|'greedy'|'always') -> (accepted, StepLog)
-    外部候補 1 つを注入し、受理判定・状態更新・ロギング。
-run_auto_until_converged(state, *, max_steps=10000, batch=50, time_limit_s=None,
-                         check_every=100, check_fn=default_convergence_check,
-                         inject_every=None, inject_fn=None, stop_on_converge=True)
-    自動探索を収束まで回すランナー。**inject_every ステップごとに inject_fn を呼び**、
-    返された候補を external_step で評価・適用する。
-
-その他ユーティリティ
---------------------
-should_shake(state) -> bool
-    停滞（patience 超過）したか。
-make_shake_candidate(state, base='best'|'current', k=None) -> (x, idx)
-    強摂動候補（参考実装）。
-do_shake(state, base='best', k=None) -> StepLog
-    強摂動を適用してログ追加（“再起動”。デフォルトでは自動では呼ばない）。
-get_current_x(state) / get_best_x(state)
-    現在解 / 最良解のコピー取得。
-evaluate_candidates(state, xs) -> list[float]
-    複数候補のユーザー向き（sense反映）評価。
-default_convergence_check(state, **opts) -> (bool, reason)
-    収束判定（停滞＋低受理率＋低温度の合成ルール）。
-finalize(state, stop_reason='') -> (x_star, RunLog)
-    最良解とログを返す。
-
+- 破壊/修復オペレータを辞書で差し替え可能な、本格ALNSの最小クリーン実装。
+- 主要API: init_alns / auto_step / run_auto / finalize
+- 拡張: _DESTROY_IMPLS / _REPAIR_IMPLS に関数を追加/置換するだけで新オペレータが自動採用される
 """
 
 from __future__ import annotations
 from dataclasses import dataclass, field, asdict
-from typing import Callable, Sequence, List, Optional, Dict, Any, Tuple, Iterable, Union
+from typing import Callable, Sequence, List, Optional, Dict, Any, Tuple, Iterable
 import math
 import random
-import time
-
 import numpy as np
-
+from pprint import pprint
+import time
 
 # -------------------------
 # ログ構造体
 # -------------------------
 @dataclass
 class StepLog:
-    """
-    1 ステップ（自動/外部/Shake）のログ。
-
+    """ALNSステップのログ情報.
+    
     Attributes
     ----------
     iter : int
-        ステップ番号（1 始まり）。
+        イテレーション番号
     move : str
-        適用した近傍または注入ラベル（例："kflip", "swap", "external", "shake(k)"}）。
-    changed_idx : list of int or None
-        変更したインデックス（分からなければ None/[] 可）。
+        実行されたムーブ ("D:<destroy>+R:<repair>" または "shake(k)")
+    changed_idx : Optional[List[int]]
+        変更されたインデックスのリスト
+    changed_idxs : Optional[int]
+        変更されたインデックスの数
     delta_obj : float
-        内部向き最小化での差分（cand - cur）。
+        内部最小化差分 (cand - cur)
     accepted : bool
-        候補が採択されたか。
+        ムーブが受理されたかどうか
     obj_val : float
-        ステップ後の現解の目的値（ユーザー向き：sense を反映）。
+        ユーザー向き目的関数値（sense反映）
     best_obj : float
-        ステップ後の最良目的値（ユーザー向き）。
+        ユーザー向き最良目的関数値
     temperature : float
-        当該ステップの温度。
-    source : {"auto","external","shake"}
-        ステップ種別。
+        現在の温度
+    source : str
+        ステップのソース ("auto" または "shake")
     """
     iter: int
-    move: str
+    move: str                          # "D:<destroy>+R:<repair>" | "shake(k)"
     changed_idx: Optional[List[int]]
     changed_idxs: Optional[int]
-    delta_obj: float
+    delta_obj: float                   # 内部最小化差分 cand - cur
     accepted: bool
-    obj_val: float
-    best_obj: float
+    obj_val: float                     # ユーザー向き（sense 反映）
+    best_obj: float                    # ユーザー向き
     temperature: float
-    source: str
-
+    source: str                        # {"auto","shake"}
 
 @dataclass
 class RunLog:
-    """
-    実行全体のログとメタ情報。
-
+    """ALNS実行全体のログ情報.
+    
     Attributes
     ----------
-    steps : list of StepLog
-        ステップログ。
-    best_x : sequence
-        最良解（ユーザー向き）。
+    steps : List[StepLog]
+        各ステップのログリスト
+    best_x : Sequence[Any]
+        最良解
     best_obj : float
-        最良目的値（ユーザー向き）。
-    seed : int or None
-        乱数シード。
+        最良目的関数値
+    seed : Optional[int]
+        使用された乱数シード
     stop_reason : str
-        停止理由。
-    operator_stats : dict
-        自動近傍の統計（weight, uses, best_improves）。
-    params : dict
-        実行パラメータのスナップショット。
+        停止理由
+    operator_stats : Dict[str, Any]
+        オペレータの統計情報 {"destroy":..., "repair":...}
+    params : Dict[str, Any]
+        使用されたパラメータ
+    
+    Methods
+    -------
+    to_dict()
+        辞書形式に変換
+    to_dataframe()
+        pandasデータフレームに変換（pandasが必要）
     """
     steps: List[StepLog] = field(default_factory=list)
     best_x: Sequence[Any] = field(default_factory=list)
     best_obj: float = float("inf")
     seed: Optional[int] = None
     stop_reason: str = ""
-    operator_stats: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    operator_stats: Dict[str, Any] = field(default_factory=dict)   # {"destroy":..., "repair":...}
     params: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        """辞書化。"""
         return asdict(self)
 
     def to_dataframe(self):
-        """
-        ステップログを pandas.DataFrame で返す（pandas 無しなら list[dict]）。
-        """
         try:
             import pandas as pd
             return pd.DataFrame([s.__dict__ for s in self.steps])
         except Exception:
             return [s.__dict__ for s in self.steps]
 
-
 # -------------------------
 # 内部ユーティリティ
 # -------------------------
 def _copy_vec(x: Sequence[Any]) -> List[Any]:
+    """ベクトルをコピー.
+    
+    numpy配列の場合はリストに変換してコピー。
+    
+    Parameters
+    ----------
+    x : Sequence[Any]
+        コピー元のベクトル
+    
+    Returns
+    -------
+    List[Any]
+        コピーされたリスト
+    """
     if isinstance(x, np.ndarray):
         return x.copy().tolist()
     return list(x)
 
 def _rng_choice(rng: random.Random, seq: Sequence[Any]) -> Any:
+    """乱数生成器を使ってシーケンスから要素をランダム選択.
+    
+    Parameters
+    ----------
+    rng : random.Random
+        乱数生成器
+    seq : Sequence[Any]
+        選択元のシーケンス
+    
+    Returns
+    -------
+    Any
+        選択された要素
+    """
     return seq[rng.randrange(len(seq))]
 
 def _infer_domains_from_x(x: Sequence[Any]) -> List[List[Any]]:
+    """解ベクトルから定義域を自動推定.
+    
+    各位置の値として、xに含まれる全てのユニーク値を
+    使用可能と仮定。
+    
+    Parameters
+    ----------
+    x : Sequence[Any]
+        推定元の解ベクトル
+    
+    Returns
+    -------
+    List[List[Any]]
+        各位置の定義域
+    """
     uniq = sorted(set(x), key=lambda v: (str(type(v)), str(v)))
     return [uniq[:] for _ in range(len(x))]
-
 
 # -------------------------
 # 状態
 # -------------------------
 @dataclass
 class ALNSState:
-    """
-    ALNS の進行状態を保持する。
-
-    Parameters（主なフィールド）
-    ----------------------------
-    sense : {"min","max"}
-        最小化/最大化（内部では最小化に統一）。
-    obj : callable
-        ユーザーの目的関数 `obj(x)->float`。
-    domains : list of sequence
-        各位置の許容値候補。
-    move_set : list of {"kflip","swap","shuffle"}
-        自動ステップで使用する近傍の集合。
+    """ALNS実行状態.
+    
+    アルゴリズムの全状態を保持するデータクラス。
+    
+    Attributes
+    ----------
+    sense : str
+        最適化の方向 ("min" または "max")
+    obj : Callable[[Sequence[Any]], float]
+        目的関数
+    domains : List[Sequence[Any]]
+        各変数の定義域
+    destroy_set : List[str]
+        使用する破壊オペレータの名前リスト
+    repair_set : List[str]
+        使用する修復オペレータの名前リスト
+    k_min : int
+        破壊規模の最小値
     k_max : int
-        kflip で一度に変更する最大位置数。
-    T0, Tend : float
-        温度スケジュールの初期・終端。
+        破壊規模の最大値
+    T0 : float
+        初期温度
+    Tend : float
+        終了温度
     total_iters : int
-        温度スケジュールの地平（分母）。後から変更可。
+        総イテレーション数
+    segment_len : int
+        適応更新のセグメント長
     adapt_eta : float
-        近傍重みの EMA 係数。
+        適応更新の学習率
+    reward_improve_best : float
+        最良解改善時の報酬
+    reward_improve : float
+        解改善時の報酬
+    reward_accept_worse : float
+        悪化解受理時の報酬
     patience : int
-        ベスト更新がこれだけ無いと停滞扱い。
+        停滞判定までのイテレーション数
     shake_k : int
-        強摂動の変更数。
+        シェイク時の変更数
     auto_shake : bool
-        停滞時に自動で do_shake() を入れるか（デフォルト False）。
-    additional_info : dict
-        UXsimから渡される追加情報
-        "departure_times": 0-1で正規化された車両ごとの出発時刻
-
-
-    状態フィールド
-    --------------
-    x_cur, x_best : list
-        現在解 / 最良解。
-    cur, best : float
-        内部向き（最小化）の目的値。
-    it, last_best_it : int
-        総ステップ数 / 直近ベスト更新ステップ。
-    op_* : dict
-        自動近傍の適応重みや統計。
-    steps : list of StepLog
-        ログ。
+        自動シェイクを有効にするか
+    rng : random.Random
+        乱数生成器
+    seed : Optional[int]
+        乱数シード
+    params : Dict[str, Any]
+        パラメータ辞書
+    additional_info : Dict[str, Any]
+        追加情報
+    x_cur : List[Any]
+        現在解
+    x_best : List[Any]
+        最良解
+    cur : float
+        現在解の目的関数値（内部用）
+    best : float
+        最良解の目的関数値（内部用）
+    it : int
+        現在のイテレーション番号
+    last_best_it : int
+        最後に最良解が更新されたイテレーション番号
+    d_weights : Dict[str, float]
+        破壊オペレータの重み
+    d_scores : Dict[str, float]
+        破壊オペレータのスコア
+    d_uses : Dict[str, int]
+        破壊オペレータの使用回数
+    d_best_improves : Dict[str, int]
+        破壊オペレータによる最良解改善回数
+    r_weights : Dict[str, float]
+        修復オペレータの重み
+    r_scores : Dict[str, float]
+        修復オペレータのスコア
+    r_uses : Dict[str, int]
+        修復オペレータの使用回数
+    r_best_improves : Dict[str, int]
+        修復オペレータによる最良解改善回数
+    seg_countdown : int
+        次のセグメント更新までのカウントダウン
+    steps : List[StepLog]
+        ステップログのリスト
     """
     # パラメータ
     sense: str
     obj: Callable[[Sequence[Any]], float]
     domains: List[Sequence[Any]]
-    move_set: List[str]
+
+    # ---- 破壊/修復（可変オペレータ集合） ----
+    destroy_set: List[str]
+    repair_set: List[str]
+
+    # 破壊規模
+    k_min: int
     k_max: int
+
+    # 焼きなまし
     T0: float
     Tend: float
     total_iters: int
+
+    # 適応（セグメント更新）
+    segment_len: int
     adapt_eta: float
     reward_improve_best: float
     reward_improve: float
     reward_accept_worse: float
+
+    # 停滞→shake
     patience: int
     shake_k: int
     auto_shake: bool
+
     rng: random.Random
     seed: Optional[int]
     params: Dict[str, Any]
-    additional_info: Any
+    additional_info: Dict[str, Any]
 
     # 状態
     x_cur: List[Any]
@@ -237,15 +293,342 @@ class ALNSState:
     it: int = 0
     last_best_it: int = 0
 
-    # 適応
-    op_weights: Dict[str, float] = field(default_factory=dict)
-    op_scores: Dict[str, float] = field(default_factory=dict)
-    op_uses: Dict[str, int] = field(default_factory=dict)
-    op_best_improves: Dict[str, int] = field(default_factory=dict)
+    # 破壊/修復の適応重み
+    d_weights: Dict[str, float] = field(default_factory=dict)
+    d_scores: Dict[str, float] = field(default_factory=dict)
+    d_uses: Dict[str, int] = field(default_factory=dict)
+    d_best_improves: Dict[str, int] = field(default_factory=dict)
+
+    r_weights: Dict[str, float] = field(default_factory=dict)
+    r_scores: Dict[str, float] = field(default_factory=dict)
+    r_uses: Dict[str, int] = field(default_factory=dict)
+    r_best_improves: Dict[str, int] = field(default_factory=dict)
+
+    seg_countdown: int = 0
 
     # ログ
     steps: List[StepLog] = field(default_factory=list)
 
+# -------------------------
+# 破壊オペレータ実装
+#   シグネチャ: (state, base) -> (removed_idx: list[int], partial_x: list[Any] with None on removed)
+# -------------------------
+
+def destroy_random_k(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
+    """ランダムにk個の要素を選んで破壊.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base : Sequence[Any]
+        基本となる解
+    
+    Returns
+    -------
+    Tuple[List[int], List[Any]]
+        (削除されたインデックス, 部分解) のタプル
+        部分解の削除位置はNoneに設定される
+    """
+    n = len(base)
+    k = state.rng.randint(state.k_min, min(state.k_max, n))
+    removed = state.rng.sample(range(n), k)
+    xx = _copy_vec(base)
+    for i in removed:
+        xx[i] = None
+    return removed, xx
+
+def destroy_segment(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
+    """連続したセグメントを破壊.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base : Sequence[Any]
+        基本となる解
+    
+    Returns
+    -------
+    Tuple[List[int], List[Any]]
+        (削除されたインデックス, 部分解) のタプル
+        部分解の削除位置はNoneに設定される
+    """
+    n = len(base)
+    if n < 2:
+        return destroy_random_k(state, base)
+    i = state.rng.randrange(n)
+    j = state.rng.randrange(n)
+    if i > j:
+        i, j = j, i
+    length = j - i + 1
+    if length < state.k_min:
+        j = min(n - 1, i + state.k_min - 1)
+    if (j - i + 1) > state.k_max:
+        j = i + state.k_max - 1
+    removed = list(range(i, j + 1))
+    xx = _copy_vec(base)
+    for t in removed:
+        xx[t] = None
+    return removed, xx
+
+def destroy_weighted_k(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
+    """出発時刻の早い車両を優先で重み付き確率でk個の要素を選んで破壊.
+        
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base : Sequence[Any]
+        基本となる解
+    
+    Returns
+    -------
+    Tuple[List[int], List[Any]]
+        (削除されたインデックス, 部分解) のタプル
+        部分解の削除位置はNoneに設定される
+    """
+    n = len(base)
+    
+    #出発時刻の早いものを選択しやすい
+    w = 1 - state.additional_info.get("departure_times")
+    w = np.maximum(1.0 / max(100, n), w)
+    
+    k = state.rng.randint(state.k_min, min(state.k_max, n))
+    probs = (w / w.sum())
+    removed = list(np.random.choice(np.arange(n), size=k, replace=False, p=probs))
+    xx = _copy_vec(base)
+    for i in removed:
+        xx[i] = None
+    return removed, xx
+
+# ここにユーザー独自の破壊を追加可能
+_DESTROY_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any]], Tuple[List[int], List[Any]]]] = {
+    "random_k": destroy_random_k,
+    "segment": destroy_segment,
+    "early_deaprture": destroy_weighted_k,
+}
+
+# -------------------------
+# 修復オペレータ実装
+#   シグネチャ: (state, base_cur, partial_x, removed_idx) -> (x_filled: list[Any], changed_idx: list[int])
+# -------------------------
+def _eval_internal(state: ALNSState, x: Sequence[Any]) -> float:
+    """内部用の目的関数評価.
+    
+    最大化問題の場合は符号を反転して最小化として扱う。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    x : Sequence[Any]
+        評価する解
+    
+    Returns
+    -------
+    float
+        内部目的関数値（常に最小化）
+    """
+    v = state.obj(x)
+    return -v if state.sense == "max" else v
+
+def _repair_random(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
+    """ランダムに値を選んで修復.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base_cur : Sequence[Any]
+        現在の基本解
+    partial_x : Sequence[Any]
+        部分解（削除位置はNone）
+    removed : List[int]
+        削除されたインデックス
+    
+    Returns
+    -------
+    Tuple[List[Any], List[int]]
+        (修復された解, 変更されたインデックス) のタプル
+    """
+    x = _copy_vec(partial_x)
+    rng = state.rng
+    for i in removed:
+        cur_val = base_cur[i]
+        choices = [c for c in state.domains[i]]
+        if len(choices) > 1:
+            choices = [c for c in choices if c != cur_val] or choices
+        x[i] = _rng_choice(rng, choices)
+    return x, removed[:]
+
+def _repair_greedy(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
+    """貪欲法で修復.
+    
+    各位置で最も良い値を選択。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base_cur : Sequence[Any]
+        現在の基本解
+    partial_x : Sequence[Any]
+        部分解（削除位置はNone）
+    removed : List[int]
+        削除されたインデックス
+    
+    Returns
+    -------
+    Tuple[List[Any], List[int]]
+        (修復された解, 変更されたインデックス) のタプル
+    """
+    x = _copy_vec(base_cur)
+    changed = []
+    for i in removed:
+        best_val = x[i]
+        best_obj = float("inf")
+        orig = x[i]
+        for v in state.domains[i]:
+            x[i] = v
+            o = _eval_internal(state, x)
+            if o < best_obj:
+                best_obj = o
+                best_val = v
+        x[i] = best_val
+        if x[i] != orig:
+            changed.append(i)
+    return x, changed
+
+def _repair_regret2(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
+    """2-regret法で修復.
+    
+    最良選択と次点選択の差（regret）が最大の位置から
+    優先的に値を割り当てる。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base_cur : Sequence[Any]
+        現在の基本解
+    partial_x : Sequence[Any]
+        部分解（削除位置はNone）
+    removed : List[int]
+        削除されたインデックス
+    
+    Returns
+    -------
+    Tuple[List[Any], List[int]]
+        (修復された解, 変更されたインデックス) のタプル
+    """
+    x = _copy_vec(base_cur)
+    unassigned = set(removed)
+    changed = []
+    while unassigned:
+        sel_i = None
+        sel_best_val = None
+        best_regret = -1.0
+        for i in list(unassigned):
+            scores = []
+            orig = x[i]
+            for v in state.domains[i]:
+                x[i] = v
+                scores.append((_eval_internal(state, x), v))
+            scores.sort(key=lambda t: t[0])
+            best = scores[0][0]
+            second = scores[1][0] if len(scores) >= 2 else scores[0][0]
+            regret = second - best
+            if regret > best_regret:
+                best_regret = regret
+                sel_i = i
+                sel_best_val = scores[0][1]
+            x[i] = orig
+        x[sel_i] = sel_best_val
+        if x[sel_i] != base_cur[sel_i]:
+            changed.append(sel_i)
+        unassigned.remove(sel_i)
+    return x, changed
+
+def _local_1opt(state: ALNSState, x: List[Any], idxs: List[int], max_pass: int = 1) -> Tuple[List[Any], List[int]]:
+    """1-opt局所探索.
+    
+    指定されたインデックスの値を変更して改善を試みる。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    x : List[Any]
+        解（in-placeで変更される）
+    idxs : List[int]
+        探索対象のインデックス
+    max_pass : int, default=1
+        最大パス数
+    
+    Returns
+    -------
+    Tuple[List[Any], List[int]]
+        (改善された解, 変更されたインデックス) のタプル
+    """
+    changed = []
+    improved = True
+    cur_obj = _eval_internal(state, x)
+    passes = 0
+    while improved and passes < max_pass:
+        improved = False
+        passes += 1
+        for i in idxs:
+            best_val = x[i]
+            best_obj = cur_obj
+            for v in state.domains[i]:
+                if v == x[i]:
+                    continue
+                old = x[i]
+                x[i] = v
+                o = _eval_internal(state, x)
+                if o < best_obj:
+                    best_obj = o
+                    best_val = v
+                x[i] = old
+            if best_val != x[i]:
+                x[i] = best_val
+                cur_obj = best_obj
+                changed.append(i)
+                improved = True
+    return x, changed
+
+def _repair_greedy_1opt(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
+    """貪欲法で修復後、1-opt局所探索を適用.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base_cur : Sequence[Any]
+        現在の基本解
+    partial_x : Sequence[Any]
+        部分解（削除位置はNone）
+    removed : List[int]
+        削除されたインデックス
+    
+    Returns
+    -------
+    Tuple[List[Any], List[int]]
+        (修復された解, 変更されたインデックス) のタプル
+    """
+    x, changed = _repair_greedy(state, base_cur, partial_x, removed)
+    x, ch2 = _local_1opt(state, x, removed, max_pass=1)
+    changed = list(sorted(set(changed) | set(ch2)))
+    return x, changed
+
+# ここにユーザー独自の修復を追加可能
+_REPAIR_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any], Sequence[Any], List[int]], Tuple[List[Any], List[int]]]] = {
+    "random": _repair_random,
+    # "greedy": _repair_greedy,
+    # "regret2": _repair_regret2,
+    # "greedy_1opt": _repair_greedy_1opt,
+}
 
 # -------------------------
 # 初期化
@@ -256,48 +639,137 @@ def init_alns(
     *,
     sense: str = "min",
     domains: Optional[List[Sequence[Any]]] = None,
-    move_set: Optional[List[str]] = None,  # ["kflip","swap","shuffle"]
+
+    # destroy/repair：指定しなければ辞書キーを自動採用
+    destroy_set: Optional[List[str]] = None,
+    repair_set: Optional[List[str]] = None,
+
+    # 破壊規模
+    k_min: int = 1,
     k_max: int = 5,
+
+    # 焼きなまし
     T0: Optional[float] = None,
     Tend: float = 1e-3,
     total_iters: int = 10000,
+
+    # 適応（セグメント更新）
+    segment_len: int = 50,
     adapt_eta: float = 0.2,
     reward_improve_best: float = 5.0,
     reward_improve: float = 2.0,
     reward_accept_worse: float = 0.5,
+
+    # 停滞対策
     patience: int = 1000,
     shake_k: Optional[int] = None,
-    auto_shake: bool = False,  # ← デフォルトOFF
-    seed: Optional[int] = 42,
-    additional_info: Any,
-) -> ALNSState:
-    """
-    ALNS 状態を初期化する。
+    auto_shake: bool = False,
 
-    See Also
-    --------
-    run_auto, run_auto_until_converged
+    seed: Optional[int] = 42,
+
+    # 追加情報（任意）
+    additional_info: Optional[Dict[str, Any]] = None,
+) -> ALNSState:
+    """ALNSアルゴリズムを初期化.
+    
+    Parameters
+    ----------
+    x : Sequence[Any]
+        初期解
+    obj : Callable[[Sequence[Any]], float]
+        目的関数
+    sense : str, default="min"
+        最適化方向 ("min" または "max")
+    domains : Optional[List[Sequence[Any]]], default=None
+        各変数の定義域。Noneの場合はxから自動推定
+    destroy_set : Optional[List[str]], default=None
+        使用する破壊オペレータ名。Noneの場合は全て使用
+    repair_set : Optional[List[str]], default=None
+        使用する修復オペレータ名。Noneの場合は全て使用
+    k_min : int, default=1
+        破壊規模の最小値
+    k_max : int, default=5
+        破壊規模の最大値
+    T0 : Optional[float], default=None
+        初期温度。Noneの場合は自動推定
+    Tend : float, default=1e-3
+        終了温度
+    total_iters : int, default=10000
+        総イテレーション数
+    segment_len : int, default=50
+        適応更新のセグメント長
+    adapt_eta : float, default=0.2
+        適応更新の学習率
+    reward_improve_best : float, default=5.0
+        最良解改善時の報酬
+    reward_improve : float, default=2.0
+        解改善時の報酬
+    reward_accept_worse : float, default=0.5
+        悪化解受理時の報酬
+    patience : int, default=1000
+        停滞判定までのイテレーション数
+    shake_k : Optional[int], default=None
+        シェイク時の変更数。Noneの場合はn//3
+    auto_shake : bool, default=False
+        自動シェイクを有効にするか
+    seed : Optional[int], default=42
+        乱数シード
+    additional_info : Optional[Dict[str, Any]], default=None
+        追加情報（例: departure_timesなど）
+    
+    Returns
+    -------
+    ALNSState
+        初期化されたALNS状態
+    
+    Raises
+    ------
+    ValueError
+        senseが"min"または"max"でない場合
+        domainsに空の位置がある場合
+        destroy_setまたはrepair_setが空の場合
+        未登録のオペレータが指定された場合
     """
     if sense not in ("min", "max"):
         raise ValueError("sense must be 'min' or 'max'")
 
     rng = random.Random(seed)
+
     if domains is None:
         domains = _infer_domains_from_x(x)
     n = len(x)
     if any(len(d) == 0 for d in domains):
         raise ValueError("domains に空の位置があります。")
 
-    if move_set is None:
-        move_set = ["kflip", "swap", "shuffle"]
-    for m in move_set:
-        if m not in ("kflip", "swap", "shuffle"):
-            raise ValueError(f"未知の move: {m}")
+    # 利用可能オペレータ一覧（辞書キー）
+    available_destroy = list(_DESTROY_IMPLS.keys())
+    available_repair  = list(_REPAIR_IMPLS.keys())
+
+    if destroy_set is None:
+        destroy_set = available_destroy[:]
+    if repair_set is None:
+        repair_set = available_repair[:]
+
+    if not destroy_set:
+        raise ValueError("destroy_set が空です。_DESTROY_IMPLS に少なくとも1つ実装を登録してください。")
+    if not repair_set:
+        raise ValueError("repair_set が空です。_REPAIR_IMPLS に少なくとも1つ実装を登録してください。")
+
+    unknown_d = [m for m in destroy_set if m not in _DESTROY_IMPLS]
+    unknown_r = [m for m in repair_set  if m not in _REPAIR_IMPLS]
+    if unknown_d:
+        raise ValueError(f"destroy_set に未登録のオペレータがあります: {unknown_d}. 登録済: {available_destroy}")
+    if unknown_r:
+        raise ValueError(f"repair_set に未登録のオペレータがあります: {unknown_r}. 登録済: {available_repair}")
 
     if shake_k is None:
         shake_k = max(1, n // 3)
 
+    k_min = max(1, min(k_min, n))
+    k_max = max(k_min, min(k_max, n))
+
     x_cur = _copy_vec(x)
+    additional_info = additional_info or {}
 
     def _eval(xx: Sequence[Any]) -> float:
         v = obj(xx)
@@ -309,135 +781,294 @@ def init_alns(
 
     # T0 自動推定
     if T0 is None:
-        diffs = []
-        for _ in range(min(10, 100)):
+        # diffs = []
+        # trials = min(20, 100)
+        # for _ in range(trials):
+        #     xx = _copy_vec(x_cur)
+        #     k = rng.randint(k_min, min(k_max, n))
+        #     idx = rng.sample(range(n), k)
+        #     for j in idx:
+        #         choices = [c for c in domains[j] if c != xx[j]]
+        #         if choices:
+        #             xx[j] = _rng_choice(rng, choices)
+        #     diffs.append(max(0.0, _eval(xx) - cur))
+        # scale = (sorted(diffs)[len(diffs)//2] if diffs else 1.0) or 1.0
+        # T0 = max(1e-6, 3.0 * scale)
+            
+        deltas = []
+        trials = 50
+        for _ in range(trials):
             xx = _copy_vec(x_cur)
-            k = rng.randint(1, min(k_max, n))
+            k = rng.randint(k_min, min(k_max, n))
             idx = rng.sample(range(n), k)
             for j in idx:
                 choices = [c for c in domains[j] if c != xx[j]]
                 if choices:
                     xx[j] = _rng_choice(rng, choices)
-            diffs.append(max(0.0, _eval(xx) - cur))
-        scale = (sorted(diffs)[len(diffs)//2] if diffs else 1.0) or 1.0
-        T0 = max(1e-6, 3.0 * scale)
+            d = _eval(xx) - cur
+            if d > 0:               # 悪化のみ収集
+                deltas.append(d)
+        if not deltas:
+            deltas = [1.0]
+        med = sorted(deltas)[len(deltas)//2]
+        p0 = 0.5                  # 初期に悪化を割合p0前後で受理したい：p0よりかなり小さめにずれる．
+        T0 = max(1e-6, med / max(1e-12, math.log(1.0/p0)))
 
-    op_weights = {m: 1.0 for m in move_set}
-    op_scores = {m: 0.0 for m in move_set}
-    op_uses = {m: 0 for m in move_set}
-    op_best_improves = {m: 0 for m in move_set}
+    # 適応初期値
+    d_weights = {m: 1.0 for m in destroy_set}
+    d_scores  = {m: 0.0 for m in destroy_set}
+    d_uses    = {m: 0   for m in destroy_set}
+    d_best_improves = {m: 0 for m in destroy_set}
 
-    additional_info = additional_info
+    r_weights = {m: 1.0 for m in repair_set}
+    r_scores  = {m: 0.0 for m in repair_set}
+    r_uses    = {m: 0   for m in repair_set}
+    r_best_improves = {m: 0 for m in repair_set}
 
     params = dict(
-        sense=sense, move_set=move_set, k_max=k_max, T0=T0, Tend=Tend,
-        total_iters=total_iters, adapt_eta=adapt_eta,
+        sense=sense,
+        destroy_set=destroy_set, repair_set=repair_set,
+        available_destroy=available_destroy, available_repair=available_repair,
+        k_min=k_min, k_max=k_max,
+        T0=T0, Tend=Tend, total_iters=total_iters,
+        segment_len=segment_len, adapt_eta=adapt_eta,
         reward_improve_best=reward_improve_best, reward_improve=reward_improve,
-        reward_accept_worse=reward_accept_worse, patience=patience,
-        shake_k=shake_k, auto_shake=auto_shake, seed=seed
+        reward_accept_worse=reward_accept_worse,
+        patience=patience, shake_k=shake_k, auto_shake=auto_shake, seed=seed
     )
 
     return ALNSState(
-        sense=sense, obj=obj, domains=domains, move_set=move_set,
-        k_max=k_max, T0=T0, Tend=Tend, total_iters=total_iters,
-        adapt_eta=adapt_eta, reward_improve_best=reward_improve_best,
-        reward_improve=reward_improve, reward_accept_worse=reward_accept_worse,
+        sense=sense, obj=obj, domains=domains,
+        destroy_set=destroy_set, repair_set=repair_set,
+        k_min=k_min, k_max=k_max,
+        T0=T0, Tend=Tend, total_iters=total_iters,
+        segment_len=segment_len, adapt_eta=adapt_eta,
+        reward_improve_best=reward_improve_best, reward_improve=reward_improve,
+        reward_accept_worse=reward_accept_worse,
         patience=patience, shake_k=shake_k, auto_shake=auto_shake,
         rng=rng, seed=seed, params=params,
+        additional_info=additional_info,
         x_cur=x_cur, x_best=x_best, cur=cur, best=best,
         it=0, last_best_it=0,
-        op_weights=op_weights, op_scores=op_scores,
-        op_uses=op_uses, op_best_improves=op_best_improves,
-        steps=[],
-        additional_info=additional_info
+        d_weights=d_weights, d_scores=d_scores, d_uses=d_uses, d_best_improves=d_best_improves,
+        r_weights=r_weights, r_scores=r_scores, r_uses=r_uses, r_best_improves=r_best_improves,
+        seg_countdown=segment_len,
+        steps=[]
     )
 
-
 # -------------------------
-# 温度・自動近傍
+# 温度・ルーレット・重み更新
 # -------------------------
 def _temperature(state: ALNSState, it_next: Optional[int] = None) -> float:
+    """焼きなまし温度を計算.
+    
+    指数的に減少する温度スケジュール。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    it_next : Optional[int], default=None
+        次のイテレーション番号。Noneの場合は現在のitを使用
+    
+    Returns
+    -------
+    float
+        現在の温度
+    """
     it = state.it if it_next is None else it_next
     it = max(0, min(it, max(1, state.total_iters)))
     return state.T0 * ((state.Tend / state.T0) ** (it / max(1, state.total_iters)))
 
-def _apply_move_auto(state: ALNSState, move: str, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
-    n = len(base)
-    xx = _copy_vec(base)
-    rng = state.rng
-
-    #時間の矢を考えて，最初は出発時刻が早いほどkflip/swapしやすい
-    #TODO: shuffleはこれを全く考慮しない．うまいヒューリスティクスがあれば使う
-    weights = 1-state.additional_info["departure_times"]*((state.total_iters-state.it)/state.total_iters)
-    weights = np.maximum(1/len(weights)/100, weights)
-
-    if move == "kflip":
-        k = rng.randint(1, min(state.k_max, n))
-        idx = random.choices(range(n), weights=weights/sum(weights), k=k)
-        for j in idx:
-            choices = [c for c in state.domains[j] if c != xx[j]]
-            if choices:
-                xx[j] = _rng_choice(rng, choices)
-        return idx, xx
-
-    elif move == "swap":
-        if n < 2:
-            return [], xx
-        
-        i = random.choices(range(n), weights=weights/sum(weights), k=1)[0]
-        j = random.choices(range(n), weights=weights/sum(weights), k=1)[0]
-
-        xx[i], xx[j] = xx[j], xx[i]
-        return [i, j], xx
-
-    elif move == "shuffle":
-        if n < 2:
-            return [], xx
-        i, j = sorted(rng.sample(range(n), 2))
-        seg = xx[i:j+1]
-        rng.shuffle(seg)
-        xx[i:j+1] = seg
-        return list(range(i, j+1)), xx
-
-    else:
-        raise ValueError(f"未知の move: {move}")
-
-def _pick_operator(state: ALNSState) -> str:
-    total = sum(state.op_weights[m] for m in state.move_set)
-    r = state.rng.random() * total
+def _roulette_pick(rng: random.Random, weights: Dict[str, float]) -> str:
+    """ルーレット選択.
+    
+    重みに比例した確率でキーを選択。
+    
+    Parameters
+    ----------
+    rng : random.Random
+        乱数生成器
+    weights : Dict[str, float]
+        各キーの重み
+    
+    Returns
+    -------
+    str
+        選択されたキー
+    """
+    total = sum(max(1e-12, w) for w in weights.values())
+    r = rng.random() * total
     s = 0.0
-    for m in state.move_set:
-        s += state.op_weights[m]
+    last = None
+    for k, w in weights.items():
+        s += max(1e-12, w)
+        last = k
         if r <= s:
-            return m
-    return state.move_set[-1]
+            return k
+    return last or next(iter(weights))
 
-def _eval_internal(state: ALNSState, x: Sequence[Any]) -> float:
-    v = state.obj(x)
-    return -v if state.sense == "max" else v
-
-def _maybe_update_weights(state: ALNSState, op: str, *, improved_best: bool, accepted: bool, delta: float):
-    if op not in state.op_weights:
+def _segment_update_weights(state: ALNSState):
+    """セグメント終了時にオペレータ重みを更新.
+    
+    スコアと使用回数に基づいて適応的に重みを調整。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    """
+    if state.seg_countdown > 0:
         return
+    for m in state.destroy_set:
+        uses = max(1, state.d_uses[m])
+        target = max(1e-6, state.d_scores[m] / uses)
+        w_old = state.d_weights[m]
+        state.d_weights[m] = (1 - state.adapt_eta) * w_old + state.adapt_eta * target
+        state.d_scores[m] = 0.0
+        state.d_uses[m] = 0
+    for m in state.repair_set:
+        uses = max(1, state.r_uses[m])
+        target = max(1e-6, state.r_scores[m] / uses)
+        w_old = state.r_weights[m]
+        state.r_weights[m] = (1 - state.adapt_eta) * w_old + state.adapt_eta * target
+        state.r_scores[m] = 0.0
+        state.r_uses[m] = 0
+    state.seg_countdown = state.segment_len
+
+def _reward_step(state: ALNSState, d: str, r: str, *, improved_best: bool, accepted: bool, delta: float):
+    """ステップ結果に基づいてオペレータに報酬を付与.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    d : str
+        使用された破壊オペレータ名
+    r : str
+        使用された修復オペレータ名
+    improved_best : bool
+        最良解が改善されたか
+    accepted : bool
+        ムーブが受理されたか
+    delta : float
+        目的関数値の差分
+    """
     if improved_best:
-        state.op_scores[op] += state.reward_improve_best
+        state.d_scores[d] += state.reward_improve_best
+        state.r_scores[r] += state.reward_improve_best
     elif accepted and delta < 0:
-        state.op_scores[op] += state.reward_improve
+        state.d_scores[d] += state.reward_improve
+        state.r_scores[r] += state.reward_improve
     elif accepted and delta > 0:
-        state.op_scores[op] += state.reward_accept_worse
+        state.d_scores[d] += state.reward_accept_worse
+        state.r_scores[r] += state.reward_accept_worse
 
-    w_old = state.op_weights[op]
-    state.op_weights[op] = (1 - state.adapt_eta) * w_old + state.adapt_eta * max(1e-6, state.op_scores[op])
-    state.op_scores[op] *= 0.5
+# -------------------------
+# Shake（任意）
+# -------------------------
 
+def make_shake_candidate(state: ALNSState, *, base: str = "best", k: Optional[int] = None) -> Tuple[List[Any], List[int]]:
+    """シェイク用の候補解を生成.
+    
+    ランダムにk個の位置を変更した解を生成。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base : str, default="best"
+        ベースとなる解 ("best" または "current")
+    k : Optional[int], default=None
+        変更する位置数。Noneの場合はshake_kを使用
+    
+    Returns
+    -------
+    Tuple[List[Any], List[int]]
+        (シェイクされた解, 変更されたインデックス) のタプル
+    """
+    if k is None:
+        k = state.shake_k
+    xx = _copy_vec(state.x_best if base == "best" else state.x_cur)
+    n = len(xx)
+    idx = state.rng.sample(range(n), min(k, n))
+    for j in idx:
+        choices = [c for c in state.domains[j] if c != xx[j]]
+        if choices:
+            xx[j] = _rng_choice(state.rng, choices)
+    return xx, idx
+
+def do_shake(state: ALNSState, *, base: str = "best", k: Optional[int] = None) -> StepLog:
+    """シェイクを実行.
+    
+    ランダムに大きく解を変更して停滞から脱出。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base : str, default="best"
+        ベースとなる解 ("best" または "current")
+    k : Optional[int], default=None
+        変更する位置数。Noneの場合はshake_kを使用
+    
+    Returns
+    -------
+    StepLog
+        シェイクステップのログ
+    """
+    x_cand, idx = make_shake_candidate(state, base=base, k=k)
+    def _eval(xx):
+        v = state.obj(xx)
+        return -v if state.sense == "max" else v
+    T = _temperature(state, it_next=state.it + 1)
+    state.x_cur = _copy_vec(x_cand)
+    state.cur = _eval(state.x_cur)
+    state.it += 1
+    state.seg_countdown -= 1
+    _segment_update_weights(state)
+    log = StepLog(
+        iter=state.it, move=f"shake({len(idx)})", changed_idx=idx, changed_idxs=len(idx), delta_obj=0.0,
+        accepted=True,
+        obj_val=(state.cur if state.sense == "min" else -state.cur),
+        best_obj=(state.best if state.sense == "min" else -state.best),
+        temperature=T, source="shake",
+    )
+    state.steps.append(log)
+    return log
+
+# -------------------------
+# 自動ステップ（ALNS）
+# -------------------------
 def auto_step(state: ALNSState) -> StepLog:
+    """ALNSの1ステップを実行.
+    
+    破壊・修復オペレータを選択し、現在解を変更、
+    焼きなましに基づいて受理判定を行う。
+    必要に応じて自動シェイクも実行。
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    
+    Returns
+    -------
+    StepLog
+        実行されたステップのログ
     """
-    デフォルト近傍で 1 ステップ進める。
-    """
-    op = _pick_operator(state)
-    state.op_uses[op] += 1
+    # オペレータ選択
+    d = _roulette_pick(state.rng, state.d_weights)
+    r = _roulette_pick(state.rng, state.r_weights)
+    state.d_uses[d] += 1
+    state.r_uses[r] += 1
 
-    changed_idx, x_cand = _apply_move_auto(state, op, state.x_cur)
+    # 破壊
+    removed, partial = _DESTROY_IMPLS[d](state, state.x_cur)
+    # 修復
+    x_cand, changed_idx = _REPAIR_IMPLS[r](state, state.x_cur, partial, removed)
+
+    # 評価・受理
     cand = _eval_internal(state, x_cand)
     delta = cand - state.cur
     T = _temperature(state, it_next=state.it + 1)
@@ -452,27 +1083,45 @@ def auto_step(state: ALNSState) -> StepLog:
         state.x_best = _copy_vec(state.x_cur)
         improved_best = True
         state.last_best_it = state.it + 1
-        state.op_best_improves[op] += 1
+        state.d_best_improves[d] += 1
+        state.r_best_improves[r] += 1
 
-    _maybe_update_weights(state, op, improved_best=improved_best, accepted=accept, delta=delta)
+    _reward_step(state, d, r, improved_best=improved_best, accepted=accept, delta=delta)
 
     state.it += 1
+    state.seg_countdown -= 1
+    _segment_update_weights(state)
+
     log = StepLog(
-        iter=state.it, move=op, changed_idx=changed_idx, changed_idxs=len(changed_idx), delta_obj=delta, accepted=accept,
+        iter=state.it, move=f"D:{d}+R:{r}", changed_idx=changed_idx, changed_idxs=len(changed_idx),
+        delta_obj=delta, accepted=accept,
         obj_val=(state.cur if state.sense == "min" else -state.cur),
         best_obj=(state.best if state.sense == "min" else -state.best),
         temperature=T, source="auto"
     )
     state.steps.append(log)
 
-    if state.auto_shake and should_shake(state):
+    if state.auto_shake and (state.it - state.last_best_it) >= state.patience:
         do_shake(state, base="best", k=state.shake_k)
 
     return log
 
 def run_auto(state: ALNSState, n: int = 100, time_limit_s: Optional[float] = None) -> List[StepLog]:
-    """
-    自動近傍で連続 `n` ステップ実行。
+    """複数ステップを自動実行.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    n : int, default=100
+        実行するステップ数
+    time_limit_s : Optional[float], default=None
+        時間制限（秒）。Noneの場合は制限なし
+    
+    Returns
+    -------
+    List[StepLog]
+        実行されたステップのログリスト
     """
     start_it = state.it
     t0 = time.time()
@@ -482,295 +1131,54 @@ def run_auto(state: ALNSState, n: int = 100, time_limit_s: Optional[float] = Non
         auto_step(state)
     return state.steps[start_it:state.it]
 
-
-# -------------------------
-# 外部注入
-# -------------------------
-def external_step(
-    state: ALNSState,
-    x_cand: Sequence[Any],
-    *,
-    move: str = "external",
-    changed_idx: Optional[List[int]] = None,
-    accept_policy: str = "metropolis",  # "metropolis" | "greedy" | "always"
-) -> Tuple[bool, StepLog]:
-    """
-    外部で作成した候補解を 1 ステップとして注入。
-
-    Parameters
-    ----------
-    x_cand : sequence
-        候補解。
-    move : str, optional
-        ログ用ラベル。
-    changed_idx : list of int, optional
-        変更インデックス。Noneの場合は自動計算される。
-    accept_policy : {'metropolis','greedy','always'}, optional
-        受理方針。
-
-    Returns
-    -------
-    accepted : bool
-        受理されたか。
-    log : StepLog
-        追加ログ。
-    """
-    # changed_idxが指定されていない場合、自動的に計算
-    if changed_idx is None:
-        changed_idx = []
-        for i in range(len(x_cand)):
-            if i >= len(state.x_cur) or state.x_cur[i] != x_cand[i]:
-                changed_idx.append(i)
-    
-    cand = _eval_internal(state, x_cand)
-    delta = cand - state.cur
-    T = _temperature(state, it_next=state.it + 1)
-
-    if accept_policy == "metropolis":
-        accepted = (delta <= 0) or (random.random() < math.exp(-delta / max(T, 1e-12)))
-    elif accept_policy == "greedy":
-        accepted = (delta <= 0)
-    elif accept_policy == "always":
-        accepted = True
-    else:
-        raise ValueError("accept_policy must be 'metropolis', 'greedy', or 'always'")
-
-    if accepted:
-        state.x_cur = _copy_vec(x_cand)
-        state.cur = cand
-
-    improved_best = False
-    if state.cur < state.best:
-        state.best = state.cur
-        state.x_best = _copy_vec(state.x_cur)
-        improved_best = True
-        state.last_best_it = state.it + 1
-
-    state.it += 1
-    log = StepLog(
-        iter=state.it, move=move, changed_idx=changed_idx, changed_idxs=len(changed_idx), delta_obj=delta,
-        accepted=accepted,
-        obj_val=(state.cur if state.sense == "min" else -state.cur),
-        best_obj=(state.best if state.sense == "min" else -state.best),
-        temperature=T, source="external"
-    )
-    state.steps.append(log)
-
-    if state.auto_shake and should_shake(state):
-        do_shake(state, base="best", k=state.shake_k)
-
-    return accepted, log
-
-
-# -------------------------
-# Shake（任意）
-# -------------------------
-def should_shake(state: ALNSState) -> bool:
-    """停滞（patience 超過）したか。"""
-    return (state.it - state.last_best_it) >= state.patience
-
-def make_shake_candidate(state: ALNSState, *, base: str = "best", k: Optional[int] = None) -> Tuple[List[Any], List[int]]:
-    """強摂動候補を作る（参考）。"""
-    if k is None:
-        k = state.shake_k
-    xx = _copy_vec(state.x_best if base == "best" else state.x_cur)
-    n = len(xx)
-    idx = state.rng.sample(range(n), min(k, n))
-    for j in idx:
-        choices = [c for c in state.domains[j] if c != xx[j]]
-        if choices:
-            xx[j] = _rng_choice(state.rng, choices)
-    return xx, idx
-
-def do_shake(state: ALNSState, *, base: str = "best", k: Optional[int] = None) -> StepLog:
-    """強摂動を適用してログ追加（再起動）。"""
-    x_cand, idx = make_shake_candidate(state, base=base, k=k)
-    def _eval(xx): 
-        v = state.obj(xx)
-        return -v if state.sense == "max" else v
-    T = _temperature(state, it_next=state.it + 1)
-    state.x_cur = _copy_vec(x_cand)
-    state.cur = _eval(state.x_cur)
-    state.it += 1
-    log = StepLog(
-        iter=state.it, move=f"shake({len(idx)})", changed_idx=idx, changed_idxs=len(idx), delta_obj=0.0,
-        accepted=True,
-        obj_val=(state.cur if state.sense == "min" else -state.cur),
-        best_obj=(state.best if state.sense == "min" else -state.best),
-        temperature=T, source="shake",
-    )
-    state.steps.append(log)
-    return log
-
-
-# -------------------------
-# 収束判定 & ランナー
-# -------------------------
-def default_convergence_check(
-    state: ALNSState,
-    *,
-    window: int = 500,
-    stall_iters: Optional[int] = None,
-    min_accept_rate: float = 0.005,
-    min_best_improve: float = 1e-8,
-    temp_threshold: Optional[float] = None,
-    sources: Tuple[str, ...] = ("auto",),
-) -> Tuple[bool, str]:
-    """
-    “停滞＋低受理率＋低温度”の合成ルールで収束を判定。
-
-    Returns
-    -------
-    converged : bool
-    reason : str
-    """
-    if stall_iters is None:
-        stall_iters = state.patience
-    if temp_threshold is None:
-        temp_threshold = max(state.Tend * 1.05, state.T0 * 1e-4)
-
-    steps = state.steps
-    if len(steps) < window:
-        return (False, "warmup")
-
-    window_steps = [s for s in steps if s.source in sources][-window:]
-    if not window_steps:
-        return (False, "no-steps-in-window")
-
-    accept_rate = sum(1 for s in window_steps if s.accepted) / len(window_steps)
-    best_start = window_steps[0].best_obj
-    best_end = window_steps[-1].best_obj
-    best_improve = abs(best_start - best_end)
-    no_improve_long = (state.it - state.last_best_it) >= stall_iters
-    T = _temperature(state)
-
-    if (no_improve_long and accept_rate <= min_accept_rate and best_improve <= min_best_improve):
-        return True, f"stalled:{stall_iters}, low-accept:{accept_rate:.4f}, tiny-improve:{best_improve:.3g}"
-    if T <= temp_threshold and best_improve <= min_best_improve:
-        return True, f"frozen:T={T:.3g}<=thr, tiny-improve:{best_improve:.3g}"
-    return False, "not-converged"
-
-
-def run_auto_until_converged(
-    state: ALNSState,
-    *,
-    max_steps: int = 10_000,
-    batch: int = 50,
-    time_limit_s: Optional[float] = None,
-    check_every: int = 100,
-    check_fn: Callable[..., Tuple[bool, str]] = default_convergence_check,
-    stop_on_converge: bool = True,
-    # ↓↓↓ 追加：n ステップごとにユーザー注入（例：n=200）
-    inject_every: Optional[int] = None,
-    inject_fn: Optional[
-        Callable[[ALNSState],
-                 Optional[Union[
-                     Sequence[Any],
-                     Tuple[Sequence[Any], str],
-                     Tuple[Sequence[Any], str, Optional[List[int]]],
-                     Tuple[Sequence[Any], str, Optional[List[int]], str],
-                 ]]]
-    ] = None,
-    inject_accept_policy: str = "metropolis",
-) -> Tuple[bool, str, int]:
-    """
-    自動探索を “収束まで” 実行するランナー。
-    **inject_every** ステップごとに **inject_fn(state)** を呼び、
-    返された候補を external_step で評価します。
-
-    Parameters
-    ----------
-    inject_every : int or None, optional
-        何ステップごとに注入を試みるか（例：200）。
-        None の場合、注入は行わない。
-    inject_fn : callable or None, optional
-        `inject_fn(state)` は以下のいずれかを返せます：
-            - x_cand
-            - (x_cand, move)
-            - (x_cand, move, accept_policy)
-        None を返した場合は「今回注入なし」と解釈。
-        changed_idxは自動的に計算される。
-    inject_accept_policy : {'metropolis','greedy','always'}, optional
-        inject_fn が accept_policy を返さなかった場合のデフォルト。
-
-    Returns
-    -------
-    converged : bool
-    reason : str
-    steps_done : int
-    """
-    start_it = state.it
-    t0 = time.time()
-    next_inject_at = state.it + (inject_every or 0)
-
-    def _maybe_inject():
-        nonlocal next_inject_at
-        if inject_every is None or inject_fn is None:
-            return
-        if state.it < next_inject_at:
-            return
-        payload = inject_fn(state)
-        if payload is None:
-            # スキップ（次回はさらに inject_every 後）
-            next_inject_at = state.it + inject_every
-            return
-        # payload の解釈
-        if isinstance(payload, tuple):
-            if len(payload) == 1:
-                x_cand = payload[0]
-                move = "external"
-                policy = inject_accept_policy
-            elif len(payload) == 2:
-                x_cand, move = payload
-                policy = inject_accept_policy
-            else:
-                # 3つ以上の要素がある場合、3番目はaccept_policy
-                x_cand, move, policy = payload[:3]
-        else:
-            x_cand = payload
-            move = "external"
-            policy = inject_accept_policy
-
-        # changed_idxは常にNoneを渡して自動計算させる
-        external_step(state, x_cand, move=move, changed_idx=None, accept_policy=policy)
-        next_inject_at = state.it + inject_every
-
-    while state.it - start_it < max_steps:
-        if time_limit_s is not None and (time.time() - t0) >= time_limit_s:
-            return False, "time-limit", state.it - start_it
-
-        # 自動を小さく刻む：注入タイミングを細かく拾うため
-        todo = min(batch, max_steps - (state.it - start_it))
-        run_auto(state, n=todo)
-
-        # 必要なら注入
-        _maybe_inject()
-
-        # 収束チェック
-        if (state.it - start_it) % check_every == 0:
-            converged, reason = check_fn(state)
-            if converged:
-                state.params["converged"] = True
-                state.params["converged_reason"] = reason
-                if stop_on_converge:
-                    return True, reason, state.it - start_it
-
-    return False, "step-budget", state.it - start_it
-
-
 # -------------------------
 # 取得・評価・完了
 # -------------------------
 def get_current_x(state: ALNSState) -> List[Any]:
-    """現在解のコピーを返す。"""
+    """現在解を取得.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    
+    Returns
+    -------
+    List[Any]
+        現在解のコピー
+    """
     return _copy_vec(state.x_cur)
 
 def get_best_x(state: ALNSState) -> List[Any]:
-    """最良解のコピーを返す。"""
+    """最良解を取得.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    
+    Returns
+    -------
+    List[Any]
+        最良解のコピー
+    """
     return _copy_vec(state.x_best)
 
 def evaluate_candidates(state: ALNSState, xs: Iterable[Sequence[Any]]) -> List[float]:
-    """複数候補をユーザー向きの値（sense を反映）で返す。"""
+    """複数の候補解を評価.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    xs : Iterable[Sequence[Any]]
+        評価する候補解のイテラブル
+    
+    Returns
+    -------
+    List[float]
+        各候補解の目的関数値（ユーザー向き）
+    """
     vals = []
     for x in xs:
         v = state.obj(x)
@@ -778,7 +1186,20 @@ def evaluate_candidates(state: ALNSState, xs: Iterable[Sequence[Any]]) -> List[f
     return vals
 
 def finalize(state: ALNSState, stop_reason: str = "") -> Tuple[Sequence[Any], RunLog]:
-    """実行を締め、最良解とログを返す。"""
+    """ALNS実行を終了し、結果を取得.
+    
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    stop_reason : str, default=""
+        停止理由
+    
+    Returns
+    -------
+    Tuple[Sequence[Any], RunLog]
+        (最良解, 実行ログ) のタプル
+    """
     run = RunLog(
         steps=list(state.steps),
         best_x=_copy_vec(state.x_best),
@@ -786,77 +1207,56 @@ def finalize(state: ALNSState, stop_reason: str = "") -> Tuple[Sequence[Any], Ru
         seed=state.seed,
         stop_reason=stop_reason,
         operator_stats={
-            m: dict(weight=state.op_weights[m], uses=state.op_uses[m], best_improves=state.op_best_improves[m])
-            for m in state.move_set
+            "destroy": {
+                m: dict(weight=state.d_weights[m], uses=state.d_uses[m], best_improves=state.d_best_improves[m])
+                for m in state.destroy_set
+            },
+            "repair": {
+                m: dict(weight=state.r_weights[m], uses=state.r_uses[m], best_improves=state.r_best_improves[m])
+                for m in state.repair_set
+            },
         },
         params=dict(state.params),
     )
     return _copy_vec(state.x_best), run
 
-
 # -------------------------
 # デモ（__main__）
 # -------------------------
 if __name__ == "__main__":
-    # 例：各位置 ∈ {0,1,2,3}、重み付き合計を target に合わせる
-    w = [1.12,3.13,2.141,7.11,4.111,6.1111,5.11111,9.111111]
-    target = 70
-    x0 = [0,0,0,0,0,0,0,0]
+    # 例：各位置 ∈ {0,1,2,3}、重み付き合計を target に合わせる（制約なし）
+    random.seed(42)
+    n_elem = 20
+    w = [random.uniform(0,10) for _ in range(n_elem)]
+    target = sum(w)*1.5
+    x0 = [0 for _ in range(n_elem)]
     domains = [[0,1,2,3] for _ in x0]
 
     def obj_example(x1):
         return abs(sum(wj*xj for wj, xj in zip(w, x1)) - target)
 
-    # 初期化（自動shakeはOFF）
     state = init_alns(
         x0, obj_example,
         domains=domains,
-        move_set=["kflip","swap","shuffle"],
-        k_max=3,
-        total_iters=1000,
-        auto_shake=True,   # 収束後に壊さない
+        k_min=2, k_max=4,
+        total_iters=2000,
+        segment_len=50,
+        auto_shake=True,
         seed=0,
+        additional_info=None,  # 例: {"departure_times": np.linspace(0,1,len(x0))}
     )
 
-    # ---- ユーザー注入関数：inject_every ステップごとに呼ばれる ----
-    def inject_fn_example(st):
-        """
-        重い位置（wが大）のインデックスを重点的に微摂動する簡易destroy+repair。
-        - 返り値は (x_cand, move_label, changed_idx, accept_policy) の省略可タプル。
-        """
-        cur = get_current_x(st)
-        top_idx = sorted(range(len(w)), key=lambda i: w[i], reverse=True)[:3]
-        cand = _copy_vec(cur)
-        rng = random.Random(123 + st.it)
-        for i in top_idx:
-            choices = [v for v in domains[i] if v != cand[i]]
-            if not choices:
-                continue
-            cand[i] = rng.choice(choices)
-        # "greedy" にすると悪化は採用しない＝非破壊注入にもできる
-        return (cand, "custom-heavy-weights", "metropolis")
-
-    # 収束まで回す。inject_every ステップごとに inject_fn_example を呼ぶ
-    converged, reason, done = run_auto_until_converged(
-        state,
-        max_steps=2000,
-        batch=50,
-        check_every=100,
-        inject_every=200,          # ← 指定：n=200
-        inject_fn=inject_fn_example,
-        stop_on_converge=True,
-    )
-
-    x_star, run = finalize(state, stop_reason="converged" if converged else "budget")
+    # 1000 ステップだけ走らせて終了
+    run_auto(state, n=1000)
+    x_star, run = finalize(state, stop_reason="done")
 
     try:
         df = run.to_dataframe()
-        df.drop(columns=["changed_idx"])
         print(df.to_string())
     except Exception:
         pass
 
-    print("converged:", converged, "reason:", reason, "steps:", done)
     print("best obj:", run.best_obj)
     print("best x  :", x_star)
-    print("op stats:", run.operator_stats)
+    print("op stats:")
+    pprint(run.operator_stats)
