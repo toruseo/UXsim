@@ -2006,9 +2006,9 @@ class Analyzer:
         """
         s.link_analysis_coarse()
 
-        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time", "length"]]
+        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time", "delay_ratio", "length"]]
         for l in s.W.LINKS:
-            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l], l.length])
+            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l], s.linkc_tt_ave[l]/s.linkc_tt_free[l], l.length])
         s.df_linkc = pd.DataFrame(out[1:], columns=out[0])
         return s.df_linkc
 

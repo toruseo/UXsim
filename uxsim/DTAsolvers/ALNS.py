@@ -29,7 +29,7 @@ class StepLog:
     iter : int
         イテレーション番号
     move : str
-        実行されたムーブ ("D:<destroy>+R:<repair>" または "shake(k)")
+        実行されたムーブ ("D:<destroy>+R:<repair>" または "reheat")
     changed_idx : Optional[List[int]]
         変更されたインデックスのリスト
     changed_idxs : Optional[int]
@@ -45,10 +45,10 @@ class StepLog:
     temperature : float
         現在の温度
     source : str
-        ステップのソース ("auto" または "shake")
+        ステップのソース ("auto" または "reheat")
     """
     iter: int
-    move: str                          # "D:<destroy>+R:<repair>" | "shake(k)"
+    move: str                          # "D:<destroy>+R:<repair>" | "reheat"
     changed_idx: Optional[List[int]]
     changed_idxs: Optional[int]
     delta_obj: float                   # 内部最小化差分 cand - cur
@@ -56,7 +56,7 @@ class StepLog:
     obj_val: float                     # ユーザー向き（sense 反映）
     best_obj: float                    # ユーザー向き
     temperature: float
-    source: str                        # {"auto","shake"}
+    source: str                        # {"auto","reheat"}
 
 @dataclass
 class RunLog:
@@ -203,12 +203,12 @@ class ALNSState:
         解改善時の報酬
     reward_accept_worse : float
         悪化解受理時の報酬
-    patience : int
-        停滞判定までのイテレーション数
-    shake_k : int
-        シェイク時の変更数
-    auto_shake : bool
-        自動シェイクを有効にするか
+    iters_until_reheat : int
+        停滞判定までのイテレーション数（reheat発動の閾値）
+    auto_reheat : bool
+        自動reheatを有効にするか
+    current_temperature : float
+        現在の実効温度（reheatで増加）
     rng : random.Random
         乱数生成器
     seed : Optional[int]
@@ -275,10 +275,10 @@ class ALNSState:
     reward_improve: float
     reward_accept_worse: float
 
-    # 停滞→shake
-    patience: int
-    shake_k: int
-    auto_shake: bool
+    # 停滞→reheat
+    iters_until_reheat: int
+    auto_reheat: bool
+    current_temperature: float
 
     rng: random.Random
     seed: Optional[int]
@@ -292,6 +292,7 @@ class ALNSState:
     best: float
     it: int = 0
     last_best_it: int = 0
+    last_reheat_it : int = 0
 
     # 破壊/修復の適応重み
     d_weights: Dict[str, float] = field(default_factory=dict)
@@ -314,7 +315,7 @@ class ALNSState:
 #   シグネチャ: (state, base) -> (removed_idx: list[int], partial_x: list[Any] with None on removed)
 # -------------------------
 
-def destroy_random_k(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
+def destroy_random(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
     """ランダムにk個の要素を選んで破壊.
     
     Parameters
@@ -356,7 +357,7 @@ def destroy_segment(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], L
     """
     n = len(base)
     if n < 2:
-        return destroy_random_k(state, base)
+        return destroy_random(state, base)
     i = state.rng.randrange(n)
     j = state.rng.randrange(n)
     if i > j:
@@ -372,7 +373,7 @@ def destroy_segment(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], L
         xx[t] = None
     return removed, xx
 
-def destroy_weighted_k(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
+def destroy_early_departure(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
     """出発時刻の早い車両を優先で重み付き確率でk個の要素を選んで破壊.
         
     Parameters
@@ -391,8 +392,8 @@ def destroy_weighted_k(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int]
     n = len(base)
     
     #出発時刻の早いものを選択しやすい
-    w = 1 - state.additional_info.get("departure_times")
-    w = np.maximum(1.0 / max(100, n), w)
+    w = (1 - state.additional_info.get("departure_times"))
+    w = np.maximum(1/100000, w-0.3)
     
     k = state.rng.randint(state.k_min, min(state.k_max, n))
     probs = (w / w.sum())
@@ -402,11 +403,90 @@ def destroy_weighted_k(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int]
         xx[i] = None
     return removed, xx
 
-# ここにユーザー独自の破壊を追加可能
+def destroy_late_departure(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
+    """出発時刻の遅い車両を優先で重み付き確率でk個の要素を選んで破壊.
+        
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base : Sequence[Any]
+        基本となる解
+    
+    Returns
+    -------
+    Tuple[List[int], List[Any]]
+        (削除されたインデックス, 部分解) のタプル
+        部分解の削除位置はNoneに設定される
+    """
+    n = len(base)
+    
+    #出発時刻の遅いものを選択しやすい
+    w = state.additional_info.get("departure_times")
+    w = np.maximum(1/100000, w-0.3)
+    
+    k = state.rng.randint(state.k_min, min(state.k_max, n))
+    probs = (w / w.sum())
+    removed = list(np.random.choice(np.arange(n), size=k, replace=False, p=probs))
+    xx = _copy_vec(base)
+    for i in removed:
+        xx[i] = None
+    return removed, xx
+
+
+def destroy_congested_link(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
+    """混雑リンクを走行した車両を選んで破壊
+        
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base : Sequence[Any]
+        基本となる解
+    
+    Returns
+    -------
+    Tuple[List[int], List[Any]]
+        (削除されたインデックス, 部分解) のタプル
+        部分解の削除位置はNoneに設定される
+    """
+    n = len(base)
+    
+    #混雑リンクを選択
+    W = state.additional_info.get("W")
+    df_l = W.analyzer.links_to_pandas()
+    delay_threath = 1.5
+    delay_ranking_ratio = 0.1
+    link_selected_name = np.random.choice(list(df_l[df_l["delay"]>delay_threath].sort_values(by='delay', ascending=False)[:max([int(len(df_l)*delay_ranking_ratio),5])]["link"]))
+    link_selected = W.get_link(link_selected_name)
+
+    #TODO:つづく
+
+    w = np.maximum(1/100000, w-0.3)
+    
+    k = state.rng.randint(state.k_min, min(state.k_max, n))
+    probs = (w / w.sum())
+    removed = list(np.random.choice(np.arange(n), size=k, replace=False, p=probs))
+    xx = _copy_vec(base)
+    for i in removed:
+        xx[i] = None
+    return removed, xx
+
+
+# 破壊オペレータ一覧
 _DESTROY_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any]], Tuple[List[int], List[Any]]]] = {
-    "random_k": destroy_random_k,
+    "random": destroy_random,
     "segment": destroy_segment,
-    "early_deaprture": destroy_weighted_k,
+    "early_departure": destroy_early_departure,
+    "late_departure": destroy_late_departure,
+}
+
+# 破壊オペレータの初期重み（選択確率に比例）
+_DESTROY_INITIAL_WEIGHTS: Dict[str, float] = {
+    "random": 1.0,
+    "segment": 1.0,
+    "early_departure": 2.0,
+    "late_departure": 0.5,
 }
 
 # -------------------------
@@ -500,134 +580,17 @@ def _repair_greedy(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequenc
             changed.append(i)
     return x, changed
 
-def _repair_regret2(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
-    """2-regret法で修復.
-    
-    最良選択と次点選択の差（regret）が最大の位置から
-    優先的に値を割り当てる。
-    
-    Parameters
-    ----------
-    state : ALNSState
-        ALNS状態
-    base_cur : Sequence[Any]
-        現在の基本解
-    partial_x : Sequence[Any]
-        部分解（削除位置はNone）
-    removed : List[int]
-        削除されたインデックス
-    
-    Returns
-    -------
-    Tuple[List[Any], List[int]]
-        (修復された解, 変更されたインデックス) のタプル
-    """
-    x = _copy_vec(base_cur)
-    unassigned = set(removed)
-    changed = []
-    while unassigned:
-        sel_i = None
-        sel_best_val = None
-        best_regret = -1.0
-        for i in list(unassigned):
-            scores = []
-            orig = x[i]
-            for v in state.domains[i]:
-                x[i] = v
-                scores.append((_eval_internal(state, x), v))
-            scores.sort(key=lambda t: t[0])
-            best = scores[0][0]
-            second = scores[1][0] if len(scores) >= 2 else scores[0][0]
-            regret = second - best
-            if regret > best_regret:
-                best_regret = regret
-                sel_i = i
-                sel_best_val = scores[0][1]
-            x[i] = orig
-        x[sel_i] = sel_best_val
-        if x[sel_i] != base_cur[sel_i]:
-            changed.append(sel_i)
-        unassigned.remove(sel_i)
-    return x, changed
 
-def _local_1opt(state: ALNSState, x: List[Any], idxs: List[int], max_pass: int = 1) -> Tuple[List[Any], List[int]]:
-    """1-opt局所探索.
-    
-    指定されたインデックスの値を変更して改善を試みる。
-    
-    Parameters
-    ----------
-    state : ALNSState
-        ALNS状態
-    x : List[Any]
-        解（in-placeで変更される）
-    idxs : List[int]
-        探索対象のインデックス
-    max_pass : int, default=1
-        最大パス数
-    
-    Returns
-    -------
-    Tuple[List[Any], List[int]]
-        (改善された解, 変更されたインデックス) のタプル
-    """
-    changed = []
-    improved = True
-    cur_obj = _eval_internal(state, x)
-    passes = 0
-    while improved and passes < max_pass:
-        improved = False
-        passes += 1
-        for i in idxs:
-            best_val = x[i]
-            best_obj = cur_obj
-            for v in state.domains[i]:
-                if v == x[i]:
-                    continue
-                old = x[i]
-                x[i] = v
-                o = _eval_internal(state, x)
-                if o < best_obj:
-                    best_obj = o
-                    best_val = v
-                x[i] = old
-            if best_val != x[i]:
-                x[i] = best_val
-                cur_obj = best_obj
-                changed.append(i)
-                improved = True
-    return x, changed
-
-def _repair_greedy_1opt(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
-    """貪欲法で修復後、1-opt局所探索を適用.
-    
-    Parameters
-    ----------
-    state : ALNSState
-        ALNS状態
-    base_cur : Sequence[Any]
-        現在の基本解
-    partial_x : Sequence[Any]
-        部分解（削除位置はNone）
-    removed : List[int]
-        削除されたインデックス
-    
-    Returns
-    -------
-    Tuple[List[Any], List[int]]
-        (修復された解, 変更されたインデックス) のタプル
-    """
-    x, changed = _repair_greedy(state, base_cur, partial_x, removed)
-    x, ch2 = _local_1opt(state, x, removed, max_pass=1)
-    changed = list(sorted(set(changed) | set(ch2)))
-    return x, changed
-
-# ここにユーザー独自の修復を追加可能
+# 修復オペレータ一覧
 _REPAIR_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any], Sequence[Any], List[int]], Tuple[List[Any], List[int]]]] = {
     "random": _repair_random,
     # "greedy": _repair_greedy,
-    # "regret2": _repair_regret2,
-    # "greedy_1opt": _repair_greedy_1opt,
+}
+
+# 修復オペレータの初期重み（選択確率に比例）
+_REPAIR_INITIAL_WEIGHTS: Dict[str, float] = {
+    "random": 1.0,
+    # "greedy": 1.0,
 }
 
 # -------------------------
@@ -661,9 +624,8 @@ def init_alns(
     reward_accept_worse: float = 0.5,
 
     # 停滞対策
-    patience: int = 1000,
-    shake_k: Optional[int] = None,
-    auto_shake: bool = False,
+    iters_until_reheat: int = 999999999,
+    auto_reheat: bool = True,
 
     seed: Optional[int] = 42,
 
@@ -706,12 +668,10 @@ def init_alns(
         解改善時の報酬
     reward_accept_worse : float, default=0.5
         悪化解受理時の報酬
-    patience : int, default=1000
-        停滞判定までのイテレーション数
-    shake_k : Optional[int], default=None
-        シェイク時の変更数。Noneの場合はn//3
-    auto_shake : bool, default=False
-        自動シェイクを有効にするか
+    iters_until_reheat : int, default=999999999
+        停滞判定までのイテレーション数（reheat発動の閾値）
+    auto_reheat : bool, default=True
+        自動reheatを有効にするか
     seed : Optional[int], default=42
         乱数シード
     additional_info : Optional[Dict[str, Any]], default=None
@@ -762,9 +722,6 @@ def init_alns(
     if unknown_r:
         raise ValueError(f"repair_set に未登録のオペレータがあります: {unknown_r}. 登録済: {available_repair}")
 
-    if shake_k is None:
-        shake_k = max(1, n // 3)
-
     k_min = max(1, min(k_min, n))
     k_max = max(k_min, min(k_max, n))
 
@@ -811,16 +768,16 @@ def init_alns(
         if not deltas:
             deltas = [1.0]
         med = sorted(deltas)[len(deltas)//2]
-        p0 = 0.5                  # 初期に悪化を割合p0前後で受理したい：p0よりかなり小さめにずれる．
+        p0 = 0.3                  # 初期に悪化を割合p0前後で受理したい：かなりずれる．．．
         T0 = max(1e-6, med / max(1e-12, math.log(1.0/p0)))
 
-    # 適応初期値
-    d_weights = {m: 1.0 for m in destroy_set}
+    # 適応初期値（初期重みは定数から取得、定義されていなければ1.0）
+    d_weights = {m: _DESTROY_INITIAL_WEIGHTS.get(m, 1.0) for m in destroy_set}
     d_scores  = {m: 0.0 for m in destroy_set}
     d_uses    = {m: 0   for m in destroy_set}
     d_best_improves = {m: 0 for m in destroy_set}
 
-    r_weights = {m: 1.0 for m in repair_set}
+    r_weights = {m: _REPAIR_INITIAL_WEIGHTS.get(m, 1.0) for m in repair_set}
     r_scores  = {m: 0.0 for m in repair_set}
     r_uses    = {m: 0   for m in repair_set}
     r_best_improves = {m: 0 for m in repair_set}
@@ -834,7 +791,7 @@ def init_alns(
         segment_len=segment_len, adapt_eta=adapt_eta,
         reward_improve_best=reward_improve_best, reward_improve=reward_improve,
         reward_accept_worse=reward_accept_worse,
-        patience=patience, shake_k=shake_k, auto_shake=auto_shake, seed=seed
+        iters_until_reheat=iters_until_reheat, auto_reheat=auto_reheat, seed=seed
     )
 
     return ALNSState(
@@ -845,7 +802,8 @@ def init_alns(
         segment_len=segment_len, adapt_eta=adapt_eta,
         reward_improve_best=reward_improve_best, reward_improve=reward_improve,
         reward_accept_worse=reward_accept_worse,
-        patience=patience, shake_k=shake_k, auto_shake=auto_shake,
+        iters_until_reheat=iters_until_reheat, auto_reheat=auto_reheat,
+        current_temperature=T0,
         rng=rng, seed=seed, params=params,
         additional_info=additional_info,
         x_cur=x_cur, x_best=x_best, cur=cur, best=best,
@@ -862,7 +820,8 @@ def init_alns(
 def _temperature(state: ALNSState, it_next: Optional[int] = None) -> float:
     """焼きなまし温度を計算.
     
-    指数的に減少する温度スケジュール。
+    基本は指数的に減少する温度スケジュールだが、
+    reheatが発生した場合はcurrent_temperatureを使用。
     
     Parameters
     ----------
@@ -878,7 +837,11 @@ def _temperature(state: ALNSState, it_next: Optional[int] = None) -> float:
     """
     it = state.it if it_next is None else it_next
     it = max(0, min(it, max(1, state.total_iters)))
-    return state.T0 * ((state.Tend / state.T0) ** (it / max(1, state.total_iters)))
+    scheduled_temp = state.T0 * ((state.Tend / state.T0) ** (it / max(1, state.total_iters)))
+    
+    # current_temperatureとscheduled_tempの最大値を使用
+    # （reheatで上昇した温度が自然減衰するまで高温を維持）
+    return max(state.current_temperature, scheduled_temp)
 
 def _roulette_pick(rng: random.Random, weights: Dict[str, float]) -> str:
     """ルーレット選択.
@@ -965,74 +928,37 @@ def _reward_step(state: ALNSState, d: str, r: str, *, improved_best: bool, accep
         state.r_scores[r] += state.reward_accept_worse
 
 # -------------------------
-# Shake（任意）
+# Reheat（停滞対策）
 # -------------------------
 
-def make_shake_candidate(state: ALNSState, *, base: str = "best", k: Optional[int] = None) -> Tuple[List[Any], List[int]]:
-    """シェイク用の候補解を生成.
+def do_reheat(state: ALNSState) -> StepLog:
+    """reheatを実行.
     
-    ランダムにk個の位置を変更した解を生成。
-    
-    Parameters
-    ----------
-    state : ALNSState
-        ALNS状態
-    base : str, default="best"
-        ベースとなる解 ("best" または "current")
-    k : Optional[int], default=None
-        変更する位置数。Noneの場合はshake_kを使用
-    
-    Returns
-    -------
-    Tuple[List[Any], List[int]]
-        (シェイクされた解, 変更されたインデックス) のタプル
-    """
-    if k is None:
-        k = state.shake_k
-    xx = _copy_vec(state.x_best if base == "best" else state.x_cur)
-    n = len(xx)
-    idx = state.rng.sample(range(n), min(k, n))
-    for j in idx:
-        choices = [c for c in state.domains[j] if c != xx[j]]
-        if choices:
-            xx[j] = _rng_choice(state.rng, choices)
-    return xx, idx
-
-def do_shake(state: ALNSState, *, base: str = "best", k: Optional[int] = None) -> StepLog:
-    """シェイクを実行.
-    
-    ランダムに大きく解を変更して停滞から脱出。
+    温度を上昇させて停滞から脱出を図る。
     
     Parameters
     ----------
     state : ALNSState
         ALNS状態
-    base : str, default="best"
-        ベースとなる解 ("best" または "current")
-    k : Optional[int], default=None
-        変更する位置数。Noneの場合はshake_kを使用
     
     Returns
     -------
     StepLog
-        シェイクステップのログ
+        reheatステップのログ
     """
-    x_cand, idx = make_shake_candidate(state, base=base, k=k)
-    def _eval(xx):
-        v = state.obj(xx)
-        return -v if state.sense == "max" else v
-    T = _temperature(state, it_next=state.it + 1)
-    state.x_cur = _copy_vec(x_cand)
-    state.cur = _eval(state.x_cur)
+    # 温度を上昇
+    state.current_temperature += state.T0/2
+    
     state.it += 1
     state.seg_countdown -= 1
     _segment_update_weights(state)
+    
     log = StepLog(
-        iter=state.it, move=f"shake({len(idx)})", changed_idx=idx, changed_idxs=len(idx), delta_obj=0.0,
+        iter=state.it, move="reheat", changed_idx=None, changed_idxs=0, delta_obj=0.0,
         accepted=True,
         obj_val=(state.cur if state.sense == "min" else -state.cur),
         best_obj=(state.best if state.sense == "min" else -state.best),
-        temperature=T, source="shake",
+        temperature=state.current_temperature, source="reheat",
     )
     state.steps.append(log)
     return log
@@ -1045,7 +971,7 @@ def auto_step(state: ALNSState) -> StepLog:
     
     破壊・修復オペレータを選択し、現在解を変更、
     焼きなましに基づいて受理判定を行う。
-    必要に応じて自動シェイクも実行。
+    必要に応じて自動reheatも実行。
     
     Parameters
     ----------
@@ -1101,8 +1027,16 @@ def auto_step(state: ALNSState) -> StepLog:
     )
     state.steps.append(log)
 
-    if state.auto_shake and (state.it - state.last_best_it) >= state.patience:
-        do_shake(state, base="best", k=state.shake_k)
+    # reheatで温度が上昇していたら、自然減衰させる
+    scheduled_temp = state.T0 * ((state.Tend / state.T0) ** (state.it / max(1, state.total_iters)))
+    b = (state.Tend/state.T0) ** (1/state.total_iters)  # スケジュール減衰係数
+    if state.current_temperature > scheduled_temp:
+        # 温度を徐々に下げる（スケジュールに向けて減衰）
+        state.current_temperature = max(scheduled_temp, state.current_temperature * b*0.99)
+    
+    if state.auto_reheat and (state.it - state.last_best_it) >= state.iters_until_reheat and (state.it - state.last_reheat_it) >= state.iters_until_reheat:
+        do_reheat(state)
+        state.last_reheat_it = state.it
 
     return log
 
@@ -1241,9 +1175,10 @@ if __name__ == "__main__":
         k_min=2, k_max=4,
         total_iters=2000,
         segment_len=50,
-        auto_shake=True,
+        iters_until_reheat=100,
+        auto_reheat=True,
         seed=0,
-        additional_info=None,  # 例: {"departure_times": np.linspace(0,1,len(x0))}
+        additional_info={"departure_times": np.linspace(0,1,len(x0))} #無意味な例
     )
 
     # 1000 ステップだけ走らせて終了
