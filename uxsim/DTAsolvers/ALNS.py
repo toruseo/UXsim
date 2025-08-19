@@ -2,12 +2,13 @@
 Mixed-Control ALNS with Periodic Injection & Convergence Check
 ==============================================================
 
+- Initially coded by GPT-5, refined by human and Claude Code. Unfortunately, this code is unnecessarily redundant and not in my style, but I confirm it works.
+
 概要
 ----
 - デフォルトの小近傍（kflip / swap / shuffle）で自動探索（auto）
 - n ステップごとにユーザー定義の候補を**注入**（external）
 - 収束判定（停滞 + 低受理率 + 低温度）で早期停止（オプション）
-- Initially coded by GPT-5, refined by human and Claude Code. Unfortunately, this code is unnecessarily redundant and not in my style, but I confirm it works.
 
 主API
 -----
