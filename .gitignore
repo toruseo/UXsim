@@ -144,6 +144,7 @@ p*_*.py
 *.prof
 demos_and_examples/uxsim/*
 /*.pkl
+_bench*
 
 # pre-commit
 .pre-commit-config.yaml

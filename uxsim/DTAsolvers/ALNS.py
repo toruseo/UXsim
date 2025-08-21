@@ -451,22 +451,26 @@ def destroy_congested_link(state: ALNSState, base: Sequence[Any]) -> Tuple[List[
         部分解の削除位置はNoneに設定される
     """
     n = len(base)
-    
+
+    removed = []
+
     #混雑リンクを選択
     W = state.additional_info.get("W")
-    df_l = W.analyzer.links_to_pandas()
-    delay_threath = 1.5
-    delay_ranking_ratio = 0.1
-    link_selected_name = np.random.choice(list(df_l[df_l["delay"]>delay_threath].sort_values(by='delay', ascending=False)[:max([int(len(df_l)*delay_ranking_ratio),5])]["link"]))
-    link_selected = W.get_link(link_selected_name)
+    df_l = W.analyzer.link_to_pandas()
+    
+    delay_ranking_ratio = 0.05
+    delay_ranking_min_n = 3
 
-    #TODO:つづく
-
-    w = np.maximum(1/100000, w-0.3)
+    most_delayed_links = list(df_l.sort_values(by='delay_ratio', ascending=False)[:max([int(len(df_l)*delay_ranking_ratio),delay_ranking_min_n])]["link"])
     
     k = state.rng.randint(state.k_min, min(state.k_max, n))
-    probs = (w / w.sum())
-    removed = list(np.random.choice(np.arange(n), size=k, replace=False, p=probs))
+    for _ in range(k):
+        link_selected_name = np.random.choice(most_delayed_links)
+        link_selected = W.get_link(link_selected_name)
+
+        veh_selected = np.random.choice(list(link_selected.vehicles_enter_log.values()))
+        removed.append(veh_selected.id)
+
     xx = _copy_vec(base)
     for i in removed:
         xx[i] = None
@@ -479,6 +483,7 @@ _DESTROY_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any]], Tuple[List[int], 
     "segment": destroy_segment,
     "early_departure": destroy_early_departure,
     "late_departure": destroy_late_departure,
+    "congested_link": destroy_congested_link,
 }
 
 # 破壊オペレータの初期重み（選択確率に比例）
@@ -487,6 +492,7 @@ _DESTROY_INITIAL_WEIGHTS: Dict[str, float] = {
     "segment": 1.0,
     "early_departure": 2.0,
     "late_departure": 0.5,
+    "congested_link": 1.0,
 }
 
 # -------------------------
@@ -768,7 +774,7 @@ def init_alns(
         if not deltas:
             deltas = [1.0]
         med = sorted(deltas)[len(deltas)//2]
-        p0 = 0.3                  # 初期に悪化を割合p0前後で受理したい：かなりずれる．．．
+        p0 = 0.2                  # 初期に悪化を割合p0前後で受理したい：かなりずれる．．．
         T0 = max(1e-6, med / max(1e-12, math.log(1.0/p0)))
 
     # 適応初期値（初期重みは定数から取得、定義されていなければ1.0）
