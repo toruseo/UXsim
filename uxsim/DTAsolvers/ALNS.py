@@ -29,7 +29,7 @@ class StepLog:
     iter : int
         イテレーション番号
     move : str
-        実行されたムーブ ("D:<destroy>+R:<repair>" または "reheat")
+        実行されたムーブ ("D:<destroy>+R:<repair>")
     changed_idx : Optional[List[int]]
         変更されたインデックスのリスト
     changed_idxs : Optional[int]
@@ -45,10 +45,10 @@ class StepLog:
     temperature : float
         現在の温度
     source : str
-        ステップのソース ("auto" または "reheat")
+        ステップのソース ("auto")
     """
     iter: int
-    move: str                          # "D:<destroy>+R:<repair>" | "reheat"
+    move: str                          # "D:<destroy>+R:<repair>"
     changed_idx: Optional[List[int]]
     changed_idxs: Optional[int]
     delta_obj: float                   # 内部最小化差分 cand - cur
@@ -56,7 +56,7 @@ class StepLog:
     obj_val: float                     # ユーザー向き（sense 反映）
     best_obj: float                    # ユーザー向き
     temperature: float
-    source: str                        # {"auto","reheat"}
+    source: str                        # "auto"
 
 @dataclass
 class RunLog:
@@ -205,12 +205,6 @@ class ALNSState:
         解改善時の報酬
     reward_accept_worse : float
         悪化解受理時の報酬
-    iters_until_reheat : int
-        停滞判定までのイテレーション数（reheat発動の閾値）
-    auto_reheat : bool
-        自動reheatを有効にするか
-    current_temperature : float
-        現在の実効温度（reheatで増加）
     rng : random.Random
         乱数生成器
     seed : Optional[int]
@@ -278,10 +272,6 @@ class ALNSState:
     reward_improve: float
     reward_accept_worse: float
 
-    # 停滞→reheat
-    iters_until_reheat: int
-    auto_reheat: bool
-    current_temperature: float
 
     rng: random.Random
     seed: Optional[int]
@@ -295,7 +285,6 @@ class ALNSState:
     best: float
     it: int = 0
     last_best_it: int = 0
-    last_reheat_it : int = 0
 
     # 破壊/修復の適応重み
     d_weights: Dict[str, float] = field(default_factory=dict)
@@ -632,10 +621,6 @@ def init_alns(
     reward_improve: float = 2.0,
     reward_accept_worse: float = 0.5,
 
-    # 停滞対策
-    iters_until_reheat: int = 999999999,
-    auto_reheat: bool = True,
-
     seed: Optional[int] = 42,
 
     # 追加情報（任意）
@@ -677,10 +662,6 @@ def init_alns(
         解改善時の報酬
     reward_accept_worse : float, default=0.5
         悪化解受理時の報酬
-    iters_until_reheat : int, default=999999999
-        停滞判定までのイテレーション数（reheat発動の閾値）
-    auto_reheat : bool, default=True
-        自動reheatを有効にするか
     seed : Optional[int], default=42
         乱数シード
     additional_info : Optional[Dict[str, Any]], default=None
@@ -801,7 +782,7 @@ def init_alns(
         segment_len=segment_len, adapt_eta=adapt_eta,
         reward_improve_best=reward_improve_best, reward_improve=reward_improve,
         reward_accept_worse=reward_accept_worse,
-        iters_until_reheat=iters_until_reheat, auto_reheat=auto_reheat, seed=seed
+        seed=seed
     )
 
     return ALNSState(
@@ -812,8 +793,6 @@ def init_alns(
         segment_len=segment_len, adapt_eta=adapt_eta,
         reward_improve_best=reward_improve_best, reward_improve=reward_improve,
         reward_accept_worse=reward_accept_worse,
-        iters_until_reheat=iters_until_reheat, auto_reheat=auto_reheat,
-        current_temperature=T0,
         rng=rng, seed=seed, params=params,
         additional_info=additional_info,
         x_cur=x_cur, x_best=x_best, cur=cur, best=best,
@@ -830,8 +809,7 @@ def init_alns(
 def _temperature(state: ALNSState, it_next: Optional[int] = None) -> float:
     """焼きなまし温度を計算.
     
-    基本は指数的に減少する温度スケジュールだが、
-    reheatが発生した場合はcurrent_temperatureを使用。
+    指数的に減少する温度スケジュール。
     
     Parameters
     ----------
@@ -847,11 +825,7 @@ def _temperature(state: ALNSState, it_next: Optional[int] = None) -> float:
     """
     it = state.it if it_next is None else it_next
     it = max(0, min(it, max(1, state.total_iters)))
-    scheduled_temp = state.T0 * ((state.Tend / state.T0) ** (it / max(1, state.total_iters)))
-    
-    # current_temperatureとscheduled_tempの最大値を使用
-    # （reheatで上昇した温度が自然減衰するまで高温を維持）
-    return max(state.current_temperature, scheduled_temp)
+    return state.T0 * ((state.Tend / state.T0) ** (it / max(1, state.total_iters)))
 
 def _roulette_pick(rng: random.Random, weights: Dict[str, float]) -> str:
     """ルーレット選択.
@@ -938,42 +912,6 @@ def _reward_step(state: ALNSState, d: str, r: str, *, improved_best: bool, accep
         state.r_scores[r] += state.reward_accept_worse
 
 # -------------------------
-# Reheat（停滞対策）
-# -------------------------
-
-def do_reheat(state: ALNSState) -> StepLog:
-    """reheatを実行.
-    
-    温度を上昇させて停滞から脱出を図る。
-    
-    Parameters
-    ----------
-    state : ALNSState
-        ALNS状態
-    
-    Returns
-    -------
-    StepLog
-        reheatステップのログ
-    """
-    # 温度を上昇
-    state.current_temperature += state.T0/2
-    
-    state.it += 1
-    state.seg_countdown -= 1
-    _segment_update_weights(state)
-    
-    log = StepLog(
-        iter=state.it, move="reheat", changed_idx=None, changed_idxs=0, delta_obj=0.0,
-        accepted=True,
-        obj_val=(state.cur if state.sense == "min" else -state.cur),
-        best_obj=(state.best if state.sense == "min" else -state.best),
-        temperature=state.current_temperature, source="reheat",
-    )
-    state.steps.append(log)
-    return log
-
-# -------------------------
 # 自動ステップ（ALNS）
 # -------------------------
 def auto_step(state: ALNSState) -> StepLog:
@@ -981,7 +919,6 @@ def auto_step(state: ALNSState) -> StepLog:
     
     破壊・修復オペレータを選択し、現在解を変更、
     焼きなましに基づいて受理判定を行う。
-    必要に応じて自動reheatも実行。
     
     Parameters
     ----------
@@ -994,8 +931,7 @@ def auto_step(state: ALNSState) -> StepLog:
         実行されたステップのログ
     """
     # kを計算
-    scheduled_temp = state.T0 * ((state.Tend / state.T0) ** (state.it / max(1, state.total_iters)))
-    temp_cur = max(scheduled_temp, state.current_temperature)
+    temp_cur = _temperature(state, state.it)
     state.k_cur = int((state.k_max-state.k_min)*temp_cur/state.T0 + state.k_min)
     if state.k_cur < state.k_min:
         state.k_cur = state.k_min
@@ -1045,16 +981,6 @@ def auto_step(state: ALNSState) -> StepLog:
         temperature=T, source="auto"
     )
     state.steps.append(log)
-
-    # reheatで温度が上昇していたら、自然減衰させる
-    b = (state.Tend/state.T0) ** (1/state.total_iters)  # スケジュール減衰係数
-    if state.current_temperature > scheduled_temp:
-        # 温度を徐々に下げる（スケジュールに向けて減衰）
-        state.current_temperature = max(scheduled_temp, state.current_temperature * b*0.99)
-    
-    if state.auto_reheat and (state.it - state.last_best_it) >= state.iters_until_reheat and (state.it - state.last_reheat_it) >= state.iters_until_reheat:
-        do_reheat(state)
-        state.last_reheat_it = state.it
 
     return log
 
@@ -1193,8 +1119,6 @@ if __name__ == "__main__":
         k_min=1, k_max=4,
         total_iters=2000,
         segment_len=50,
-        iters_until_reheat=100,
-        auto_reheat=True,
         seed=0,
         additional_info={"departure_times": np.linspace(0,1,len(x0))} #無意味な例
     )
