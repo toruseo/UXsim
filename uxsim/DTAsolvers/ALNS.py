@@ -610,6 +610,7 @@ def init_alns(
     k_max: int = 5,
 
     # 焼きなまし
+    p0: float=0.2, #目標初期エラー
     T0: Optional[float] = None,
     Tend: float = 1e-3,
     total_iters: int = 10000,
@@ -759,7 +760,7 @@ def init_alns(
         if not deltas:
             deltas = [1.0]
         med = sorted(deltas)[len(deltas)//2]
-        p0 = 0.2                  # 初期に悪化を割合p0前後で受理したい：かなりずれる．．．
+        p0 = p0                 # 初期に悪化を割合p0前後で受理したい：かなりずれる．．．
         T0 = max(1e-6, med / max(1e-12, math.log(1.0/p0)))
 
     # 適応初期値（初期重みは定数から取得、定義されていなければ1.0）

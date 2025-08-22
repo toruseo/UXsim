@@ -4,11 +4,15 @@ Submodule for Dynamic Traffic Assginment solvers
 import random
 import time
 import warnings
+from pprint import pprint
+from collections import defaultdict
+
 import matplotlib.pyplot as plt
 import numpy as np
-from collections import defaultdict
+
 from ..Utilities import enumerate_k_shortest_routes, enumerate_k_random_routes
 from ..utils import *
+from . import ALNS
 
 import warnings
 
@@ -601,7 +605,7 @@ class SolverDUE:
 class SolverDSO_GA:
     def __init__(s, func_World):
         """
-        Solve Dynamic System Optimum (DSO) problem using genetic algorithm. WIP
+        Solve Dynamic System Optimum (DSO) problem using genetic algorithm.
 
         Parameters
         ----------
@@ -980,6 +984,203 @@ class SolverDSO_GA:
         plt.ylabel("travel time")
         plt.legend()
         plt.show()
+
+
+class SolverDSO_ALNS:
+    def __init__(s, func_World):
+        
+        """
+        Solve Dynamic System Optimum (DSO) problem using a customized Adaptive Large Neighborhood Search (ADLS).
+
+        Parameters
+        ----------
+        func_World : function
+            function that returns a World object with nodes, links, and demand specifications
+        """
+        s.func_World = func_World
+        s.W_sol = None  #final solution
+        s.W_intermid_solution = None
+        s.dfs_link = []
+        
+    def solve(s, max_iter, n_routes_per_od=10, k_max=None, p0=0.2, print_progress=True, initial_solution_World=None):
+        
+        s.print_progress = print_progress
+        s.n_routes_per_od = n_routes_per_od
+        s.max_iter = max_iter
+        if k_max == None:
+            k_max = max([1, int(len(initial_solution_World.VEHICLES)*0.01)])
+
+        departure_times = []
+
+        s.start_time = time.time()
+
+        ##############################################################
+        # initial solution
+
+        if initial_solution_World == None:
+            W = s.func_World()
+            W.exec_simulation()
+            if print_progress:
+                print(W.analyzer.basic_to_pandas())
+        else:
+            W = initial_solution_World
+            dict_od_to_routes = W.dict_od_to_routes
+            
+        if print_progress:
+            W.print_scenario_stats()
+
+        dict_od_to_vehid = defaultdict(lambda: [])
+        for key, veh in W.VEHICLES.items():
+            o = veh.orig.name
+            d = veh.dest.name
+            dict_od_to_vehid[o,d].append(key)
+            departure_times.append(veh.departure_time)
+
+        departure_times = np.array(departure_times)/max(departure_times)
+
+        ##############################################################
+        # enumerate some routes between each OD pair
+
+        dict_od_to_vehid = defaultdict(lambda: [])
+        for key, veh in W.VEHICLES.items():
+            o = veh.orig.name
+            d = veh.dest.name
+            dict_od_to_vehid[o,d].append(key)
+
+        if initial_solution_World != None and hasattr(initial_solution_World, "dict_od_to_routes"):
+            print("Initial solusion is used")
+            routes = initial_solution_World.dict_od_to_routes
+            xx0 = [0 for i in range(len(W.VEHICLES))]
+            for i,veh in enumerate(W.VEHICLES.values()):   
+                route_id = 0
+                for j,r in enumerate(routes[(veh.orig.name, veh.dest.name)]):
+                    if W.defRoute(r) == veh.traveled_route()[0]:
+                        route_id = j
+                        break
+                xx0[i] = route_id
+        else:
+            print("No initial solution")
+            routes = enumerate_k_random_routes(W, k=n_routes_per_od)
+            xx0 = [random.randint(0, len(xx_domain[i])) for i in range(len(W.VEHICLES))]
+
+        ##############################################################
+        # Prepare ALNS
+
+        # specify routing based on x vector
+        def specify_routes(W, xx):
+            veh_list = list(W.VEHICLES.values())
+            for i, value in enumerate(xx):
+                veh = veh_list[i]
+                if value < len(routes[(veh.orig.name, veh.dest.name)]):
+                    veh.set_links_prefer(routes[(veh.orig.name, veh.dest.name)][value])
+                else:
+                    veh.set_links_prefer(routes[(veh.orig.name, veh.dest.name)][-1])
+                    
+        xx_domain = []
+        for i, veh in enumerate(W.VEHICLES.values()):
+            actual_n_route = len(routes[(veh.orig.name, veh.dest.name)])
+            xx_domain.append([i for i in range(actual_n_route)])
+
+        s.W_intermid_solution = W
+        s.best_obj_value = None
+        s.iter = 0
+        s.ttts = []
+        s.ttts_best = []
+        s.route_log = []
+        s.cost_log = []
+        s.dfs_link = []
+
+        s.best_iter = []
+        s.best_obj = []
+
+        print("solving DSO by ALNS...")
+        print("k_max:", k_max)
+
+        def objective_function_by_UXsim(xx):
+            W = s.func_World()
+            specify_routes(W, xx)
+            W.exec_simulation()
+            obj_value = W.analyzer.total_travel_time - (W.analyzer.trip_all-W.analyzer.trip_completed)*W.TMAX
+            
+            route_actual = {}
+            cost_actual = {}
+            for key,veh in W.VEHICLES.items():
+                if veh.state != "end":
+                    continue
+
+                route, ts = veh.traveled_route()
+                travel_time = ts[-1]-ts[0]
+                
+                route_actual[key] = [rr.name for rr in route]
+                cost_actual[key] = travel_time
+            s.route_log.append(route_actual)
+            s.cost_log.append(cost_actual)
+            s.ttts.append(int(W.analyzer.total_travel_time))
+            s.dfs_link.append(W.analyzer.link_to_pandas())
+
+
+            if s.best_obj_value == None or obj_value < s.best_obj_value:
+                s.best_obj_value = obj_value
+                s.W_intermid_solution = W
+                s.W_intermid_solution.dict_od_to_routes = dict_od_to_routes
+
+                s.ttts_best.append(int(W.analyzer.total_travel_time))
+
+                s.best_iter.append(s.iter)
+                s.best_obj.append(s.best_obj_value)
+
+            if s.iter%20 == 0:
+                print(f"iter: {s.iter} - TTT: {W.analyzer.total_travel_time}, trips:{W.analyzer.trip_completed}/{W.analyzer.trip_all}, Obj:{obj_value}, Best Obj:{s.best_obj_value}")
+
+            s.iter += 1
+            return obj_value
+
+
+        state = ALNS.init_alns(
+            xx0, objective_function_by_UXsim,
+            domains=xx_domain,
+            k_max=k_max,
+            total_iters=max_iter,
+            p0=p0,
+            seed=0,
+            additional_info={"departure_times":departure_times, "W":W}
+        )
+
+        ALNS.run_auto(state, n=max_iter)
+
+        s.xx_star, s.run = ALNS.finalize(state)
+
+        s.W_sol = s.W_intermid_solution
+
+        s.end_time = time.time()
+        print("DSO summary:")
+        print(f" total travel time: initial {s.ttts[0]:.1f} -> last {s.ttts_best[-1]:.1f}")
+        print(f" computation time: {s.end_time - s.start_time:.1f} seconds")
+    
+    def print_solution_process(s, full=False):
+        df = s.run.to_dataframe()
+        df = df.drop(columns=["changed_idx"])
+        if full:
+            print(df.to_string())
+        else:
+            print(df[df["accepted"]==True].to_string())
+        pprint(s.run.operator_stats)
+
+    def plot_convergence(s):
+        plt.figure()
+        plt.plot(s.ttts, "b-", lw=0.5, label="search trace")
+        plt.plot(s.best_iter, s.best_obj, "r.", label="updated solution")
+        obj_init = s.best_obj[0]
+        obj_min = s.best_obj[-1]
+        plt.ylim([obj_min-(obj_init-obj_min)*0.1, obj_init+(obj_init-obj_min)*0.5])
+        plt.xlabel("iteration")
+        plt.ylabel("total travel time (s)")
+        plt.legend()
+        plt.grid()
+        plt.show()
+
+
+
 
 # does not work very well
 # class SolverDUE_departure_time_choice:
