@@ -187,6 +187,8 @@ class ALNSState:
         破壊規模の最小値
     k_max : int
         破壊規模の最大値
+    k_cur : int
+        破壊規模の現在値
     T0 : float
         初期温度
     Tend : float
@@ -262,6 +264,7 @@ class ALNSState:
     # 破壊規模
     k_min: int
     k_max: int
+    k_cur: int
 
     # 焼きなまし
     T0: float
@@ -332,7 +335,7 @@ def destroy_random(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], Li
         部分解の削除位置はNoneに設定される
     """
     n = len(base)
-    k = state.rng.randint(state.k_min, min(state.k_max, n))
+    k = state.rng.randint(state.k_min, min(state.k_cur, n))
     removed = state.rng.sample(range(n), k)
     xx = _copy_vec(base)
     for i in removed:
@@ -365,8 +368,8 @@ def destroy_segment(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], L
     length = j - i + 1
     if length < state.k_min:
         j = min(n - 1, i + state.k_min - 1)
-    if (j - i + 1) > state.k_max:
-        j = i + state.k_max - 1
+    if (j - i + 1) > state.k_cur:
+        j = i + state.k_cur - 1
     removed = list(range(i, j + 1))
     xx = _copy_vec(base)
     for t in removed:
@@ -395,7 +398,7 @@ def destroy_early_departure(state: ALNSState, base: Sequence[Any]) -> Tuple[List
     w = (1 - state.additional_info.get("departure_times"))
     w = np.maximum(1/100000, w-0.3)
     
-    k = state.rng.randint(state.k_min, min(state.k_max, n))
+    k = state.rng.randint(state.k_min, min(state.k_cur, n))
     probs = (w / w.sum())
     removed = list(np.random.choice(np.arange(n), size=k, replace=False, p=probs))
     xx = _copy_vec(base)
@@ -425,7 +428,7 @@ def destroy_late_departure(state: ALNSState, base: Sequence[Any]) -> Tuple[List[
     w = state.additional_info.get("departure_times")
     w = np.maximum(1/100000, w-0.3)
     
-    k = state.rng.randint(state.k_min, min(state.k_max, n))
+    k = state.rng.randint(state.k_min, min(state.k_cur, n))
     probs = (w / w.sum())
     removed = list(np.random.choice(np.arange(n), size=k, replace=False, p=probs))
     xx = _copy_vec(base)
@@ -463,7 +466,7 @@ def destroy_congested_link(state: ALNSState, base: Sequence[Any]) -> Tuple[List[
 
     most_delayed_links = list(df_l.sort_values(by='delay_ratio', ascending=False)[:max([int(len(df_l)*delay_ranking_ratio),delay_ranking_min_n])]["link"])
     
-    k = state.rng.randint(state.k_min, min(state.k_max, n))
+    k = state.rng.randint(state.k_min, min(state.k_cur, n))
     for _ in range(k):
         link_selected_name = np.random.choice(most_delayed_links)
         link_selected = W.get_link(link_selected_name)
@@ -490,8 +493,8 @@ _DESTROY_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any]], Tuple[List[int], 
 _DESTROY_INITIAL_WEIGHTS: Dict[str, float] = {
     "random": 1.0,
     "segment": 1.0,
-    "early_departure": 2.0,
-    "late_departure": 0.5,
+    "early_departure": 10.0,
+    "late_departure": 0.1,
     "congested_link": 1.0,
 }
 
@@ -730,6 +733,7 @@ def init_alns(
 
     k_min = max(1, min(k_min, n))
     k_max = max(k_min, min(k_max, n))
+    k_cur = k_max
 
     x_cur = _copy_vec(x)
     additional_info = additional_info or {}
@@ -792,7 +796,7 @@ def init_alns(
         sense=sense,
         destroy_set=destroy_set, repair_set=repair_set,
         available_destroy=available_destroy, available_repair=available_repair,
-        k_min=k_min, k_max=k_max,
+        k_min=k_min, k_max=k_max, k_cur=k_cur,
         T0=T0, Tend=Tend, total_iters=total_iters,
         segment_len=segment_len, adapt_eta=adapt_eta,
         reward_improve_best=reward_improve_best, reward_improve=reward_improve,
@@ -803,7 +807,7 @@ def init_alns(
     return ALNSState(
         sense=sense, obj=obj, domains=domains,
         destroy_set=destroy_set, repair_set=repair_set,
-        k_min=k_min, k_max=k_max,
+        k_min=k_min, k_max=k_max,k_cur=k_cur,
         T0=T0, Tend=Tend, total_iters=total_iters,
         segment_len=segment_len, adapt_eta=adapt_eta,
         reward_improve_best=reward_improve_best, reward_improve=reward_improve,
@@ -989,6 +993,15 @@ def auto_step(state: ALNSState) -> StepLog:
     StepLog
         実行されたステップのログ
     """
+    # kを計算
+    scheduled_temp = state.T0 * ((state.Tend / state.T0) ** (state.it / max(1, state.total_iters)))
+    temp_cur = max(scheduled_temp, state.current_temperature)
+    state.k_cur = int((state.k_max-state.k_min)*temp_cur/state.T0 + state.k_min)
+    if state.k_cur < state.k_min:
+        state.k_cur = state.k_min
+    if state.k_cur > state.k_max:
+        state.k_cur = state.k_max
+
     # オペレータ選択
     d = _roulette_pick(state.rng, state.d_weights)
     r = _roulette_pick(state.rng, state.r_weights)
@@ -1034,7 +1047,6 @@ def auto_step(state: ALNSState) -> StepLog:
     state.steps.append(log)
 
     # reheatで温度が上昇していたら、自然減衰させる
-    scheduled_temp = state.T0 * ((state.Tend / state.T0) ** (state.it / max(1, state.total_iters)))
     b = (state.Tend/state.T0) ** (1/state.total_iters)  # スケジュール減衰係数
     if state.current_temperature > scheduled_temp:
         # 温度を徐々に下げる（スケジュールに向けて減衰）
@@ -1178,7 +1190,7 @@ if __name__ == "__main__":
     state = init_alns(
         x0, obj_example,
         domains=domains,
-        k_min=2, k_max=4,
+        k_min=1, k_max=4,
         total_iters=2000,
         segment_len=50,
         iters_until_reheat=100,
