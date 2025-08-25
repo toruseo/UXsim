@@ -453,7 +453,7 @@ def estimate_congestion_externality_link(W, link, t):
         #TODO:微妙に系統的にずれる
         #TODO:スピルオーバー時の除外 
         #TODO:信号待ちの一台目のときに破綻してしまう．頑健で賢い方法あるか？信号，このリンクの容量制約，下流側リンク・ノード容量制約を全部考えられるもの
-        ts_out = int(ts+int(link.traveltime_actual[ts]/W.DELTAN))+1
+        ts_out = int(ts+int(link.traveltime_actual[ts]/W.DELTAT))+1
         ts_out_leader = ts_out
         for i in range(ts_out, 0, -1):
             if link.cum_departure[i] < link.cum_departure[ts_out]:
@@ -472,8 +472,6 @@ def estimate_congestion_externality_link(W, link, t):
         warnings.warn(f"Error at `estimate_congestion_externality_link`: {e}", UserWarning)
 
         return 0
-
-
 
 def estimate_congestion_externality_route(W, route, t):
     """
