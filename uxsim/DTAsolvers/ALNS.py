@@ -2,10 +2,8 @@
 Adaptive Large Neighborhood Search (ALNS) for DSO
 
 - Initially coded by GPT-5, refined by human and Claude Code. 
-
-- 破壊/修復オペレータを辞書で差し替え可能な、本格ALNSの最小クリーン実装。
-- 主要API: init_alns / auto_step / run_auto / finalize
-- 拡張: _DESTROY_IMPLS / _REPAIR_IMPLS に関数を追加/置換するだけで新オペレータが自動採用される
+- Customizable minimum implementation
+- Includes domain-knowledge-based heuristics
 """
 
 from __future__ import annotations

@@ -1189,3 +1189,75 @@ def test_construct_time_space_network():
 
     assert W.TSN_paths["4", 0]["7", "end"][-2] == ('7', 340)
     assert equal_tolerance(W.TSN_costs["4", 0]["7", "end"], W.TSN_paths["4", 0]["7", "end"][-2][1])
+
+@pytest.mark.flaky(reruns=10)
+def test_estimate_congestion_externality_1link():
+    def create_world(seed):
+        W = World(
+            name="aaa",    # Scenario name
+            deltan=10,   # Simulation aggregation unit delta n
+            tmax=2400,  # Total simulation time (s)
+            print_mode=0, save_mode=0, show_mode=0,    # Various options
+            random_seed=seed    # Set the random seed
+        )
+
+        # Define the scenario
+        ## Create nodes
+        W.addNode(name="orig1", x=0, y=0)
+        W.addNode("mid", 1, 1)
+        W.addNode("dest", 2, 1)
+        ## Create links between nodes
+        link1 = W.addLink(name="link1", start_node="orig1", end_node="mid", length=2000, free_flow_speed=20, number_of_lanes=1, capacity_out=0.8)
+        link2 = W.addLink("link3", "mid", "dest", length=1000, free_flow_speed=20, number_of_lanes=1, capacity_in=0.4)
+
+        R1 = uxsim.Route(W, [link1, link2])
+        ## Create OD traffic demand between nodes
+        W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1200, flow=0.2)
+        W.adddemand(orig="orig1", dest="dest", t_start=300, t_end=600, flow=0.4)
+
+        return W
+
+    dep_ts = []
+    acts = []
+    ests = []
+    for _ in range(50):
+        seed = random.randint(0,999999)
+
+        W = create_world(seed)
+        W.exec_simulation()
+        W.analyzer.print_simple_stats()
+        #W.analyzer.time_space_diagram_traj_links(["link1", "link3"])
+
+        key = random.choice(list(W.VEHICLES.keys()))
+        veh = W.VEHICLES[key]
+        veh_tt = veh.travel_time*W.DELTAN
+        route = veh.traveled_route()[0]
+        dep_t = veh.log_t_link[1][0]
+        ext = estimate_congestion_externality_route(W, route, dep_t)
+        ttt1 = W.analyzer.total_travel_time
+
+
+        W2 = create_world(seed)
+        W2.VEHICLES[key].state="abort"
+        W2.exec_simulation()
+        W2.analyzer.print_simple_stats()
+        #W2.analyzer.time_space_diagram_traj_links(["link1", "link3"])
+        ttt2 = W2.analyzer.total_travel_time
+
+        #print(f"selected vehicle - dep time {veh.departure_time_in_second}")
+        #print("actual ext:", ttt1-ttt2-veh_tt, f"{ttt1}-{ttt2}-{veh_tt}")
+        #print("esti. ext: ", ext)
+
+        dep_ts.append(veh.departure_time_in_second)
+        acts.append(ttt1-ttt2-veh_tt)
+        ests.append(ext)
+
+    # W.analyzer.time_space_diagram_traj_links(["link1", "link3"])
+
+    # figure()
+    # plot(dep_ts, acts, "o", label="actual")
+    # plot(dep_ts, ests, "x", label="estimated")
+    # legend()
+    # grid()
+
+    assert uxsim.equal_tolerance(average(acts), average(ests), rel_tol=0.333)
