@@ -979,7 +979,7 @@ class SolverDSO_GA:
             dest_ = "any"
         plt.title(f"orig: {orig_}, dest: {dest_}")
         plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, 
-                fmt='bx', ecolor="#aaaaff", capsize=0, label="travel time (mean $\pm$ std)")
+                fmt='bx', ecolor="#aaaaff", capsize=0, label=r"travel time (mean $\pm$ std)")
         plt.xlabel("departure time of vehicle")
         plt.ylabel("travel time")
         plt.legend()
@@ -1007,8 +1007,6 @@ class SolverDSO_ALNS:
         s.print_progress = print_progress
         s.n_routes_per_od = n_routes_per_od
         s.max_iter = max_iter
-        if k_max == None:
-            k_max = max([1, int(len(initial_solution_World.VEHICLES)*0.01)])
 
         departure_times = []
 
@@ -1026,6 +1024,9 @@ class SolverDSO_ALNS:
             W = initial_solution_World
             dict_od_to_routes = W.dict_od_to_routes
             
+        if k_max == None:
+            k_max = max([1, int(len(W.VEHICLES)*0.01)])
+
         if print_progress:
             W.print_scenario_stats()
 
@@ -1058,10 +1059,26 @@ class SolverDSO_ALNS:
                         route_id = j
                         break
                 xx0[i] = route_id
+                
+            xx_domain = []
+            for i, veh in enumerate(W.VEHICLES.values()):
+                actual_n_route = len(routes[(veh.orig.name, veh.dest.name)])
+                xx_domain.append([i for i in range(actual_n_route)])
+
         else:
             print("No initial solution")
             routes = enumerate_k_random_routes(W, k=n_routes_per_od)
+
+            W.dict_od_to_routes = routes
+            dict_od_to_routes = routes
+            
+            xx_domain = []
+            for i, veh in enumerate(W.VEHICLES.values()):
+                actual_n_route = len(routes[(veh.orig.name, veh.dest.name)])
+                xx_domain.append([i for i in range(actual_n_route)])
+
             xx0 = [random.randint(0, len(xx_domain[i])) for i in range(len(W.VEHICLES))]
+
 
         ##############################################################
         # Prepare ALNS
@@ -1076,11 +1093,6 @@ class SolverDSO_ALNS:
                 else:
                     veh.set_links_prefer(routes[(veh.orig.name, veh.dest.name)][-1])
                     
-        xx_domain = []
-        for i, veh in enumerate(W.VEHICLES.values()):
-            actual_n_route = len(routes[(veh.orig.name, veh.dest.name)])
-            xx_domain.append([i for i in range(actual_n_route)])
-
         s.W_intermid_solution = W
         s.best_obj_value = None
         s.iter = 0
