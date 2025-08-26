@@ -325,6 +325,7 @@ class Analyzer:
         s.W.print(" number of completed trips:\t", s.trip_completed, "/", s.trip_all)
         #s.W.print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
         if s.trip_completed > 0:
+            s.W.print(f" total travel time:\t\t {s.total_travel_time:.1f} s")
             s.W.print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
             s.W.print(f" average delay of trips:\t {s.average_delay:.1f} s")
             s.W.print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
@@ -336,6 +337,7 @@ class Analyzer:
             print(" number of completed trips:\t", s.trip_completed, "/", s.trip_all)
             #print(" number of completed trips:\t", s.trip_completed, "/", len(s.W.VEHICLES)*s.W.DELTAN)
             if s.trip_completed > 0:
+                print(f" total travel time:\t\t {s.total_travel_time:.1f} s")
                 print(f" average travel time of trips:\t {s.average_travel_time:.1f} s")
                 print(f" average delay of trips:\t {s.average_delay:.1f} s")
                 print(f" delay ratio:\t\t\t {s.average_delay/s.average_travel_time:.3f}")
@@ -2006,9 +2008,9 @@ class Analyzer:
         """
         s.link_analysis_coarse()
 
-        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time", "length"]]
+        out = [["link", "start_node", "end_node", "traffic_volume", "vehicles_remain", "free_travel_time", "average_travel_time", "stddiv_travel_time", "delay_ratio", "length"]]
         for l in s.W.LINKS:
-            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l], l.length])
+            out.append([l.name, l.start_node.name, l.end_node.name, s.linkc_volume[l], s.linkc_remain[l], s.linkc_tt_free[l], s.linkc_tt_ave[l], s.linkc_tt_std[l], s.linkc_tt_ave[l]/s.linkc_tt_free[l], l.length])
         s.df_linkc = pd.DataFrame(out[1:], columns=out[0])
         return s.df_linkc
 

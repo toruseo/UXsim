@@ -9,6 +9,7 @@ from scipy.sparse.csgraph import dijkstra
 import tqdm
 import random
 from collections import defaultdict
+import warnings
 
 def generate_grid_network(W, imax, jmax, **kwargs):
     """
@@ -418,4 +419,81 @@ def construct_time_space_network(W, dt=None, from_origin_only=True):
     #         if target[1] == "end":
     #             print(f"Shortest path from {source[0]} to {target[0]} on t = {source[1]}: cost = {costs[source][target]}: {paths[source][target]}")
 
+
+
+def estimate_congestion_externality_link(W, link, t):
+    """
+    Estimate externality caused by a hypothetical vehicle traveling the link in the world. Subfunction for `estimate_congestion_externality_route`.
+
+    Parameters
+    ----------
+    W : World
+        The World object.
+    link : str | Link
+        Link object or link name.
+    t : float
+        The departure time of the hypothetical vehicle.
+    """
+    try:
+        link = W.get_link(link)
+        ts = int(t/W.DELTAT)
+
+        #同じ待ち行列で自分より後ろで待っている車両台数の算出
+        ts_end = ts
+        for i in range(ts, len(link.traveltime_actual), 1):
+            if link.traveltime_actual[i] > link.length/link.free_flow_speed*1.01 and link.cum_arrival[i+int(link.traveltime_actual[i]/W.DELTAT)]-link.cum_departure[i+int(link.traveltime_actual[i]/W.DELTAT)] > 0:
+            #if link.traveltime_actual[i] > link.length/link.free_flow_speed*1.01:
+                ts_end = i
+            else:
+                break
+        
+        veh_count = link.cum_arrival[ts_end]-link.cum_arrival[ts]
+
+        #局所的容量の算出
+        #TODO:微妙に系統的にずれる
+        #TODO:スピルオーバー時の除外 
+        #TODO:信号待ちの一台目のときに破綻してしまう．頑健で賢い方法あるか？信号，このリンクの容量制約，下流側リンク・ノード容量制約を全部考えられるもの
+        ts_out = int(ts+int(link.traveltime_actual[ts]/W.DELTAT))+1
+        ts_out_leader = ts_out
+        for i in range(ts_out, 0, -1):
+            if link.cum_departure[i] < link.cum_departure[ts_out]:
+                ts_out_leader = i
+                break
+
+        headway_consumed = (ts_out-ts_out_leader)*W.DELTAT 
+
+        ext = headway_consumed*veh_count
+        
+        return ext
+    
+    except Exception as e:
+        #細かいインデックスエラーなどを一時的に回避 TODO: fix
+
+        warnings.warn(f"Error at `estimate_congestion_externality_link`: {e}", UserWarning)
+
+        return 0
+
+def estimate_congestion_externality_route(W, route, t):
+    """
+    Estimate externality caused by a hypothetical vehicle traveling the route in the world. 
+    
+    Specifically, it estimates the total travel time that would be achieved if the vehicle did not exist and then calculates the difference. This estimation is based on a simple queuing model for each link of the route that the vehicle passes through. Does not fully capture queue spilovers.
+
+    Parameters
+    ----------
+    W : World
+        The World object.  
+    route : Route
+        Route object.
+    t : float
+        The departure time of the hypothetical vehicle.
+    """
+
+    tts = route.actual_travel_time(t, return_details=True)[1]
+    exts = 0
+    for i,link in enumerate(route):
+        exts += estimate_congestion_externality_link(W, link, t)
+        t += tts[i]
+    
+    return exts
 

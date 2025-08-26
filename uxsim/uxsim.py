@@ -225,6 +225,7 @@ class Node:
                             assert veh.leader.lane == veh.lane
 
                         outlink.vehicles.append(veh)
+                        outlink.vehicles_enter_log[s.W.T*s.W.DELTAT] = veh
 
                         outlink.cum_arrival[-1] += s.W.DELTAN
                         veh.link_arrival_time = s.W.T*s.W.DELTAT
@@ -295,6 +296,7 @@ class Node:
 
                 #リンク間遷移実行
                 inlink.vehicles.popleft()
+                outlink.vehicles_enter_log[s.W.T*s.W.DELTAT] = veh
                 veh.link = outlink
                 veh.x = 0
 
@@ -533,6 +535,9 @@ class Link:
 
         #リンク内車両一覧
         s.vehicles = deque()
+
+        #流入した車両一覧．t: Vehicle
+        s.vehicles_enter_log = {}
 
         #旅行時間
         s.traveltime_instant = []
@@ -2305,7 +2310,7 @@ class World:
             else:
                 if node.name in W.NODES_NAME_DICT:
                     return W.NODES_NAME_DICT[node.name]
-        elif type(node) is str:
+        elif type(node) is str or type(node) is np.str_:
             if node in W.NODES_NAME_DICT:
                 return W.NODES_NAME_DICT[node]
         raise Exception(f"'{node}' is not Node in this World")
@@ -2333,7 +2338,7 @@ class World:
             else:
                 if link.name in W.LINKS_NAME_DICT:
                     return W.LINKS_NAME_DICT[link.name]
-        elif type(link) is str:
+        elif type(link) is str or type(link) is np.str_:
             if link in W.LINKS_NAME_DICT:
                 return W.LINKS_NAME_DICT[link]
         raise Exception(f"'{link}' is not Link in this World")
