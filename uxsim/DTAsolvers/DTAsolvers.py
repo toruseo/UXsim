@@ -1018,8 +1018,8 @@ class SolverDSO_ALNS:
         if initial_solution_World == None:
             W = s.func_World()
             W.exec_simulation()
-            if print_progress:
-                print(W.analyzer.basic_to_pandas())
+            #if print_progress:
+            #    print(W.analyzer.basic_to_pandas())
         else:
             W = initial_solution_World
             dict_od_to_routes = W.dict_od_to_routes
@@ -1168,6 +1168,8 @@ class SolverDSO_ALNS:
         print("DSO summary:")
         print(f" total travel time: initial {s.ttts[0]:.1f} -> last {s.ttts_best[-1]:.1f}")
         print(f" computation time: {s.end_time - s.start_time:.1f} seconds")
+
+        return s.W_sol
     
     def print_solution_process(s, full=False):
         df = s.run.to_dataframe()
@@ -1554,7 +1556,7 @@ class SolverDSO_ALNS:
 #             dest_ = "any"
 #         plt.title(f"orig: {orig_}, dest: {dest_}")
 #         plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, 
-#                 fmt='bx', ecolor="#aaaaff", capsize=0, label="travel time (mean $\pm$ std)")
+#                 fmt='bx', ecolor="#aaaaff", capsize=0, label="travel time (mean $pm$ std)")
 #         plt.xlabel("departure time of vehicle")
 #         plt.ylabel("travel time")
 #         plt.legend()

@@ -15,6 +15,8 @@ import numpy as np
 from pprint import pprint
 import time
 
+from ..Utilities import estimate_congestion_externality_route
+
 # -------------------------
 # ログ構造体
 # -------------------------
@@ -466,23 +468,81 @@ def destroy_congested_link(state: ALNSState, base: Sequence[Any]) -> Tuple[List[
         xx[i] = None
     return removed, xx
 
+def destroy_reducable(state: ALNSState, base: Sequence[Any]) -> Tuple[List[int], List[Any]]:
+    """コストを減らせそうな車両を選択
+        
+    Parameters
+    ----------
+    state : ALNSState
+        ALNS状態
+    base : Sequence[Any]
+        基本となる解
+    
+    Returns
+    -------
+    Tuple[List[int], List[Any]]
+        (削除されたインデックス, 部分解) のタプル
+        部分解の削除位置はNoneに設定される
+    """
+    n = len(base)
+
+    removed = []
+
+    W = state.additional_info.get("W")
+    veh_keys = list(W.VEHICLES.keys())
+    state.rng.shuffle(veh_keys)
+    
+    k = state.rng.randint(state.k_min, min(state.k_cur, n))
+    for i in veh_keys:
+        
+        veh = W.VEHICLES[i]
+        t = veh.departure_time_in_second
+        o, d = veh.orig.name, veh.dest.name
+
+        route = veh.traveled_route()[0]
+        ext = estimate_congestion_externality_route(W, route, t)
+        private_cost = route.actual_travel_time(t)
+        cost_current = private_cost+ext
+
+        flag_reducable = False        
+        for v in state.domains[veh.id]:
+            route = W.defRoute(W.dict_od_to_routes[o, d][v])
+            ext = estimate_congestion_externality_route(W, route, t)
+            private_cost = route.actual_travel_time(t)
+            cost = private_cost+ext
+            
+            if cost < cost_current:
+                flag_reducable = True
+                break
+        
+        if flag_reducable:
+            removed.append(veh.id)
+        if len(removed) >= k:
+            break
+
+    xx = _copy_vec(base)
+    for i in removed:
+        xx[i] = None
+    return removed, xx
 
 # 破壊オペレータ一覧
 _DESTROY_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any]], Tuple[List[int], List[Any]]]] = {
     "random": destroy_random,
     "segment": destroy_segment,
-    "early_departure": destroy_early_departure,
-    "late_departure": destroy_late_departure,
-    "congested_link": destroy_congested_link,
+    "early_dep": destroy_early_departure,
+    "late_dep": destroy_late_departure,
+    "congest_link": destroy_congested_link,
+    "reducable": destroy_reducable,
 }
 
 # 破壊オペレータの初期重み（選択確率に比例）
 _DESTROY_INITIAL_WEIGHTS: Dict[str, float] = {
     "random": 1.0,
     "segment": 1.0,
-    "early_departure": 10.0,
-    "late_departure": 0.1,
-    "congested_link": 1.0,
+    "early_dep": 10.0,
+    "late_dep": 0.1,
+    "congest_link": 1.0,
+    "reducable": 1.0,
 }
 
 # -------------------------
@@ -538,8 +598,8 @@ def _repair_random(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequenc
         x[i] = _rng_choice(rng, choices)
     return x, removed[:]
 
-def _repair_greedy(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
-    """貪欲法で修復.
+def _repair_minimum_cost(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
+    """各車両の総コストに基づく貪欲法で修復.
     
     各位置で最も良い値を選択。
     
@@ -559,17 +619,27 @@ def _repair_greedy(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequenc
     Tuple[List[Any], List[int]]
         (修復された解, 変更されたインデックス) のタプル
     """
+    W = state.additional_info.get("W")
+    veh_keys = list(W.VEHICLES.keys())
+    
     x = _copy_vec(base_cur)
     changed = []
+    
     for i in removed:
-        best_val = x[i]
-        best_obj = float("inf")
         orig = x[i]
+        veh = W.VEHICLES[veh_keys[i]]
+        t = veh.departure_time_in_second
+        o, d = veh.orig.name, veh.dest.name
+        cost_min = float("inf")
         for v in state.domains[i]:
             x[i] = v
-            o = _eval_internal(state, x)
-            if o < best_obj:
-                best_obj = o
+            route = W.defRoute(W.dict_od_to_routes[o, d][v])
+            ext = estimate_congestion_externality_route(W, route, t)
+            private_cost = route.actual_travel_time(t)
+            cost = private_cost+ext
+            
+            if cost < cost_min:
+                cost_min = cost
                 best_val = v
         x[i] = best_val
         if x[i] != orig:
@@ -580,13 +650,13 @@ def _repair_greedy(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequenc
 # 修復オペレータ一覧
 _REPAIR_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any], Sequence[Any], List[int]], Tuple[List[Any], List[int]]]] = {
     "random": _repair_random,
-    # "greedy": _repair_greedy,
+    "min_cost": _repair_minimum_cost,
 }
 
 # 修復オペレータの初期重み（選択確率に比例）
 _REPAIR_INITIAL_WEIGHTS: Dict[str, float] = {
     "random": 1.0,
-    # "greedy": 1.0,
+    "min_cost": 1.0,
 }
 
 # -------------------------
@@ -953,7 +1023,7 @@ def auto_step(state: ALNSState) -> StepLog:
     delta = cand - state.cur
     T = _temperature(state, it_next=state.it + 1)
 
-    accept = (delta <= 0) or (random.random() < math.exp(-delta / max(T, 1e-12)))
+    accept = ((delta <= 0) or (random.random() < math.exp(-delta / max(T, 1e-12)))) and len(changed_idx) > 0
     if accept:
         state.x_cur, state.cur = x_cand, cand
 
