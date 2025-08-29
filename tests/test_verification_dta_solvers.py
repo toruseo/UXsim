@@ -6,6 +6,9 @@ import pytest
 import uxsim
 from uxsim.DTAsolvers import *
 
+import matplotlib
+matplotlib.use('Agg')
+
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     if check == 0 and abs_tol == 0:
         abs_tol = 0.1

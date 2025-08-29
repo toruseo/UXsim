@@ -109,6 +109,9 @@ def test_osm_import():
     assert equal_tolerance(len(W.VEHICLES), 5000*4/5)
 
 def test_readme():
+    import matplotlib
+    matplotlib.use('Agg')
+    
     import re, requests
     url = "https://raw.githubusercontent.com/toruseo/UXsim/main/README.md"
 
