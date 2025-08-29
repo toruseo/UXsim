@@ -155,6 +155,7 @@ class SolverDUE:
             total_t_gap = 0
             potential_n_swap = 0
             for key,veh in W.VEHICLES.items():
+                flag_swap = random.random() < swap_prob
                 o = veh.orig.name
                 d = veh.dest.name
                 r, ts = veh.traveled_route()
@@ -169,15 +170,22 @@ class SolverDUE:
                 flag_route_changed = False
                 route_changed = None
                 t_gap = 0
+
+                cost_current = r.actual_travel_time(ts[0])
                 
+                potential_n_swap_updated = potential_n_swap
                 for alt_route in route_set[o,d]:
-                    if alt_route.actual_travel_time(ts[0]) < r.actual_travel_time(ts[0]):
-                        if flag_route_changed == False or (alt_route.actual_travel_time(ts[0]) < route_changed.actual_travel_time(ts[0])):
-                            t_gap = r.actual_travel_time(ts[0]) - alt_route.actual_travel_time(ts[0])
-                            potential_n_swap += W.DELTAN #there may be double count; but not critical issue
-                            if random.random() < swap_prob:
+                    cost_alt = alt_route.actual_travel_time(ts[0])
+                    if cost_alt < cost_current:
+                        if flag_route_changed == False or (cost_alt < cost_current):
+                            t_gap = cost_current - cost_alt
+                            potential_n_swap_updated = potential_n_swap + W.DELTAN
+                            if flag_swap:
                                 flag_route_changed = True
                                 route_changed = alt_route
+                                cost_current = cost_alt
+                                
+                potential_n_swap = potential_n_swap_updated
                 
                 total_t_gap += t_gap
                 routes_specified[key] = r
