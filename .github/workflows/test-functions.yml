@@ -21,7 +21,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install .
     - name: Install pytest other dependencies
-      run: pip install pytest pytest-rerunfailures pytest-xdist setuptools osmnx requests
+      run: |
+        # Install testing dependencies with compatible versions to avoid serialization issues
+        pip install -r test-requirements.txt setuptools osmnx requests
     - name: Run tests with pytest
       run: pytest -n auto tests/test_other_functions.py --durations=0 -v
 
