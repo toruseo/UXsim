@@ -23,7 +23,7 @@ jobs:
     - name: Install pytest other dependencies
       run: |
         # Install testing dependencies with compatible versions to avoid serialization issues
-        pip install -r test-requirements.txt setuptools osmnx requests
+        pip install "pytest>=7.4.0,<8.0.0" "pytest-xdist>=3.3.0,<4.0.0" "pytest-rerunfailures>=11.1,<12.0" setuptools osmnx requests
     - name: Run tests with pytest
       run: pytest -n auto tests/test_other_functions.py --durations=0 -v
 
