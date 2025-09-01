@@ -24,6 +24,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install uxsim
     - name: Install pytest other dependencies
-      run: pip install pytest pytest-rerunfailures pytest-xdist setuptools
+      run: |
+        # Install testing dependencies with compatible versions to avoid serialization issues  
+        pip install -r test-requirements.txt setuptools
     - name: Run tests with pytest
       run: pytest -n auto tests/test_verification_sioux_falls.py --durations=0 -v
