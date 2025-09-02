@@ -128,19 +128,24 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+
+out*/
 out/
 demos_and_examples/out/
 demos_and_examples/out*/
 cache/
 _private_files/*
+_private_files*
 dev*.ipynb
 _*.ps1
 p*_*.py
 *.code-workspace
 .VSCodeCounter/*
 .vscode/*
-demos_and_examples/uxsim/
-*.lnk
+*.prof
+demos_and_examples/uxsim/*
+/*.pkl
+_bench*
 
 *.prof
 

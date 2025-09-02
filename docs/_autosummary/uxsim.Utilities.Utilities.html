@@ -5,31 +5,31 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="uxsim.scenario_reader_writer" href="uxsim.scenario_reader_writer.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
         <title>uxsim.Utilities.Utilities - UXsim: Traffic Simulation in Python v1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -198,7 +198,6 @@ gtag('config', 'UA-111714220-1');
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  
   <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
@@ -305,6 +304,12 @@ This contains functions that are not essential for simulation but useful to spec
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t" title="uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes_on_t</span></code></a>(W, source, ...)</p></td>
 <td><p>Enumerate the k shortest routes between two nodes in a network.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.estimate_congestion_externality_link" title="uxsim.Utilities.Utilities.estimate_congestion_externality_link"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_congestion_externality_link</span></code></a>(W, link, t)</p></td>
+<td><p>Estimate externality caused by a hypothetical vehicle traveling the link in the world.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.estimate_congestion_externality_route" title="uxsim.Utilities.Utilities.estimate_congestion_externality_route"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_congestion_externality_route</span></code></a>(W, ...)</p></td>
+<td><p>Estimate externality caused by a hypothetical vehicle traveling the route in the world.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network" title="uxsim.Utilities.Utilities.generate_grid_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_grid_network</span></code></a>(W, imax, jmax, **kwargs)</p></td>
 <td><p>Generate a grid network with imax x jmax nodes.</p></td>
 </tr>
@@ -407,6 +412,37 @@ This contains functions that are not essential for simulation but useful to spec
 <li><p><strong>costs</strong> (<em>list</em>) – A list of costs of the routes if return_cost is True.</p></li>
 </ul>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.Utilities.Utilities.estimate_congestion_externality_link">
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">estimate_congestion_externality_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#estimate_congestion_externality_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.estimate_congestion_externality_link" title="Link to this definition">¶</a></dt>
+<dd><p>Estimate externality caused by a hypothetical vehicle traveling the link in the world. Subfunction for <cite>estimate_congestion_externality_route</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>link</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Link.html#uxsim.Link" title="uxsim.Link"><em>Link</em></a>) – Link object or link name.</p></li>
+<li><p><strong>t</strong> (<em>float</em>) – The departure time of the hypothetical vehicle.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="uxsim.Utilities.Utilities.estimate_congestion_externality_route">
+<span class="sig-prename descclassname"><span class="pre">uxsim.Utilities.Utilities.</span></span><span class="sig-name descname"><span class="pre">estimate_congestion_externality_route</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/Utilities/Utilities.html#estimate_congestion_externality_route"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Utilities.Utilities.estimate_congestion_externality_route" title="Link to this definition">¶</a></dt>
+<dd><p>Estimate externality caused by a hypothetical vehicle traveling the route in the world.</p>
+<p>Specifically, it estimates the total travel time that would be achieved if the vehicle did not exist and then calculates the difference. This estimation is based on a simple queuing model for each link of the route that the vehicle passes through. Does not fully capture queue spilovers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>route</strong> (<a class="reference internal" href="uxsim.Route.html#uxsim.Route" title="uxsim.Route"><em>Route</em></a>) – Route object.</p></li>
+<li><p><strong>t</strong> (<em>float</em>) – The departure time of the hypothetical vehicle.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -547,6 +583,8 @@ Returns a tuple of the abode distances and the actual time of computing shortest
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_random_routes"><code class="docutils literal notranslate"><span class="pre">enumerate_k_random_routes()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes"><code class="docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t"><code class="docutils literal notranslate"><span class="pre">enumerate_k_shortest_routes_on_t()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Utilities.Utilities.estimate_congestion_externality_link"><code class="docutils literal notranslate"><span class="pre">estimate_congestion_externality_link()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Utilities.Utilities.estimate_congestion_externality_route"><code class="docutils literal notranslate"><span class="pre">estimate_congestion_externality_route()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.generate_grid_network"><code class="docutils literal notranslate"><span class="pre">generate_grid_network()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes"><code class="docutils literal notranslate"><span class="pre">get_shortest_path_distance_between_all_nodes()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes"><code class="docutils literal notranslate"><span class="pre">get_shortest_path_instantaneous_travel_time_between_all_nodes()</span></code></a></li>
@@ -563,10 +601,9 @@ Returns a tuple of the abode distances and the actual time of computing shortest
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5cb08e4e"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

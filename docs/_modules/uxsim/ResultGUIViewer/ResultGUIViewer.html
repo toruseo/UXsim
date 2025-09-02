@@ -4,31 +4,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
         <title>uxsim.ResultGUIViewer.ResultGUIViewer - UXsim: Traffic Simulation in Python v1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -197,7 +197,6 @@ gtag('config', 'UA-111714220-1');
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  
   <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
@@ -293,18 +292,18 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &gt;&gt;&gt; launch_World_viewer(W)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colormaps</span>
-<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QGraphicsView</span><span class="p">,</span> <span class="n">QGraphicsScene</span><span class="p">,</span> <span class="n">QGraphicsItem</span><span class="p">,</span> <span class="n">QMenu</span><span class="p">,</span> <span class="n">QSlider</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QInputDialog</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="p">,</span> <span class="n">QTableView</span><span class="p">,</span> <span class="n">QDialog</span><span class="p">,</span> <span class="n">QFileDialog</span>
-<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="n">QPen</span><span class="p">,</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QPainter</span><span class="p">,</span> <span class="n">QPainterPath</span>
-<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QPointF</span><span class="p">,</span> <span class="n">QRectF</span><span class="p">,</span> <span class="n">QTimer</span><span class="p">,</span> <span class="n">QAbstractTableModel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">colormaps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QGraphicsView</span><span class="p">,</span> <span class="n">QGraphicsScene</span><span class="p">,</span> <span class="n">QGraphicsItem</span><span class="p">,</span> <span class="n">QMenu</span><span class="p">,</span> <span class="n">QSlider</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QInputDialog</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="p">,</span> <span class="n">QTableView</span><span class="p">,</span> <span class="n">QDialog</span><span class="p">,</span> <span class="n">QFileDialog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtGui</span><span class="w"> </span><span class="kn">import</span> <span class="n">QPen</span><span class="p">,</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QPainter</span><span class="p">,</span> <span class="n">QPainterPath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QPointF</span><span class="p">,</span> <span class="n">QRectF</span><span class="p">,</span> <span class="n">QTimer</span><span class="p">,</span> <span class="n">QAbstractTableModel</span>
 
 
 <div class="viewcode-block" id="EdgeItem">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.EdgeItem">[docs]</a>
-<span class="k">class</span> <span class="nc">EdgeItem</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">density_list</span><span class="p">,</span> <span class="n">Link</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EdgeItem</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">density_list</span><span class="p">,</span> <span class="n">Link</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_node</span> <span class="o">=</span> <span class="n">start_node</span>
@@ -319,13 +318,13 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="EdgeItem.boundingRect">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.EdgeItem.boundingRect">[docs]</a>
-    <span class="k">def</span> <span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">()</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="EdgeItem.shape">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.EdgeItem.shape">[docs]</a>
-    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">QPainterPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
         <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
         <span class="n">dy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
@@ -346,7 +345,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="EdgeItem.paint">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.EdgeItem.paint">[docs]</a>
-    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">()</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">length</span><span class="p">()</span>
         <span class="n">num_segments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">density_list</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -400,7 +399,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="EdgeItem.contextMenuEvent">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.EdgeItem.contextMenuEvent">[docs]</a>
-    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="n">menu</span> <span class="o">=</span> <span class="n">QMenu</span><span class="p">()</span>
         <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
@@ -416,18 +415,18 @@ gtag('config', 'UA-111714220-1');
             <span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">cumulative_curves</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Link</span><span class="p">)</span></div>
 
             
-    <span class="k">def</span> <span class="nf">set_curve_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_curve_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">curve_direction</span> <span class="o">=</span> <span class="n">direction</span>
 
-    <span class="k">def</span> <span class="nf">set_show_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_show_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_name</span> <span class="o">=</span> <span class="n">show_name</span></div>
 
 
 
 <div class="viewcode-block" id="NodeItem">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.NodeItem">[docs]</a>
-<span class="k">class</span> <span class="nc">NodeItem</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NodeItem</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -437,13 +436,13 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="NodeItem.boundingRect">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.NodeItem.boundingRect">[docs]</a>
-    <span class="k">def</span> <span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">QRectF</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NodeItem.paint">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.NodeItem.paint">[docs]</a>
-    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">white</span><span class="p">)</span>
         <span class="n">painter</span><span class="o">.</span><span class="n">drawEllipse</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_name</span><span class="p">:</span>
@@ -451,28 +450,28 @@ gtag('config', 'UA-111714220-1');
             <span class="n">painter</span><span class="o">.</span><span class="n">drawText</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
             
-    <span class="k">def</span> <span class="nf">set_show_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_show_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_name</span> <span class="o">=</span> <span class="n">show_name</span></div>
 
 
 
 <div class="viewcode-block" id="VehicleItem">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.VehicleItem">[docs]</a>
-<span class="k">class</span> <span class="nc">VehicleItem</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VehicleItem</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VehicleItem.boundingRect">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.VehicleItem.boundingRect">[docs]</a>
-    <span class="k">def</span> <span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">QRectF</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VehicleItem.paint">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.VehicleItem.paint">[docs]</a>
-    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">red</span><span class="p">)</span>
         <span class="n">painter</span><span class="o">.</span><span class="n">drawEllipse</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span></div>
 </div>
@@ -481,8 +480,8 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="GraphWidget">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.GraphWidget">[docs]</a>
-<span class="k">class</span> <span class="nc">GraphWidget</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">vehicle_list</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GraphWidget</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">vehicle_list</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setRenderHint</span><span class="p">(</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setScene</span><span class="p">(</span><span class="n">QGraphicsScene</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
@@ -510,7 +509,7 @@ gtag('config', 'UA-111714220-1');
         
         <span class="bp">self</span><span class="o">.</span><span class="n">set_vehice_items</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">set_vehice_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_vehice_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_items</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_list</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">edge_name</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_list</span><span class="p">:</span>
@@ -522,19 +521,19 @@ gtag('config', 'UA-111714220-1');
                     <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">vehicle</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vehicle</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">find_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">NodeItem</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">item</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">find_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">EdgeItem</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">item</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">set_t</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_t</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
             <span class="n">edge</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_vehicles</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_list</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
@@ -552,7 +551,7 @@ gtag('config', 'UA-111714220-1');
         
 <div class="viewcode-block" id="GraphWidget.wheelEvent">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.GraphWidget.wheelEvent">[docs]</a>
-    <span class="k">def</span> <span class="nf">wheelEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wheelEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="n">zoom_factor</span> <span class="o">=</span> <span class="mf">1.15</span>
         <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">angleDelta</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">zoom_factor</span><span class="p">,</span> <span class="n">zoom_factor</span><span class="p">)</span>
@@ -560,18 +559,18 @@ gtag('config', 'UA-111714220-1');
             <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">zoom_factor</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">zoom_factor</span><span class="p">)</span></div>
 
         
-    <span class="k">def</span> <span class="nf">set_curve_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_curve_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
             <span class="n">edge</span><span class="o">.</span><span class="n">set_curve_direction</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">set_show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_names</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_names</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="n">NodeItem</span><span class="p">,</span> <span class="n">EdgeItem</span><span class="p">)):</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">set_show_name</span><span class="p">(</span><span class="n">show_names</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">set_show_vehicles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_vehicles</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_show_vehicles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_vehicles</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_vehicles</span> <span class="o">=</span> <span class="n">show_vehicles</span>
         <span class="k">for</span> <span class="n">vehicle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_items</span><span class="p">:</span>
             <span class="n">vehicle</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">show_vehicles</span><span class="p">)</span>
@@ -580,8 +579,8 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="MainWindow">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.MainWindow">[docs]</a>
-<span class="k">class</span> <span class="nc">MainWindow</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">vehicle_list</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MainWindow</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">vehicle_list</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;UXsim result viewer&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
@@ -679,13 +678,13 @@ gtag('config', 'UA-111714220-1');
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_graph</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">show_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="n">viewer</span> <span class="o">=</span> <span class="n">DataFrameViewer</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">save_world</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_filename</span><span class="o">=</span><span class="s1">&#39;untitled.pkl_dill&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_world</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_filename</span><span class="o">=</span><span class="s1">&#39;untitled.pkl_dill&#39;</span><span class="p">):</span>
         <span class="c1">#TODO: do something about &quot;maximum recursion depth exceeded in comparison&quot; error</span>
-        <span class="kn">import</span> <span class="nn">dill</span> <span class="k">as</span> <span class="nn">pickle</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">dill</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pickle</span>
         <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Save the world&#39;</span><span class="p">,</span> <span class="n">default_filename</span><span class="p">,</span> <span class="s1">&#39;Pickle (by Dill package) Files (*.pkl_dill);;All Files (*)&#39;</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
@@ -696,44 +695,44 @@ gtag('config', 'UA-111714220-1');
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error saving object: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">update_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_slider</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
         <span class="n">edie_dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Link</span><span class="o">.</span><span class="n">edie_dt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">set_t</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="n">edie_dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmax</span><span class="o">*</span><span class="n">edie_dt</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">play_animation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">play_animation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">play_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">stop_animation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_animation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">playing</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">play_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">update_t</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_t</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_slider</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
         <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmax</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         
-    <span class="k">def</span> <span class="nf">set_curve_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_curve_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">curve_direction</span> <span class="o">=</span> <span class="n">direction</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">set_curve_direction</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
         
-    <span class="k">def</span> <span class="nf">toggle_show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">toggle_show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_names</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">set_show_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_names</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">toggle_show_vehicles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">toggle_show_vehicles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_vehicles</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_vehicles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">set_show_vehicles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_vehicles</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">show_vehicle_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_vehicle_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">vehicle_id</span><span class="p">,</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">QInputDialog</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Highlight Vehicle&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;b&gt;Enter Vehicle ID&lt;/b&gt;&lt;br&gt;Note that fast vehicles will be plotted as multiple dots in the animation.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ok</span> <span class="ow">and</span> <span class="n">vehicle_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_id</span> <span class="o">=</span> <span class="n">vehicle_id</span>
@@ -752,26 +751,26 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="PandasModel">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.PandasModel">[docs]</a>
-<span class="k">class</span> <span class="nc">PandasModel</span><span class="p">(</span><span class="n">QAbstractTableModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PandasModel</span><span class="p">(</span><span class="n">QAbstractTableModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PandasModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
 
 <div class="viewcode-block" id="PandasModel.rowCount">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.PandasModel.rowCount">[docs]</a>
-    <span class="k">def</span> <span class="nf">rowCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rowCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="PandasModel.columnCount">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.PandasModel.columnCount">[docs]</a>
-    <span class="k">def</span> <span class="nf">columnCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">columnCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="PandasModel.data">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.PandasModel.data">[docs]</a>
-    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">()</span> <span class="ow">and</span> <span class="n">role</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">(),</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()])</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -779,7 +778,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="PandasModel.headerData">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.PandasModel.headerData">[docs]</a>
-    <span class="k">def</span> <span class="nf">headerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">headerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">section</span><span class="p">])</span>
@@ -792,8 +791,8 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="DataFrameViewer">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.DataFrameViewer">[docs]</a>
-<span class="k">class</span> <span class="nc">DataFrameViewer</span><span class="p">(</span><span class="n">QDialog</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataFrameViewer</span><span class="p">(</span><span class="n">QDialog</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DataFrameViewer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
@@ -808,7 +807,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="launch_World_viewer">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html#uxsim.ResultGUIViewer.ResultGUIViewer.launch_World_viewer">[docs]</a>
-<span class="k">def</span> <span class="nf">launch_World_viewer</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_app_window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">launch_World_viewer</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_app_window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Launch the interactive viewer for the simulation result of the given World object.</span>
 
@@ -896,10 +895,9 @@ gtag('config', 'UA-111714220-1');
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5cb08e4e"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

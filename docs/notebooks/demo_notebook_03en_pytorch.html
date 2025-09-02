@@ -5,32 +5,32 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Network data import from OpenStreetMap" href="demo_notebook_04en_OpenStreetMap.html" /><link rel="prev" title="Advanced example" href="demo_notebook_02en.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
         <title>Signal control by PyTorch (DQN) - UXsim: Traffic Simulation in Python v1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -199,7 +199,6 @@ gtag('config', 'UA-111714220-1');
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  
   <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
@@ -301,10 +300,10 @@ gtag('config', 'UA-111714220-1');
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">uxsim</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 </pre></div>
 </div>
 </div>
@@ -475,7 +474,7 @@ results:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out/anim_network1.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
 </pre></div>
@@ -501,27 +500,27 @@ results:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;KMP_DUPLICATE_LIB_OK&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;True&#39;</span>
 
-<span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">matplotlib</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">deque</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">deque</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">count</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
-<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">optim</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 
-<span class="kn">from</span> <span class="nn">uxsim</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uxsim</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 </pre></div>
 </div>
 </div>
@@ -535,8 +534,8 @@ results:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TrafficSim</span><span class="p">(</span><span class="n">gym</span><span class="o">.</span><span class="n">Env</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TrafficSim</span><span class="p">(</span><span class="n">gym</span><span class="o">.</span><span class="n">Env</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        traffic scenario: 4 signalized intersections as shown below:</span>
 <span class="sd">                N1  N2</span>
@@ -569,7 +568,7 @@ results:
 
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        reset the env</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -630,7 +629,7 @@ results:
 
         <span class="k">return</span> <span class="n">observation</span><span class="p">,</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">comp_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">comp_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        compute the current state</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -639,10 +638,10 @@ results:
             <span class="n">vehicles_per_links</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">num_vehicles_queue</span> <span class="c1">#l.num_vehicles_queue: the number of vehicles in queue in link l</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">vehicles_per_links</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">comp_n_veh_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">comp_n_veh_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comp_state</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_index</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        proceed env by 1 step = `operation_timestep_width` seconds</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -702,22 +701,22 @@ results:
 <span class="n">Transition</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Transition&#39;</span><span class="p">,</span>
                         <span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">,</span> <span class="s1">&#39;next_state&#39;</span><span class="p">,</span> <span class="s1">&#39;reward&#39;</span><span class="p">))</span>
 
-<span class="k">class</span> <span class="nc">ReplayMemory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capacity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReplayMemory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capacity</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([],</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">capacity</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save a transition&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Transition</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">DQN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_observations</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DQN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_observations</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DQN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">n_neurals</span> <span class="o">=</span> <span class="mi">64</span>
         <span class="n">n_layers</span> <span class="o">=</span> <span class="mi">3</span>
@@ -728,12 +727,12 @@ results:
         <span class="bp">self</span><span class="o">.</span><span class="n">layer_last</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">n_neurals</span><span class="p">,</span> <span class="n">n_actions</span><span class="p">)</span>
 
     <span class="c1"># Called with either one element to determine next action, or a batch during optimization. Returns tensor([[left0exp,right0exp]...]).</span>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_last</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">select_action</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">steps_done</span>
     <span class="n">sample</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
     <span class="n">eps_threshold</span> <span class="o">=</span> <span class="n">EPS_END</span> <span class="o">+</span> <span class="p">(</span><span class="n">EPS_START</span> <span class="o">-</span> <span class="n">EPS_END</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">steps_done</span> <span class="o">/</span> <span class="n">EPS_DECAY</span><span class="p">)</span>
@@ -745,7 +744,7 @@ results:
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()]],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">optimize_model</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">optimize_model</span><span class="p">():</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">memory</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">BATCH_SIZE</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="n">transitions</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
@@ -1350,7 +1349,7 @@ end anim
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;out/anim_network1.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span>
 </pre></div>
@@ -1517,11 +1516,10 @@ Wall time: 12min 54s
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5cb08e4e"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>

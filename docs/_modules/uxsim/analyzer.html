@@ -4,31 +4,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
         <title>uxsim.analyzer - UXsim: Traffic Simulation in Python v1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -197,7 +197,6 @@ gtag('config', 'UA-111714220-1');
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  
   <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -284,23 +283,23 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">This module is automatically loaded when you import the `uxsim` module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
-<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">csv</span><span class="o">,</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
-<span class="kn">from</span> <span class="nn">PIL.Image</span> <span class="kn">import</span> <span class="n">Resampling</span>
-<span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
-<span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">files</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse.csgraph</span> <span class="kn">import</span> <span class="n">floyd_warshall</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">csv</span><span class="o">,</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageFont</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL.Image</span><span class="w"> </span><span class="kn">import</span> <span class="n">Resampling</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse.csgraph</span><span class="w"> </span><span class="kn">import</span> <span class="n">floyd_warshall</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
-<span class="k">def</span> <span class="nf">load_font_data</span><span class="p">(</span><span class="n">font_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_font_data</span><span class="p">(</span><span class="n">font_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">font_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">font_resource</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;uxsim.files&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;HackGen-Regular.ttf&#39;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">font_resource</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -318,14 +317,14 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer">[docs]</a>
-<span class="k">class</span> <span class="nc">Analyzer</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for analyzing and visualizing a simulation result.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Analyzer.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">font_pillow</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_matplotlib</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">font_pillow</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_matplotlib</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create result analysis object.</span>
 
@@ -365,7 +364,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.basic_analysis">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.basic_analysis">[docs]</a>
-    <span class="k">def</span> <span class="nf">basic_analysis</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">basic_analysis</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Analyze basic stats.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -391,7 +390,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.od_analysis">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.od_analysis">[docs]</a>
-    <span class="k">def</span> <span class="nf">od_analysis</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">od_analysis</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -459,7 +458,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.link_analysis_coarse">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.link_analysis_coarse">[docs]</a>
-    <span class="k">def</span> <span class="nf">link_analysis_coarse</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">link_analysis_coarse</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Analyze link-level coarse stats: traffic volume, remaining vehicles, free-flow travel time, average travel time, its std.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -480,7 +479,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.compute_accurate_traj">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.compute_accurate_traj">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_accurate_traj</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_accurate_traj</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories. It is assumed that vehicles are in free-flow travel at the end of the link.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -526,7 +525,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.compute_edie_state">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.compute_edie_state">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_edie_state</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_edie_state</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute Edie&#39;s traffic state for each link.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -614,7 +613,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.print_simple_stats">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.print_simple_stats">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">print_simple_stats</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">force_print</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_simple_stats</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">force_print</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prints basic statistics of simulation result.</span>
 
@@ -628,6 +627,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot; number of completed trips:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_completed</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_all</span><span class="p">)</span>
         <span class="c1">#s.W.print(&quot; number of completed trips:\t&quot;, s.trip_completed, &quot;/&quot;, len(s.W.VEHICLES)*s.W.DELTAN)</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_completed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total travel time:</span><span class="se">\t\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">total_travel_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average travel time of trips:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average delay of trips:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; delay ratio:</span><span class="se">\t\t\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -639,6 +639,7 @@ gtag('config', 'UA-111714220-1');
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; number of completed trips:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_completed</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_all</span><span class="p">)</span>
             <span class="c1">#print(&quot; number of completed trips:\t&quot;, s.trip_completed, &quot;/&quot;, len(s.W.VEHICLES)*s.W.DELTAN)</span>
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">trip_completed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total travel time:</span><span class="se">\t\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">total_travel_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average travel time of trips:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average delay of trips:</span><span class="se">\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; delay ratio:</span><span class="se">\t\t\t</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">average_delay</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">average_travel_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -646,13 +647,13 @@ gtag('config', 'UA-111714220-1');
 
 
 
-    <span class="k">def</span> <span class="nf">comp_route_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">route</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">comp_route_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">route</span><span class="p">):</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="Analyzer.time_space_diagram_traj">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.time_space_diagram_traj">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">time_space_diagram_traj</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time_space_diagram_traj</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draws the time-space diagram of vehicle trajectories for vehicles on specified links.</span>
 
@@ -688,7 +689,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.time_space_diagram_density">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.time_space_diagram_density">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">time_space_diagram_density</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time_space_diagram_density</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draws the time-space diagram of traffic density on specified links.</span>
 
@@ -756,7 +757,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.time_space_diagram_traj_links">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.time_space_diagram_traj_links">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">time_space_diagram_traj_links</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">linkslist</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time_space_diagram_traj_links</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">linkslist</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</span>
 
@@ -830,11 +831,12 @@ gtag('config', 'UA-111714220-1');
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
+            
 
 <div class="viewcode-block" id="Analyzer.cumulative_curves">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.cumulative_curves">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">cumulative_curves</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">)):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cumulative_curves</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">)):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the cumulative curves and travel times for the provided links.</span>
 
@@ -898,7 +900,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.network">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.network">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;density_speed&quot;</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp_anim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_outside</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">network</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;density_speed&quot;</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp_anim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_outside</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualizes the entire transportation network and its current traffic conditions.</span>
 
@@ -1107,7 +1109,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.network_average">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.network_average">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">network_average</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_outside</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">network_average</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_outside</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualizes the average traffic conditions of the network.</span>
 <span class="sd">        This function generates a network visualization where links are colored based on congestion levels (travel time ratio) and sized according to traffic volume.</span>
@@ -1231,7 +1233,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.network_pillow">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.network_pillow">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">network_pillow</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;density_speed&quot;</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp_anim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">image_return</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">network_pillow</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;density_speed&quot;</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp_anim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">image_return</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualizes the entire transportation network and its current traffic conditions. Faster implementation using Pillow.</span>
 
@@ -1315,7 +1317,7 @@ gtag('config', 'UA-111714220-1');
         <span class="k">if</span> <span class="n">network_font_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="n">font_file_like</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">network_font_size</span><span class="p">))</span>
 
-        <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">flip</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y</span>
 
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
@@ -1452,7 +1454,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.show_simulation_progress">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.show_simulation_progress">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">show_simulation_progress</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_simulation_progress</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print simulation progress.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1472,7 +1474,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.network_anim">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.network_anim">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">network_anim</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;density_speed&quot;</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">network_anim</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;density_speed&quot;</span><span class="p">,</span> <span class="n">minwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates an animation of the entire transportation network and its traffic states over time.</span>
 
@@ -1544,7 +1546,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.network_fancy">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.network_fancy">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">network_fancy</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">speed_coef</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">network_fancy</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">sample_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">trace_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">speed_coef</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a visually appealing animation of vehicles&#39; trajectories across the entire transportation network over time.</span>
 
@@ -1583,7 +1585,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot; generating animation...&quot;</span><span class="p">)</span>
 
         <span class="c1"># ベジエ補間</span>
-        <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">make_interp_spline</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_interp_spline</span>
 
         <span class="c1">#{t: [&quot;xs&quot;:[], &quot;ys&quot;:[], &quot;v&quot;: v, &quot;c&quot;:c]}</span>
         <span class="n">draw_dict</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
@@ -1678,7 +1680,7 @@ gtag('config', 'UA-111714220-1');
             <span class="k">if</span> <span class="n">network_font_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">font</span> <span class="o">=</span> <span class="n">ImageFont</span><span class="o">.</span><span class="n">truetype</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">font_file_like</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">network_font_size</span><span class="p">))</span>
 
-            <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">flip</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y</span>
 
             <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
@@ -1731,7 +1733,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.compute_mfd">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.compute_mfd">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_mfd</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_mfd</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute network average flow and density for MFD.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1753,7 +1755,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.macroscopic_fundamental_diagram">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.macroscopic_fundamental_diagram">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">macroscopic_fundamental_diagram</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">kappa</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">qmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figtitle</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">macroscopic_fundamental_diagram</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">kappa</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">qmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figtitle</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.</span>
 
@@ -1804,7 +1806,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.plot_vehicle_log">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.plot_vehicle_log">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">plot_vehicle_log</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">vehname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_vehicle_log</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">vehname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the driving link and speed for a single vehicle.</span>
 
@@ -1851,7 +1853,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.plot_vehicles_log">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.plot_vehicles_log">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">plot_vehicles_log</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">vehnamelist</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_vehicles_log</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">vehnamelist</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the driving link and speed for a single vehicle.</span>
 
@@ -1892,7 +1894,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.vehicles_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.vehicles_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">vehicles_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vehicles_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the detailed vehicle travel logs and return as a pandas DataFrame.</span>
 
@@ -1940,7 +1942,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.log_vehicles_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.log_vehicles_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_vehicles_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_vehicles_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        same to `vehicles_to_pandas`, just for backward compatibility</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1949,7 +1951,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.vehicle_trip_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.vehicle_trip_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">vehicle_trip_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vehicle_trip_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the vehicle trip summary and return as a pandas DataFrame.</span>
 
@@ -1982,7 +1984,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.gps_like_log_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.gps_like_log_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">gps_like_log_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gps_like_log_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate GPS-like log (x and y in the coordinate system used for Node) of vehicles and return as a pandas DataFrame.</span>
 
@@ -2004,7 +2006,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.basic_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.basic_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">basic_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">basic_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Comutes the basic stats and return as a pandas DataFrame.</span>
 
@@ -2020,7 +2022,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.od_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.od_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">od_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">od_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the OD-specific stats and return as a pandas DataFrame.</span>
 
@@ -2041,7 +2043,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="Analyzer.areas2areas_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.areas2areas_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">areas2areas_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">areas</span><span class="p">,</span> <span class="n">area_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">areas2areas_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">areas</span><span class="p">,</span> <span class="n">area_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the area-wise OD-specific stats and return a pandas DataFrame. It analyzes travel stats between areas (set of nodes).</span>
 <span class="sd">        </span>
@@ -2155,7 +2157,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.area_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.area_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">area_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">areas</span><span class="p">,</span> <span class="n">area_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">border_include</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">area_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">areas</span><span class="p">,</span> <span class="n">area_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">border_include</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute traffic stats in area and return as pandas.DataFrame.</span>
 
@@ -2250,7 +2252,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.vehicle_groups_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.vehicle_groups_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">vehicle_groups_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">group_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">vehicle_groups_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">group_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the stats of vehicle group and return as a pandas DataFrame.</span>
 
@@ -2350,7 +2352,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.mfd_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.mfd_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">mfd_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mfd_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the MFD-like stats and return as a pandas DataFrame.</span>
 
@@ -2373,7 +2375,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.link_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.link_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">link_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">link_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the link-level analysis results to a pandas DataFrame.</span>
 
@@ -2383,16 +2385,16 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">link_analysis_coarse</span><span class="p">()</span>
 
-        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;start_node&quot;</span><span class="p">,</span> <span class="s2">&quot;end_node&quot;</span><span class="p">,</span> <span class="s2">&quot;traffic_volume&quot;</span><span class="p">,</span> <span class="s2">&quot;vehicles_remain&quot;</span><span class="p">,</span> <span class="s2">&quot;free_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;stddiv_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">]]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;start_node&quot;</span><span class="p">,</span> <span class="s2">&quot;end_node&quot;</span><span class="p">,</span> <span class="s2">&quot;traffic_volume&quot;</span><span class="p">,</span> <span class="s2">&quot;vehicles_remain&quot;</span><span class="p">,</span> <span class="s2">&quot;free_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;average_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;stddiv_travel_time&quot;</span><span class="p">,</span> <span class="s2">&quot;delay_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">]]</span>
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_volume</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_remain</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_free</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_ave</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_std</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="p">])</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">start_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">l</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_volume</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_remain</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_free</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_ave</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_std</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_ave</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">linkc_tt_free</span><span class="p">[</span><span class="n">l</span><span class="p">],</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="p">])</span>
         <span class="n">s</span><span class="o">.</span><span class="n">df_linkc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">columns</span><span class="o">=</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">df_linkc</span></div>
 
 
 <div class="viewcode-block" id="Analyzer.link_traffic_state_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.link_traffic_state_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">link_traffic_state_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">link_traffic_state_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the traffic states in links and return as a pandas DataFrame.</span>
 
@@ -2413,7 +2415,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Analyzer.link_cumulative_to_pandas">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.link_cumulative_to_pandas">[docs]</a>
-    <span class="k">def</span> <span class="nf">link_cumulative_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">link_cumulative_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the cumulative counts etc. in links and return as a pandas DataFrame.</span>
 
@@ -2432,7 +2434,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="Analyzer.output_data">
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.output_data">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">output_data</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save all results to CSV files. This is obsolute; not all functions are implemented.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2479,10 +2481,9 @@ gtag('config', 'UA-111714220-1');
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=5cb08e4e"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

@@ -4,31 +4,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
         <title>uxsim.utils - UXsim: Traffic Simulation in Python v1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -197,7 +197,6 @@ gtag('config', 'UA-111714220-1');
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  
   <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -283,18 +282,18 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">General utilities for UXsim.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">traceback</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 <div class="viewcode-block" id="catch_exceptions_and_warn">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.catch_exceptions_and_warn">[docs]</a>
-<span class="k">def</span> <span class="nf">catch_exceptions_and_warn</span><span class="p">(</span><span class="n">warning_msg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">catch_exceptions_and_warn</span><span class="p">(</span><span class="n">warning_msg</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A decorator that catches exceptions in the decorated function and raises a warning with the specified message.</span>
 
@@ -321,9 +320,9 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">formatwarning</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -340,7 +339,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="lange">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.lange">[docs]</a>
-<span class="k">def</span> <span class="nf">lange</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lange</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Super lazy function for abbreviating range(len(l))</span>
 
@@ -353,7 +352,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="printtry">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.printtry">[docs]</a>
-<span class="k">def</span> <span class="nf">printtry</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">printtry</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print messages safely, evaluating any callable arguments and catching exceptions. Mainly written by GPT-4</span>
 
@@ -381,7 +380,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="get_font_for_matplotlib">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.get_font_for_matplotlib">[docs]</a>
-<span class="k">def</span> <span class="nf">get_font_for_matplotlib</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_font_for_matplotlib</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a multi-language (currently Japanese only) font for matplotlib.</span>
 <span class="sd">    TODO: check if it works on different OS. It is only checked on Japanese Windows. </span>
@@ -392,7 +391,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    str</span>
 <span class="sd">        The name of a Japanese font that is available on the system. If no Japanese font is found, &quot;monospace&quot; is returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">font_manager</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">font_manager</span>
 
     <span class="n">font_list</span> <span class="o">=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">()</span>
 
@@ -410,7 +409,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="print_columns">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.print_columns">[docs]</a>
-<span class="k">def</span> <span class="nf">print_columns</span><span class="p">(</span><span class="o">*</span><span class="n">lists</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_columns</span><span class="p">(</span><span class="o">*</span><span class="n">lists</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convinient function to check contents of 1d lists. For debug.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -433,7 +432,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="display_image_in_notebook">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.display_image_in_notebook">[docs]</a>
-<span class="k">def</span> <span class="nf">display_image_in_notebook</span><span class="p">(</span><span class="n">image_path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">display_image_in_notebook</span><span class="p">(</span><span class="n">image_path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display an image in Jupyter Notebook.</span>
 
@@ -442,14 +441,14 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    image_path : str</span>
 <span class="sd">        The path to the image file to display.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="LoggingWarning">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.LoggingWarning">[docs]</a>
-<span class="k">class</span> <span class="nc">LoggingWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LoggingWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This warns that when vehicle_logging_timestep_interval is not 1 but called vehicle logging-related functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -458,7 +457,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="plot_multiple_y">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.plot_multiple_y">[docs]</a>
-<span class="k">def</span> <span class="nf">plot_multiple_y</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_multiple_y</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot multiple y values on the same plot, normalizing each value to [0, 1].</span>
 
@@ -491,7 +490,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="equal_tolerance">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.equal_tolerance">[docs]</a>
-<span class="k">def</span> <span class="nf">equal_tolerance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">check</span><span class="p">,</span> <span class="n">rel_tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">abs_tol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">equal_tolerance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">check</span><span class="p">,</span> <span class="n">rel_tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">abs_tol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    function for tests</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -532,10 +531,9 @@ gtag('config', 'UA-111714220-1');
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=5cb08e4e"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

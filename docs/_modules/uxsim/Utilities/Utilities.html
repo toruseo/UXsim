@@ -4,31 +4,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
         <title>uxsim.Utilities.Utilities - UXsim: Traffic Simulation in Python v1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -197,7 +197,6 @@ gtag('config', 'UA-111714220-1');
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  
   <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
@@ -283,17 +282,18 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">Submodule for general utilities.</span>
 <span class="sd">This contains functions that are not essential for simulation but useful to specific analysis.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse.csgraph</span> <span class="kn">import</span> <span class="n">dijkstra</span>
-<span class="kn">import</span> <span class="nn">tqdm</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">csr_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse.csgraph</span><span class="w"> </span><span class="kn">import</span> <span class="n">dijkstra</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <div class="viewcode-block" id="generate_grid_network">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.generate_grid_network">[docs]</a>
-<span class="k">def</span> <span class="nf">generate_grid_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">imax</span><span class="p">,</span> <span class="n">jmax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_grid_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">imax</span><span class="p">,</span> <span class="n">jmax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a grid network with imax x jmax nodes.</span>
 
@@ -335,7 +335,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="enumerate_k_shortest_routes">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.enumerate_k_shortest_routes">[docs]</a>
-<span class="k">def</span> <span class="nf">enumerate_k_shortest_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">l</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">print_stats</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_cost</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enumerate_k_shortest_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">l</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="n">print_stats</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_cost</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enumerate the k shortest routes between two nodes in a network. By default, `enumerate_k_shortest_routes(W, &quot;O&quot;, &quot;D&quot;)` returns the shortest path from node &quot;O&quot; to &quot;D&quot; based on the free-flow travel time. </span>
 
@@ -393,7 +393,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="enumerate_k_shortest_routes_on_t">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.enumerate_k_shortest_routes_on_t">[docs]</a>
-<span class="k">def</span> <span class="nf">enumerate_k_shortest_routes_on_t</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">instant_travel_time</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">print_stats</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_cost</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enumerate_k_shortest_routes_on_t</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cost_function</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">l</span><span class="o">.</span><span class="n">instant_travel_time</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">print_stats</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_cost</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enumerate the k shortest routes between two nodes in a network. By default, `enumerate_k_shortest_routes_on_t(W, &quot;O&quot;, &quot;D&quot;, t=t)` returns the shortest path from node &quot;O&quot; to &quot;D&quot; based on instantanious travel time on time t.</span>
 
@@ -452,7 +452,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="enumerate_k_random_routes">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.enumerate_k_random_routes">[docs]</a>
-<span class="k">def</span> <span class="nf">enumerate_k_random_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enumerate_k_random_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enumerate k random routes between all node pairs in a network. The shortest path with free flow travel time is always included. This is much faster than `enumerate_k_shortest_routes` and could be useful for a plausible choice set generation for route choice problems.</span>
 
@@ -509,7 +509,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="get_shortest_path_distance_between_all_nodes">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.get_shortest_path_distance_between_all_nodes">[docs]</a>
-<span class="k">def</span> <span class="nf">get_shortest_path_distance_between_all_nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_shortest_path_distance_between_all_nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the shortest distances (in meters) between all node pairs based on link lengths</span>
 
@@ -551,7 +551,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="get_shortest_path_instantaneous_travel_time_between_all_nodes">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes">[docs]</a>
-<span class="k">def</span> <span class="nf">get_shortest_path_instantaneous_travel_time_between_all_nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_shortest_path_instantaneous_travel_time_between_all_nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the shortest instantaneous travel time (in seconds) between all node pairs based on the current instantaneous travel time of each link.</span>
 
@@ -583,7 +583,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t">[docs]</a>
-<span class="k">def</span> <span class="nf">get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">return_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_shortest_path_instantaneous_travel_time_between_all_nodes_on_t</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">return_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the shortest instantaneous travel time (in seconds) between all node pairs based on the instantaneous travel time of each link near time t (based on the route choice update interval).</span>
 
@@ -630,7 +630,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="construct_time_space_network">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.construct_time_space_network">[docs]</a>
-<span class="k">def</span> <span class="nf">construct_time_space_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_origin_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">construct_time_space_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_origin_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a time-space network (TSN) that includes the time-dependent shortest path infomation.</span>
 
@@ -724,6 +724,89 @@ gtag('config', 'UA-111714220-1');
     <span class="c1">#             print(f&quot;Shortest path from {source[0]} to {target[0]} on t = {source[1]}: cost = {costs[source][target]}: {paths[source][target]}&quot;)</span>
 
 
+
+<div class="viewcode-block" id="estimate_congestion_externality_link">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.estimate_congestion_externality_link">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_congestion_externality_link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate externality caused by a hypothetical vehicle traveling the link in the world. Subfunction for `estimate_congestion_externality_route`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : World</span>
+<span class="sd">        The World object.</span>
+<span class="sd">    link : str | Link</span>
+<span class="sd">        Link object or link name.</span>
+<span class="sd">    t : float</span>
+<span class="sd">        The departure time of the hypothetical vehicle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
+
+        <span class="c1">#同じ待ち行列で自分より後ろで待っている車両台数の算出</span>
+        <span class="n">ts_end</span> <span class="o">=</span> <span class="n">ts</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">),</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">link</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">link</span><span class="o">.</span><span class="n">free_flow_speed</span><span class="o">*</span><span class="mf">1.01</span> <span class="ow">and</span> <span class="n">link</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="nb">int</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)]</span><span class="o">-</span><span class="n">link</span><span class="o">.</span><span class="n">cum_departure</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="nb">int</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1">#if link.traveltime_actual[i] &gt; link.length/link.free_flow_speed*1.01:</span>
+                <span class="n">ts_end</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+        
+        <span class="n">veh_count</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">[</span><span class="n">ts_end</span><span class="p">]</span><span class="o">-</span><span class="n">link</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">[</span><span class="n">ts</span><span class="p">]</span>
+
+        <span class="c1">#局所的容量の算出</span>
+        <span class="c1">#TODO:微妙に系統的にずれる</span>
+        <span class="c1">#TODO:スピルオーバー時の除外 </span>
+        <span class="c1">#TODO:信号待ちの一台目のときに破綻してしまう．頑健で賢い方法あるか？信号，このリンクの容量制約，下流側リンク・ノード容量制約を全部考えられるもの</span>
+        <span class="n">ts_out</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ts</span><span class="o">+</span><span class="nb">int</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">[</span><span class="n">ts</span><span class="p">]</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">ts_out_leader</span> <span class="o">=</span> <span class="n">ts_out</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts_out</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">cum_departure</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">link</span><span class="o">.</span><span class="n">cum_departure</span><span class="p">[</span><span class="n">ts_out</span><span class="p">]:</span>
+                <span class="n">ts_out_leader</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="k">break</span>
+
+        <span class="n">headway_consumed</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts_out</span><span class="o">-</span><span class="n">ts_out_leader</span><span class="p">)</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span> 
+
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">headway_consumed</span><span class="o">*</span><span class="n">veh_count</span>
+        
+        <span class="k">return</span> <span class="n">ext</span>
+    
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1">#細かいインデックスエラーなどを一時的に回避 TODO: fix</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at `estimate_congestion_externality_link`: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="estimate_congestion_externality_route">
+<a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.estimate_congestion_externality_route">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_congestion_externality_route</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate externality caused by a hypothetical vehicle traveling the route in the world. </span>
+<span class="sd">    </span>
+<span class="sd">    Specifically, it estimates the total travel time that would be achieved if the vehicle did not exist and then calculates the difference. This estimation is based on a simple queuing model for each link of the route that the vehicle passes through. Does not fully capture queue spilovers.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    W : World</span>
+<span class="sd">        The World object.  </span>
+<span class="sd">    route : Route</span>
+<span class="sd">        Route object.</span>
+<span class="sd">    t : float</span>
+<span class="sd">        The departure time of the hypothetical vehicle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tts</span> <span class="o">=</span> <span class="n">route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">return_details</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">exts</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">link</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">route</span><span class="p">):</span>
+        <span class="n">exts</span> <span class="o">+=</span> <span class="n">estimate_congestion_externality_link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">+=</span> <span class="n">tts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">exts</span></div>
+
+
 </pre></div>
         </article>
       </div>
@@ -757,10 +840,9 @@ gtag('config', 'UA-111714220-1');
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5cb08e4e"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

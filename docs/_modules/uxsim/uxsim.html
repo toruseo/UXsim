@@ -4,31 +4,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
         <title>uxsim.uxsim - UXsim: Traffic Simulation in Python v1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -197,7 +197,6 @@ gtag('config', 'UA-111714220-1');
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  
   <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
@@ -284,30 +283,30 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">This `uxsim.py` is the core of UXsim. It summarizes the classes and methods that are essential for the simulation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">csv</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">warnings</span><span class="o">,</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span><span class="o">,</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">math</span><span class="o">,</span><span class="w"> </span><span class="nn">string</span><span class="o">,</span><span class="w"> </span><span class="nn">warnings</span><span class="o">,</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
-<span class="kn">from</span> <span class="nn">scipy.sparse.csgraph</span> <span class="kn">import</span> <span class="n">dijkstra</span>
-<span class="kn">import</span> <span class="nn">dill</span> <span class="k">as</span> <span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">csr_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse.csgraph</span><span class="w"> </span><span class="kn">import</span> <span class="n">dijkstra</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dill</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pickle</span>
 
-<span class="kn">from</span> <span class="nn">.analyzer</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.scenario_reader_writer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.scenario_reader_writer</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="Node">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Node">[docs]</a>
-<span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Node</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Node in a network.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Node.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Node.html#uxsim.Node.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal_offset_old</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a node</span>
 
@@ -327,6 +326,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</span>
 <span class="sd">        signal_offset : float, optional</span>
 <span class="sd">            The offset of the signal. Default is 0.</span>
+<span class="sd">        signal_offset_old : float, optional</span>
+<span class="sd">            The old parameter used to set offset of the signal prior to v1.8.1. This is the opposite of the usual definition of offset. Default is None, meaning it is `signal_offset` is used.</span>
 <span class="sd">        flow_capacity : float, optional</span>
 <span class="sd">            The maximum flow capacity of the node. Default is None, meaning infinite capacity.</span>
 <span class="sd">        auto_rename : bool, optional</span>
@@ -378,10 +379,14 @@ gtag('config', 'UA-111714220-1');
         <span class="c1">#If this node does not have a signal, set `signal=[0]`</span>
         <span class="c1">#If this node has a signal, set `signal=[green time for group0, green time for group1. ...]`</span>
         <span class="n">s</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">cycle_length</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">signal</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">s</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">s</span><span class="o">.</span><span class="n">signal_offset</span> <span class="o">=</span> <span class="n">signal_offset</span>
-        <span class="n">offset</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">signal_offset</span>
+        <span class="k">if</span> <span class="n">signal_offset_old</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">signal_offset</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">cycle_length</span><span class="o">-</span><span class="n">signal_offset_old</span>
+        
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">cycle_length</span><span class="o">-</span><span class="n">s</span><span class="o">.</span><span class="n">signal_offset</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">signal</span> <span class="o">!=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
@@ -425,12 +430,12 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">NODES_NAME_DICT</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span></div>
 
     
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Node </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
 <div class="viewcode-block" id="Node.signal_control">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Node.signal_control">[docs]</a>
-    <span class="k">def</span> <span class="nf">signal_control</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">signal_control</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the signal timings for a traffic signal node.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -440,13 +445,14 @@ gtag('config', 'UA-111714220-1');
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">signal</span><span class="p">):</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">signal_phase</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">s</span><span class="o">.</span><span class="n">signal_t</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">cycle_length</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">signal</span><span class="p">)</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">signal_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">signal_phase</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Node.flow_capacity_update">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Node.flow_capacity_update">[docs]</a>
-    <span class="k">def</span> <span class="nf">flow_capacity_update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flow_capacity_update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        flow capacity updates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -459,7 +465,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Node.generate">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Node.generate">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Departs vehicles from the waiting queue.</span>
 
@@ -512,6 +518,7 @@ gtag('config', 'UA-111714220-1');
                             <span class="k">assert</span> <span class="n">veh</span><span class="o">.</span><span class="n">leader</span><span class="o">.</span><span class="n">lane</span> <span class="o">==</span> <span class="n">veh</span><span class="o">.</span><span class="n">lane</span>
 
                         <span class="n">outlink</span><span class="o">.</span><span class="n">vehicles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="p">)</span>
+                        <span class="n">outlink</span><span class="o">.</span><span class="n">vehicles_enter_log</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">]</span> <span class="o">=</span> <span class="n">veh</span>
 
                         <span class="n">outlink</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
                         <span class="n">veh</span><span class="o">.</span><span class="n">link_arrival_time</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
@@ -526,7 +533,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Node.transfer">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Node.transfer">[docs]</a>
-    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transfers vehicles between links at the node.</span>
 
@@ -585,6 +592,7 @@ gtag('config', 'UA-111714220-1');
 
                 <span class="c1">#リンク間遷移実行</span>
                 <span class="n">inlink</span><span class="o">.</span><span class="n">vehicles</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+                <span class="n">outlink</span><span class="o">.</span><span class="n">vehicles_enter_log</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">]</span> <span class="o">=</span> <span class="n">veh</span>
                 <span class="n">veh</span><span class="o">.</span><span class="n">link</span> <span class="o">=</span> <span class="n">outlink</span>
                 <span class="n">veh</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -639,7 +647,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Node.update">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Node.update">[docs]</a>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make necessary updates when the timestep is incremented.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -653,13 +661,13 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link">[docs]</a>
-<span class="k">class</span> <span class="nc">Link</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Link</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Link in a network.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Link.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Link.html#uxsim.Link.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">capacity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">capacity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a link</span>
 
@@ -833,6 +841,9 @@ gtag('config', 'UA-111714220-1');
         <span class="c1">#リンク内車両一覧</span>
         <span class="n">s</span><span class="o">.</span><span class="n">vehicles</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
 
+        <span class="c1">#流入した車両一覧．t: Vehicle</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">vehicles_enter_log</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="c1">#旅行時間</span>
         <span class="n">s</span><span class="o">.</span><span class="n">traveltime_instant</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -904,12 +915,12 @@ gtag('config', 'UA-111714220-1');
 
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Link </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
 <div class="viewcode-block" id="Link.init_after_tmax_fix">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.init_after_tmax_fix">[docs]</a>
-    <span class="k">def</span> <span class="nf">init_after_tmax_fix</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_after_tmax_fix</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initalization before simulation execution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -930,7 +941,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.update">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.update">[docs]</a>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make necessary updates when the timestep is incremented.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -956,7 +967,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.in_out_flow_constraint">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.in_out_flow_constraint">[docs]</a>
-    <span class="k">def</span> <span class="nf">in_out_flow_constraint</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">in_out_flow_constraint</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Link capacity updates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -973,7 +984,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.set_traveltime_instant">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.set_traveltime_instant">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_traveltime_instant</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_traveltime_instant</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute instantaneous travel time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -989,7 +1000,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.arrival_count">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.arrival_count">[docs]</a>
-    <span class="k">def</span> <span class="nf">arrival_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">arrival_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get cumulative vehicle count of arrival to this link on time t</span>
 
@@ -1013,7 +1024,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.departure_count">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.departure_count">[docs]</a>
-    <span class="k">def</span> <span class="nf">departure_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">departure_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get cumulative vehicle count of departure from this link on time t</span>
 
@@ -1037,7 +1048,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.instant_travel_time">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.instant_travel_time">[docs]</a>
-    <span class="k">def</span> <span class="nf">instant_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instant_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get instantaneous travel time of this link on time t</span>
 
@@ -1061,7 +1072,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.actual_travel_time">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.actual_travel_time">[docs]</a>
-    <span class="k">def</span> <span class="nf">actual_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">actual_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get actual travel time of vehicle who enters this link on time t. Note that small error may occur due to fractional processing.</span>
 
@@ -1085,7 +1096,7 @@ gtag('config', 'UA-111714220-1');
 
     <span class="c1">#getter/setter</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">speed</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">speed</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">_speed</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">vehicles</span><span class="p">):</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">([</span><span class="n">veh</span><span class="o">.</span><span class="n">v</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">vehicles</span><span class="p">])</span>
@@ -1094,25 +1105,25 @@ gtag('config', 'UA-111714220-1');
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">_speed</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">density</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">_density</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">_density</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">num_vehicles</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">length</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">_density</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">flow</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flow</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">_flow</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">_flow</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">density</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">speed</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">_flow</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_vehicles</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_vehicles</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">_num_vehicles</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">_num_vehicles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">vehicles</span><span class="p">)</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">_num_vehicles</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_vehicles_queue</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_vehicles_queue</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">_num_vehicles_queue</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">_num_vehicles_queue</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">veh</span><span class="o">.</span><span class="n">v</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="n">u</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">vehicles</span><span class="p">])</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">_num_vehicles_queue</span>
@@ -1146,7 +1157,7 @@ gtag('config', 'UA-111714220-1');
     <span class="c1">#     else:</span>
     <span class="c1">#         warnings.warn(f&quot;ignored negative jam_density at {s}&quot;, UserWarning)</span>
 
-    <span class="k">def</span> <span class="nf">change_free_flow_speed</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_free_flow_speed</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">new_value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">free_flow_speed</span> <span class="o">=</span> <span class="n">new_value</span>
             <span class="n">s</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="n">new_value</span>
@@ -1156,7 +1167,7 @@ gtag('config', 'UA-111714220-1');
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ignored negative free_flow_speed at </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">change_jam_density</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_jam_density</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">new_value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">free_jam_density</span> <span class="o">=</span> <span class="n">new_value</span>
             <span class="n">s</span><span class="o">.</span><span class="n">kappa</span> <span class="o">=</span> <span class="n">new_value</span>
@@ -1172,13 +1183,13 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle">[docs]</a>
-<span class="k">class</span> <span class="nc">Vehicle</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Vehicle</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Vehicle or platoon in a network.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Vehicle.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Vehicle.html#uxsim.Vehicle.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;single_trip&quot;</span><span class="p">,</span> <span class="n">links_prefer</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;single_trip&quot;</span><span class="p">,</span> <span class="n">links_prefer</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a vehicle (more precisely, platoon)</span>
 
@@ -1324,12 +1335,12 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES_LIVING</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Vehicle </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">, x=</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">, link=</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">link</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
 <div class="viewcode-block" id="Vehicle.update">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.update">[docs]</a>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the vehicle&#39;s state and position.</span>
 
@@ -1408,7 +1419,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle.end_trip">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.end_trip">[docs]</a>
-    <span class="k">def</span> <span class="nf">end_trip</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_trip</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Procedure when the vehicle finishes its trip.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1441,7 +1452,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle.carfollow">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.carfollow">[docs]</a>
-    <span class="k">def</span> <span class="nf">carfollow</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">carfollow</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drive withing a link.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1460,7 +1471,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="Vehicle.enforce_route">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.enforce_route">[docs]</a>
-    <span class="k">def</span> <span class="nf">enforce_route</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">set_avoid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enforce_route</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">set_avoid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check</span>
 
@@ -1478,7 +1489,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle.route_pref_update">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.route_pref_update">[docs]</a>
-    <span class="k">def</span> <span class="nf">route_pref_update</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">route_pref_update</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates the vehicle&#39;s link preferences for route choice.</span>
 
@@ -1520,7 +1531,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle.route_next_link_choice">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.route_next_link_choice">[docs]</a>
-    <span class="k">def</span> <span class="nf">route_next_link_choice</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">route_next_link_choice</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select a next link from the current link.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1550,7 +1561,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle.add_dest">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.add_dest">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_dest</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_dest</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">order</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a destination to the vehicle&#39;s destination list.</span>
 
@@ -1576,7 +1587,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="Vehicle.set_links_prefer">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.set_links_prefer">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_links_prefer</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_links_prefer</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the links the vehicle prefers.</span>
 
@@ -1590,7 +1601,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="Vehicle.set_links_avoid">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.set_links_avoid">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_links_avoid</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_links_avoid</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">links</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the links the vehicle avoids.</span>
 
@@ -1604,7 +1615,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle.add_dests">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.add_dests">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_dests</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dests</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_dests</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dests</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add multiple destinations to the vehicle&#39;s destination list.</span>
 
@@ -1619,7 +1630,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="Vehicle.traveled_route">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.traveled_route">[docs]</a>
-    <span class="k">def</span> <span class="nf">traveled_route</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">include_arrival_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_departure_time</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">traveled_route</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">include_arrival_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_departure_time</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the route this vehicle traveled.</span>
 
@@ -1675,7 +1686,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle.get_xy_coords">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.get_xy_coords">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_xy_coords</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_xy_coords</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the x-y coordinates of the vehicle. If t is given, the position at time t is returned based on the logs.</span>
 
@@ -1704,7 +1715,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Vehicle.record_log">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.record_log">[docs]</a>
-    <span class="k">def</span> <span class="nf">record_log</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">enforce_log</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">record_log</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">enforce_log</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Record travel logs.</span>
 
@@ -1760,14 +1771,14 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="RouteChoice">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.RouteChoice">[docs]</a>
-<span class="k">class</span> <span class="nc">RouteChoice</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RouteChoice</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for computing shortest path for all vehicles.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RouteChoice.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.RouteChoice.html#uxsim.RouteChoice.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create route choice computation object.</span>
 
@@ -1795,7 +1806,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="RouteChoice.route_search_all">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.RouteChoice.route_search_all">[docs]</a>
-    <span class="k">def</span> <span class="nf">route_search_all</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">infty</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">route_search_all</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">infty</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the current shortest path based on instantaneous travel time.</span>
 
@@ -1836,7 +1847,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="RouteChoice.homogeneous_DUO_update">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.RouteChoice.homogeneous_DUO_update">[docs]</a>
-    <span class="k">def</span> <span class="nf">homogeneous_DUO_update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">homogeneous_DUO_update</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update link preference of all homogeneous travelers based on DUO principle.</span>
 <span class="sd">        Vectorized by Claude 3.5 Sonnet.</span>
@@ -1877,14 +1888,14 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World">[docs]</a>
-<span class="k">class</span> <span class="nc">World</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">World</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="World.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.uxsim.World.html#uxsim.World.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">reaction_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">reaction_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
                  <span class="n">duo_update_time</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">duo_update_weight</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">duo_noise</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="s2">&quot;homogeneous_DUO&quot;</span><span class="p">,</span> <span class="n">route_choice_update_gradual</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">instantaneous_TT_timestep_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
                  <span class="n">eular_dt</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
                  <span class="n">random_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
@@ -2023,7 +2034,7 @@ gtag('config', 'UA-111714220-1');
         <span class="k">if</span> <span class="n">print_mode</span><span class="p">:</span>
             <span class="n">W</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="nb">print</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">def</span> <span class="nf">noprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">noprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="k">pass</span>
             <span class="n">W</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="n">noprint</span>
         <span class="n">W</span><span class="o">.</span><span class="n">save_mode</span> <span class="o">=</span> <span class="n">save_mode</span>
@@ -2035,7 +2046,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.addNode">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addNode">[docs]</a>
-    <span class="k">def</span> <span class="nf">addNode</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addNode</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        add a node to world</span>
 
@@ -2075,7 +2086,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.addLink">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addLink">[docs]</a>
-    <span class="k">def</span> <span class="nf">addLink</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addLink</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        add a link to world</span>
 
@@ -2128,7 +2139,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.addVehicle">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addVehicle">[docs]</a>
-    <span class="k">def</span> <span class="nf">addVehicle</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addVehicle</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        add a vehicle to world</span>
 
@@ -2177,7 +2188,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span> <span class="nf">adddemand</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand.</span>
 
@@ -2216,7 +2227,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand_point2point">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_point2point">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span> <span class="nf">adddemand_point2point</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_point2point</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand using coordinates.</span>
 
@@ -2249,7 +2260,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand_area2area">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_area2area">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span> <span class="nf">adddemand_area2area</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span>  <span class="n">radious_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">radious_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_area2area</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span>  <span class="n">radious_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">radious_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas. `adddemand_area2area()` is not recommended as it may truncate demand. Consider to use new `adddemand_area2area2()` which is more accurate, smooth, and fast.</span>
 
@@ -2313,7 +2324,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand_nodes2nodes">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_nodes2nodes">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span> <span class="nf">adddemand_nodes2nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">origs</span><span class="p">,</span> <span class="n">dests</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_nodes2nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">origs</span><span class="p">,</span> <span class="n">dests</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one. `adddemand_nodes2nodes()` is not recommended as it may truncate demand. Consider to use new `adddemand_nodes2nodes2() which is more accurate, smooth, and fast.</span>
 
@@ -2364,7 +2375,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand_area2area2">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_area2area2">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span> <span class="nf">adddemand_area2area2</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span>  <span class="n">radious_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">radious_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_area2area2</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span>  <span class="n">radious_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">radious_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas. This is new version of `adddemand_area2area`, more efficient, more smooth, and more accurate. However, it introduces some randomness.</span>
 
@@ -2433,7 +2444,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand_nodes2nodes2">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_nodes2nodes2">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span> <span class="nf">adddemand_nodes2nodes2</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">origs</span><span class="p">,</span> <span class="n">dests</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_nodes2nodes2</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">origs</span><span class="p">,</span> <span class="n">dests</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one. This is new version of `adddemand_nodes2nodes`, more efficient, more smooth, and more accurate. However, it introduces some randomness.</span>
 
@@ -2485,7 +2496,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.finalize_scenario">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.finalize_scenario">[docs]</a>
-    <span class="k">def</span> <span class="nf">finalize_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">finalize_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finalizes the settings and preparations for the simulation scenario execution.</span>
 
@@ -2547,7 +2558,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.print_scenario_stats">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.print_scenario_stats">[docs]</a>
-    <span class="k">def</span> <span class="nf">print_scenario_stats</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_scenario_stats</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print scenario stats</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2573,7 +2584,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.exec_simulation">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.exec_simulation">[docs]</a>
-    <span class="k">def</span> <span class="nf">exec_simulation</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">until_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exec_simulation</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">until_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the main loop of the simulation.</span>
 
@@ -2688,7 +2699,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.check_simulation_ongoing">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.check_simulation_ongoing">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_simulation_ongoing</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_simulation_ongoing</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether the simulation is has not reached its final time.</span>
 
@@ -2704,7 +2715,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.simulation_terminated">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.simulation_terminated">[docs]</a>
-    <span class="k">def</span> <span class="nf">simulation_terminated</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulation_terminated</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Postprocessing after simulation finished</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2714,7 +2725,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.get_node">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_node">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a Node instance by name or object.</span>
 
 <span class="sd">        Parameters</span>
@@ -2736,7 +2747,7 @@ gtag('config', 'UA-111714220-1');
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES_NAME_DICT</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES_NAME_DICT</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES_NAME_DICT</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES_NAME_DICT</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s2">&#39; is not Node in this World&quot;</span><span class="p">)</span></div>
@@ -2744,7 +2755,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.get_link">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_link">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">link</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">link</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a Link instance by name or object.</span>
 
@@ -2767,7 +2778,7 @@ gtag('config', 'UA-111714220-1');
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS_NAME_DICT</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS_NAME_DICT</span><span class="p">[</span><span class="n">link</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">link</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">link</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">link</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS_NAME_DICT</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS_NAME_DICT</span><span class="p">[</span><span class="n">link</span><span class="p">]</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s2">&#39; is not Link in this World&quot;</span><span class="p">)</span></div>
@@ -2775,7 +2786,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.get_nearest_node">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_nearest_node">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_nearest_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nearest_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the nearest node to the given coordinates.</span>
 
@@ -2803,7 +2814,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.get_nodes_in_area">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_nodes_in_area">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_nodes_in_area</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nodes_in_area</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the nodes in the area defined by the center coordinates and radius.</span>
 <span class="sd">        </span>
@@ -2830,7 +2841,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.defRoute">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.defRoute">[docs]</a>
-    <span class="k">def</span> <span class="nf">defRoute</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">defRoute</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Define Route object for this World.</span>
 
@@ -2850,7 +2861,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.load_scenario_from_csv">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.load_scenario_from_csv">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_scenario_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname_node</span><span class="p">,</span> <span class="n">fname_link</span><span class="p">,</span> <span class="n">fname_demand</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_scenario_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname_node</span><span class="p">,</span> <span class="n">fname_link</span><span class="p">,</span> <span class="n">fname_demand</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a scenario from CSV files.</span>
 
@@ -2875,7 +2886,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.generate_Nodes_from_csv">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.generate_Nodes_from_csv">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_Nodes_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_Nodes_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate nodes in the network from a CSV file.</span>
 
@@ -2893,7 +2904,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.generate_Links_from_csv">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.generate_Links_from_csv">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_Links_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_Links_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate links in the network from a CSV file.</span>
 
@@ -2911,7 +2922,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.generate_demand_from_csv">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.generate_demand_from_csv">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_demand_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_demand_from_csv</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate demand in the network from a CSV file.</span>
 
@@ -2931,7 +2942,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.save_scenario">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.save_scenario">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the scenario (Node, Link, demand) to a file.</span>
 
@@ -2949,7 +2960,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.load_scenario">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.load_scenario">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">demand</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a scenario from a file.</span>
 
@@ -2967,7 +2978,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.on_time">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.on_time">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_time</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_time</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the current time step is close to the specified time.</span>
 
@@ -2989,7 +3000,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.change_print_mode">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.change_print_mode">[docs]</a>
-    <span class="k">def</span> <span class="nf">change_print_mode</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">print_mode</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_print_mode</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">print_mode</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the print mode.</span>
 
@@ -3003,7 +3014,7 @@ gtag('config', 'UA-111714220-1');
         <span class="k">if</span> <span class="n">print_mode</span><span class="p">:</span>
             <span class="n">W</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="nb">print</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">def</span> <span class="nf">noprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">noprint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="k">pass</span>
             <span class="n">W</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="n">noprint</span></div>
 
@@ -3011,7 +3022,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.show_network">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.show_network">[docs]</a>
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">show_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">show_id</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_network</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">left_handed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">show_id</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualizes the entire transportation network shape.</span>
 
@@ -3079,7 +3090,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="World.copy">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.copy">[docs]</a>
-    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Copy the World object.</span>
 
@@ -3093,7 +3104,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.save">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.save">[docs]</a>
-    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the World object.</span>
 
@@ -3109,13 +3120,13 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Route">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Route">[docs]</a>
-<span class="k">class</span> <span class="nc">Route</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Route</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for a route that store concective links.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Route.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Route.html#uxsim.Route.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">trust_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">trust_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Define a route.</span>
 
@@ -3156,27 +3167,29 @@ gtag('config', 'UA-111714220-1');
                     <span class="c1">#todo: interpolation based on shotest path</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">links</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l2</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">links</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">links</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">links</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1">#検査せずそのまま使用（計算コスト削減）</span>
             <span class="n">s</span><span class="o">.</span><span class="n">links</span> <span class="o">=</span> <span class="n">links</span>
         <span class="n">s</span><span class="o">.</span><span class="n">links_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Route </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override `iter()` function. Iterate the links of the route.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override `==` operator. If the links of two route are the same, then the routes are the same.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3186,7 +3199,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Route.actual_travel_time">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Route.actual_travel_time">[docs]</a>
-    <span class="k">def</span> <span class="nf">actual_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">return_details</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">actual_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">return_details</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Actual travel time for a (hypothetical) vehicle who start traveling this route on time t.</span>
 
@@ -3252,10 +3265,9 @@ gtag('config', 'UA-111714220-1');
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=5cb08e4e"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>

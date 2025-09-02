@@ -4,31 +4,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
         <title>uxsim.DTAsolvers.DTAsolvers - UXsim: Traffic Simulation in Python v1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -197,7 +197,6 @@ gtag('config', 'UA-111714220-1');
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
-  
   <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
@@ -282,23 +281,27 @@ gtag('config', 'UA-111714220-1');
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Submodule for Dynamic Traffic Assginment solvers</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">..Utilities</span> <span class="kn">import</span> <span class="n">enumerate_k_shortest_routes</span><span class="p">,</span> <span class="n">enumerate_k_random_routes</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..Utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">enumerate_k_shortest_routes</span><span class="p">,</span> <span class="n">enumerate_k_random_routes</span><span class="p">,</span> <span class="n">estimate_congestion_externality_route</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">ALNS</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <div class="viewcode-block" id="SolverDUE">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE">[docs]</a>
-<span class="k">class</span> <span class="nc">SolverDUE</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SolverDUE</span><span class="p">:</span>
 <div class="viewcode-block" id="SolverDUE.__init__">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP</span>
 
@@ -334,7 +337,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="SolverDUE.solve">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.solve">[docs]</a>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">swap_prob</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">swap_prob</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP</span>
 
@@ -419,6 +422,11 @@ gtag('config', 'UA-111714220-1');
             <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">()</span>
             <span class="c1">#W.analyzer.network_average()</span>
 
+            <span class="c1"># trip completion check</span>
+            <span class="n">unfinished_trips</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">trip_all</span> <span class="o">-</span> <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">trip_completed</span>
+            <span class="k">if</span> <span class="n">unfinished_trips</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: </span><span class="si">{</span><span class="n">unfinished_trips</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">trip_all</span><span class="si">}</span><span class="s2"> vehicles have not finished their trips. The DUE solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+
             <span class="c1"># attach route choice set to W object for later re-use at different solvers like DSO-GA</span>
             <span class="n">W</span><span class="o">.</span><span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">dict_od_to_routes</span>
             
@@ -434,6 +442,7 @@ gtag('config', 'UA-111714220-1');
             <span class="n">total_t_gap</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">potential_n_swap</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">veh</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">flag_swap</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">swap_prob</span>
                 <span class="n">o</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span>
                 <span class="n">r</span><span class="p">,</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()</span>
@@ -448,16 +457,22 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">flag_route_changed</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">route_changed</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">t_gap</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="n">cost_current</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 
+                <span class="n">potential_n_swap_updated</span> <span class="o">=</span> <span class="n">potential_n_swap</span>
                 <span class="k">for</span> <span class="n">alt_route</span> <span class="ow">in</span> <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
-                    <span class="k">if</span> <span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">r</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                        <span class="k">if</span> <span class="n">flag_route_changed</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">or</span> <span class="p">(</span><span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">route_changed</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
-                            <span class="n">t_gap</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                            <span class="n">potential_n_swap</span> <span class="o">+=</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span> <span class="c1">#there may be double count; but not critical issue</span>
-                            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">swap_prob</span><span class="p">:</span>
+                    <span class="n">cost_alt</span> <span class="o">=</span> <span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">cost_alt</span> <span class="o">&lt;</span> <span class="n">cost_current</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">flag_route_changed</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">or</span> <span class="p">(</span><span class="n">cost_alt</span> <span class="o">&lt;</span> <span class="n">cost_current</span><span class="p">):</span>
+                            <span class="n">t_gap</span> <span class="o">=</span> <span class="n">cost_current</span> <span class="o">-</span> <span class="n">cost_alt</span>
+                            <span class="n">potential_n_swap_updated</span> <span class="o">=</span> <span class="n">potential_n_swap</span> <span class="o">+</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
+                            <span class="k">if</span> <span class="n">flag_swap</span><span class="p">:</span>
                                 <span class="n">flag_route_changed</span> <span class="o">=</span> <span class="kc">True</span>
                                 <span class="n">route_changed</span> <span class="o">=</span> <span class="n">alt_route</span>
-
+                                <span class="n">cost_current</span> <span class="o">=</span> <span class="n">cost_alt</span>
+                                
+                <span class="n">potential_n_swap</span> <span class="o">=</span> <span class="n">potential_n_swap_updated</span>
                 
                 <span class="n">total_t_gap</span> <span class="o">+=</span> <span class="n">t_gap</span>
                 <span class="n">routes_specified</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
@@ -499,7 +514,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="SolverDUE.plot_convergence">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.plot_convergence">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_convergence</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_convergence</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots convergence metrics for a Dynamic Traffic Assignment (DTA) solution.</span>
 <span class="sd">        This function creates three separate plots:</span>
@@ -536,7 +551,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="SolverDUE.plot_link_stats">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.plot_link_stats">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_link_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_link_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate two plots to visualize the evolution of link-level traffic statistics across iterations.</span>
 <span class="sd">        The first plot shows traffic volume changes for each link over iterations.</span>
@@ -566,7 +581,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="SolverDUE.plot_vehicle_stats">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.plot_vehicle_stats">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_vehicle_stats</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_vehicle_stats</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot travel time statistics for vehicles based on their origin and destination.</span>
 <span class="sd">        This function visualizes the average travel time and standard deviation for vehicles</span>
@@ -895,12 +910,12 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="SolverDSO_GA">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA">[docs]</a>
-<span class="k">class</span> <span class="nc">SolverDSO_GA</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SolverDSO_GA</span><span class="p">:</span>
 <div class="viewcode-block" id="SolverDSO_GA.__init__">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solve Dynamic System Optimum (DSO) problem using genetic algorithm. WIP</span>
+<span class="sd">        Solve Dynamic System Optimum (DSO) problem using genetic algorithm.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -921,7 +936,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="SolverDSO_GA.solve">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.solve">[docs]</a>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">elite_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mutation_occur_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">mutation_gene_rate</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">n_crossover_points</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">initial_solution_World</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">elite_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mutation_occur_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">mutation_gene_rate</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">n_crossover_points</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">initial_solution_World</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solve Dynamic System Optimum (DSO) problem using genetic algorithm. The objective function is </span>
 <span class="sd">            total_travel_time + simulation_duration*number_of_vehicles_that_could_not_complete_their_trip.</span>
@@ -990,7 +1005,7 @@ gtag('config', 'UA-111714220-1');
 
         <span class="c1">#     return population</span>
 
-        <span class="k">def</span> <span class="nf">tournament_selection</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">fitnesses</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">tournament_selection</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">fitnesses</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Select individuals using tournament selection.&quot;&quot;&quot;</span>
             <span class="n">selected</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)):</span>
@@ -998,7 +1013,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">selected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">aspirants</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">selected</span>
 
-        <span class="k">def</span> <span class="nf">crossover</span><span class="p">(</span><span class="n">parent1</span><span class="p">,</span> <span class="n">parent2</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">crossover</span><span class="p">(</span><span class="n">parent1</span><span class="p">,</span> <span class="n">parent2</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Perform n-point crossover between two parents.&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">n_points</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parent1</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of crossover points must be less than genome length.&quot;</span><span class="p">)</span>
@@ -1016,7 +1031,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">last_point</span> <span class="o">=</span> <span class="n">point</span>
             <span class="k">return</span> <span class="n">child1</span><span class="p">,</span> <span class="n">child2</span>
 
-        <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="n">genome</span><span class="p">,</span> <span class="n">mutation_rate</span><span class="p">,</span> <span class="n">genome_maxs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">mutate</span><span class="p">(</span><span class="n">genome</span><span class="p">,</span> <span class="n">mutation_rate</span><span class="p">,</span> <span class="n">genome_maxs</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Mutate a genome with a given mutation rate.&quot;&quot;&quot;</span>
             <span class="n">mutated_genome</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">gene</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">genome</span><span class="p">):</span>
@@ -1070,7 +1085,7 @@ gtag('config', 'UA-111714220-1');
         <span class="c1"># Prepare genetic algorithm</span>
 
         <span class="c1"># specify routing based on genome</span>
-        <span class="k">def</span> <span class="nf">specify_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">genome</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">specify_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">genome</span><span class="p">):</span>
             <span class="n">veh_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">genome</span><span class="p">):</span>
                 <span class="n">veh</span> <span class="o">=</span> <span class="n">veh_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -1205,7 +1220,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="SolverDSO_GA.plot_convergence">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.plot_convergence">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_convergence</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_convergence</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the convergence of total travel time across iterations.</span>
 <span class="sd">        This method generates a plot showing how the total travel time changes</span>
@@ -1222,7 +1237,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="SolverDSO_GA.plot_link_stats">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.plot_link_stats">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_link_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_link_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the traffic volume and average travel time for each link across iterations.</span>
 <span class="sd">        This function creates two separate figures: one for traffic volume and one for average travel time.</span>
@@ -1252,7 +1267,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="SolverDSO_GA.plot_vehicle_stats">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html#uxsim.DTAsolvers.SolverDSO_GA.plot_vehicle_stats">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_vehicle_stats</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_vehicle_stats</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot vehicle travel time statistics based on route logs.</span>
 <span class="sd">        This function generates a plot that shows average travel times with standard deviations</span>
@@ -1286,13 +1301,340 @@ gtag('config', 'UA-111714220-1');
             <span class="n">dest_</span> <span class="o">=</span> <span class="s2">&quot;any&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;orig: </span><span class="si">{</span><span class="n">orig_</span><span class="si">}</span><span class="s2">, dest: </span><span class="si">{</span><span class="n">dest_</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">depature_time</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ave_TT</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">std_TT</span><span class="p">,</span> 
-                <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;bx&#39;</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;#aaaaff&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;travel time (mean $\pm$ std)&quot;</span><span class="p">)</span>
+                <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;bx&#39;</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;#aaaaff&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;travel time (mean $\pm$ std)&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;departure time of vehicle&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;travel time&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 </div>
 
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SolverDSO_ALNS</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">):</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve Dynamic System Optimum (DSO) problem using a customized Adaptive Large Neighborhood Search (ADLS).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        func_World : function</span>
+<span class="sd">            function that returns a World object with nodes, links, and demand specifications</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">func_World</span> <span class="o">=</span> <span class="n">func_World</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#final solution</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span> <span class="o">=</span> <span class="p">[]</span>
+        
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">k_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">trials</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">always_accept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">initial_solution_World</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">destroy_set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repair_set</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve Dynamic System Optimum (DSO) problem using a customized Adaptive Large Neighborhood Search (ADLS).</span>
+<span class="sd">        The objective function is </span>
+<span class="sd">            total_travel_time + simulation_duration*number_of_vehicles_that_could_not_complete_their_trip.</span>
+<span class="sd">        The second term should be zero for reasonable results.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_iter : int</span>
+<span class="sd">            maximum number of iterations</span>
+<span class="sd">        n_routes_per_od : int</span>
+<span class="sd">            number of routes to enumerate for each OD pair</span>
+<span class="sd">            If `initial_solution_World` is given, this arg is ignored and the value in `initial_solution_World` is used.</span>
+<span class="sd">        k_max : int</span>
+<span class="sd">            maximum number of vehicles to change the route in each iteration. If None, it is set to 1% of the total number of vehicles.</span>
+<span class="sd">        k_min : int</span>
+<span class="sd">            minimum number of vehicles to change the route in each iteration. If None, it is set to 1.</span>
+<span class="sd">        p0 : float</span>
+<span class="sd">            initial temperature parameter for ALNS. Default is 0.2.</span>
+<span class="sd">        trials : int</span>
+<span class="sd">            number of trials to estimate the temperature parameter. Default is 50.</span>
+<span class="sd">        always_accept : bool</span>
+<span class="sd">            whether to always accept a new solution regardless of its value. Default is False.</span>
+<span class="sd">        print_progress : bool</span>
+<span class="sd">            whether to print the information</span>
+<span class="sd">        initial_solution_World : World</span>
+<span class="sd">            Initial solution (starting point) for the optimization algorithm. If None, it uses the DUO solution as a starting point; this tends to be very slow. Usually, DUE soultion is a good starting point. It must have the same structure as the output of func_World, and its simulation has been already executed.</span>
+<span class="sd">            Recommended example: `W_init = solve_DUE(func_World); W = solve_DSO(func_World, initial_solution_World=W_init)`.</span>
+<span class="sd">        destroy_set : list of functions</span>
+<span class="sd">            list of destroy functions to be used in ALNS. If None, all functions are used.</span>
+<span class="sd">        repair_set : list of functions</span>
+<span class="sd">            list of repair functions to be used in ALNS. If None, all functions are used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">s</span><span class="o">.</span><span class="n">print_progress</span> <span class="o">=</span> <span class="n">print_progress</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">n_routes_per_od</span> <span class="o">=</span> <span class="n">n_routes_per_od</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+
+        <span class="n">departure_times</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1">##############################################################</span>
+        <span class="c1"># initial solution</span>
+
+        <span class="k">if</span> <span class="n">initial_solution_World</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">func_World</span><span class="p">()</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+            <span class="c1">#if print_progress:</span>
+            <span class="c1">#    print(W.analyzer.basic_to_pandas())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">initial_solution_World</span>
+            <span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">dict_od_to_routes</span>
+            
+        <span class="k">if</span> <span class="n">k_max</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">k_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">)</span><span class="o">*</span><span class="mf">0.01</span><span class="p">)])</span>
+
+        <span class="k">if</span> <span class="n">print_progress</span><span class="p">:</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">print_scenario_stats</span><span class="p">()</span>
+
+        <span class="n">dict_od_to_vehid</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">dict_od_to_vehid</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">departure_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">departure_time</span><span class="p">)</span>
+
+        <span class="n">departure_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">departure_times</span><span class="p">)</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">departure_times</span><span class="p">)</span>
+
+        <span class="c1">##############################################################</span>
+        <span class="c1"># enumerate some routes between each OD pair</span>
+
+        <span class="n">dict_od_to_vehid</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">dict_od_to_vehid</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">initial_solution_World</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">initial_solution_World</span><span class="p">,</span> <span class="s2">&quot;dict_od_to_routes&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial solusion is used&quot;</span><span class="p">)</span>
+            <span class="n">routes</span> <span class="o">=</span> <span class="n">initial_solution_World</span><span class="o">.</span><span class="n">dict_od_to_routes</span>
+            <span class="n">xx0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">))]</span>
+            <span class="n">n_route_found</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">veh</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>   
+                <span class="n">route_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="n">route_id_mintt</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">route_mintt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">routes</span><span class="p">[(</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)]):</span>
+                    <span class="n">route</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">defRoute</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">route</span> <span class="o">==</span> <span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()[</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">route_id</span> <span class="o">=</span> <span class="n">j</span>
+                        <span class="n">n_route_found</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">break</span>
+
+                    <span class="c1">#経路が経路集合に見当たらない場合，最短経路を探す</span>
+                    <span class="k">if</span> <span class="n">route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">departure_time_in_second</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">route_mintt</span><span class="p">:</span> 
+                        <span class="n">route_id_mintt</span> <span class="o">=</span> <span class="n">j</span>
+                
+                <span class="k">if</span> <span class="n">route_id</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">xx0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">route_id</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">xx0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">route_id_mintt</span> <span class="c1">#経路が経路集合に見当たらない場合，最短経路に割付</span>
+
+            <span class="c1">#print(f&quot; route recovered: {n_route_found*W.DELTAN}/{len(W.VEHICLES)*W.DELTAN}&quot;)</span>
+
+            <span class="n">xx_domain</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">veh</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="n">actual_n_route</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">routes</span><span class="p">[(</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)])</span>
+                <span class="n">xx_domain</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">actual_n_route</span><span class="p">)])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No initial solution&quot;</span><span class="p">)</span>
+            <span class="n">routes</span> <span class="o">=</span> <span class="n">enumerate_k_random_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n_routes_per_od</span><span class="p">)</span>
+
+            <span class="n">W</span><span class="o">.</span><span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">routes</span>
+            <span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">routes</span>
+            
+            <span class="n">xx_domain</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">veh</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="n">actual_n_route</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">routes</span><span class="p">[(</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)])</span>
+                <span class="n">xx_domain</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">actual_n_route</span><span class="p">)])</span>
+
+            <span class="n">xx0</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">xx_domain</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">))]</span>
+
+
+        <span class="c1">##############################################################</span>
+        <span class="c1"># Prepare ALNS</span>
+
+        <span class="c1"># specify routing based on x vector</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">specify_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">xx</span><span class="p">):</span>
+            <span class="n">veh_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xx</span><span class="p">):</span>
+                <span class="n">veh</span> <span class="o">=</span> <span class="n">veh_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">routes</span><span class="p">[(</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)]):</span>
+                    <span class="n">veh</span><span class="o">.</span><span class="n">set_links_prefer</span><span class="p">(</span><span class="n">routes</span><span class="p">[(</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="n">value</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">veh</span><span class="o">.</span><span class="n">set_links_prefer</span><span class="p">(</span><span class="n">routes</span><span class="p">[(</span><span class="n">veh</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span><span class="p">)][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    
+        <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="n">W</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">best_obj_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">ttts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">ttts_best</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">route_log</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">cost_log</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">best_iter</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">best_obj</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;solving DSO by ALNS...&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">objective_function_by_UXsim</span><span class="p">(</span><span class="n">xx</span><span class="p">):</span>
+            <span class="n">W</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">func_World</span><span class="p">()</span>
+            <span class="n">specify_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">xx</span><span class="p">)</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+            <span class="n">obj_value</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">total_travel_time</span> <span class="o">-</span> <span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">trip_all</span><span class="o">-</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">trip_completed</span><span class="p">)</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">TMAX</span>
+            
+            <span class="n">route_actual</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">cost_actual</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">veh</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">route</span><span class="p">,</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()</span>
+                <span class="n">travel_time</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                
+                <span class="n">route_actual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">rr</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="n">route</span><span class="p">]</span>
+                <span class="n">cost_actual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">travel_time</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">route_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">route_actual</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">cost_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cost_actual</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">ttts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">total_travel_time</span><span class="p">))</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">())</span>
+
+
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">best_obj_value</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">obj_value</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="n">best_obj_value</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">best_obj_value</span> <span class="o">=</span> <span class="n">obj_value</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="n">W</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span><span class="o">.</span><span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">dict_od_to_routes</span>
+
+                <span class="n">s</span><span class="o">.</span><span class="n">ttts_best</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">total_travel_time</span><span class="p">))</span>
+
+                <span class="n">s</span><span class="o">.</span><span class="n">best_iter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">iter</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">best_obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">best_obj_value</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">print_progress</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">iter</span><span class="o">%</span><span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;iter: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">iter</span><span class="si">}</span><span class="s2"> - TTT: </span><span class="si">{</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">total_travel_time</span><span class="si">}</span><span class="s2">, trips:</span><span class="si">{</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">trip_completed</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">trip_all</span><span class="si">}</span><span class="s2">, Obj:</span><span class="si">{</span><span class="n">obj_value</span><span class="si">}</span><span class="s2">, Best Obj:</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">best_obj_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">s</span><span class="o">.</span><span class="n">iter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">obj_value</span>
+
+        <span class="n">state</span> <span class="o">=</span> <span class="n">ALNS</span><span class="o">.</span><span class="n">init_alns</span><span class="p">(</span>
+            <span class="n">xx0</span><span class="p">,</span> <span class="n">objective_function_by_UXsim</span><span class="p">,</span>
+            <span class="n">domains</span><span class="o">=</span><span class="n">xx_domain</span><span class="p">,</span>
+            <span class="n">k_max</span><span class="o">=</span><span class="n">k_max</span><span class="p">,</span>
+            <span class="n">k_min</span><span class="o">=</span><span class="n">k_min</span><span class="p">,</span>
+            <span class="n">destroy_set</span><span class="o">=</span><span class="n">destroy_set</span><span class="p">,</span>
+            <span class="n">repair_set</span><span class="o">=</span><span class="n">repair_set</span><span class="p">,</span>
+            <span class="n">total_iters</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span>
+            <span class="n">trials</span><span class="o">=</span><span class="n">trials</span><span class="p">,</span>
+            <span class="n">always_accept</span><span class="o">=</span><span class="n">always_accept</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">additional_info</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;departure_times&quot;</span><span class="p">:</span><span class="n">departure_times</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">:</span><span class="n">W</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="n">ALNS</span><span class="o">.</span><span class="n">run_auto</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">total_iters</span><span class="p">)</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">xx_star</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="n">ALNS</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DSO summary:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total travel time: initial </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">ttts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> -&gt; last </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">ttts_best</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; computation time: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s</span><span class="o">.</span><span class="n">start_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_solution_process</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;changed_idx&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;accepted&quot;</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">]</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">operator_stats</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_convergence</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">ttts</span><span class="p">,</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;search trace&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">best_iter</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">best_obj</span><span class="p">,</span> <span class="s2">&quot;r.&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;updated solution&quot;</span><span class="p">)</span>
+        <span class="n">obj_init</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">best_obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">obj_min</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">best_obj</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="n">obj_min</span><span class="o">-</span><span class="p">(</span><span class="n">obj_init</span><span class="o">-</span><span class="n">obj_min</span><span class="p">)</span><span class="o">*</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">obj_init</span><span class="o">+</span><span class="p">(</span><span class="n">obj_init</span><span class="o">-</span><span class="n">obj_min</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;total travel time (s)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_link_stats</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the traffic volume and average travel time for each link across iterations.</span>
+<span class="sd">        This function creates two separate figures: one for traffic volume and one for average travel time.</span>
+<span class="sd">        For each link, it plots the values across all iterations and adds a legend with link identifiers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;traffic volume&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">vols</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;traffic_volume&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span><span class="p">]</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vols</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;link&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;volume (veh)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;average travel time&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">vols</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;average_travel_time&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span><span class="p">]</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">vols</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;link&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;time (s)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center left&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_vehicle_stats</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot vehicle travel time statistics based on route logs.</span>
+<span class="sd">        This function generates a plot that shows average travel times with standard deviations</span>
+<span class="sd">        for vehicles, filtered by optional origin and destination locations.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        orig : str, optional</span>
+<span class="sd">            Origin location name to filter vehicles. If None, all origins are included.</span>
+<span class="sd">        dest : str, optional</span>
+<span class="sd">            Destination location name to filter vehicles. If None, all destinations are included.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ave_TT</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">std_TT</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">depature_time</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">vehid</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">route_log</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W_sol</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">[</span><span class="n">vehid</span><span class="p">]</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">orig</span> <span class="ow">or</span> <span class="n">orig</span> <span class="o">==</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W_sol</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">[</span><span class="n">vehid</span><span class="p">]</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">dest</span> <span class="ow">or</span> <span class="n">dest</span> <span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">route_log</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">cost_log</span><span class="p">[</span><span class="n">day</span><span class="p">][</span><span class="n">vehid</span><span class="p">]</span> <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">length</span><span class="p">)]</span>
+                <span class="n">ave_TT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+                <span class="n">std_TT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+                <span class="n">depature_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">W_sol</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">[</span><span class="n">vehid</span><span class="p">]</span><span class="o">.</span><span class="n">departure_time_in_second</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">orig_</span> <span class="o">=</span> <span class="n">orig</span>
+        <span class="k">if</span> <span class="n">orig</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">orig_</span> <span class="o">=</span> <span class="s2">&quot;any&quot;</span>
+        <span class="n">dest_</span> <span class="o">=</span> <span class="n">dest</span>
+        <span class="k">if</span> <span class="n">dest</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dest_</span> <span class="o">=</span> <span class="s2">&quot;any&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;orig: </span><span class="si">{</span><span class="n">orig_</span><span class="si">}</span><span class="s2">, dest: </span><span class="si">{</span><span class="n">dest_</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">depature_time</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ave_TT</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">std_TT</span><span class="p">,</span> 
+                <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;bx&#39;</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;#aaaaff&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;travel time (mean $\pm$ std)&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;departure time of vehicle&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;travel time&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="c1"># does not work very well</span>
 <span class="c1"># class SolverDUE_departure_time_choice:</span>
@@ -1654,7 +1996,7 @@ gtag('config', 'UA-111714220-1');
 <span class="c1">#             dest_ = &quot;any&quot;</span>
 <span class="c1">#         plt.title(f&quot;orig: {orig_}, dest: {dest_}&quot;)</span>
 <span class="c1">#         plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, </span>
-<span class="c1">#                 fmt=&#39;bx&#39;, ecolor=&quot;#aaaaff&quot;, capsize=0, label=&quot;travel time (mean $\pm$ std)&quot;)</span>
+<span class="c1">#                 fmt=&#39;bx&#39;, ecolor=&quot;#aaaaff&quot;, capsize=0, label=&quot;travel time (mean $pm$ std)&quot;)</span>
 <span class="c1">#         plt.xlabel(&quot;departure time of vehicle&quot;)</span>
 <span class="c1">#         plt.ylabel(&quot;travel time&quot;)</span>
 <span class="c1">#         plt.legend()</span>
@@ -1693,10 +2035,9 @@ gtag('config', 'UA-111714220-1');
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5cb08e4e"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     </body>
 </html>
