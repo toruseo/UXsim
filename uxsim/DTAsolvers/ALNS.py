@@ -11,9 +11,12 @@ from dataclasses import dataclass, field, asdict
 from typing import Callable, Sequence, List, Optional, Dict, Any, Tuple, Iterable
 import math
 import random
+import warnings
 import numpy as np
 from pprint import pprint
 import time
+
+from ..Utilities import estimate_congestion_externality_route
 
 # -------------------------
 # ログ構造体
@@ -269,6 +272,7 @@ class ALNSState:
     reward_improve_best: float
     reward_improve: float
     reward_accept_worse: float
+    always_accept: bool
 
 
     rng: random.Random
@@ -471,18 +475,18 @@ def destroy_congested_link(state: ALNSState, base: Sequence[Any]) -> Tuple[List[
 _DESTROY_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any]], Tuple[List[int], List[Any]]]] = {
     "random": destroy_random,
     "segment": destroy_segment,
-    "early_departure": destroy_early_departure,
-    "late_departure": destroy_late_departure,
-    "congested_link": destroy_congested_link,
+    "early_dep": destroy_early_departure,
+    "late_dep": destroy_late_departure,
+    "congest_link": destroy_congested_link,
 }
 
 # 破壊オペレータの初期重み（選択確率に比例）
 _DESTROY_INITIAL_WEIGHTS: Dict[str, float] = {
     "random": 1.0,
     "segment": 1.0,
-    "early_departure": 10.0,
-    "late_departure": 0.1,
-    "congested_link": 1.0,
+    "early_dep": 5.0,
+    "late_dep": 0.2,
+    "congest_link": 1.0,
 }
 
 # -------------------------
@@ -538,8 +542,8 @@ def _repair_random(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequenc
         x[i] = _rng_choice(rng, choices)
     return x, removed[:]
 
-def _repair_greedy(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
-    """貪欲法で修復.
+def _repair_minimum_cost(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequence[Any], removed: List[int]) -> Tuple[List[Any], List[int]]:
+    """各車両の総コストに基づく貪欲法で修復.
     
     各位置で最も良い値を選択。
     
@@ -559,34 +563,46 @@ def _repair_greedy(state: ALNSState, base_cur: Sequence[Any], partial_x: Sequenc
     Tuple[List[Any], List[int]]
         (修復された解, 変更されたインデックス) のタプル
     """
+    W = state.additional_info.get("W")
+    veh_keys = list(W.VEHICLES.keys())
+    
     x = _copy_vec(base_cur)
     changed = []
-    for i in removed:
-        best_val = x[i]
-        best_obj = float("inf")
-        orig = x[i]
-        for v in state.domains[i]:
-            x[i] = v
-            o = _eval_internal(state, x)
-            if o < best_obj:
-                best_obj = o
+    
+    for j in removed:
+        orig = x[j]
+        veh = W.VEHICLES[veh_keys[j]]
+        t = veh.departure_time_in_second
+        o, d = veh.orig.name, veh.dest.name
+
+        cost_min = float("inf")
+        for v in state.domains[j]:
+            x[j] = v
+            route = W.defRoute(W.dict_od_to_routes[o, d][v])
+            ext = estimate_congestion_externality_route(W, route, t)
+            private_cost = route.actual_travel_time(t)
+            cost = private_cost+ext
+            
+            if cost < cost_min:
+                cost_min = cost
                 best_val = v
-        x[i] = best_val
-        if x[i] != orig:
-            changed.append(i)
+        x[j] = best_val
+        if x[j] != orig:
+            changed.append(j)
+    
     return x, changed
 
 
 # 修復オペレータ一覧
 _REPAIR_IMPLS: Dict[str, Callable[[ALNSState, Sequence[Any], Sequence[Any], List[int]], Tuple[List[Any], List[int]]]] = {
     "random": _repair_random,
-    # "greedy": _repair_greedy,
+    "min_cost": _repair_minimum_cost,
 }
 
 # 修復オペレータの初期重み（選択確率に比例）
 _REPAIR_INITIAL_WEIGHTS: Dict[str, float] = {
     "random": 1.0,
-    # "greedy": 1.0,
+    "min_cost": 1.0,
 }
 
 # -------------------------
@@ -604,14 +620,16 @@ def init_alns(
     repair_set: Optional[List[str]] = None,
 
     # 破壊規模
-    k_min: int = 1,
+    k_min: int = None,
     k_max: int = 5,
 
     # 焼きなまし
     p0: float=0.2, #目標初期エラー
+    trials: int=50, #初期試行回数
     T0: Optional[float] = None,
     Tend: float = 1e-3,
-    total_iters: int = 10000,
+    total_iters: int = 2000,
+    always_accept: False,
 
     # 適応（セグメント更新）
     segment_len: int = 50,
@@ -649,7 +667,7 @@ def init_alns(
         初期温度。Noneの場合は自動推定
     Tend : float, default=1e-3
         終了温度
-    total_iters : int, default=10000
+    total_iters : int, default=2000
         総イテレーション数
     segment_len : int, default=50
         適応更新のセグメント長
@@ -688,7 +706,7 @@ def init_alns(
         domains = _infer_domains_from_x(x)
     n = len(x)
     if any(len(d) == 0 for d in domains):
-        raise ValueError("domains に空の位置があります。")
+        raise ValueError("domains is invalid")
 
     # 利用可能オペレータ一覧（辞書キー）
     available_destroy = list(_DESTROY_IMPLS.keys())
@@ -700,17 +718,19 @@ def init_alns(
         repair_set = available_repair[:]
 
     if not destroy_set:
-        raise ValueError("destroy_set が空です。_DESTROY_IMPLS に少なくとも1つ実装を登録してください。")
+        raise ValueError("destroy_set is empty")
     if not repair_set:
-        raise ValueError("repair_set が空です。_REPAIR_IMPLS に少なくとも1つ実装を登録してください。")
+        raise ValueError("repair_set is empty")
 
     unknown_d = [m for m in destroy_set if m not in _DESTROY_IMPLS]
     unknown_r = [m for m in repair_set  if m not in _REPAIR_IMPLS]
     if unknown_d:
-        raise ValueError(f"destroy_set に未登録のオペレータがあります: {unknown_d}. 登録済: {available_destroy}")
+        raise ValueError(f"destroy_set is invalid")
     if unknown_r:
-        raise ValueError(f"repair_set に未登録のオペレータがあります: {unknown_r}. 登録済: {available_repair}")
+        raise ValueError(f"repair_set is invalid")
 
+    if k_min is None:
+        k_min = k_max
     k_min = max(1, min(k_min, n))
     k_max = max(k_min, min(k_max, n))
     k_cur = k_max
@@ -743,7 +763,13 @@ def init_alns(
         # T0 = max(1e-6, 3.0 * scale)
             
         deltas = []
-        trials = 50
+        if total_iters > trials:
+            total_iters -= trials
+        else:
+            trials = int(total_iters*0.5)
+            total_iters -= trials
+            warnings.warn("total_iters is too small for initial T0 estimation")
+            
         for _ in range(trials):
             xx = _copy_vec(x_cur)
             k = rng.randint(k_min, min(k_max, n))
@@ -788,6 +814,7 @@ def init_alns(
         sense=sense, obj=obj, domains=domains,
         destroy_set=destroy_set, repair_set=repair_set,
         k_min=k_min, k_max=k_max,k_cur=k_cur,
+        always_accept=always_accept,
         T0=T0, Tend=Tend, total_iters=total_iters,
         segment_len=segment_len, adapt_eta=adapt_eta,
         reward_improve_best=reward_improve_best, reward_improve=reward_improve,
@@ -953,7 +980,7 @@ def auto_step(state: ALNSState) -> StepLog:
     delta = cand - state.cur
     T = _temperature(state, it_next=state.it + 1)
 
-    accept = (delta <= 0) or (random.random() < math.exp(-delta / max(T, 1e-12)))
+    accept = (((delta <= 0) or (random.random() < math.exp(-delta / max(T, 1e-12)))) or state.always_accept) and len(changed_idx) > 0
     if accept:
         state.x_cur, state.cur = x_cand, cand
 
