@@ -1010,7 +1010,40 @@ class SolverDSO_ALNS:
         s.W_intermid_solution = None
         s.dfs_link = []
         
-    def solve(s, max_iter, n_routes_per_od=10, k_max=None, p0=0.2, print_progress=True, initial_solution_World=None):
+    def solve(s, max_iter, n_routes_per_od=10, k_max=None, k_min=None, p0=0.2, trials=50, always_accept=False, print_progress=True, initial_solution_World=None, destroy_set=None, repair_set=None):
+        """
+        Solve Dynamic System Optimum (DSO) problem using a customized Adaptive Large Neighborhood Search (ADLS).
+        The objective function is 
+            total_travel_time + simulation_duration*number_of_vehicles_that_could_not_complete_their_trip.
+        The second term should be zero for reasonable results.
+
+        Parameters
+        ----------
+        max_iter : int
+            maximum number of iterations
+        n_routes_per_od : int
+            number of routes to enumerate for each OD pair
+            If `initial_solution_World` is given, this arg is ignored and the value in `initial_solution_World` is used.
+        k_max : int
+            maximum number of vehicles to change the route in each iteration. If None, it is set to 1% of the total number of vehicles.
+        k_min : int
+            minimum number of vehicles to change the route in each iteration. If None, it is set to 1.
+        p0 : float
+            initial temperature parameter for ALNS. Default is 0.2.
+        trials : int
+            number of trials to estimate the temperature parameter. Default is 50.
+        always_accept : bool
+            whether to always accept a new solution regardless of its value. Default is False.
+        print_progress : bool
+            whether to print the information
+        initial_solution_World : World
+            Initial solution (starting point) for the optimization algorithm. If None, it uses the DUO solution as a starting point; this tends to be very slow. Usually, DUE soultion is a good starting point. It must have the same structure as the output of func_World, and its simulation has been already executed.
+            Recommended example: `W_init = solve_DUE(func_World); W = solve_DSO(func_World, initial_solution_World=W_init)`.
+        destroy_set : list of functions
+            list of destroy functions to be used in ALNS. If None, all functions are used.
+        repair_set : list of functions
+            list of repair functions to be used in ALNS. If None, all functions are used.
+        """
         
         s.print_progress = print_progress
         s.n_routes_per_od = n_routes_per_od
@@ -1060,14 +1093,29 @@ class SolverDSO_ALNS:
             print("Initial solusion is used")
             routes = initial_solution_World.dict_od_to_routes
             xx0 = [0 for i in range(len(W.VEHICLES))]
+            n_route_found = 0
             for i,veh in enumerate(W.VEHICLES.values()):   
-                route_id = 0
+                route_id = -1
+                route_id_mintt = 0
+                route_mintt = float("inf")
                 for j,r in enumerate(routes[(veh.orig.name, veh.dest.name)]):
-                    if W.defRoute(r) == veh.traveled_route()[0]:
+                    route = W.defRoute(r)
+                    if route == veh.traveled_route()[0]:
                         route_id = j
+                        n_route_found += 1
                         break
-                xx0[i] = route_id
+
+                    #経路が経路集合に見当たらない場合，最短経路を探す
+                    if route.actual_travel_time(veh.departure_time_in_second) < route_mintt: 
+                        route_id_mintt = j
                 
+                if route_id != -1:
+                    xx0[i] = route_id
+                else:
+                    xx0[i] = route_id_mintt #経路が経路集合に見当たらない場合，最短経路に割付
+
+            #print(f" route recovered: {n_route_found*W.DELTAN}/{len(W.VEHICLES)*W.DELTAN}")
+
             xx_domain = []
             for i, veh in enumerate(W.VEHICLES.values()):
                 actual_n_route = len(routes[(veh.orig.name, veh.dest.name)])
@@ -1114,7 +1162,6 @@ class SolverDSO_ALNS:
         s.best_obj = []
 
         print("solving DSO by ALNS...")
-        print("k_max:", k_max)
 
         def objective_function_by_UXsim(xx):
             W = s.func_World()
@@ -1149,24 +1196,28 @@ class SolverDSO_ALNS:
                 s.best_iter.append(s.iter)
                 s.best_obj.append(s.best_obj_value)
 
-            if s.iter%20 == 0:
+            if s.print_progress and s.iter%20 == 0:
                 print(f"iter: {s.iter} - TTT: {W.analyzer.total_travel_time}, trips:{W.analyzer.trip_completed}/{W.analyzer.trip_all}, Obj:{obj_value}, Best Obj:{s.best_obj_value}")
 
             s.iter += 1
             return obj_value
 
-
         state = ALNS.init_alns(
             xx0, objective_function_by_UXsim,
             domains=xx_domain,
             k_max=k_max,
+            k_min=k_min,
+            destroy_set=destroy_set,
+            repair_set=repair_set,
             total_iters=max_iter,
             p0=p0,
+            trials=trials,
+            always_accept=always_accept,
             seed=0,
             additional_info={"departure_times":departure_times, "W":W}
         )
 
-        ALNS.run_auto(state, n=max_iter)
+        ALNS.run_auto(state, n=state.total_iters)
 
         s.xx_star, s.run = ALNS.finalize(state)
 
@@ -1202,6 +1253,72 @@ class SolverDSO_ALNS:
         plt.show()
 
 
+    def plot_link_stats(s):
+        """
+        Plot the traffic volume and average travel time for each link across iterations.
+        This function creates two separate figures: one for traffic volume and one for average travel time.
+        For each link, it plots the values across all iterations and adds a legend with link identifiers.
+        """
+
+        plt.figure()
+        plt.title("traffic volume")
+        for i in range(len(s.dfs_link[0])):
+            vols = [df["traffic_volume"][i] for df in s.dfs_link]
+            plt.plot(vols, label=s.dfs_link[0]["link"][i])
+        plt.xlabel("iteration")
+        plt.ylabel("volume (veh)")
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        plt.figure()
+        plt.title("average travel time")
+        for i in range(len(s.dfs_link[0])):
+            vols = [df["average_travel_time"][i] for df in s.dfs_link]
+            plt.plot(vols, label=s.dfs_link[0]["link"][i])
+        plt.xlabel("iteration")
+        plt.ylabel("time (s)")
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        plt.show()
+    
+    def plot_vehicle_stats(s, orig=None, dest=None):
+        """
+        Plot vehicle travel time statistics based on route logs.
+        This function generates a plot that shows average travel times with standard deviations
+        for vehicles, filtered by optional origin and destination locations.
+
+        Parameters
+        ----------
+        orig : str, optional
+            Origin location name to filter vehicles. If None, all origins are included.
+        dest : str, optional
+            Destination location name to filter vehicles. If None, all destinations are included.
+        """
+
+        ave_TT = []
+        std_TT = []
+        depature_time = []
+        for vehid in s.route_log[0].keys():
+            if (s.W_sol.VEHICLES[vehid].orig.name == orig or orig == None) and (s.W_sol.VEHICLES[vehid].dest.name == dest or dest == None):
+                length = len(s.route_log)
+                ts = [s.cost_log[day][vehid] for day in range(int(length/2), length)]
+                ave_TT.append(np.average(ts))
+                std_TT.append(np.std(ts))
+                depature_time.append(s.W_sol.VEHICLES[vehid].departure_time_in_second)
+
+        plt.figure()
+        orig_ = orig
+        if orig == None:
+            orig_ = "any"
+        dest_ = dest
+        if dest == None:
+            dest_ = "any"
+        plt.title(f"orig: {orig_}, dest: {dest_}")
+        plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, 
+                fmt='bx', ecolor="#aaaaff", capsize=0, label=r"travel time (mean $\pm$ std)")
+        plt.xlabel("departure time of vehicle")
+        plt.ylabel("travel time")
+        plt.legend()
+        plt.show()
 
 # does not work very well
 # class SolverDUE_departure_time_choice:
