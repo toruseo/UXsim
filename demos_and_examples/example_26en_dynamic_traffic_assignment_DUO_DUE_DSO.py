@@ -66,8 +66,8 @@ df_DUE = W_DUE.analyzer.basic_to_pandas()
 
 #################################
 # DSO
-solver_DSO = SolverDSO_GA(create_World)
-solver_DSO.solve(max_iter=20, pop_size=20)   # max_iter should be larger (e.g., 100) for a better result. this is just for demonstration
+solver_DSO = SolverDSO_ALNS(create_World)
+solver_DSO.solve(max_iter=100)
 W_DSO = solver_DSO.W_sol
 W_DSO.analyzer.print_simple_stats(force_print=True)
 df_DSO = W_DSO.analyzer.basic_to_pandas()
