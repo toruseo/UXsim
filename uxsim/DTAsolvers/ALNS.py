@@ -487,7 +487,6 @@ _DESTROY_INITIAL_WEIGHTS: Dict[str, float] = {
     "early_dep": 5.0,
     "late_dep": 0.2,
     "congest_link": 1.0,
-    "reducible": 1.0,
 }
 
 # -------------------------
