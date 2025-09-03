@@ -327,7 +327,7 @@ class SolverDUE:
             dest_ = "any"
         plt.title(f"orig: {orig_}, dest: {dest_}")
         plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, 
-                fmt='bx', ecolor="#aaaaff", capsize=0, label="travel time (mean $\pm$ std)")
+                fmt='bx', ecolor="#aaaaff", capsize=0, label=r"travel time (mean $\pm$ std)")
         plt.xlabel("departure time of vehicle")
         plt.ylabel("travel time")
         plt.legend()
@@ -603,7 +603,7 @@ class SolverDUE:
 #             dest_ = "any"
 #         plt.title(f"orig: {orig_}, dest: {dest_}")
 #         plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, 
-#                 fmt='bx', ecolor="#aaaaff", capsize=0, label="travel time (mean $\pm$ std)")
+#                 fmt='bx', ecolor="#aaaaff", capsize=0, label="travel time (mean $pm$ std)")
 #         plt.xlabel("departure time of vehicle")
 #         plt.ylabel("travel time")
 #         plt.legend()
