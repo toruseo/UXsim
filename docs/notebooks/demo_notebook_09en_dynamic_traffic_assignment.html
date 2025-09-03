@@ -297,8 +297,8 @@ gtag('config', 'UA-111714220-1');
 <p>The default routing principle of UXsim is based on DUO, because it is reasonable and very easy to compute.</p>
 <p>DUE and DSO are also important as theoretical benchmarks. Due to the aforementioned complexity, it is known that they are difficult to solve especially when the network is large. But, for small or mid scale networks with relatively small number of platoons, their approximate solutions can be obtained by UXsim. The solvers for DTA problems are implemented as <code class="docutils literal notranslate"><span class="pre">uxsim.DTAsolvers</span></code> submodule. In this notebook, we demonstrate their behaviors.</p>
 <p>Techical notes for experienced readers. In this demonstration, we consider the route choice problem only. In the other words, we do not consider the departure time problem, and the departure time of each traveler is assumed to be fixed.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -307,16 +307,6 @@ gtag('config', 'UA-111714220-1');
 <span class="kn">from</span><span class="w"> </span><span class="nn">uxsim.DTAsolvers</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-c:\Users\ts123\AppData\Local\Programs\Python\Python313\Lib\site-packages\tqdm\auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
-  from .autonotebook import tqdm as notebook_tqdm
-SyntaxWarning: invalid escape sequence &#39;\p&#39;
-</pre></div></div>
 </div>
 <section id="Two-route-network-with-parallel-highway-and-arterial">
 <h2>Two route network with parallel highway and arterial<a class="headerlink" href="#Two-route-network-with-parallel-highway-and-arterial" title="Link to this heading">¶</a></h2>
@@ -1474,14 +1464,6 @@ DUO vs DUE: 5100 / 6840
 DUE vs DSO: 2430 / 6840
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 </section>
@@ -1571,6 +1553,7 @@ DUE vs DSO: 2430 / 6840
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>

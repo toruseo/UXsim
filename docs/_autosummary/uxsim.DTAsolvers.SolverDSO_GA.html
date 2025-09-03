@@ -384,7 +384,7 @@ If <cite>initial_solution_World</cite> is given, this arg is ignored and the val
 <li><p><strong>mutation_gene_rate</strong> (<em>float</em>) – mutation rate for gene</p></li>
 <li><p><strong>n_crossover_points</strong> (<em>int</em>) – number of crossover points</p></li>
 <li><p><strong>print_progress_detailed</strong> (<em>bool</em>) – whether to print the detailed information</p></li>
-<li><p><strong>initial_solution_World</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – initial solution (starting point) for the optimization algorithm. It must have the same structure as the output of func_World, and its simulation has been already executed. Recommended example: <cite>W_init = solve_DUE(func_World); W = solve_DSO(func_World, initial_solution_World=W_init)</cite>
+<li><p><strong>initial_solution_World</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – initial solution (starting point) for the optimization algorithm. It must have the same structure as the output of func_World, and its simulation has been already executed. Recommended example: <cite>W_init = solve_DUE(func_World); W = solve_DSO(func_World, initial_solution_World=W_init)</cite>
 For unknown reason, this World is not always reproduced extactly. Sometimes small number of vehicles cannot find the routes chosen in DUE solution. TODO: fix</p></li>
 </ul>
 </dd>
@@ -392,7 +392,7 @@ For unknown reason, this World is not always reproduced extactly. Sometimes smal
 <dd class="field-even"><p><strong>W</strong> – World object with near DSO solution (if properly converged)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World">World</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World">World</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -485,5 +485,6 @@ For unknown reason, this World is not always reproduced extactly. Sometimes smal
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>

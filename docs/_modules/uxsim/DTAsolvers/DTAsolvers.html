@@ -623,7 +623,7 @@ gtag('config', 'UA-111714220-1');
             <span class="n">dest_</span> <span class="o">=</span> <span class="s2">&quot;any&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;orig: </span><span class="si">{</span><span class="n">orig_</span><span class="si">}</span><span class="s2">, dest: </span><span class="si">{</span><span class="n">dest_</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">depature_time</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ave_TT</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">std_TT</span><span class="p">,</span> 
-                <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;bx&#39;</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;#aaaaff&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;travel time (mean $\pm$ std)&quot;</span><span class="p">)</span>
+                <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;bx&#39;</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;#aaaaff&quot;</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;travel time (mean $\pm$ std)&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;departure time of vehicle&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;travel time&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -901,7 +901,7 @@ gtag('config', 'UA-111714220-1');
 <span class="c1">#             dest_ = &quot;any&quot;</span>
 <span class="c1">#         plt.title(f&quot;orig: {orig_}, dest: {dest_}&quot;)</span>
 <span class="c1">#         plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, </span>
-<span class="c1">#                 fmt=&#39;bx&#39;, ecolor=&quot;#aaaaff&quot;, capsize=0, label=&quot;travel time (mean $\pm$ std)&quot;)</span>
+<span class="c1">#                 fmt=&#39;bx&#39;, ecolor=&quot;#aaaaff&quot;, capsize=0, label=&quot;travel time (mean $pm$ std)&quot;)</span>
 <span class="c1">#         plt.xlabel(&quot;departure time of vehicle&quot;)</span>
 <span class="c1">#         plt.ylabel(&quot;travel time&quot;)</span>
 <span class="c1">#         plt.legend()</span>
@@ -2039,5 +2039,6 @@ gtag('config', 'UA-111714220-1');
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>
