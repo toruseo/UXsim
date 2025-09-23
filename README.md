@@ -22,14 +22,16 @@ If you are interested, please see:
 ## Main Features
 
 - Simple, lightweight, and easy-to-use Python implementation of modern standard models of dynamic network traffic flow
-- Macroscopic traffic simulation: Simulating over 60000 vehicles in a city in 30 seconds, or even 1 million vehicles in a metropolitan area in 40 seconds depending on the simulation setting
+- Macroscopic and mesoscopic traffic simulation: Simulating over 60000 vehicles in a city in 30 seconds, or even 1 million vehicles in a metropolitan area in 40 seconds depending on the simulation setting
 - Dynamic traffic assignment: Traffic flow simulation with a given network and time-dependent OD demand
-- Theoretically valid models commonly used in academic/professional transportation research
-- Implementation of traffic control/management schemes such as taxi/shared-mobility, traffic signals, road pricing, and so on
-- Basic analysis of simulation results and their export to `pandas.DataFrame` and CSV files
-- Visualization of simulation results using `Matplotlib`; interactive GUI is also available
-- Flexible and customizable thanks to pure Python implementation; can also be directly integrated with other Python-based frameworks, such as `PyTorch` for deep reinforcement learning traffic control
-- The main code `uxsim.py` is only about 2300 lines of code. Users may easily understand and customize it
+	- Approximate solvers for Dynamic User Equilibrium and Dynamic System Optimum are also available
+- Theoretically valid models commonly used in academic and professional transportation research
+- Implementation of traffic control and management schemes such as taxi/shared-mobility, traffic signals, road pricing, and so on
+- Flexible and customizable thanks to pure Python implementation
+	- Basic analysis of simulation results and their export to `pandas.DataFrame` and CSV files
+	- Visualization of simulation results using `Matplotlib`; interactive GUI is also available
+	- can also be directly integrated with other Python-based frameworks, such as `PyTorch` for deep reinforcement learning traffic control
+	- The main code `uxsim.py` is only about 1200 lines of code. Users may easily understand and customize it
 
 ## Simulation Examples
 
@@ -58,9 +60,11 @@ A [Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/
 <img src="https://github.com/toruseo/UXsim/blob/images/anim_network1_0.22_DQL.gif" width="400"/>
 </p>
 
+<!--
 ### Interactive GUI for exploring a simulation result
 
 https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127196d9
+-->
 
 ## Install
 
@@ -74,6 +78,9 @@ The simplest way is to use `pip` to install from PyPI:
 pip install uxsim
 ```
 
+<details>
+<summary>Alternative methods for advanced users (click to see)</summary>
+	
 ### Using conda
 
 You can also install with `conda` from `conda-forge` channel:
@@ -84,9 +91,6 @@ conda install uxsim
 
 For the details, please see [here](https://github.com/conda-forge/uxsim-feedstock?tab=readme-ov-file#installing-uxsim).
 
-<details>
-<summary>Alternative methods for advanced users (click to see)</summary>
-	
 ### Using pip with custom configuration
 
 You can also use `pip` to install the GitHub version:
@@ -204,6 +208,7 @@ To learn more about UXsim, please see:
 - [Demos and examples](https://github.com/toruseo/UXsim/tree/main/demos_and_examples): Various examples using Jupyter Notebooks and Python codes
 - [UXsim Technical Documentation](https://toruseo.jp/UXsim/docs/index.html): Detailed documents on tutorials, simulation mechanism, and specifications of modules/functions
 - [arXiv preprint](https://arxiv.org/abs/2309.17114): Scientific overview
+- [JOSS paper](https://doi.org/10.21105/joss.07617): Peer-reviewed article in Journal of Open Source Software
 
 ## Main Files
 
