@@ -189,10 +189,16 @@ class Node:
 
                     #consider the link preferences
                     outlinks = list(s.outlinks.values())
-                    if set(outlinks) & set(veh.links_prefer):
-                        outlinks = sorted(set(outlinks) & set(veh.links_prefer), key=lambda l:l.name)
-                    if set(outlinks) & set(veh.links_avoid):
-                        outlinks = sorted(set(outlinks) - set(veh.links_avoid), key=lambda l:l.name)
+                    if veh.specified_route == None:
+                        if set(outlinks) & set(veh.links_prefer):
+                            outlinks = sorted(set(outlinks) & set(veh.links_prefer), key=lambda l:l.name)
+                        if set(outlinks) & set(veh.links_avoid):
+                            outlinks = sorted(set(outlinks) - set(veh.links_avoid), key=lambda l:l.name)
+                    else:
+                        if veh.specified_route[0] in outlinks:
+                            outlinks = [veh.specified_route[0]]
+                        else:
+                            raise ValueError(f"Vehicle {veh.name}: specified route {s.specified_route} is inconsistent at the origin node {s.name}. Debug info: {outlinks=}")
                     
                     preference = np.array([veh.route_pref[l.id] for l in outlinks], dtype=float)
                     if s.W.hard_deterministic_mode == False:
@@ -1191,7 +1197,6 @@ class Vehicle:
         """
         Select a next link from the current link.
         """
-        #print("aaa", end="")
         if s.specified_route == None:
             if s.dest != s.link.end_node:
                 outlinks = list(s.link.end_node.outlinks.values())
