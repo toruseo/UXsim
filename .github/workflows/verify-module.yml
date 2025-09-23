@@ -22,7 +22,7 @@ jobs:
         pip install .
     - name: Install pytest other dependencies
       run: |
-        # Install testing dependencies with compatible versions to avoid serialization issues
-        pip install "pytest>=7.4.0,<8.0.0" "pytest-xdist>=3.3.0,<4.0.0" "pytest-rerunfailures>=11.1,<12.0" setuptools
+        # Install testing dependencies with compatible versions for parallel execution
+        pip install "pytest>=8.4.0" "pytest-xdist>=3.8.0" "pytest-rerunfailures>=16.0" setuptools
     - name: Run verifications with pytest
       run: pytest -n auto tests/test_verification_straight_road.py tests/test_verification_route_choice.py tests/test_verification_node.py tests/test_verification_exceptional.py tests/test_verification_sioux_falls.py tests/test_verification_multilane.py tests/test_verification_taxi.py tests/test_verification_dta_solvers.py --durations=0 -v
