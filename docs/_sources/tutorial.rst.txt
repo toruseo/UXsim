@@ -10,7 +10,7 @@ Here we show several examples of simulations and applications of UXsim.
 The original Jupyter Notebook can be obtained from https://github.com/toruseo/UXsim/tree/main/demos_and_examples.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    ../notebooks/demo_notebook_01en.ipynb
    ../notebooks/demo_notebook_10en_traffic_signal_tutorial.ipynb

@@ -31,18 +31,21 @@ Classes (support)
 -----------------
 
 These classes are not necessary for the basic usage of UXsim, but useful for specific or advanced analyses.
+``DTAsolvers`` can be used to derive approximate solutions for Dynamic User Equilibrium (DUE) and Dynamic System Optimum (DSO).
+``TaxiHandler`` can be used to simulate shared mobility. 
+``OSMImporter2`` is for importing OpenStreetMap data.
 
 .. autosummary::
    :toctree: _autosummary
    :nosignatures:
 
    uxsim.Route
+   uxsim.DTAsolvers.SolverDUE
+   uxsim.DTAsolvers.SolverDSO_D2D
    uxsim.TaxiHandler.TripRequest
    uxsim.TaxiHandler.TaxiHandler
    uxsim.TaxiHandler.TaxiHandler_nearest
-   uxsim.OSMImporter.OSMImporter
-   uxsim.DTAsolvers.SolverDUE
-   uxsim.DTAsolvers.SolverDSO_GA
+   uxsim.OSMImporter2.OSMImporter2
    uxsim.ResultGUIViewer.ResultGUIViewer
 
 

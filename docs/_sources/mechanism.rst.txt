@@ -1,6 +1,6 @@
 
-Simulation Mechanism: Summary
-=============================
+Simulation Mechanism
+====================
 
 In this page, we briefly explain the models and logics behind UXsim.
 If you want to know more details, please refer to `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_, the code, the original articles, or  `Japanese textbook on traffic simulation <https://www.coronasha.co.jp/np/isbn/9784339052794/>`_.
@@ -167,3 +167,13 @@ The advantage of this model:
 The limitation:
 
 - Aggregation error at network-level traffic: All vehicles in single platoon must have the same OD pair and travel the same route consecutively. This can be a source of errors at node merging/diverging and route choice behaviors.
+
+
+Further reading
+---------------
+
+For futher details on the simulation mechanism, please see the following materials:
+
+- `UXsim's DeepWiki <https://deepwiki.com/toruseo/UXsim>`_: AI-generated document. I confirmed that it is mostly okey.
+- :doc:`Detailed mechanism page <./mechanism_detailed>`: Some explanations on the code.
+- `arXiv preprint <https://arxiv.org/abs/2309.17114>`_: Scientific overview

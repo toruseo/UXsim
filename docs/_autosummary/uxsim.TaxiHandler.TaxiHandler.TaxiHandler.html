@@ -219,8 +219,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism: Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
@@ -229,12 +228,12 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Route.html">uxsim.Route</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.DTAsolvers.SolverDSO_D2D.html">uxsim.DTAsolvers.SolverDSO_D2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.DTAsolvers.SolverDSO_GA.html">uxsim.DTAsolvers.SolverDSO_GA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.OSMImporter2.OSMImporter2.html">uxsim.OSMImporter2.OSMImporter2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
@@ -293,7 +292,7 @@ gtag('config', 'UA-111714220-1');
 <p>Initializes a taxi handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The world object.</p>
+<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -302,7 +301,7 @@ gtag('config', 'UA-111714220-1');
 <dd><p>Initializes a taxi handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The world object.</p>
+<dd class="field-odd"><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -345,8 +344,8 @@ gtag('config', 'UA-111714220-1');
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The origin node of the trip request.</p></li>
-<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The destination node of the trip request.</p></li>
+<li><p><strong>orig</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The origin node of the trip request.</p></li>
+<li><p><strong>dest</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The destination node of the trip request.</p></li>
 <li><p><strong>depart_time</strong> (<em>float</em>) – The time at which the trip request departs.</p></li>
 <li><p><strong>name</strong> (<em>any</em><em>, </em><em>optional</em>) – The name of the trip request. Default is None.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em>) – An optional attribute of the trip request. This can be used to store any information by users’ need.</p></li>
@@ -361,7 +360,7 @@ gtag('config', 'UA-111714220-1');
 <dd><p>Assigns a trip request to a vehicle.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.Vehicle" title="uxsim.uxsim.Vehicle"><em>Vehicle</em></a>) – The vehicle to assign the trip request to.</p>
+<dd class="field-odd"><p><strong>vehicle</strong> (<a class="reference internal" href="uxsim.Vehicle.html#uxsim.Vehicle" title="uxsim.Vehicle"><em>Vehicle</em></a>) – The vehicle to assign the trip request to.</p>
 </dd>
 </dl>
 </dd></dl>

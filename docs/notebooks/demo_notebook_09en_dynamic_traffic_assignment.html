@@ -220,8 +220,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism: Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Node.html">uxsim.Node</a></li>
@@ -230,12 +229,12 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.Route.html">uxsim.Route</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.DTAsolvers.SolverDSO_D2D.html">uxsim.DTAsolvers.SolverDSO_D2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.DTAsolvers.SolverDSO_GA.html">uxsim.DTAsolvers.SolverDSO_GA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.OSMImporter2.OSMImporter2.html">uxsim.OSMImporter2.OSMImporter2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../_autosummary/uxsim.utils.html">uxsim.utils</a></li>
@@ -298,7 +297,7 @@ gtag('config', 'UA-111714220-1');
 <p>DUE and DSO are also important as theoretical benchmarks. Due to the aforementioned complexity, it is known that they are difficult to solve especially when the network is large. But, for small or mid scale networks with relatively small number of platoons, their approximate solutions can be obtained by UXsim. The solvers for DTA problems are implemented as <code class="docutils literal notranslate"><span class="pre">uxsim.DTAsolvers</span></code> submodule. In this notebook, we demonstrate their behaviors.</p>
 <p>Techical notes for experienced readers. In this demonstration, we consider the route choice problem only. In the other words, we do not consider the departure time problem, and the departure time of each traveler is assumed to be fixed.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -355,7 +354,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 <p>The network structure is as follows. Vehicles travel from nodes “1” and “4” at the left to node “7” at the right. The upper route is a <em>highway</em>, and the bottom is an <em>arterial road</em>. The highway has faster maximum speed but smaller traffic capacity compared with the arterial road. Vehicles from “3” can choose either highway or arterial, depending on the traffic condition.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">W</span> <span class="o">=</span> <span class="n">create_World</span><span class="p">()</span>
@@ -372,7 +371,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 <p>For later use, we define the following visualization function to visualize simulation results.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">visualizaion_helper_function</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
@@ -409,7 +408,7 @@ gtag('config', 'UA-111714220-1');
 <h3>DUO<a class="headerlink" href="#DUO" title="Link to this heading">¶</a></h3>
 <p>DUO can be simulated by the default procedure of UXsim as follows.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># DUO (default)</span>
@@ -488,7 +487,7 @@ reach a steady state. Due to the problem complexity, it does not necessarily rea
 <li><p>Iryo, T., Watling, D., &amp; Hazelton, M. (2024). Estimating Markov Chain Mixing Times: Convergence Rate Towards Equilibrium of a Stochastic Process Traffic Assignment Model. Transportation Science. <a class="reference external" href="https://doi.org/10.1287/trsc.2024.0523">https://doi.org/10.1287/trsc.2024.0523</a></p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># DUE</span>
@@ -507,22 +506,22 @@ reach a steady state. Due to the problem complexity, it does not necessarily rea
 <div class="highlight"><pre>
 solving DUE...
 DUE summary:
- total travel time: initial 4046400.0 -&gt; average of last 25 iters 3191056.0
- number of potential route changes: initial 1580.0 -&gt; average of last 25 iters 1000.8
- route travel time gap: initial 57.2 -&gt; average of last 25 iters 10.2
- computation time: 5.5 seconds
+ total travel time: initial 4046400.0 -&gt; average of last 25 iters 3221200.0
+ number of potential route changes: initial 1580.0 -&gt; average of last 25 iters 1144.8
+ route travel time gap: initial 57.2 -&gt; average of last 25 iters 13.9
+ computation time: 5.0 seconds
 results:
  average speed:  11.3 m/s
  number of completed trips:      4500 / 4500
- total travel time:              3195600.0 s
- average travel time of trips:   710.1 s
- average delay of trips:         380.1 s
+ total travel time:              3190400.0 s
+ average travel time of trips:   709.0 s
+ average delay of trips:         379.0 s
  delay ratio:                    0.535
- total distance traveled:        23880000.0 m
+ total distance traveled:        23840000.0 m
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizaion_helper_function</span><span class="p">(</span><span class="n">W_DUE</span><span class="p">)</span>
@@ -537,11 +536,11 @@ results:
 results:
  average speed:  11.3 m/s
  number of completed trips:      4500 / 4500
- total travel time:              3195600.0 s
- average travel time of trips:   710.1 s
- average delay of trips:         380.1 s
+ total travel time:              3190400.0 s
+ average travel time of trips:   709.0 s
+ average delay of trips:         379.0 s
  delay ratio:                    0.535
- total distance traveled:        23880000.0 m
+ total distance traveled:        23840000.0 m
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -573,7 +572,7 @@ results:
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DUE</span><span class="o">.</span><span class="n">plot_convergence</span><span class="p">()</span>
@@ -629,19 +628,19 @@ results:
 </section>
 <section id="DSO">
 <h3>DSO<a class="headerlink" href="#DSO" title="Link to this heading">¶</a></h3>
-<p>Now we compute DSO solution. Here we use Adaptive Large Neighborhood Search (ALNS), which is a heuristic algorithm that is suitable for this kind of problem, customized for the DSO problem by incorporating some domain-knowledge.</p>
-<p>The objective function for ALNS is</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>total_travel_time + simulation_duration*number_of_vehicles_that_could_not_complete_their_trip
-</pre></div>
-</div>
-<p>The second term should be zero for reasonable results.</p>
+<p>Now we compute DSO solution. To obtain the solution, we use a similar iterative algorithm to the previous DUE example. In this algorithm, each traveler tries to minimize their marginal travel time (i.e., private cost + externality) instead of the private cost as in DUE.</p>
+<p>This algorithm is a loose generalization of “DSO game” of the following paper:</p>
+<ul class="simple">
+<li><p>Satsukawa, K., Wada, K., &amp; Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209.</p></li>
+</ul>
+<p>In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take long time. This <code class="docutils literal notranslate"><span class="pre">SolverDSO_D2D</span></code> speeds up the solution process significantly, but it weaken the convergence guarantee.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># DSO by ALNS</span>
-<span class="n">solver_DSO</span> <span class="o">=</span> <span class="n">SolverDSO_ALNS</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
-<span class="n">solver_DSO</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">solver_DSO</span> <span class="o">=</span> <span class="n">SolverDSO_D2D</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
+<span class="n">solver_DSO</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">W_DSO</span> <span class="o">=</span> <span class="n">solver_DSO</span><span class="o">.</span><span class="n">W_sol</span>
 <span class="n">W_DSO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">df_DSO</span> <span class="o">=</span> <span class="n">W_DSO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_to_pandas</span><span class="p">()</span>
@@ -653,23 +652,24 @@ results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-No initial solution
-solving DSO by ALNS...
+solving DSO...
 DSO summary:
- total travel time: initial 3144400.0 -&gt; last 2955200.0
- computation time: 19.2 seconds
+ total travel time: initial 4046400.0 -&gt; minimum 2962800.0
+ number of potential route changes: initial 1660.0 -&gt; minimum 960.0
+ route marginal travel time gap: initial 8825.7 -&gt; minimum 137.5
+ computation time: 2.9 seconds
 results:
- average speed:  12.5 m/s
+ average speed:  0.0 m/s
  number of completed trips:      4500 / 4500
- total travel time:              2955200.0 s
- average travel time of trips:   656.7 s
- average delay of trips:         326.7 s
- delay ratio:                    0.497
- total distance traveled:        23640000.0 m
+ total travel time:              2962800.0 s
+ average travel time of trips:   658.4 s
+ average delay of trips:         328.4 s
+ delay ratio:                    0.499
+ total distance traveled:        23520000.0 m
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">visualizaion_helper_function</span><span class="p">(</span><span class="n">W_DSO</span><span class="p">)</span>
@@ -682,13 +682,13 @@ results:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 results:
- average speed:  12.5 m/s
+ average speed:  0.0 m/s
  number of completed trips:      4500 / 4500
- total travel time:              2955200.0 s
- average travel time of trips:   656.7 s
- average delay of trips:         326.7 s
- delay ratio:                    0.497
- total distance traveled:        23640000.0 m
+ total travel time:              2962800.0 s
+ average travel time of trips:   658.4 s
+ average delay of trips:         328.4 s
+ delay ratio:                    0.499
+ total distance traveled:        23520000.0 m
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -701,9 +701,11 @@ results:
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_2.png" />
-</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+LoggingWarning: vehicle_logging_timestep_interval is not 1. The plot is not exactly accurate.
+LoggingWarning: vehicle_logging_timestep_interval is not 1. The trajecotries are not exactly accurate.
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -712,15 +714,22 @@ results:
 <img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_3.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_3.png" />
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_4.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_4.png" />
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_5.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_19_5.png" />
+</div>
+</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DSO</span><span class="o">.</span><span class="n">plot_convergence</span><span class="p">()</span>
@@ -764,7 +773,7 @@ results:
 <h3>Comparison<a class="headerlink" href="#Comparison" title="Link to this heading">¶</a></h3>
 <p>Comparison of 3 cases.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_DUO</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DUO&#39;</span>
@@ -825,20 +834,20 @@ results:
       <td>DUE</td>
       <td>4500</td>
       <td>4500</td>
-      <td>3195600.0</td>
-      <td>710.133333</td>
-      <td>1710600.0</td>
-      <td>380.133333</td>
+      <td>3190400.0</td>
+      <td>708.977778</td>
+      <td>1705400.0</td>
+      <td>378.977778</td>
     </tr>
     <tr>
       <th>2</th>
       <td>DSO</td>
       <td>4500</td>
       <td>4500</td>
-      <td>2955200.0</td>
-      <td>656.711111</td>
-      <td>1470200.0</td>
-      <td>326.711111</td>
+      <td>2962800.0</td>
+      <td>658.400000</td>
+      <td>1477800.0</td>
+      <td>328.400000</td>
     </tr>
   </tbody>
 </table>
@@ -850,7 +859,7 @@ results:
 <h2>Large-scale scenario<a class="headerlink" href="#Large-scale-scenario" title="Link to this heading">¶</a></h2>
 <p>Now we show larger example.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">uxsim</span>
@@ -942,7 +951,7 @@ results:
 <h3>DUO<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <p>First, let’s compute DUO solution.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># execute simulation</span>
@@ -964,29 +973,7 @@ results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-simulation setting:
- scenario name:
- simulation duration:    4800 s
- number of vehicles:     6840 veh
- total road length:      288000 m
- time discret. width:    10 s
- platoon size:           10 veh
- number of timesteps:    480
- number of platoons:     684
- number of links:        288
- number of nodes:        81
- setup time:             5.45 s
-simulating...
-      time| # of vehicles| ave speed| computation time
-       0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|     1380 vehs|   9.7 m/s|     0.05 s
-    1200 s|     2240 vehs|   8.5 m/s|     0.12 s
-    1800 s|     2860 vehs|   8.0 m/s|     0.20 s
-    2400 s|     3030 vehs|   9.4 m/s|     0.28 s
-    3000 s|     1290 vehs|   7.7 m/s|     0.34 s
-    3600 s|        0 vehs|   0.0 m/s|     0.37 s
-    4200 s|        0 vehs|   0.0 m/s|     0.38 s
-    4800 s|        0 vehs|   0.0 m/s|     0.39 s
+    4800 s|        0 vehs|   0.0 m/s|     5.58 s
  simulation finished
 results:
  average speed:  9.6 m/s
@@ -1016,10 +1003,8 @@ results:
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-100%|██████████| 60/60 [00:02&lt;00:00, 20.86it/s]
-</pre></div></div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1f24f560e6f648499b124a95fed80045", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -1034,7 +1019,7 @@ results:
 <h3>DUE<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
 <p>Now we compute DUE solution.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DUE</span> <span class="o">=</span> <span class="n">DTAsolvers</span><span class="o">.</span><span class="n">SolverDUE</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
@@ -1069,87 +1054,86 @@ simulation setting (not finalized):
  number of links:        288
  number of nodes:        81
  setup time:             0.01 s
-number of OD pairs: 6561, number of routes: 123650
+number of OD pairs: 6561, number of routes: 121733
 solving DUE...
- iter 0: time gap: 113.1, potential route change: 4790, route change: 280, total travel time:  6663000.0, delay ratio:  0.470
- iter 1: time gap: 104.8, potential route change: 4440, route change: 200, total travel time:  6628100.0, delay ratio:  0.467
- iter 2: time gap: 92.6, potential route change: 4320, route change: 210, total travel time:  6363500.0, delay ratio:  0.445
- iter 3: time gap: 85.9, potential route change: 4270, route change: 240, total travel time:  6514500.0, delay ratio:  0.458
- iter 4: time gap: 103.0, potential route change: 4130, route change: 220, total travel time:  6775100.0, delay ratio:  0.478
- iter 5: time gap: 90.1, potential route change: 4220, route change: 170, total travel time:  6558200.0, delay ratio:  0.461
- iter 6: time gap: 80.4, potential route change: 4180, route change: 160, total travel time:  6419500.0, delay ratio:  0.449
- iter 7: time gap: 81.4, potential route change: 4190, route change: 310, total travel time:  6400500.0, delay ratio:  0.448
- iter 8: time gap: 75.6, potential route change: 4140, route change: 250, total travel time:  6327100.0, delay ratio:  0.441
- iter 9: time gap: 59.6, potential route change: 3950, route change: 110, total travel time:  6166000.0, delay ratio:  0.427
- iter 10: time gap: 64.5, potential route change: 4210, route change: 280, total travel time:  6030700.0, delay ratio:  0.414
- iter 11: time gap: 63.3, potential route change: 4030, route change: 200, total travel time:  6228600.0, delay ratio:  0.433
- iter 12: time gap: 57.2, potential route change: 4070, route change: 290, total travel time:  6055200.0, delay ratio:  0.416
- iter 13: time gap: 54.6, potential route change: 4020, route change: 200, total travel time:  5991300.0, delay ratio:  0.410
- iter 14: time gap: 57.5, potential route change: 4030, route change: 190, total travel time:  6030200.0, delay ratio:  0.414
- iter 15: time gap: 53.4, potential route change: 4210, route change: 220, total travel time:  5927900.0, delay ratio:  0.404
- iter 16: time gap: 53.6, potential route change: 4110, route change: 280, total travel time:  6035900.0, delay ratio:  0.415
- iter 17: time gap: 46.9, potential route change: 4120, route change: 250, total travel time:  5803300.0, delay ratio:  0.391
- iter 18: time gap: 42.8, potential route change: 4260, route change: 190, total travel time:  5621200.0, delay ratio:  0.371
- iter 19: time gap: 49.1, potential route change: 4230, route change: 290, total travel time:  5701200.0, delay ratio:  0.380
- iter 20: time gap: 46.5, potential route change: 3990, route change: 150, total travel time:  5673300.0, delay ratio:  0.377
- iter 21: time gap: 47.5, potential route change: 4230, route change: 260, total travel time:  5623400.0, delay ratio:  0.372
- iter 22: time gap: 45.3, potential route change: 3940, route change: 200, total travel time:  5552500.0, delay ratio:  0.364
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-UserWarning: Warning: 10 / 6840 vehicles have not finished their trips. The DUE solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.
+ iter 0: time gap: 127.2, potential route change: 4790, route change: 230, total travel time:  6663000.0, delay ratio:  0.470
+ iter 1: time gap: 129.8, potential route change: 4450, route change: 150, total travel time:  6783700.0, delay ratio:  0.479
+ iter 2: time gap: 123.2, potential route change: 4500, route change: 210, total travel time:  6729100.0, delay ratio:  0.475
+ iter 3: time gap: 114.3, potential route change: 4320, route change: 210, total travel time:  6662800.0, delay ratio:  0.470
+ iter 4: time gap: 100.7, potential route change: 4370, route change: 240, total travel time:  6521500.0, delay ratio:  0.458
+ iter 5: time gap: 102.6, potential route change: 4100, route change: 170, total travel time:  6629700.0, delay ratio:  0.467
+ iter 6: time gap: 101.8, potential route change: 4230, route change: 210, total travel time:  6742800.0, delay ratio:  0.476
+ iter 7: time gap: 99.2, potential route change: 4110, route change: 190, total travel time:  6594100.0, delay ratio:  0.464
+ iter 8: time gap: 93.3, potential route change: 4020, route change: 180, total travel time:  6512500.0, delay ratio:  0.457
+ iter 9: time gap: 99.7, potential route change: 4020, route change: 190, total travel time:  6645900.0, delay ratio:  0.468
+ iter 10: time gap: 87.7, potential route change: 4090, route change: 160, total travel time:  6457500.0, delay ratio:  0.453
+ iter 11: time gap: 75.6, potential route change: 4150, route change: 260, total travel time:  6215000.0, delay ratio:  0.431
+ iter 12: time gap: 82.4, potential route change: 4180, route change: 200, total travel time:  6301700.0, delay ratio:  0.439
+ iter 13: time gap: 76.9, potential route change: 3920, route change: 210, total travel time:  6246900.0, delay ratio:  0.434
+ iter 14: time gap: 68.2, potential route change: 4030, route change: 230, total travel time:  6170400.0, delay ratio:  0.427
+ iter 15: time gap: 64.8, potential route change: 4060, route change: 220, total travel time:  6053400.0, delay ratio:  0.416
+ iter 16: time gap: 57.8, potential route change: 4030, route change: 220, total travel time:  5988700.0, delay ratio:  0.410
+ iter 17: time gap: 60.5, potential route change: 3710, route change: 160, total travel time:  6163700.0, delay ratio:  0.427
+ iter 18: time gap: 59.3, potential route change: 4160, route change: 230, total travel time:  5922700.0, delay ratio:  0.403
+ iter 19: time gap: 53.2, potential route change: 3940, route change: 150, total travel time:  5941700.0, delay ratio:  0.405
+ iter 20: time gap: 47.3, potential route change: 3810, route change: 220, total travel time:  5878600.0, delay ratio:  0.399
+ iter 21: time gap: 55.4, potential route change: 4280, route change: 140, total travel time:  5740400.0, delay ratio:  0.384
+ iter 22: time gap: 49.7, potential route change: 4180, route change: 170, total travel time:  5823800.0, delay ratio:  0.393
+ iter 23: time gap: 45.2, potential route change: 4160, route change: 280, total travel time:  5738200.0, delay ratio:  0.384
+ iter 24: time gap: 51.4, potential route change: 4050, route change: 220, total travel time:  5776700.0, delay ratio:  0.388
+ iter 25: time gap: 44.7, potential route change: 4050, route change: 200, total travel time:  5702400.0, delay ratio:  0.380
+ iter 26: time gap: 45.0, potential route change: 3820, route change: 200, total travel time:  5716400.0, delay ratio:  0.382
+ iter 27: time gap: 45.3, potential route change: 3880, route change: 260, total travel time:  5729800.0, delay ratio:  0.383
+ iter 28: time gap: 46.8, potential route change: 4110, route change: 140, total travel time:  5838800.0, delay ratio:  0.395
+ iter 29: time gap: 43.3, potential route change: 3850, route change: 240, total travel time:  5757200.0, delay ratio:  0.386
+ iter 30: time gap: 42.8, potential route change: 3730, route change: 160, total travel time:  5750400.0, delay ratio:  0.385
+ iter 31: time gap: 42.5, potential route change: 3830, route change: 160, total travel time:  5704800.0, delay ratio:  0.381
+ iter 32: time gap: 42.0, potential route change: 3870, route change: 170, total travel time:  5717600.0, delay ratio:  0.382
+ iter 33: time gap: 40.5, potential route change: 3990, route change: 130, total travel time:  5604700.0, delay ratio:  0.369
+ iter 34: time gap: 36.5, potential route change: 3620, route change: 240, total travel time:  5566100.0, delay ratio:  0.365
+ iter 35: time gap: 45.5, potential route change: 4050, route change: 220, total travel time:  5610200.0, delay ratio:  0.370
+ iter 36: time gap: 38.2, potential route change: 3600, route change: 190, total travel time:  5610100.0, delay ratio:  0.370
+ iter 37: time gap: 38.9, potential route change: 3670, route change: 200, total travel time:  5719300.0, delay ratio:  0.382
+ iter 38: time gap: 43.2, potential route change: 3780, route change: 240, total travel time:  5706300.0, delay ratio:  0.381
+ iter 39: time gap: 40.6, potential route change: 3830, route change: 150, total travel time:  5685900.0, delay ratio:  0.378
+ iter 40: time gap: 44.5, potential route change: 3890, route change: 190, total travel time:  5817700.0, delay ratio:  0.393
+ iter 41: time gap: 44.0, potential route change: 3980, route change: 230, total travel time:  5883500.0, delay ratio:  0.399
+ iter 42: time gap: 35.8, potential route change: 3890, route change: 160, total travel time:  5646000.0, delay ratio:  0.374
+ iter 43: time gap: 35.6, potential route change: 3750, route change: 190, total travel time:  5649100.0, delay ratio:  0.374
+ iter 44: time gap: 38.4, potential route change: 3940, route change: 240, total travel time:  5703000.0, delay ratio:  0.380
+ iter 45: time gap: 37.5, potential route change: 3820, route change: 160, total travel time:  5675800.0, delay ratio:  0.377
+ iter 46: time gap: 35.5, potential route change: 3850, route change: 120, total travel time:  5599600.0, delay ratio:  0.369
+ iter 47: time gap: 34.9, potential route change: 3850, route change: 190, total travel time:  5506200.0, delay ratio:  0.358
+ iter 48: time gap: 35.3, potential route change: 3890, route change: 200, total travel time:  5663000.0, delay ratio:  0.376
+ iter 49: time gap: 33.6, potential route change: 3740, route change: 220, total travel time:  5563500.0, delay ratio:  0.365
+DUE summary:
+ total travel time: initial 6663000.0 -&gt; average of last 12 iters 5674966.7
+ number of potential route changes: initial 4790.0 -&gt; average of last 12 iters 3850.8
+ route travel time gap: initial 127.2 -&gt; average of last 12 iters 38.2
+ computation time: 32.4 seconds
+results:
+ average speed:  11.2 m/s
+ number of completed trips:      6840 / 6840
+ total travel time:              5563500.0 s
+ average travel time of trips:   813.4 s
+ average delay of trips:         296.7 s
+ delay ratio:                    0.365
+ total distance traveled:        59860000.0 m
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
- iter 23: time gap: 41.4, potential route change: 4080, route change: 120, total travel time:  5488900.0, delay ratio:  0.357
- iter 24: time gap: 42.2, potential route change: 4170, route change: 190, total travel time:  5451200.0, delay ratio:  0.352
- iter 25: time gap: 40.8, potential route change: 3990, route change: 250, total travel time:  5631900.0, delay ratio:  0.373
- iter 26: time gap: 36.4, potential route change: 3910, route change: 160, total travel time:  5509800.0, delay ratio:  0.359
- iter 27: time gap: 40.9, potential route change: 4070, route change: 220, total travel time:  5556700.0, delay ratio:  0.364
- iter 28: time gap: 35.8, potential route change: 4020, route change: 180, total travel time:  5521500.0, delay ratio:  0.360
- iter 29: time gap: 35.4, potential route change: 3800, route change: 220, total travel time:  5568500.0, delay ratio:  0.365
- iter 30: time gap: 34.5, potential route change: 3890, route change: 160, total travel time:  5529600.0, delay ratio:  0.361
- iter 31: time gap: 37.3, potential route change: 3980, route change: 250, total travel time:  5489600.0, delay ratio:  0.356
- iter 32: time gap: 34.8, potential route change: 3730, route change: 160, total travel time:  5626600.0, delay ratio:  0.372
- iter 33: time gap: 34.5, potential route change: 3740, route change: 230, total travel time:  5430700.0, delay ratio:  0.349
- iter 34: time gap: 34.0, potential route change: 3600, route change: 170, total travel time:  5489900.0, delay ratio:  0.356
- iter 35: time gap: 36.3, potential route change: 3760, route change: 180, total travel time:  5533100.0, delay ratio:  0.361
- iter 36: time gap: 34.0, potential route change: 3750, route change: 190, total travel time:  5511000.0, delay ratio:  0.359
- iter 37: time gap: 36.0, potential route change: 3740, route change: 180, total travel time:  5555000.0, delay ratio:  0.364
- iter 38: time gap: 30.2, potential route change: 3580, route change: 160, total travel time:  5538800.0, delay ratio:  0.362
- iter 39: time gap: 36.1, potential route change: 3820, route change: 260, total travel time:  5656100.0, delay ratio:  0.375
- iter 40: time gap: 33.9, potential route change: 3830, route change: 220, total travel time:  5457900.0, delay ratio:  0.352
- iter 41: time gap: 57.0, potential route change: 4000, route change: 190, total travel time:  5998400.0, delay ratio:  0.411
- iter 42: time gap: 36.4, potential route change: 3820, route change: 230, total travel time:  5625400.0, delay ratio:  0.372
- iter 43: time gap: 30.6, potential route change: 3690, route change: 130, total travel time:  5562700.0, delay ratio:  0.365
- iter 44: time gap: 36.1, potential route change: 3880, route change: 240, total travel time:  5544200.0, delay ratio:  0.363
- iter 45: time gap: 35.0, potential route change: 3840, route change: 310, total travel time:  5606100.0, delay ratio:  0.370
- iter 46: time gap: 37.6, potential route change: 3750, route change: 160, total travel time:  5637100.0, delay ratio:  0.373
- iter 47: time gap: 30.6, potential route change: 3690, route change: 140, total travel time:  5623300.0, delay ratio:  0.372
- iter 48: time gap: 30.1, potential route change: 3650, route change: 240, total travel time:  5574200.0, delay ratio:  0.366
- iter 49: time gap: 31.4, potential route change: 3630, route change: 110, total travel time:  5651600.0, delay ratio:  0.375
-DUE summary:
- total travel time: initial 6663000.0 -&gt; average of last 12 iters 5622983.3
- number of potential route changes: initial 4790.0 -&gt; average of last 12 iters 3765.0
- route travel time gap: initial 113.1 -&gt; average of last 12 iters 35.4
- computation time: 47.9 seconds
-results:
- average speed:  10.9 m/s
- number of completed trips:      6840 / 6840
- total travel time:              5651600.0 s
- average travel time of trips:   826.3 s
- average delay of trips:         309.6 s
- delay ratio:                    0.375
- total distance traveled:        59440000.0 m
-</pre></div></div>
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_2.png" />
+</div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -1165,25 +1149,11 @@ results:
 <img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_4.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_4.png" />
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_5.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_5.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_6.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_6.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_7.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_7.png" />
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_5.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_29_5.png" />
 </div>
 </div>
 <p>The algorithm successfully converged to a steady state, and it can be considered as a quasi-DUE state.</p>
@@ -1196,11 +1166,11 @@ results:
 <h3>DSO<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <p>Now, we compute DSO solution. Note that many local optima exist. It may be required to run the algorithm multiple times to obtain a good result.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DSO</span> <span class="o">=</span> <span class="n">DTAsolvers</span><span class="o">.</span><span class="n">SolverDSO_ALNS</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
-<span class="n">solver_DSO</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">initial_solution_World</span><span class="o">=</span><span class="n">W_DUE</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DSO</span> <span class="o">=</span> <span class="n">DTAsolvers</span><span class="o">.</span><span class="n">SolverDSO_D2D</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
+<span class="n">solver_DSO</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 <span class="n">W_DSO</span> <span class="o">=</span> <span class="n">solver_DSO</span><span class="o">.</span><span class="n">W_sol</span>
 <span class="n">W_DSO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1209,6 +1179,8 @@ results:
 
 <span class="n">W_DSO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">network_anim</span><span class="p">(</span><span class="n">state_variables</span><span class="o">=</span><span class="s2">&quot;flow_speed&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">animation_speed_inverse</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">timestep_skip</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">network_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;out/anim_DSO.gif&quot;</span><span class="p">)</span>
 <span class="n">uxsim</span><span class="o">.</span><span class="n">display_image_in_notebook</span><span class="p">(</span><span class="s2">&quot;out/anim_DSO.gif&quot;</span><span class="p">)</span>
+
+<span class="n">solver_DSO</span><span class="o">.</span><span class="n">plot_convergence</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1217,57 +1189,83 @@ results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-simulation setting:
+simulation setting (not finalized):
  scenario name:
  simulation duration:    4800 s
  number of vehicles:     6840 veh
  total road length:      288000 m
  time discret. width:    10 s
  platoon size:           10 veh
- number of timesteps:    480
+ number of timesteps:    480.0
  number of platoons:     684
  number of links:        288
  number of nodes:        81
- setup time:             41.51 s
-Initial solusion is used
-solving DSO by ALNS...
-iter: 0 - TTT: 5775700.0, trips:6840/6840, Obj:5775700.0, Best Obj:5775700.0
-iter: 20 - TTT: 5876000.0, trips:6840/6840, Obj:5876000.0, Best Obj:5713000.0
-iter: 40 - TTT: 5956900.0, trips:6840/6840, Obj:5956900.0, Best Obj:5713000.0
-iter: 60 - TTT: 5815300.0, trips:6840/6840, Obj:5815300.0, Best Obj:5713000.0
-iter: 80 - TTT: 5424000.0, trips:6840/6840, Obj:5424000.0, Best Obj:5424000.0
-iter: 100 - TTT: 5319200.0, trips:6840/6840, Obj:5319200.0, Best Obj:5310400.0
-iter: 120 - TTT: 5329200.0, trips:6840/6840, Obj:5329200.0, Best Obj:5264700.0
-iter: 140 - TTT: 5240700.0, trips:6840/6840, Obj:5240700.0, Best Obj:5231000.0
-iter: 160 - TTT: 5224200.0, trips:6840/6840, Obj:5224200.0, Best Obj:5208800.0
-iter: 180 - TTT: 5198400.0, trips:6840/6840, Obj:5198400.0, Best Obj:5178500.0
-iter: 200 - TTT: 5158500.0, trips:6840/6840, Obj:5158500.0, Best Obj:5148400.0
-iter: 220 - TTT: 5131600.0, trips:6840/6840, Obj:5131600.0, Best Obj:5128800.0
-iter: 240 - TTT: 5130100.0, trips:6840/6840, Obj:5130100.0, Best Obj:5122500.0
-iter: 260 - TTT: 5152300.0, trips:6840/6840, Obj:5152300.0, Best Obj:5122500.0
-iter: 280 - TTT: 5145900.0, trips:6840/6840, Obj:5145900.0, Best Obj:5120100.0
-iter: 300 - TTT: 5127800.0, trips:6840/6840, Obj:5127800.0, Best Obj:5114500.0
-iter: 320 - TTT: 5139800.0, trips:6840/6840, Obj:5139800.0, Best Obj:5114500.0
-iter: 340 - TTT: 5127600.0, trips:6840/6840, Obj:5127600.0, Best Obj:5114500.0
-iter: 360 - TTT: 5129000.0, trips:6840/6840, Obj:5129000.0, Best Obj:5114500.0
-iter: 380 - TTT: 5134100.0, trips:6840/6840, Obj:5134100.0, Best Obj:5111200.0
-iter: 400 - TTT: 5141300.0, trips:6840/6840, Obj:5141300.0, Best Obj:5100700.0
-iter: 420 - TTT: 5115800.0, trips:6840/6840, Obj:5115800.0, Best Obj:5100700.0
-iter: 440 - TTT: 5116400.0, trips:6840/6840, Obj:5116400.0, Best Obj:5100700.0
-iter: 460 - TTT: 5106200.0, trips:6840/6840, Obj:5106200.0, Best Obj:5100700.0
-iter: 480 - TTT: 5116900.0, trips:6840/6840, Obj:5116900.0, Best Obj:5100700.0
-iter: 500 - TTT: 5108600.0, trips:6840/6840, Obj:5108600.0, Best Obj:5100300.0
+ setup time:             0.01 s
+number of OD pairs: 6561, number of routes: 63441
+solving DSO...
+ iter 0: marginal time gap: 5419.0, potential route change: 5490, route change: 220, total travel time:  6663000.0, delay ratio:  0.470
+ iter 1: marginal time gap: 5231.0, potential route change: 5260, route change: 250, total travel time:  6423500.0, delay ratio:  0.450
+ iter 2: marginal time gap: 4763.5, potential route change: 5350, route change: 230, total travel time:  6462300.0, delay ratio:  0.453
+ iter 3: marginal time gap: 5725.8, potential route change: 5090, route change: 240, total travel time:  6401200.0, delay ratio:  0.448
+ iter 4: marginal time gap: 5237.4, potential route change: 5220, route change: 250, total travel time:  6158000.0, delay ratio:  0.426
+ iter 5: marginal time gap: 3904.0, potential route change: 5100, route change: 180, total travel time:  5972200.0, delay ratio:  0.408
+ iter 6: marginal time gap: 3828.1, potential route change: 5120, route change: 280, total travel time:  5805300.0, delay ratio:  0.391
+ iter 7: marginal time gap: 2675.1, potential route change: 5380, route change: 440, total travel time:  5669100.0, delay ratio:  0.377
+ iter 8: marginal time gap: 2392.3, potential route change: 5200, route change: 320, total travel time:  5635000.0, delay ratio:  0.373
+ iter 9: marginal time gap: 2026.5, potential route change: 5400, route change: 150, total travel time:  5511200.0, delay ratio:  0.359
+ iter 10: marginal time gap: 1738.6, potential route change: 5560, route change: 320, total travel time:  5485100.0, delay ratio:  0.356
+ iter 11: marginal time gap: 1620.2, potential route change: 5360, route change: 270, total travel time:  5463400.0, delay ratio:  0.353
+ iter 12: marginal time gap: 1320.3, potential route change: 5320, route change: 270, total travel time:  5380900.0, delay ratio:  0.343
+ iter 13: marginal time gap: 1029.3, potential route change: 5400, route change: 210, total travel time:  5314900.0, delay ratio:  0.335
+ iter 14: marginal time gap: 861.9, potential route change: 5260, route change: 410, total travel time:  5292100.0, delay ratio:  0.332
+ iter 15: marginal time gap: 518.1, potential route change: 5370, route change: 210, total travel time:  5227800.0, delay ratio:  0.324
+ iter 16: marginal time gap: 808.5, potential route change: 5340, route change: 250, total travel time:  5231500.0, delay ratio:  0.324
+ iter 17: marginal time gap: 584.7, potential route change: 5290, route change: 300, total travel time:  5204400.0, delay ratio:  0.321
+ iter 18: marginal time gap: 486.6, potential route change: 5470, route change: 190, total travel time:  5188100.0, delay ratio:  0.319
+ iter 19: marginal time gap: 629.6, potential route change: 5290, route change: 270, total travel time:  5201000.0, delay ratio:  0.321
+ iter 20: marginal time gap: 619.0, potential route change: 5310, route change: 280, total travel time:  5190800.0, delay ratio:  0.319
+ iter 21: marginal time gap: 700.2, potential route change: 5250, route change: 180, total travel time:  5202500.0, delay ratio:  0.321
+ iter 22: marginal time gap: 549.1, potential route change: 5200, route change: 270, total travel time:  5186900.0, delay ratio:  0.319
+ iter 23: marginal time gap: 367.7, potential route change: 5390, route change: 250, total travel time:  5150500.0, delay ratio:  0.314
+ iter 24: marginal time gap: 462.3, potential route change: 5270, route change: 230, total travel time:  5159000.0, delay ratio:  0.315
+ iter 25: marginal time gap: 485.5, potential route change: 5230, route change: 240, total travel time:  5167100.0, delay ratio:  0.316
+ iter 26: marginal time gap: 981.6, potential route change: 5160, route change: 280, total travel time:  5198300.0, delay ratio:  0.320
+ iter 27: marginal time gap: 493.1, potential route change: 5300, route change: 380, total travel time:  5131400.0, delay ratio:  0.311
+ iter 28: marginal time gap: 583.0, potential route change: 5270, route change: 380, total travel time:  5108700.0, delay ratio:  0.308
+ iter 29: marginal time gap: 524.0, potential route change: 5080, route change: 290, total travel time:  5093000.0, delay ratio:  0.306
+ iter 30: marginal time gap: 904.7, potential route change: 5190, route change: 340, total travel time:  5129500.0, delay ratio:  0.311
+ iter 31: marginal time gap: 1282.6, potential route change: 5040, route change: 240, total travel time:  5184500.0, delay ratio:  0.318
+ iter 32: marginal time gap: 687.0, potential route change: 5170, route change: 220, total travel time:  5138900.0, delay ratio:  0.312
+ iter 33: marginal time gap: 558.3, potential route change: 5240, route change: 280, total travel time:  5126700.0, delay ratio:  0.311
+ iter 34: marginal time gap: 700.1, potential route change: 5080, route change: 360, total travel time:  5122600.0, delay ratio:  0.310
+ iter 35: marginal time gap: 956.5, potential route change: 5220, route change: 310, total travel time:  5130600.0, delay ratio:  0.311
+ iter 36: marginal time gap: 747.5, potential route change: 5200, route change: 250, total travel time:  5101900.0, delay ratio:  0.307
+ iter 37: marginal time gap: 722.5, potential route change: 5220, route change: 230, total travel time:  5122100.0, delay ratio:  0.310
+ iter 38: marginal time gap: 631.3, potential route change: 5210, route change: 180, total travel time:  5098000.0, delay ratio:  0.307
+ iter 39: marginal time gap: 418.5, potential route change: 5170, route change: 250, total travel time:  5083000.0, delay ratio:  0.305
+ iter 40: marginal time gap: 551.7, potential route change: 5310, route change: 270, total travel time:  5087600.0, delay ratio:  0.305
+ iter 41: marginal time gap: 485.2, potential route change: 5000, route change: 240, total travel time:  5093600.0, delay ratio:  0.306
+ iter 42: marginal time gap: 468.1, potential route change: 5240, route change: 360, total travel time:  5078400.0, delay ratio:  0.304
+ iter 43: marginal time gap: 582.0, potential route change: 5180, route change: 300, total travel time:  5086500.0, delay ratio:  0.305
+ iter 44: marginal time gap: 527.3, potential route change: 5180, route change: 280, total travel time:  5074400.0, delay ratio:  0.304
+ iter 45: marginal time gap: 746.8, potential route change: 5000, route change: 250, total travel time:  5083000.0, delay ratio:  0.305
+ iter 46: marginal time gap: 600.5, potential route change: 5170, route change: 220, total travel time:  5074200.0, delay ratio:  0.304
+ iter 47: marginal time gap: 508.6, potential route change: 5230, route change: 210, total travel time:  5054400.0, delay ratio:  0.301
+ iter 48: marginal time gap: 498.3, potential route change: 5170, route change: 300, total travel time:  5060900.0, delay ratio:  0.302
+ iter 49: marginal time gap: 1060.3, potential route change: 4890, route change: 320, total travel time:  5106100.0, delay ratio:  0.308
 DSO summary:
- total travel time: initial 5775700.0 -&gt; last 5100300.0
- computation time: 239.0 seconds
+ total travel time: initial 6663000.0 -&gt; minimum 5054400.0
+ number of potential route changes: initial 5490.0 -&gt; minimum 4890.0
+ route marginal travel time gap: initial 5419.0 -&gt; minimum 367.7
+ computation time: 42.2 seconds
 results:
- average speed:  12.4 m/s
+ average speed:  0.0 m/s
  number of completed trips:      6840 / 6840
- total travel time:              5100300.0 s
- average travel time of trips:   745.7 s
- average delay of trips:         229.0 s
- delay ratio:                    0.307
- total distance traveled:        60980000.0 m
+ total travel time:              5054400.0 s
+ average travel time of trips:   738.9 s
+ average delay of trips:         222.3 s
+ delay ratio:                    0.301
+ total distance traveled:        61180000.0 m
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1277,17 +1275,24 @@ results:
 <img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_1.png" />
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_2.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_2.png" />
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_3.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_31_3.png" />
+</div>
+</div>
 <p>Now the traffic situation is much better, with 0.31 delay ratio. According to the network animation, traffic was distributed to many routes. Most of traffic congestion observed in DUO/DUE solutions were eliminated.</p>
 <p>Below is the summary of the 3 scenarios.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_DUO</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DUO&#39;</span>
@@ -1348,49 +1353,45 @@ results:
       <td>DUE</td>
       <td>6840</td>
       <td>6840</td>
-      <td>5651600.0</td>
-      <td>826.257310</td>
-      <td>2117600.0</td>
-      <td>309.590643</td>
+      <td>5563500.0</td>
+      <td>813.377193</td>
+      <td>2029500.0</td>
+      <td>296.710526</td>
     </tr>
     <tr>
       <th>2</th>
       <td>DSO</td>
       <td>6840</td>
       <td>6840</td>
-      <td>5100300.0</td>
-      <td>745.657895</td>
-      <td>1566300.0</td>
-      <td>228.991228</td>
+      <td>5054400.0</td>
+      <td>738.947368</td>
+      <td>1520400.0</td>
+      <td>222.280702</td>
     </tr>
   </tbody>
 </table>
 </div></div>
 </div>
-<p>Below is some vehicle-level analysis</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<p>Below is some vehicle-level analysis. You can see that, on average, travel time in DUE is shorter than that of DUO, and that in DSO is shorter than that of DUE. This indicates overall efficiency of respective route choice principles. However, from the perspective of each individual vehicles, some of them experiences longer travel time in DSO than DUE. This can be a potential fairness issue.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">travel_time_per_vehicle_duo</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 <span class="n">travel_time_per_vehicle_due</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DUE</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
 <span class="n">travel_time_per_vehicle_dso</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">travel_time</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DSO</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="p">()</span>
+
+<span class="n">figure</span><span class="p">()</span>
 <span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
 <span class="n">title</span><span class="p">(</span><span class="s2">&quot;travel time of each vehicle&quot;</span><span class="p">)</span>
 <span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">travel_time_per_vehicle_duo</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">travel_time_per_vehicle_due</span><span class="p">))</span>
 <span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="s2">&quot;k--&quot;</span><span class="p">)</span>
 <span class="n">hist2d</span><span class="p">(</span><span class="n">travel_time_per_vehicle_duo</span><span class="p">,</span> <span class="n">travel_time_per_vehicle_due</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">]],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">average</span><span class="p">(</span><span class="n">travel_time_per_vehicle_duo</span><span class="p">),</span> <span class="n">average</span><span class="p">(</span><span class="n">travel_time_per_vehicle_due</span><span class="p">),</span> <span class="s2">&quot;rx&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mew</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">)</span>
 <span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;number of vehicles&quot;</span><span class="p">)</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;DUO&quot;</span><span class="p">)</span>
 <span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;DUE&quot;</span><span class="p">)</span>
+<span class="n">legend</span><span class="p">()</span>
 <span class="n">show</span><span class="p">()</span>
 
 <span class="n">figure</span><span class="p">()</span>
@@ -1399,9 +1400,11 @@ results:
 <span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">travel_time_per_vehicle_due</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">travel_time_per_vehicle_dso</span><span class="p">))</span>
 <span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="s2">&quot;k--&quot;</span><span class="p">)</span>
 <span class="n">hist2d</span><span class="p">(</span><span class="n">travel_time_per_vehicle_due</span><span class="p">,</span> <span class="n">travel_time_per_vehicle_dso</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">]],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">average</span><span class="p">(</span><span class="n">travel_time_per_vehicle_due</span><span class="p">),</span> <span class="n">average</span><span class="p">(</span><span class="n">travel_time_per_vehicle_dso</span><span class="p">),</span> <span class="s2">&quot;rx&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mew</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">)</span>
 <span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;number of vehicles&quot;</span><span class="p">)</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;DUE&quot;</span><span class="p">)</span>
 <span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;DSO&quot;</span><span class="p">)</span>
+<span class="n">legend</span><span class="p">()</span>
 <span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1410,59 +1413,15 @@ results:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_36_0.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_36_0.png" />
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_35_0.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_35_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_36_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_36_1.png" />
+<img alt="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_35_1.png" src="../_images/notebooks_demo_notebook_09en_dynamic_traffic_assignment_35_1.png" />
 </div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">route_of_vehicle_duo</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-<span class="n">route_of_vehicle_due</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DUE</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-<span class="n">route_of_vehicle_dso</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">veh</span> <span class="ow">in</span> <span class="n">W_DSO</span><span class="o">.</span><span class="n">VEHICLES</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;number of vehicles that choose different routes in different scenarios&quot;</span><span class="p">)</span>
-
-<span class="n">changed</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lange</span><span class="p">(</span><span class="n">route_of_vehicle_duo</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">route_of_vehicle_duo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">route_of_vehicle_due</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
-        <span class="n">changed</span> <span class="o">+=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">DELTAN</span>
-    <span class="n">total</span> <span class="o">+=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">DELTAN</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DUO vs DUE:&quot;</span><span class="p">,</span> <span class="n">changed</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
-
-<span class="n">changed</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lange</span><span class="p">(</span><span class="n">route_of_vehicle_duo</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">route_of_vehicle_due</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">route_of_vehicle_dso</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
-        <span class="n">changed</span> <span class="o">+=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">DELTAN</span>
-    <span class="n">total</span> <span class="o">+=</span> <span class="n">W_DUO</span><span class="o">.</span><span class="n">DELTAN</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DUE vs DSO:&quot;</span><span class="p">,</span> <span class="n">changed</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-number of vehicles that choose different routes in different scenarios
-DUO vs DUE: 5100 / 6840
-DUE vs DSO: 2430 / 6840
-</pre></div></div>
 </div>
 </section>
 </section>

@@ -1,0 +1,12 @@
+﻿uxsim.OSMImporter2.OSMImporter2
+===============================
+
+.. automodule:: uxsim.OSMImporter2.OSMImporter2
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      osm_network_to_World
+   

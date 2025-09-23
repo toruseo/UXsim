@@ -1,0 +1,26 @@
+﻿uxsim.DTAsolvers.SolverDSO\_D2D
+===============================
+
+.. currentmodule:: uxsim.DTAsolvers
+
+.. autoclass:: SolverDSO_D2D
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SolverDSO_D2D.__init__
+      ~SolverDSO_D2D.plot_convergence
+      ~SolverDSO_D2D.plot_link_stats
+      ~SolverDSO_D2D.plot_vehicle_stats
+      ~SolverDSO_D2D.solve
+   
+   
+
+   
+   
+   

@@ -219,8 +219,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism: Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../mechanism_detailed.html">Simulation Mechanism: Details</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../tech_ref.html">Technical Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Technical Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="uxsim.World.html">uxsim.World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Node.html">uxsim.Node</a></li>
@@ -229,12 +228,12 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="uxsim.RouteChoice.html">uxsim.RouteChoice</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.analyzer.Analyzer.html">uxsim.analyzer.Analyzer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.Route.html">uxsim.Route</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.DTAsolvers.SolverDSO_D2D.html">uxsim.DTAsolvers.SolverDSO_D2D</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TripRequest.html">uxsim.TaxiHandler.TripRequest</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler.html">uxsim.TaxiHandler.TaxiHandler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.TaxiHandler.TaxiHandler_nearest.html">uxsim.TaxiHandler.TaxiHandler_nearest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.OSMImporter.OSMImporter.html">uxsim.OSMImporter.OSMImporter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.DTAsolvers.SolverDUE.html">uxsim.DTAsolvers.SolverDUE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="uxsim.DTAsolvers.SolverDSO_GA.html">uxsim.DTAsolvers.SolverDSO_GA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uxsim.OSMImporter2.OSMImporter2.html">uxsim.OSMImporter2.OSMImporter2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.ResultGUIViewer.ResultGUIViewer.html">uxsim.ResultGUIViewer.ResultGUIViewer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.uxsim.html">uxsim.uxsim</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uxsim.utils.html">uxsim.utils</a></li>
@@ -332,7 +331,7 @@ This contains functions that are not essential for simulation but useful to spec
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
 <li><p><strong>dt</strong> (<em>int</em><em>, </em><em>optional</em>) – The time interval to construct the TSN. Default is None, which sets to the simulation timestep.</p></li>
 <li><p><strong>from_origin_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to compute the shortest path from the origin only. Default is True</p></li>
 </ul>
@@ -350,7 +349,7 @@ This contains functions that are not essential for simulation but useful to spec
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
 <li><p><strong>k</strong> (<em>int</em>) – The number of random routes to enumerate.</p></li>
 </ul>
 </dd>
@@ -370,9 +369,9 @@ This contains functions that are not essential for simulation but useful to spec
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
-<li><p><strong>source</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The source node.</p></li>
-<li><p><strong>target</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The target node.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
+<li><p><strong>source</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The source node.</p></li>
+<li><p><strong>target</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The target node.</p></li>
 <li><p><strong>k</strong> (<em>int</em>) – The number of shortest routes to enumerate. Default is 1.</p></li>
 <li><p><strong>cost_function</strong> (<em>function</em>) – A link cost function to compute shortest path. The argument is Link object. Default is the free-flow travel time, <cite>lambda l: l.length/l.u</cite>.</p></li>
 <li><p><strong>print_stats</strong> (<em>bool</em>) – Print the statistics of the paths.</p></li>
@@ -396,9 +395,9 @@ This contains functions that are not essential for simulation but useful to spec
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
-<li><p><strong>source</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The source node.</p></li>
-<li><p><strong>target</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><em>Node</em></a>) – The target node.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object containing the network.</p></li>
+<li><p><strong>source</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The source node.</p></li>
+<li><p><strong>target</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Node.html#uxsim.Node" title="uxsim.Node"><em>Node</em></a>) – The target node.</p></li>
 <li><p><strong>t</strong> (<em>float</em>) – The time point to compute shortest routes.</p></li>
 <li><p><strong>k</strong> (<em>int</em>) – The number of shortest routes to enumerate. Default is 1.</p></li>
 <li><p><strong>cost_function</strong> (<em>function</em>) – A link cost function to compute shortest path. The argument is Link object and time t. Default is the instantaneous travel time, <cite>lambda l, t: l.instant_travel_time(t)</cite>.</p></li>
@@ -423,8 +422,8 @@ This contains functions that are not essential for simulation but useful to spec
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The World object.</p></li>
-<li><p><strong>link</strong> (<em>str</em><em> | </em><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Link" title="uxsim.uxsim.Link"><em>Link</em></a>) – Link object or link name.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>link</strong> (<em>str</em><em> | </em><a class="reference internal" href="uxsim.Link.html#uxsim.Link" title="uxsim.Link"><em>Link</em></a>) – Link object or link name.</p></li>
 <li><p><strong>t</strong> (<em>float</em>) – The departure time of the hypothetical vehicle.</p></li>
 </ul>
 </dd>
@@ -439,8 +438,8 @@ This contains functions that are not essential for simulation but useful to spec
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The World object.</p></li>
-<li><p><strong>route</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.Route" title="uxsim.uxsim.Route"><em>Route</em></a>) – Route object.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>route</strong> (<a class="reference internal" href="uxsim.Route.html#uxsim.Route" title="uxsim.Route"><em>Route</em></a>) – Route object.</p></li>
 <li><p><strong>t</strong> (<em>float</em>) – The departure time of the hypothetical vehicle.</p></li>
 </ul>
 </dd>
@@ -454,7 +453,7 @@ This contains functions that are not essential for simulation but useful to spec
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The world object to which the network will be added.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The world object to which the network will be added.</p></li>
 <li><p><strong>imax</strong> (<em>int</em>) – The number of nodes in the x direction.</p></li>
 <li><p><strong>jmax</strong> (<em>int</em>) – The number of nodes in the y direction.</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments to be passed to the addLink function.</p></li>
@@ -470,7 +469,7 @@ This contains functions that are not essential for simulation but useful to spec
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
 <li><p><strong>return_matrix</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the distance matrix as a numpy array. Default is False.</p></li>
 </ul>
 </dd>
@@ -491,7 +490,7 @@ Returns a numpy array of distances between nodes whose index is node.id pair if 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
 <li><p><strong>return_matrix</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the distance matrix as a numpy array. Default is False.</p></li>
 </ul>
 </dd>
@@ -512,7 +511,7 @@ Returns a numpy array of distances between nodes whose index is node.id pair if 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>W</strong> (<a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><em>World</em></a>) – The World object.</p></li>
+<li><p><strong>W</strong> (<a class="reference internal" href="uxsim.World.html#uxsim.World" title="uxsim.World"><em>World</em></a>) – The World object.</p></li>
 <li><p><strong>t</strong> (<em>float</em>) – The time point to compute shortest travel time.</p></li>
 <li><p><strong>return_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the actual time of computing shortest path cost. Default is False.</p></li>
 <li><p><strong>return_matrix</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return the distance matrix as a numpy array. Default is False.</p></li>

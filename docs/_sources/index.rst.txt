@@ -53,12 +53,10 @@ Contents
    getting_started
    tutorial
    mechanism
-   mechanism_detailed
    tech_ref
 
 Links
 =====
 
 * `Github repo of UXsim <https://github.com/toruseo/UXsim>`_
-* `arXiv preprint on UXsim <https://arxiv.org/pdf/2309.17114.pdf>`_
-* `Author (Toru Seo) <https://toruseo.jp/>`_
+* `Author (Toru Seo, Institute of Science Tokyo) <https://toruseo.jp/>`_
