@@ -347,7 +347,7 @@ class SolverDSO_D2D:
             
             This algorithm is a loose generalization of "DSO game" of the following paper.
             - Satsukawa, K., Wada, K., & Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209.
-            In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weaken the theoretical convergence guarantee.
+            In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weaken the convergence guarantee.
         """
 
         s.func_World = func_World
@@ -560,7 +560,7 @@ class SolverDSO_D2D:
         plt.xlabel("iter")
 
         plt.subplot(313)
-        plt.ylabel("route marginal travel time gap")
+        plt.ylabel("route marginal\n travel time gap")
         plt.plot(s.t_gaps)
         plt.ylim(0,None)
         plt.xlabel("iter")
