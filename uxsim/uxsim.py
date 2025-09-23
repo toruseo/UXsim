@@ -370,8 +370,8 @@ class Link:
         ----------
         W : object
             The world to which the link belongs.
-        name : str
-            The name of the link.
+        name : str | None
+            The name of the link. If None, the name is automatically generated as "{start_node.name}-{end_node.name}".
         start_node : str | Node
             The name of the start node of the link.
         end_node : str | Node
@@ -572,6 +572,8 @@ class Link:
 
         s.id = len(s.W.LINKS)
         s.name = name
+        if s.name == None:
+            s.name = s.start_node.name+"-"+s.end_node.name
         s.auto_rename = auto_rename
         if s.name in s.W.LINKS_NAME_DICT.keys():
             if auto_rename:
@@ -959,9 +961,11 @@ class Vehicle:
         else:
             s.route_pref = {l.id:route_pref[l] for l in route_pref.keys()}
 
-        #these links will be always chosen or not chosen when choosing next link at each node
+        #these links will be always chosen or not chosen when choosing next link at each node. This is not used anymore. keeping for backward compatibility
         s.links_prefer = [s.W.get_link(l) for l in links_prefer]
         s.links_avoid = [s.W.get_link(l) for l in links_avoid]
+
+        s.specified_route = None
 
         #行き止まりに行ってしまったときにトリップを止める
         s.trip_abort = trip_abort
@@ -1135,6 +1139,11 @@ class Vehicle:
         set_avoid : bool
             If True, the vehicle only travel the links in `route` argument. This is very strict. If the route is not consistent (e.g., the route does not completely connect between the origin and the destination), it will raise an exception.
         """
+        route = [s.W.get_link(l) for l in route]
+
+        s.specified_route = route
+
+        #for backward compatibility
         s.links_prefer = [s.W.get_link(l) for l in route]
         if set_avoid:
             s.links_avoid = [s.W.get_link(l) for l in s.W.LINKS if l not in s.links_prefer]
@@ -1182,28 +1191,41 @@ class Vehicle:
         """
         Select a next link from the current link.
         """
-        if s.dest != s.link.end_node:
-            outlinks = list(s.link.end_node.outlinks.values())
+        #print("aaa", end="")
+        if s.specified_route == None:
+            if s.dest != s.link.end_node:
+                outlinks = list(s.link.end_node.outlinks.values())
 
-            if len(outlinks):
+                if len(outlinks):
 
-                #if links_prefer is given and available at the node, select only from the links in the list. if links_avoid is given, select links not in the list.
-                if set(outlinks) & set(s.links_prefer):
-                    outlinks = sorted(set(outlinks) & set(s.links_prefer), key=lambda l:l.name)
-                if set(outlinks) & set(s.links_avoid):
-                    outlinks = sorted(set(outlinks) - set(s.links_avoid), key=lambda l:l.name)
+                    #if links_prefer is given and available at the node, select only from the links in the list. if links_avoid is given, select links not in the list.
+                    if set(outlinks) & set(s.links_prefer):
+                        outlinks = sorted(set(outlinks) & set(s.links_prefer), key=lambda l:l.name)
+                    if set(outlinks) & set(s.links_avoid):
+                        outlinks = sorted(set(outlinks) - set(s.links_avoid), key=lambda l:l.name)
 
-                preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=float)
-                if s.W.hard_deterministic_mode == False:
-                    if sum(preference) > 0:
-                        s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
+                    preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=float)
+                    if s.W.hard_deterministic_mode == False:
+                        if sum(preference) > 0:
+                            s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
+                        else:
+                            s.route_next_link = s.W.rng.choice(outlinks)
                     else:
-                        s.route_next_link = s.W.rng.choice(outlinks)
-                else:
-                    s.route_next_link = max(zip(preference, outlinks), key=lambda x:x[0])[1]
+                        s.route_next_link = max(zip(preference, outlinks), key=lambda x:x[0])[1]
 
+                else:
+                    s.route_next_link = None
+        else:
+            outlinks = list(s.link.end_node.outlinks.values())
+            if len(outlinks):
+                number_of_traveled_links = len(s.log_t_link)-1
+                if s.specified_route[number_of_traveled_links] in outlinks:
+                    s.route_next_link = s.specified_route[number_of_traveled_links]
+                else:
+                    raise ValueError(f"Vehicle {s.name}: specified route {s.specified_route} is inconsistent at the current link {s.link}. Debug info: {number_of_traveled_links=}, {outlinks=}")
             else:
                 s.route_next_link = None
+
 
     def add_dest(s, dest, order=-1):
         """
@@ -2699,6 +2721,9 @@ class Route:
     
     def __len__(s):
         return len(s.links)
+    
+    def __getitem__(s, index):
+        return s.links[index]
     
     def __eq__(self, other):
         """

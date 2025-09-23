@@ -1114,7 +1114,7 @@ def test_route_vehicle_methods():
     assert equal_tolerance(tt_from_vehicle_route, tt_from_route_by_departure_time)
 
 
-def test_route_enforce_route():
+def test_route_enforce_route_old():
     W = World(
         name="",
         deltan=5,
@@ -1153,6 +1153,78 @@ def test_route_enforce_route():
     df = W.analyzer.link_to_pandas()
     for l in r2:
         assert df[df["link"]==l.name]["traffic_volume"].values[0] == 2130
+
+def test_route_enforce_route_by_route_object():
+
+    W = World(
+        name="looproute",    # Scenario name
+        deltan=5,   # Simulation aggregation unit delta n
+        tmax=2400,  # Total simulation time (s)
+        print_mode=1, save_mode=0, show_mode=1,    # Various options
+        random_seed=0    # Set the random seed
+    )
+
+    # Define the scenario
+    ## Create nodes
+    W.addNode(name="O", x=0, y=0)
+    W.addNode("D", 2, 0)
+    W.addNode("A", 1, 0)
+    W.addNode("B", 1.5, 1)
+    W.addNode("C", 0.5, 1)
+    W.addNode("E", 1, -1)
+    ## Create links between nodes
+    W.addLink(None, "O", "A", length=500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink(None, "A", "D", length=500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink(None, "A", "B", length=500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink(None, "B", "C", length=500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink(None, "C", "A", length=500, free_flow_speed=20, number_of_lanes=1)
+    W.addLink(None, "O", "E", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink(None, "E", "D", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink(None, "O", "D", length=500, free_flow_speed=40, number_of_lanes=1)
+
+    ## Create OD traffic demand between nodes
+    W.adddemand("O","D", t_start=0, t_end=1000, volume=400)
+
+    #W.show_network()
+
+    route_straight = W.defRoute(["O-A", "A-D"])
+    route_detour_loop = W.defRoute(["O-A", "A-B", "B-C", "C-A", "A-D"])
+    route_detour_loop_triple = W.defRoute(["O-A", "A-B", "B-C", "C-A", "A-B", "B-C", "C-A", "A-B", "B-C", "C-A", "A-D"])
+    route_detour = W.defRoute(["O-E", "E-D"])
+
+    for i,veh in enumerate(W.VEHICLES.values()):
+        if i%4 == 0:
+            veh.enforce_route(route_straight)
+        elif i%4 == 1:
+            veh.enforce_route(route_detour)
+        elif i%4 == 2:
+            veh.enforce_route(route_detour_loop)
+        else:
+            veh.enforce_route(route_detour_loop_triple)
+
+    # Run the simulation to the end
+    W.exec_simulation()
+
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
+
+    W.analyzer.network_average()
+    df = W.analyzer.link_to_pandas()
+    print(df)
+    
+    assert df.query("link == 'O-A'")["traffic_volume"].item() == 300
+    assert df.query("link == 'A-D'")["traffic_volume"].item() == 300
+    assert df.query("link == 'A-B'")["traffic_volume"].item() == 400
+    assert df.query("link == 'B-C'")["traffic_volume"].item() == 400
+    assert df.query("link == 'C-A'")["traffic_volume"].item() == 400
+    assert df.query("link == 'O-E'")["traffic_volume"].item() == 100
+    assert df.query("link == 'E-D'")["traffic_volume"].item() == 100
+    assert df.query("link == 'O-D'")["traffic_volume"].item() == 0
+
+    assert W.VEHICLES["0"].traveled_route()[0] == route_straight
+    assert W.VEHICLES["1"].traveled_route()[0] == route_detour
+    assert W.VEHICLES["2"].traveled_route()[0] == route_detour_loop
+    assert W.VEHICLES["3"].traveled_route()[0] == route_detour_loop_triple
 
 def test_construct_time_space_network():
     W = World(
