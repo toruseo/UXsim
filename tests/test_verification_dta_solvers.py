@@ -61,27 +61,35 @@ def test_DTA_total_travel_time_comparison():
 
     #################################
     # DUE
-    solver_DUE = SolverDUE(create_World)
+    solver_DUE = DTAsolvers.SolverDUE(create_World)
     solver_DUE.solve(max_iter=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
     W_DUE = solver_DUE.W_sol
     W_DUE.analyzer.print_simple_stats(force_print=True)
     df_DUE = W_DUE.analyzer.basic_to_pandas()
 
     #################################
-    # DSO by GA
-    solver_DSO_GA = SolverDSO_GA(create_World)
+    # DSO by GA: this is obsolete
+    solver_DSO_GA = DTAsolvers.SolverDSO_GA(create_World)
     solver_DSO_GA.solve(max_iter=20, pop_size=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
     W_DSO_GA = solver_DSO_GA.W_sol
     W_DSO_GA.analyzer.print_simple_stats(force_print=True)
     df_DSO_GA = W_DSO_GA.analyzer.basic_to_pandas()
 
     #################################
-    # DSO by ALNS
-    solver_DSO_ALNS = SolverDSO_ALNS(create_World)
+    # DSO by ALNS: this is obsolete
+    solver_DSO_ALNS = DTAsolvers.SolverDSO_ALNS(create_World)
     solver_DSO_ALNS.solve(max_iter=200)   # max_iter should be larger (e.g., 500). this is just for demonstration
     W_DSO_ALNS = solver_DSO_ALNS.W_sol
     W_DSO_ALNS.analyzer.print_simple_stats(force_print=True)
     df_DSO_ALNS = W_DSO_ALNS.analyzer.basic_to_pandas()
+
+    #################################
+    # DSO by day-to-day: this is recommended
+    solver_DSO_D2D= DTAsolvers.SolverDSO_D2D(create_World)
+    solver_DSO_D2D.solve(max_iter=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
+    W_DSO_D2D = solver_DSO_D2D.W_sol
+    W_DSO_D2D.analyzer.print_simple_stats(force_print=True)
+    df_DSO_D2D = W_DSO_D2D.analyzer.basic_to_pandas()
 
     # stats
     print("DUO")
@@ -92,6 +100,8 @@ def test_DTA_total_travel_time_comparison():
     print(df_DSO_GA)
     print("DSO_ALNS")
     print(df_DSO_ALNS)
+    print("DSO_D2D")
+    print(df_DSO_D2D)
 
     # visualizations
     solver_DUE.plot_convergence()
@@ -104,9 +114,14 @@ def test_DTA_total_travel_time_comparison():
 
     solver_DSO_ALNS.plot_convergence()
 
+    solver_DSO_D2D.plot_convergence()
+    solver_DSO_D2D.plot_link_stats()
+    solver_DSO_D2D.plot_vehicle_stats(orig="4", dest="7")
+    
     assert W_DUO.analyzer.total_travel_time > W_DUE.analyzer.total_travel_time
     assert W_DUE.analyzer.total_travel_time > W_DSO_GA.analyzer.total_travel_time
     assert W_DUE.analyzer.total_travel_time > W_DSO_ALNS.analyzer.total_travel_time
+    assert W_DUE.analyzer.total_travel_time > W_DSO_D2D.analyzer.total_travel_time
 
 
 @pytest.mark.flaky(reruns=10)

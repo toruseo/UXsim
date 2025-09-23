@@ -19,7 +19,7 @@ import warnings
 class SolverDUE:
     def __init__(s, func_World):
         """
-        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP
+        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.
 
         Parameters
         ----------
@@ -204,13 +204,6 @@ class SolverDUE:
             s.n_swaps.append(n_swap)
             s.potential_swaps.append(potential_n_swap)
             s.t_gaps.append(t_gap_per_vehicle)
-
-            # if i == 0:
-            #     W.analyzer.network_anim(animation_speed_inverse=15, figsize=(6,6), detailed=0, network_font_size=0, file_name="out/due_anim_0init.gif")
-            # if i == int(max_iter/2):
-            #     W.analyzer.network_anim(animation_speed_inverse=15, figsize=(6,6), detailed=0, network_font_size=0, file_name="out/due_anim_1mid.gif")
-            # if i == max_iter-1:
-            #     W.analyzer.network_anim(animation_speed_inverse=15, figsize=(6,6), detailed=0, network_font_size=0, file_name="out/due_anim_2last.gif")
         
         s.end_time = time.time()
 
@@ -333,281 +326,326 @@ class SolverDUE:
         plt.legend()
         plt.show()
 
-# does not work very well
-# class SolverDSO:
-#     def __init__(s, func_World):
-#         """
-#         Solve Dynamic System Optimum (DSO) problem. WIP
 
-#         Parameters
-#         ----------
-#         func_World : function
-#             function that returns a World object with nodes, links, and demand specifications
+class SolverDSO_D2D:
+    def __init__(s, func_World):
+        """
+        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics. 
+
+        Parameters
+        ----------
+        func_World : function
+            function that returns a World object with nodes, links, and demand specifications
             
-#         Notes
-#         -----
-#             This is based on an algorithm whose stochastic convergence is theoretically guaranteed. However, the convergence is very slow. It is difficult to obtain accurate solution within a practical amount of time if the network was not small. 
+        Notes
+        -----
+            This function computes a near DSO state as a steady state of day-to-day dynamical routing game.
             
-#             This method is based on the following literature:
-#             Satsukawa, K., Wada, K., & Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209. https://doi.org/10.1016/j.trb.2021.11.001
-#         """
-#         s.func_World = func_World
-#         s.W_sol = None  #final solution
-#         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution
-#         s.dfs_link = []
-        
-#         warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
-#         warnings.warn("The current implementation of `SolverDSO` may not be effective except for small scenario.")
+            This is a modification of Iryo's DUE algorithm, in which each traveler minimize marginal travel time (i.e., private cost + externality) instead of private cost as in DUE.
+            Since the externality (i.e., the total system cost without the ego vehicle) is costly to compute directly, it is estimated based on the queueing principle of the traffic flow model.
+            Apart from these point, this algorithm is almost the same to `SolverDUE` and thus expected to have the desirable properties discussed in the papers cited above.
+            
+            This algorithm is a loose generalization of "DSO game" of the following paper.
+            - Satsukawa, K., Wada, K., & Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209.
+            In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weaken the theoretical convergence guarantee.
+        """
+
+        s.func_World = func_World
+        s.W_sol = None  #final solution
+        s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution algorithm
+        s.dfs_link = []
     
-#     def solve(s, max_iter, n_routes_per_od=10, beta_coef=1, beta_coef2=100000, print_progress=True, print_progress_detailed=False, initial_solution_World=None):
-#         """
-#         Solve Dynamic System Optimum (DSO) problem. WIP
+    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, print_progress=True):
+        """
+        Solve quasi DSO problem using day-to-day dynamics.
 
-#         Parameters
-#         ----------
-#         max_iter : int
-#             maximum number of iterations
-#         n_routes_per_od : int
-#             number of routes to enumerate for each OD pair
-#         beta_coef : float
-#             coefficient for logit response dynamics. 
-#         beta_coef2 : float
-#             coefficient for logit response dynamics. Larger value is recommended for large network.
-#         print_progress : bool
-#             whether to print the information
-#         print_progress_detailed : bool
-#             whether to print the detailed information
-#         initial_solution_World : World, optional
-#             Initial solution (starting point) for the optimization algorithm. If None, it uses the DUO solution as a starting point; this tends to be very slow. Usually, DUE soultion is a good starting point. Recommended example: `W_init = solve_DUE(func_World); W = solve_DSO(func_World, initial_solution_World=W_init)`. It must have the same structure as the output of func_World, and its simulation has been already executed.
+        Parameters
+        ----------
+        max_iter : int
+            maximum number of iterations
+        n_routes_per_od : int
+            number of routes to enumerate for each OD pair
+        swap_prob : float
+            probability of route swap
+        print_progress : bool
+            whether to print the information
 
-#         Returns
-#         -------
-#         W : World
-#             World object with near DSO solution (if properly converged)
+        Returns
+        -------
+        W : World
+            World object with quasi DUE solution (if properly converged)
         
-#         Notes
-#         -----
-#         `self.W_sol` is the final solution. 
-#         `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.
-#         """
-#         s.start_time = time.time()
+        Notes
+        -----
+        `self.W_sol` is the final solution. 
+        `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.
+        """
+        s.start_time = time.time()
 
-#         W = s.func_World()
-#         if print_progress:
-#             W.print_scenario_stats()
+        W_orig = s.func_World()
+        if print_progress:
+            W_orig.print_scenario_stats()
 
-#         # enumerate routes for each OD pair
-#         n_routes_per_od = n_routes_per_od
+        # enumerate routes for each OD pair
+        n_routes_per_od = n_routes_per_od
 
-#         dict_od_to_vehid = defaultdict(lambda: [])
-#         for key, veh in W.VEHICLES.items():
-#             o = veh.orig.name
-#             d = veh.dest.name
-#             dict_od_to_vehid[o,d].append(key)
+        dict_od_to_vehid = defaultdict(lambda: [])
+        for key, veh in W_orig.VEHICLES.items():
+            o = veh.orig.name
+            d = veh.dest.name
+            dict_od_to_vehid[o,d].append(key)
 
-#         # dict_od_to_routes = {}
-#         # for o,d in dict_od_to_vehid.keys():
-#         #     routes = enumerate_k_shortest_routes(W, o, d, k=n_routes_per_od)
-#         #     dict_od_to_routes[o,d] = routes
-#         #     #print(o, d, routes)
-        
-#         if W.finalized == False:
-#             W.finalize_scenario()
-#         dict_od_to_routes = enumerate_k_random_routes(W, k=n_routes_per_od)
+        # dict_od_to_routes = {}
+        # for o,d in dict_od_to_vehid.keys():
+        #     routes = enumerate_k_shortest_routes(W_orig, o, d, k=n_routes_per_od)
+        #     dict_od_to_routes[o,d] = routes
 
-#         if print_progress:
-#             print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
+        if W_orig.finalized == False:
+            W_orig.finalize_scenario()
+        dict_od_to_routes = enumerate_k_random_routes(W_orig, k=n_routes_per_od)
 
-#         # day-to-day dynamics
-#         s.ttts = []
-#         s.route_log = []
-#         s.cost_log = []
-#         max_iter = max_iter
+        if print_progress:
+            print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
 
-#         s.dfs_link = []
+        # day-to-day dynamics
+        s.ttts = []
+        s.n_swaps = []
+        s.potential_swaps = []
+        s.t_gaps = []
+        s.route_log = []
+        s.cost_log = []
+        swap_prob = swap_prob
+        max_iter = max_iter
 
-#         print("solving DSO...")
-#         for i in range(max_iter):
+        print("solving DSO...")
+        for i in range(max_iter):
+            W = s.func_World()
+            if i != max_iter-1:
+                W.vehicle_logging_timestep_interval = -1
 
-#             W = s.func_World()
-#             if i != max_iter-1:
-#                 W.vehicle_logging_timestep_interval = -1
-
-#             if i != 0:
-#                 for key in W.VEHICLES:
-#                     if key in routes_specified:
-#                         W.VEHICLES[key].enforce_route(routes_specified[key])
+            if i != 0:
+                for key in W.VEHICLES:
+                    if key in routes_specified:
+                        W.VEHICLES[key].enforce_route(routes_specified[key])
             
-#             # simulation
-#             # if initial_solution_DUE and i==0:
-#             #     if print_progress:
-#             #         print(" pre-solving DUE...")
-#             #     W = solve_DUE(func_World, max_iter=initial_solution_DUE_max_iter)
-#             # else:
-#             #     W.exec_simulation()
+            route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
+            for o,d in dict_od_to_vehid.keys():
+                for r in dict_od_to_routes[o,d]:
+                    route_set[o,d].append(W.defRoute(r))
 
-#             if i == 0 and initial_solution_World != None:
-#                 if print_progress:
-#                     print(" using pre-solved World...")
-#                 W = initial_solution_World
-#             else:
-#                 W.exec_simulation()
+            # simulation
+            W.exec_simulation()
 
-#             route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
-#             for o,d in dict_od_to_vehid.keys():
-#                 for r in dict_od_to_routes[o,d]:
-#                     route_set[o,d].append(W.defRoute(r))
+            # results
+            W.analyzer.print_simple_stats()
+            #W.analyzer.network_average()
+
+            # trip completion check
+            unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
+            if unfinished_trips > 0:
+                warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DSO solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
+
+            # attach route choice set to W object for later re-use at different solvers like DSO-GA
+            W.dict_od_to_routes = dict_od_to_routes
             
-#             # results
-#             W.analyzer.print_simple_stats()
-#             s.ttts.append(W.analyzer.total_travel_time)
-#             s.dfs_link.append(W.analyzer.link_to_pandas())
-            
-#             s.W_intermid_solution = W
+            if unfinished_trips == 0:
+                if s.W_intermid_solution == None:
+                    s.W_intermid_solution = W
+                elif W.analyzer.average_travel_time < s.W_intermid_solution.analyzer.average_travel_time:
+                    s.W_intermid_solution = W
 
-#             if i == max_iter-1:
-#                 break
+            s.dfs_link.append(W.analyzer.link_to_pandas())
 
-#             # DSO game
+            # route swap
+            routes_specified = {}
+            route_actual = {}
+            cost_actual = {}
+            n_swap = 0
+            total_t_gap = 0
+            potential_n_swap = 0
 
-#             # select vehicle
-#             tmp_counter=0
-#             while True: #select vehicle with multiple route options
-#                 vehid = random.choice(list(W.VEHICLES.keys()))
+            keys_swap = [key for key in W.VEHICLES.keys() if random.random() < swap_prob]
+            if swap_num != None:
+                keys_swap = random.sample(list(W.VEHICLES.keys()), swap_num)
+
+            for key,veh in W.VEHICLES.items():
+                flag_swap = key in keys_swap
+                o = veh.orig.name
+                d = veh.dest.name
+                r, ts = veh.traveled_route()
+                travel_time = ts[-1]-ts[0]
                 
-#                 o = W.VEHICLES[vehid].orig.name
-#                 d = W.VEHICLES[vehid].dest.name
+                route_actual[key] = [rr.name for rr in r]
+                cost_actual[key] = travel_time
 
-#                 if len(route_set[o,d]) > 1:
-#                     break
+                if veh.state != "end":
+                    continue
 
-#                 tmp_counter += 1
-#                 if tmp_counter > 1000000:
-#                     raise Exception("DSO error: No alternative routes.")
+                flag_route_changed = False
+                route_changed = None
+                t_gap = 0
 
-#             routes_specified = {}
-#             route_actual = {}
-#             cost_actual = {}
-#             for key,veh in W.VEHICLES.items():
-#                 if veh.state != "end":
-#                     continue
+                ext = estimate_congestion_externality_route(W, r, ts[0])
+                private_cost = r.actual_travel_time(ts[0])
+                cost_current = private_cost+ext
 
-#                 route, ts = veh.traveled_route()
-#                 travel_time = ts[-1]-ts[0]
+                potential_n_swap_updated = potential_n_swap
                 
-#                 route_actual[key] = [rr.name for rr in route]
-#                 cost_actual[key] = travel_time
+                for alt_route in route_set[o,d]:
+                    ext = estimate_congestion_externality_route(W, alt_route, ts[0])
+                    private_cost = alt_route.actual_travel_time(ts[0])
+                    cost_alt = private_cost+ext
 
-#                 routes_specified[key] = route
-            
-#             s.route_log.append(route_actual)
-#             s.cost_log.append(cost_actual)
-            
-#             beta = (i/beta_coef+1)/beta_coef2
-#             game_route = []
-#             game_self_cost = []
-#             game_system_cost = []
+                    if cost_alt < cost_current:
+                        if flag_route_changed == False or (cost_alt < cost_current):
+                            t_gap = cost_current - cost_alt
+                            potential_n_swap_updated = potential_n_swap + W.DELTAN
+                            if flag_swap:
+                                flag_route_changed = True
+                                route_changed = alt_route
+                                cost_current = cost_alt 
+                
+                potential_n_swap = potential_n_swap_updated
 
-#             W_without_i = s.func_World()
-#             for key in W.VEHICLES:
-#                 if key in routes_specified:
-#                     W_without_i.VEHICLES[key].enforce_route(routes_specified[key])
-#                 if key == vehid:
-#                     W_without_i.VEHICLES[key].state = "end"
-#             W_without_i.exec_simulation()
-#             system_cost_without_i = W_without_i.analyzer.total_travel_time
+                total_t_gap += t_gap
+                routes_specified[key] = r
+                if flag_route_changed:
+                    n_swap += W.DELTAN
+                    routes_specified[key] = route_changed
 
-#             for alt_route in dict_od_to_routes[o,d]:
-#                 W_alt = s.func_World()
-#                 W_alt.vehicle_logging_timestep_interval = -1
-#                 routes_specified[vehid] = alt_route
-#                 for key in W.VEHICLES:
-#                     if key in routes_specified:
-#                         W_alt.VEHICLES[key].enforce_route(routes_specified[key])
-#                 W_alt.exec_simulation()
+            t_gap_per_vehicle = total_t_gap/len(W.VEHICLES)
+            if print_progress:
+                print(f' iter {i}: marginal time gap: {t_gap_per_vehicle:.1f}, potential route change: {potential_n_swap}, route change: {n_swap}, total travel time: {W.analyzer.total_travel_time: .1f}, delay ratio: {W.analyzer.average_delay/W.analyzer.average_travel_time: .3f}')
 
-#                 game_route.append(alt_route)
-#                 game_self_cost.append(W_alt.VEHICLES[vehid].travel_time)
-#                 game_system_cost.append(W_alt.analyzer.total_travel_time-system_cost_without_i)
-            
-#             game_utility = -np.array(game_self_cost)-np.array(game_system_cost)
-#             game_utility_max = max(game_utility)
-#             game_prob = np.exp(beta*(game_utility-game_utility_max))/sum(np.exp(beta*(game_utility-game_utility_max)))
-#             game_prob[np.isnan(game_prob)] = 0.5 #safety measure
+            s.route_log.append(route_actual)
+            s.cost_log.append(cost_actual)
 
-#             route_index = np.random.choice([i for i in range(len(game_prob))], p=game_prob/sum(game_prob))
-#             routes_specified[vehid] = dict_od_to_routes[o,d][route_index]
-
-#             if print_progress:
-#                 print(f"iter {i}, ttt:{s.ttts[-1]}")
-#             #uxsim.print_columns(game_route, game_self_cost, game_system_cost,game_utility,game_prob)
-#             if print_progress and print_progress_detailed:
-#                 print(f"i: {vehid}, system_cost_without_i:{system_cost_without_i}, selected route:{route_index}={routes_specified[vehid]}")
-#                 print_columns(game_self_cost, game_system_cost,game_utility,game_prob)
+            s.ttts.append(int(W.analyzer.total_travel_time))
+            s.n_swaps.append(n_swap)
+            s.potential_swaps.append(potential_n_swap)
+            s.t_gaps.append(t_gap_per_vehicle)
         
-#         s.end_time = time.time()
-        
-#         print("DSO summary:")
-#         print(f" total travel time: initial {s.ttts[0]:.1f} -> last {s.ttts[-1]:.1f}")
-#         print(f" computation time: {s.end_time - s.start_time:.1f} seconds")
+        s.end_time = time.time()
 
-#         s.W_sol = W
-#         return s.W_sol
+        print("DSO summary:")
+        last_iters = int(max_iter/4)
+        print(f" total travel time: initial {s.ttts[0]:.1f} -> minimum {np.min(s.ttts):.1f}")
+        print(f" number of potential route changes: initial {s.potential_swaps[0]:.1f} -> minimum {np.min(s.potential_swaps):.1f}")
+        print(f" route marginal travel time gap: initial {s.t_gaps[0]:.1f} -> minimum {np.min(s.t_gaps):.1f}")
+        print(f" computation time: {s.end_time - s.start_time:.1f} seconds")
+
+        s.W_sol = s.W_intermid_solution
+        return s.W_sol
     
-#     def plot_convergence(s):
-#         plt.figure(figsize=(6,2))
-#         plt.title("total travel time")
-#         plt.plot(s.ttts)
-#         plt.xlabel("iter")
-#         plt.show()
+    def plot_convergence(s):
+        """
+        Plots convergence metrics for a Dynamic Traffic Assignment (DTA) solution.
+        This function creates three separate plots:
+        1. Total travel time across iterations
+        2. Number of route changes (swaps) across iterations
+        3. Travel time gap between chosen routes and minimum cost routes across iterations 
+        """
 
-#     def plot_link_stats(s):
-#         plt.figure()
-#         plt.title("traffic volume")
-#         for i in range(len(s.dfs_link[0])):
-#             vols = [df["traffic_volume"][i] for df in s.dfs_link]
-#             plt.plot(vols, label=s.dfs_link[0]["link"][i])
-#         plt.xlabel("iteration")
-#         plt.ylabel("volume (veh)")
-#         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        # iteration plot
+        plt.figure(figsize=(6,6))
+        plt.subplot(311)
+        plt.ylabel("total travel time")
+        plt.plot(s.ttts)
+        plt.xlabel("iter")
 
-#         plt.figure()
-#         plt.title("average travel time")
-#         for i in range(len(s.dfs_link[0])):
-#             vols = [df["average_travel_time"][i] for df in s.dfs_link]
-#             plt.plot(vols, label=s.dfs_link[0]["link"][i])
-#         plt.xlabel("iteration")
-#         plt.ylabel("time (s)")
-#         plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        plt.subplot(312)
+        plt.ylabel("number of route change")
+        plt.plot(s.n_swaps)
+        plt.ylim(0,None)
+        plt.xlabel("iter")
 
-#         plt.show()
+        plt.subplot(313)
+        plt.ylabel("route marginal travel time gap")
+        plt.plot(s.t_gaps)
+        plt.ylim(0,None)
+        plt.xlabel("iter")
+
+        plt.show()
+
+        # plt.figure()
+        # plot_multiple_y(ys=[s.ttts, s.n_swaps, s.potential_swaps, s.total_t_gaps, np.array(s.total_t_gaps)/np.array(s.potential_swaps)], labels=["total travel time", "number of route change", "number of potential route change", "time gap for potential route change", "time gap per potential route change"])
+        # plt.xlabel("iter")
+        # plt.show()
+
+    def plot_link_stats(s):
+        """
+        Generate two plots to visualize the evolution of link-level traffic statistics across iterations.
+        The first plot shows traffic volume changes for each link over iterations.
+        The second plot shows average travel time changes for each link over iterations.
+        """
+
+        plt.figure()
+        plt.title("traffic volume")
+        for i in range(len(s.dfs_link[0])):
+            vols = [df["traffic_volume"][i] for df in s.dfs_link]
+            plt.plot(vols, label=s.dfs_link[0]["link"][i])
+        plt.xlabel("iteration")
+        plt.ylabel("volume (veh)")
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        plt.figure()
+        plt.title("average travel time")
+        for i in range(len(s.dfs_link[0])):
+            vols = [df["average_travel_time"][i] for df in s.dfs_link]
+            plt.plot(vols, label=s.dfs_link[0]["link"][i])
+        plt.xlabel("iteration")
+        plt.ylabel("time (s)")
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        plt.show()
     
-#     def plot_vehicle_stats(s, orig=None, dest=None):
-#         ave_TT = []
-#         std_TT = []
-#         depature_time = []
-#         for vehid in s.route_log[0].keys():
-#             if (s.W_sol.VEHICLES[vehid].orig.name == orig or orig == None) and (s.W_sol.VEHICLES[vehid].dest.name == dest or dest == None):
-#                 length = len(s.route_log)
-#                 ts = [s.cost_log[day][vehid] for day in range(int(length/2), length)]
-#                 ave_TT.append(np.average(ts))
-#                 std_TT.append(np.std(ts))
-#                 depature_time.append(s.W_sol.VEHICLES[vehid].departure_time_in_second)
+    def plot_vehicle_stats(s, orig=None, dest=None):
+        """
+        Plot travel time statistics for vehicles based on their origin and destination.
+        This function visualizes the average travel time and standard deviation for vehicles
+        matching the specified origin and destination criteria. The data is plotted against 
+        the departure time of each vehicle.
 
-#         plt.figure()
-#         orig_ = orig
-#         if orig == None:
-#             orig_ = "any"
-#         dest_ = dest
-#         if dest == None:
-#             dest_ = "any"
-#         plt.title(f"orig: {orig_}, dest: {dest_}")
-#         plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, 
-#                 fmt='bx', ecolor="#aaaaff", capsize=0, label="travel time (mean $pm$ std)")
-#         plt.xlabel("departure time of vehicle")
-#         plt.ylabel("travel time")
-#         plt.legend()
-#         plt.show()
+        Parameters
+        ----------
+        orig : str, optional
+            Filter vehicles by origin. If None, vehicles from all origins are included.
+        dest : str, optional
+            Filter vehicles by destination. If None, vehicles to all destinations are included.
+            
+        Notes
+        -----
+        - The function uses the second half of the available data (from length/2 to length)
+          from the cost_log to compute statistics.
+        - The plot shows departure time on the x-axis and average travel time on the y-axis,
+          with error bars representing the standard deviation.
+        """
+
+        ave_TT = []
+        std_TT = []
+        depature_time = []
+        for vehid in s.route_log[0].keys():
+            if (s.W_sol.VEHICLES[vehid].orig.name == orig or orig == None) and (s.W_sol.VEHICLES[vehid].dest.name == dest or dest == None):
+                length = len(s.route_log)
+                ts = [s.cost_log[day][vehid] for day in range(int(length/2), length)]
+                ave_TT.append(np.average(ts))
+                std_TT.append(np.std(ts))
+                depature_time.append(s.W_sol.VEHICLES[vehid].departure_time_in_second)
+
+        plt.figure()
+        orig_ = orig
+        if orig == None:
+            orig_ = "any"
+        dest_ = dest
+        if dest == None:
+            dest_ = "any"
+        plt.title(f"orig: {orig_}, dest: {dest_}")
+        plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, 
+                fmt='bx', ecolor="#aaaaff", capsize=0, label=r"travel time (mean $\pm$ std)")
+        plt.xlabel("departure time of vehicle")
+        plt.ylabel("travel time")
+        plt.legend()
+        plt.show()
 
 
 class SolverDSO_GA:
