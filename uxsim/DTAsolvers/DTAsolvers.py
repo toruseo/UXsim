@@ -621,16 +621,13 @@ class SolverDSO_D2D:
           with error bars representing the standard deviation.
         """
 
-        ave_TT = []
-        std_TT = []
+        sol_TT = []
         depature_time = []
         for vehid in s.route_log[0].keys():
             if (s.W_sol.VEHICLES[vehid].orig.name == orig or orig == None) and (s.W_sol.VEHICLES[vehid].dest.name == dest or dest == None):
-                length = len(s.route_log)
-                ts = [s.cost_log[day][vehid] for day in range(int(length/2), length)]
-                ave_TT.append(np.average(ts))
-                std_TT.append(np.std(ts))
                 depature_time.append(s.W_sol.VEHICLES[vehid].departure_time_in_second)
+                r, ts = s.W_sol.VEHICLES[vehid].traveled_route()
+                sol_TT.append(ts[-1]-ts[0])
 
         plt.figure()
         orig_ = orig
@@ -640,8 +637,7 @@ class SolverDSO_D2D:
         if dest == None:
             dest_ = "any"
         plt.title(f"orig: {orig_}, dest: {dest_}")
-        plt.errorbar(x=depature_time, y=ave_TT, yerr=std_TT, 
-                fmt='bx', ecolor="#aaaaff", capsize=0, label=r"travel time (mean $\pm$ std)")
+        plt.plot(depature_time, sol_TT, "bx", label=r"travel time (in DSO)")
         plt.xlabel("departure time of vehicle")
         plt.ylabel("travel time")
         plt.legend()
@@ -666,8 +662,12 @@ class SolverDSO_GA:
         s.W_sol = None  #final solution
         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution 
         s.dfs_link = []
-        
-        #warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
+                
+        warnings.warn(
+            "`SolverDSO_GA` is deprecated. Please consider to use `SolverDSO_D2D`, which is much more efficient.",
+            DeprecationWarning
+        )
+
     
     def solve(s, max_iter, n_routes_per_od=10, pop_size=50, elite_size=2, mutation_occur_rate=0.1, mutation_gene_rate=0.05, n_crossover_points=2, print_progress=True, initial_solution_World=None):
         """
@@ -1047,6 +1047,11 @@ class SolverDSO_ALNS:
         s.W_sol = None  #final solution
         s.W_intermid_solution = None
         s.dfs_link = []
+        
+        warnings.warn(
+            "`SolverDSO_GA` is deprecated. Please consider to use `SolverDSO_D2D`, which is much more efficient.",
+            DeprecationWarning
+        )
         
     def solve(s, max_iter, n_routes_per_od=10, k_max=None, k_min=None, p0=0.2, trials=50, always_accept=False, print_progress=True, initial_solution_World=None, destroy_set=None, repair_set=None):
         """
