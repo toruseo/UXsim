@@ -823,7 +823,54 @@ def test_vehicle_group_stats():
     assert df["average_traveled_distance"][df["group"]=="depart_t=0"].values[0] < df["average_traveled_distance"][df["group"]=="depart_t=1500"].values[0]
     assert df["average_detour_ratio"][df["group"]=="depart_t=0"].values[0] < df["average_detour_ratio"][df["group"]=="depart_t=1500"].values[0]
     assert df["average_speed"][df["group"]=="depart_t=0"].values[0] > df["average_speed"][df["group"]=="depart_t=1500"].values[0]
-    
+
+def test_change_jam_density():
+    W = World(
+        name="",
+        deltan=5,
+        tmax=1200,
+        print_mode=1, save_mode=0, show_mode=1,
+    )
+
+    W.addNode("orig", 0, 0)
+    W.addNode("mid1", 0, 2)
+    W.addNode("mid2", 1, 1, signal=[240, 240])
+    W.addNode("dest", 2, 1)
+    W.addLink("link1", "orig", "mid1", length=1000, free_flow_speed=20, number_of_lanes=1)
+    link2 = W.addLink("link2", "mid1", "mid2", length=400, free_flow_speed=20, jam_density=0.2, number_of_lanes=1, signal_group=0)
+    W.addLink("link3", "mid2", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.adddemand("orig", "dest", 0, 1200, 0.4)
+
+    check_flag = 0
+    while W.check_simulation_ongoing():
+        W.exec_simulation(duration_t2=30)
+        print(W.TIME, link2.delta_per_lane, link2.num_vehicles, link2.num_vehicles_queue)
+        if W.TIME > 600:
+            link2.change_jam_density(0.1)
+            
+        if W.TIME == 180:
+            assert equal_tolerance(link2.num_vehicles, 10)
+            assert equal_tolerance(link2.num_vehicles_queue, 0)
+            check_flag += 1
+        if W.TIME == 450:
+            assert equal_tolerance(link2.num_vehicles, 400*0.2)
+            assert equal_tolerance(link2.num_vehicles_queue, 400*0.2)
+            check_flag += 1
+        if W.TIME == 540:
+            assert equal_tolerance(link2.num_vehicles, 35)
+            assert equal_tolerance(link2.num_vehicles_queue, 25)
+            check_flag += 1
+        if W.TIME == 900:
+            assert equal_tolerance(link2.num_vehicles, 400*0.1)
+            assert equal_tolerance(link2.num_vehicles_queue, 400*0.1)
+            check_flag += 1
+
+    assert check_flag == 4
+
+    W.analyzer.print_simple_stats()
+
+    #W.analyzer.time_space_diagram_traj_links(["link1","link2","link3"])
+
 def test_user_functions():
     # define custom user_functions
 
