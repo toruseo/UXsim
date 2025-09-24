@@ -113,8 +113,8 @@ def test_DTA_total_travel_time_comparison():
     solver_DSO_GA.plot_vehicle_stats(orig="4", dest="7")
 
     solver_DSO_ALNS.plot_convergence()
-    solver_DUE.plot_link_stats()
-    solver_DUE.plot_vehicle_stats(orig="4", dest="7")
+    solver_DSO_ALNS.plot_link_stats()
+    solver_DSO_ALNS.plot_vehicle_stats(orig="4", dest="7")
 
     solver_DSO_D2D.plot_convergence()
     solver_DSO_D2D.plot_link_stats()

@@ -63,6 +63,9 @@ def test_analyzer():
     W.analyzer.network_anim(detailed=0, network_font_size=0, figsize=(12,12), state_variables="flow_speed")
     W.analyzer.network_fancy(animation_speed_inverse=15, sample_ratio=0.3, interval=5, trace_length=5)
 
+    W.analyzer.network_pillow(600, state_variables="density_speed")
+    W.analyzer.network_pillow(600, state_variables="density_flow")
+
     # Convert results to pandas.DataFrame for easier analysis
     print(W.analyzer.basic_to_pandas()) # Basic statistics
     print(W.analyzer.od_to_pandas())    # Information by OD

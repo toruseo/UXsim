@@ -1068,26 +1068,26 @@ def get_best_x(state: ALNSState) -> List[Any]:
     """
     return _copy_vec(state.x_best)
 
-def evaluate_candidates(state: ALNSState, xs: Iterable[Sequence[Any]]) -> List[float]:
-    """複数の候補解を評価.
+# def evaluate_candidates(state: ALNSState, xs: Iterable[Sequence[Any]]) -> List[float]:
+#     """複数の候補解を評価.
     
-    Parameters
-    ----------
-    state : ALNSState
-        ALNS状態
-    xs : Iterable[Sequence[Any]]
-        評価する候補解のイテラブル
+#     Parameters
+#     ----------
+#     state : ALNSState
+#         ALNS状態
+#     xs : Iterable[Sequence[Any]]
+#         評価する候補解のイテラブル
     
-    Returns
-    -------
-    List[float]
-        各候補解の目的関数値（ユーザー向き）
-    """
-    vals = []
-    for x in xs:
-        v = state.obj(x)
-        vals.append(v if state.sense == "min" else -v)
-    return vals
+#     Returns
+#     -------
+#     List[float]
+#         各候補解の目的関数値（ユーザー向き）
+#     """
+#     vals = []
+#     for x in xs:
+#         v = state.obj(x)
+#         vals.append(v if state.sense == "min" else -v)
+#     return vals
 
 def finalize(state: ALNSState, stop_reason: str = "") -> Tuple[Sequence[Any], RunLog]:
     """ALNS実行を終了し、結果を取得.
@@ -1127,39 +1127,39 @@ def finalize(state: ALNSState, stop_reason: str = "") -> Tuple[Sequence[Any], Ru
 # -------------------------
 # デモ（__main__）
 # -------------------------
-if __name__ == "__main__":
-    # 例：各位置 ∈ {0,1,2,3}、重み付き合計を target に合わせる（制約なし）
-    random.seed(42)
-    n_elem = 20
-    w = [random.uniform(0,10) for _ in range(n_elem)]
-    target = sum(w)*1.5
-    x0 = [0 for _ in range(n_elem)]
-    domains = [[0,1,2,3] for _ in x0]
+# if __name__ == "__main__":
+#     # 例：各位置 ∈ {0,1,2,3}、重み付き合計を target に合わせる（制約なし）
+#     random.seed(42)
+#     n_elem = 20
+#     w = [random.uniform(0,10) for _ in range(n_elem)]
+#     target = sum(w)*1.5
+#     x0 = [0 for _ in range(n_elem)]
+#     domains = [[0,1,2,3] for _ in x0]
 
-    def obj_example(x1):
-        return abs(sum(wj*xj for wj, xj in zip(w, x1)) - target)
+#     def obj_example(x1):
+#         return abs(sum(wj*xj for wj, xj in zip(w, x1)) - target)
 
-    state = init_alns(
-        x0, obj_example,
-        domains=domains,
-        k_min=1, k_max=4,
-        total_iters=2000,
-        segment_len=50,
-        seed=0,
-        additional_info={"departure_times": np.linspace(0,1,len(x0))} #無意味な例
-    )
+#     state = init_alns(
+#         x0, obj_example,
+#         domains=domains,
+#         k_min=1, k_max=4,
+#         total_iters=2000,
+#         segment_len=50,
+#         seed=0,
+#         additional_info={"departure_times": np.linspace(0,1,len(x0))} #無意味な例
+#     )
 
-    # 1000 ステップだけ走らせて終了
-    run_auto(state, n=1000)
-    x_star, run = finalize(state, stop_reason="done")
+#     # 1000 ステップだけ走らせて終了
+#     run_auto(state, n=1000)
+#     x_star, run = finalize(state, stop_reason="done")
 
-    try:
-        df = run.to_dataframe()
-        print(df.to_string())
-    except Exception:
-        pass
+#     try:
+#         df = run.to_dataframe()
+#         print(df.to_string())
+#     except Exception:
+#         pass
 
-    print("best obj:", run.best_obj)
-    print("best x  :", x_star)
-    print("op stats:")
-    pprint(run.operator_stats)
+#     print("best obj:", run.best_obj)
+#     print("best x  :", x_star)
+#     print("op stats:")
+#     pprint(run.operator_stats)
