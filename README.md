@@ -210,12 +210,6 @@ To learn more about UXsim, please see:
 - [arXiv preprint](https://arxiv.org/abs/2309.17114): Scientific overview
 - [JOSS paper](https://doi.org/10.21105/joss.07617): Peer-reviewed article in Journal of Open Source Software
 
-## Main Files
-
-- `uxsim` directory: UXsim main package
-	- `uxsim/uxsim.py`: UXsim main code
-- `demos_and_examples` directory: Tutorials and examples of UXsim
-- `dat` directory: Sample scenario files
 
 ## Terms of Use & License
 
@@ -266,4 +260,4 @@ Specifically, UXsim directly uses the following works:
 ## Related Links
 
 - [Toru Seo (Author)](https://toruseo.jp/index_en.html)
-- [Seo Laboratory, Tokyo Institute of Technology](http://seo.cv.ens.titech.ac.jp/en/)
+- [Seo Laboratory, Institute of Science Tokyo](http://seo.cv.ens.titech.ac.jp/en/)

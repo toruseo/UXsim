@@ -852,6 +852,7 @@ class Link:
             s.w = 1/s.tau/s.kappa
             s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
             s.delta = 1/s.kappa
+            s.delta_per_lane = s.delta*s.number_of_lanes
         else:
             warnings.warn(f"ignored negative jam_density at {s}", UserWarning)
 
