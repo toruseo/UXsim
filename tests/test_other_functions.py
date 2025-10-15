@@ -6,6 +6,7 @@ import pytest
 from numpy import *
 from uxsim import *
 from uxsim.Utilities import *
+import dill as pickle
 
 
 
@@ -274,6 +275,77 @@ def test_scenario_write_and_read_areas():
     print(df2)
 
     assert df1["total_travel_time"][0] == df2["total_travel_time"][0]
+
+
+def test_world_save():
+    W = World(
+        name="pickle_test",
+        deltan=5, 
+        tmax=1200,
+        print_mode=0, save_mode=0, show_mode=1, 
+        random_seed=0
+    )
+
+    # Define the scenario
+
+    W.addNode(name="orig1", x=0, y=0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("merge", 1, 1)
+    W.addNode("dest", 2, 1)
+
+    W.addLink(name="link1", start_node="orig1", end_node="merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+
+    W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
+    W.adddemand("orig2", "dest", 400, 1000, 0.6)
+
+    W.show_network()
+
+    W.save("test_pickle")
+
+    W2 = pickle.load(open("test_pickle.pkl", "rb"))
+
+    W2.exec_simulation()
+
+    W2.analyzer.print_simple_stats() #no print
+
+    W2.analyzer.network(t=500)
+
+    assert True
+
+def test_world_copy():
+    
+    W = World(
+        name="pickle_test",
+        deltan=5, 
+        tmax=1200,
+        print_mode=0, save_mode=0, show_mode=1, 
+        random_seed=0
+    )
+
+    W.addNode(name="orig1", x=0, y=0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("merge", 1, 1)
+    W.addNode("dest", 2, 1)
+
+    W.addLink(name="link1", start_node="orig1", end_node="merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+
+    W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
+    W.adddemand("orig2", "dest", 400, 1000, 0.6)
+
+    W.show_network()
+
+    W2 = W.copy()
+
+    W2.exec_simulation()
+
+    W2.analyzer.print_simple_stats() #no print
+
+    W2.analyzer.network(t=500)
+
 
 def test_k_shortest_path():
     W = World(
