@@ -139,19 +139,18 @@ W = World(
 )
 
 # Define the scenario
-## Create nodes
+# Create nodes
 W.addNode(name="orig1", x=0, y=0)  #xy coords are for visualization 
 W.addNode(name="orig2", x=0, y=2)
 W.addNode(name="merge", x=1, y=1)
 W.addNode(name="dest", x=2, y=1)
-## Create links between nodes
-W.addLink(name="link1", start_node="orig1", end_node="merge",
-          length=1000, free_flow_speed=20, number_of_lanes=1)
-W.addLink(name="link2", start_node="orig2", end_node="merge", 
-          length=1000, free_flow_speed=20, number_of_lanes=1)
-W.addLink(name="link3", start_node="merge", end_node="dest", 
-          length=1000, free_flow_speed=20, number_of_lanes=1)
-## Create OD traffic demand between nodes
+
+# Create links between nodes
+W.addLink(name="link1", start_node="orig1", end_node="merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+W.addLink(name="link2", start_node="orig2", end_node="merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+W.addLink(name="link3", start_node="merge", end_node="dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+
+# Create OD traffic demand between nodes
 W.adddemand(orig="orig1", dest="dest", t_start=0, t_end=1000, flow=0.45)
 W.adddemand(orig="orig2", dest="dest", t_start=400, t_end=1000, flow=0.6)
 
