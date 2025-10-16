@@ -68,7 +68,7 @@ https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127
 
 ## Install
 
-UXsim is available for Python version 3.9 or later.
+UXsim is available for Python version 3.10 or later.
 
 ### Using pip
 
