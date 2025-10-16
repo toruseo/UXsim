@@ -63,7 +63,7 @@ https://github.com/toruseo/UXsim/assets/34780089/ec780a33-d9ba-4068-a005-0b06127
 
 ## インストール
 
-Python 3.9以降に対応しています．
+Python 3.10以降に対応しています．
 
 ### pipを使用
 
