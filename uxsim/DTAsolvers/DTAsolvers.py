@@ -1,5 +1,5 @@
 """
-Submodule for Dynamic Traffic Assginment solvers
+Submodule for Dynamic Traffic Assignment solvers
 """
 import random
 import time

@@ -42,18 +42,18 @@ class Node:
         signal_offset : float, optional
             The offset of the signal. Default is 0.
         signal_offset_old : float, optional
-            The old parameter used to set offset of the signal prior to v1.8.1. This is the opposite of the usual definition of offset. Default is None, meaning it is `signal_offset` is used.
+            The old parameter used to set offset of the signal prior to v1.8.1. This is the opposite of the usual definition of offset. Default is None, meaning `signal_offset` is used.
         flow_capacity : float, optional
             The maximum flow capacity of the node. Default is None, meaning infinite capacity.
         auto_rename : bool, optional
             Whether to automatically rename the node if the name is already used. Default is False.
         number_of_lanes : int, optional
-            The number of lanes that can be green simultaniously at the node. Default is None.
+            The number of lanes that can be green simultaneously at the node. Default is None.
         attribute : any, optional
             Additional (meta) attributes defined by users.
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
-        user_function : func, optinal
+        user_function : func, optional
             User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(node):
@@ -76,7 +76,7 @@ class Node:
         s.x = x
         s.y = y
 
-        #custom attibutes
+        #custom attributes
         s.attribute = attribute
         s.user_attribute = user_attribute
         s.user_function = user_function
@@ -406,7 +406,7 @@ class Link:
             Additional (meta) attributes defined by users.
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
-        user_function : func, optinal
+        user_function : func, optional
             User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(link):
@@ -895,11 +895,11 @@ class Vehicle:
             The names of the links the vehicle avoids, default is empty list.
         trip_abort : int, optional
             Whether to abort the trip if a dead end is reached, default is 1.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
-        user_function : func, optinal
+        user_function : func, optional
             User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(veh):
@@ -1592,11 +1592,11 @@ class World:
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
         reduce_memory_delete_vehicle_route_pref : bool, optional
             If True, the simulation will delete the route preference of vehicles after its ends. This is useful when the route preference is not needed after the simulation ends.
-        meta_data : dict, optinal
+        meta_data : dict, optional
             Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.
-        user_attribute : any, optinal
-            Optinonal meta attributes that can be freely defined by a user.
-        user_function : func, optinal
+        user_attribute : any, optional
+            Optional meta attributes that can be freely defined by a user.
+        user_function : func, optional
             User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
             
             >>> def user_function(W):
@@ -1707,7 +1707,7 @@ class World:
         auto_rename : bool, optional
             Whether to automatically rename the node if the name is already used. Default is False.
         number_of_lanes : int, optional
-            The number of lanes that can be green simultaniously at the node. Default is None.
+            The number of lanes that can be green simultaneously at the node. Default is None.
 
         Returns
         -------
@@ -1799,7 +1799,7 @@ class World:
             The names of the links the vehicle avoids, default is empty list.
         trip_abort : int, optional
             Whether to abort the trip if a dead end is reached, default is 1.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         auto_rename : bool, optional
             Whether to automatically rename the vehicle if the name is already used. Default is False.
@@ -1835,7 +1835,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
 
@@ -1875,7 +1875,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         orig = W.get_nearest_node(x_orig, y_orig)
@@ -1909,7 +1909,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         warnings.warn(
@@ -1962,7 +1962,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         warnings.warn(
@@ -2018,7 +2018,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         origs = W.get_nodes_in_area(x_orig, y_orig, radious_orig)
@@ -2076,7 +2076,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         
@@ -2670,7 +2670,7 @@ class World:
 
 class Route:
     """
-    Class for a route that store concective links.
+    Class for a route that stores consecutive links.
     """
     def __init__(s, W, links, name="", trust_input=False):
         """
@@ -2709,7 +2709,7 @@ class Route:
                 if l2 in l1.end_node.outlinks.values():
                     s.links.append(l1)
                 else:
-                    raise Exception(f"route is not defined by concective links: {links}, {l1}")
+                    raise Exception(f"route is not defined by consecutive links: {links}, {l1}")
                     #todo: interpolation based on shotest path
             if len(links) >= 2:
                 s.links.append(l2)
