@@ -447,7 +447,7 @@ class Link:
         Traffic Flow Model:
 
         - The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.
-        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link's flow characteristics. Reaction time of drivers `REACTION_TIME` is a grobal parameter.
+        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link's flow characteristics. Reaction time of drivers `REACTION_TIME` is a global parameter.
         - Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
 
         Traffic Flow Model Parameters:
@@ -1303,7 +1303,7 @@ class Vehicle:
         include_arrival_time : bool
             If true, return the arrival time to the destination as well.  `-1` means it did not reach the destination.
         include_departure_time : bool
-            If true, return the departure time from the origin as well. It will be different from the entering time to the first link if there are congestion (i.e., the vehicle need to enter the network). 
+            If true, return the departure time from the origin as well. It will be different from the entering time to the first link if there is congestion (i.e., the vehicle needs to enter the network). 
 
         Returns
         -------
@@ -1481,7 +1481,7 @@ class RouteChoice:
                 s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
                 # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
                 adj_mat_link_count[i,j] += 1
-                if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
+                if link.capacity_in == 0: #if the inflow is prohibited, travel time is assumed to be infinite
                     s.adj_mat_time[i,j] = np.inf
             else:
                 s.adj_mat_time[i,j] = np.inf
@@ -1571,7 +1571,7 @@ class World:
         print_mode : int, optional
             The print mode, whether print the simulation progress or not. Default is 1 (enabled).
         save_mode : int, optional
-            The save mode,. whether save the simulation results or not.  Default is 1 (enabled).
+            The save mode, whether save the simulation results or not.  Default is 1 (enabled).
         show_mode : int, optional
             The show mode, whether show the matplotlib visualization results or not. Default is 0 (disabled).
         route_choice_principle : str, optional
@@ -1607,7 +1607,7 @@ class World:
 
         Notes
         -----
-        A World object must be defined firstly to initiate simulation.
+        A World object must be defined first to initiate simulation.
         """
 
         ## parameter setting
