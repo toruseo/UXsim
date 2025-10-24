@@ -22,7 +22,7 @@ import math
 import warnings
 
 warnings.warn(
-    "`OSMImporter` is deprecated. If you are using Python 3.11 or later, please consider to user `OSMImporter2` which has more sophisticated functionalities.",
+    "`OSMImporter` is deprecated. If you are using Python 3.11 or later, please consider using `OSMImporter2` which has more sophisticated functionalities.",
     DeprecationWarning
 )
 

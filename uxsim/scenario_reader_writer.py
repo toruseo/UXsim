@@ -9,7 +9,7 @@ import dill as pickle
 
 def demand_info_record(func):
     """
-    A decorator to record arguments of `World.addVehicle`, `World.adddemand`, etc used in secenario definition in World object.
+    A decorator to record arguments of `World.addVehicle`, `World.adddemand`, etc used in scenario definition in World object.
     """
 
     @functools.wraps(func)
