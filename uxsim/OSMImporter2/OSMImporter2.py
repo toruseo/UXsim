@@ -13,7 +13,7 @@ import pandas as pd
 import networkx as nx
 
 
-if 1: #to avoid edior's failure
+if 1: #to avoid editor's failure
     if sys.version_info < (3, 11):
         raise RuntimeError("Python 3.11 or higher is required to use 'OSMImporter2'.")
 
