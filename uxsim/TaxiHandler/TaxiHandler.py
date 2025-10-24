@@ -184,7 +184,7 @@ class TaxiHandler:
         """
         s.compute_stats()
         print("results for taxi transportation:")
-        print(f" total trip rquests: {s.n_total_requests}")
+        print(f" total trip requests: {s.n_total_requests}")
         print(f" completed trip requests: {s.n_completed_requests}")
         print(f" completed trip requests ratio: {s.n_completed_requests/s.n_total_requests if s.n_total_requests > 0 else 0: .2f}")
         print(f" average number of completed requests per taxi: {s.n_completed_requests/s.number_of_taxis: .2f}")
