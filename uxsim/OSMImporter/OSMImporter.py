@@ -1,6 +1,6 @@
 """
 OpenStreetMap importer using OSMnx.
-`OSMImporter` is deprecated. Please consider to user `OSMImporter2`
+`OSMImporter` is deprecated. Please consider using `OSMImporter2`.
 Work in progress. Import from OSM is experimental and may not work as expected. It is functional but may produce inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.
 
 

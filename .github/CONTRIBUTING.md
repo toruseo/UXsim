@@ -3,7 +3,7 @@
 For minor changes including bug fixes, please submit a pull request (like [this good example](https://github.com/toruseo/UXsim/pull/29)).
 If you want a major change, please start a discussion on the [Issues](https://github.com/toruseo/UXsim/issues) or [Discussions](https://github.com/toruseo/UXsim/discussions) pages first.
 
-To be merged, your code must pass [test scripts](https://github.com/toruseo/UXsim/tree/main/tests) that are automatically run by the Github Action.
+To be merged, your code must pass [test scripts](https://github.com/toruseo/UXsim/tree/main/tests) that are automatically run by the GitHub Action.
 But feel free to send pull requests that fail the tests. 
 The other people may be able to help.
 

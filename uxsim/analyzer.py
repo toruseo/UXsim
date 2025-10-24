@@ -42,7 +42,7 @@ class Analyzer:
 
     def __init__(s, W, font_pillow=None, font_matplotlib=None):
         """
-        Create result analysis object.
+        Create a result analysis object.
 
         Parameters
         ----------
@@ -188,7 +188,7 @@ class Analyzer:
         Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories. It is assumed that vehicles are in free-flow travel at the end of the link.
         """
         if s.W.vehicle_logging_timestep_interval != 1:
-            warnings.warn("vehicle_logging_timestep_interval is not 1. The trajecotries are not exactly accurate.", LoggingWarning)
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The trajectories are not exactly accurate.", LoggingWarning)
 
         if s.flag_trajectory_computed:
             return 0

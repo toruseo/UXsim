@@ -23,7 +23,7 @@ class Node:
     """
     def __init__(s, W, name, x, y, signal=[0], signal_offset=0, signal_offset_old=None, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None, user_attribute=None, user_function=None):
         """
-        Create a node
+        Create a node.
 
         Parameters
         ----------
@@ -54,7 +54,7 @@ class Node:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optional
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
+            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(node):
             >>>     print(len(node.incoming_vehicles))
@@ -118,7 +118,7 @@ class Node:
 
         s.signal_log = []
 
-        #flow capacity (macroscopic/continious representation for signal)
+        #flow capacity (macroscopic/continuous representation for signal)
         s.flag_lanes_automatically_determined = False
         s.number_of_lanes = number_of_lanes
         if flow_capacity != None:
@@ -370,7 +370,7 @@ class Link:
     """
     def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=[0], capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
-        Create a link
+        Create a link.
 
         Parameters
         ----------
@@ -407,7 +407,7 @@ class Link:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optional
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.
+            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(link):
             >>>     print(len(link.vehicles))
@@ -867,7 +867,7 @@ class Vehicle:
     """
     def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, mode="single_trip", links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
-        Create a vehicle (more precisely, platoon)
+        Create a vehicle (more precisely, platoon).
 
         Parameters
         ----------
@@ -900,7 +900,7 @@ class Vehicle:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optional
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
+            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(veh):
             >>>     print(veh.speed))
@@ -1584,7 +1584,7 @@ class World:
             The simulation duration, default is None (automatically determined).
         vehicle_logging_timestep_interval : int, optional
             The interval for logging vehicle data, default is 1. Logging is off if set to -1.
-            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
+            Setting a large interval (2 or more) or turning off the logging makes the simulation significantly faster in large-scale scenarios without losing simulation internal accuracy, but outputted vehicle trajectory and other related data will become inaccurate.
         instantaneous_TT_timestep_interval : int, optional
             The interval for computing instantaneous travel time of each link. Default is 5.
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
@@ -1597,7 +1597,7 @@ class World:
         user_attribute : any, optional
             Optional meta attributes that can be freely defined by a user.
         user_function : func, optional
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
+            User-defined custom function that is automatically called when the timestep is incremented (more precisely, just before the timestep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
             
             >>> def user_function(W):
             >>>     print(W.TIME)
@@ -2178,7 +2178,7 @@ class World:
         print(" simulation duration:\t", W.TMAX, "s")
         print(" number of vehicles:\t", len(W.VEHICLES)*W.DELTAN, "veh")
         print(" total road length:\t", sum([l.length for l in W.LINKS]),"m")
-        print(" time discret. width:\t", W.DELTAT, "s")
+        print(" time discretization width:\t", W.DELTAT, "s")
         print(" platoon size:\t\t", W.DELTAN, "veh")
         if W.finalized:
             print(" number of timesteps:\t", W.TSIZE)
