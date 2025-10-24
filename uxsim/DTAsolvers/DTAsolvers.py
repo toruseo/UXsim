@@ -45,7 +45,7 @@ class SolverDUE:
         """
         s.func_World = func_World
         s.W_sol = None  #final solution
-        s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution algorithm
+        s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm
         s.dfs_link = []
 
         #warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
@@ -73,7 +73,7 @@ class SolverDUE:
         Notes
         -----
         `self.W_sol` is the final solution. 
-        `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.
+        `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.
         """
         s.start_time = time.time()
 
@@ -347,12 +347,12 @@ class SolverDSO_D2D:
             
             This algorithm is a loose generalization of "DSO game" of the following paper.
             - Satsukawa, K., Wada, K., & Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209.
-            In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weaken the convergence guarantee.
+            In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take a long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weakens the convergence guarantee.
         """
 
         s.func_World = func_World
         s.W_sol = None  #final solution
-        s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution algorithm
+        s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm
         s.dfs_link = []
     
     def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, print_progress=True):
@@ -378,7 +378,7 @@ class SolverDSO_D2D:
         Notes
         -----
         `self.W_sol` is the final solution. 
-        `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.
+        `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.
         """
         s.start_time = time.time()
 
@@ -660,7 +660,7 @@ class SolverDSO_GA:
         """
         s.func_World = func_World
         s.W_sol = None  #final solution
-        s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution 
+        s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution 
         s.dfs_link = []
                 
         warnings.warn(
@@ -705,7 +705,7 @@ class SolverDSO_GA:
         Notes
         -----
         `self.W_sol` is the final solution. 
-        `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.
+        `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.
         
         GA part is initially written by ChatGPT o1-preview, and reviewed and overwritten by human.
         """
@@ -1421,7 +1421,7 @@ class SolverDSO_ALNS:
 #         s.insensitive_ratio = insensitive_ratio
 
 #         s.W_sol = None  #final solution
-#         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution algorithm
+#         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm
 #         s.W_minimum_cost_gap = None #solution with minimum cost gap, considered as one closest to equilibrium state.
 #         s.dfs_link = []
 
@@ -1450,7 +1450,7 @@ class SolverDSO_ALNS:
 #         Notes
 #         -----
 #         `self.W_sol` is the final solution. 
-#         `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.
+#         `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.
 #         """
 #         s.start_time = time.time()
 
