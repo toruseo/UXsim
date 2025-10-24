@@ -56,7 +56,7 @@ def catch_exceptions_and_warn(warning_msg=""):
 
 def lange(l):
     """
-    Super lazy function for abbreviating range(len(l))
+    Super lazy function for abbreviating range(len(l)).
 
     Parameters
     ----
@@ -66,7 +66,7 @@ def lange(l):
 
 def printtry(*args, **kwargs):
     """
-    Print messages safely, evaluating any callable arguments and catching exceptions. Mainly written by GPT-4
+    Print messages safely, evaluating any callable arguments and catching exceptions. Mainly written by GPT-4.
 
     Parameters
     ----------
@@ -186,7 +186,7 @@ def plot_multiple_y(x=None, ys=None, labels=None, **kwarg):
 
 def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     """
-    function for tests
+    Function for tests.
     """
     if check == 0 and abs_tol == 0:
         abs_tol = 0.1

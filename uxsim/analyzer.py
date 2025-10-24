@@ -102,7 +102,7 @@ class Analyzer:
 
     def od_analysis(s):
         """
-        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled
+        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled.
         """
         if s.flag_od_analysis:
             return 0
@@ -1594,7 +1594,7 @@ class Analyzer:
 
     def log_vehicles_to_pandas(s):
         """
-        same to `vehicles_to_pandas`, just for backward compatibility
+        Same to `vehicles_to_pandas`, just for backward compatibility.
         """
         return s.vehicles_to_pandas()
 

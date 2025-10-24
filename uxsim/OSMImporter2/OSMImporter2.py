@@ -73,7 +73,7 @@ def _obtain_simplify_osm_by_osmnx_neatnet(bbox, custom_filter, simplification, k
 
 def _extract_network_from_geodataframe(gdf):
     """
-    Function to extract road network nodes and links from a GeoDataFrame
+    Function to extract road network nodes and links from a GeoDataFrame.
     
     Parameters:
     -----------

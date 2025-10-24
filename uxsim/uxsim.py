@@ -692,7 +692,7 @@ class Link:
 
     def arrival_count(s, t):
         """
-        Get cumulative vehicle count of arrival to this link on time t
+        Get cumulative vehicle count of arrival to this link on time t.
 
         Parameters
         ----------
@@ -713,7 +713,7 @@ class Link:
 
     def departure_count(s, t):
         """
-        Get cumulative vehicle count of departure from this link on time t
+        Get cumulative vehicle count of departure from this link on time t.
 
         Parameters
         ----------
@@ -734,7 +734,7 @@ class Link:
 
     def instant_travel_time(s, t):
         """
-        Get instantaneous travel time of this link on time t
+        Get instantaneous travel time of this link on time t.
 
         Parameters
         ----------
@@ -1141,7 +1141,7 @@ class Vehicle:
     
     def enforce_route(s, route, set_avoid=False):
         """
-        Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check
+        Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check.
 
         Parameters
         ----------
@@ -1686,7 +1686,7 @@ class World:
 
     def addNode(W, *args, **kwargs):
         """
-        add a node to world
+        Add a node to world.
 
         Parameters
         ----------
@@ -1723,7 +1723,7 @@ class World:
 
     def addLink(W, *args, **kwargs):
         """
-        add a link to world
+        Add a link to world.
 
         Parameters
         ----------
@@ -1773,7 +1773,7 @@ class World:
 
     def addVehicle(W, *args, direct_call=True, **kwargs):
         """
-        add a vehicle to world
+        Add a vehicle to world.
 
         Parameters
         ----------
@@ -2118,7 +2118,7 @@ class World:
 
         Notes
         -----
-        This function automatically called by `exec_simulation()` if it has not been called manually.
+        This function is automatically called by `exec_simulation()` if it has not been called manually.
         """
         if W.TMAX == None:
             if tmax == None:
@@ -2168,7 +2168,7 @@ class World:
 
     def print_scenario_stats(W):
         """
-        Print scenario stats
+        Print scenario stats.
         """
         if W.finalized:
             print("simulation setting:")
@@ -2316,7 +2316,7 @@ class World:
 
     def simulation_terminated(W):
         """
-        Postprocessing after simulation finished
+        Postprocessing after simulation finished.
         """
         W.print(" simulation finished")
         W.analyzer.basic_analysis()
