@@ -373,7 +373,7 @@ requires the following parameters:</p>
 &lt;Link link3&gt;
 </pre></div></div>
 </div>
-<p>Finally, the traffic demand between origin-destination (OD) pairs is specified using the <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.World.html#uxsim.World.adddemand">adddemand</a> method, which add appropriate number of <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.Vehicle.html">Vehicle</a> objects. It requires the following parameters:</p>
+<p>Finally, the traffic demand between origin-destination (OD) pairs is specified using the <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.World.html#uxsim.World.adddemand">adddemand</a> method, which adds appropriate number of <a class="reference external" href="https://toruseo.jp/UXsim/docs/_autosummary/uxsim.Vehicle.html">Vehicle</a> objects. It requires the following parameters:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">orig</span></code>: A string specifying the name of the origin node. You can also specify Node object instead.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dest</span></code>: A string specifying the name of the destination node. You can also specify Node object instead.</p></li>
@@ -458,7 +458,7 @@ simulating...
 1
 </pre></div></div>
 </div>
-<p>The simulation can also be run in steps by specifying the <code class="docutils literal notranslate"><span class="pre">duration_t</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">exec_simulation</span></code>. This allows intervening in the simulation at intermediate points. This is for advantage usage. For example:</p>
+<p>The simulation can also be run in steps by specifying the <code class="docutils literal notranslate"><span class="pre">duration_t</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">exec_simulation</span></code>. This allows intervening in the simulation at intermediate points. This is for advanced usage. For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">W</span><span class="o">.</span><span class="n">check_simulation_ongoing</span><span class="p">():</span>
     <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">(</span><span class="n">duration_t</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     <span class="n">your_intervention_method</span><span class="p">()</span>

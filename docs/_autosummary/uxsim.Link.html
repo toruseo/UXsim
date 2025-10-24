@@ -289,7 +289,7 @@ gtag('config', 'UA-111714220-1');
 <dt class="sig sig-object py" id="uxsim.Link">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link" title="Link to this definition">¶</a></dt>
 <dd><p>Link in a network.</p>
-<p>Create a link</p>
+<p>Create a link.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -309,7 +309,7 @@ gtag('config', 'UA-111714220-1');
 <li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</p>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optional</em>) – <p>User-defined custom function that is automatically called when the timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">link</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">vehicles</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -437,7 +437,7 @@ gtag('config', 'UA-111714220-1');
 <p>Traffic Flow Model:</p>
 <ul class="simple">
 <li><p>The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.</p></li>
-<li><p>Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link’s flow characteristics. Reaction time of drivers <cite>REACTION_TIME</cite> is a grobal parameter.</p></li>
+<li><p>Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link’s flow characteristics. Reaction time of drivers <cite>REACTION_TIME</cite> is a global parameter.</p></li>
 <li><p>Real-time link status for external reference is maintained with attributes <cite>speed</cite>, <cite>density</cite>, <cite>flow</cite>, <cite>num_vehicles</cite>, and <cite>num_vehicles_queue</cite>.</p></li>
 </ul>
 <p>Traffic Flow Model Parameters:</p>
@@ -514,7 +514,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Create a link</p>
+<dd><p>Create a link.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -534,7 +534,7 @@ gtag('config', 'UA-111714220-1');
 <li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</p>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optional</em>) – <p>User-defined custom function that is automatically called when the timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">link</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">vehicles</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -662,7 +662,7 @@ gtag('config', 'UA-111714220-1');
 <p>Traffic Flow Model:</p>
 <ul class="simple">
 <li><p>The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.</p></li>
-<li><p>Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link’s flow characteristics. Reaction time of drivers <cite>REACTION_TIME</cite> is a grobal parameter.</p></li>
+<li><p>Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link’s flow characteristics. Reaction time of drivers <cite>REACTION_TIME</cite> is a global parameter.</p></li>
 <li><p>Real-time link status for external reference is maintained with attributes <cite>speed</cite>, <cite>density</cite>, <cite>flow</cite>, <cite>num_vehicles</cite>, and <cite>num_vehicles_queue</cite>.</p></li>
 </ul>
 <p>Traffic Flow Model Parameters:</p>
@@ -743,13 +743,13 @@ gtag('config', 'UA-111714220-1');
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.__init__" title="uxsim.Link.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, name, start_node, end_node, length)</p></td>
-<td><p>Create a link</p></td>
+<td><p>Create a link.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.actual_travel_time" title="uxsim.Link.actual_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">actual_travel_time</span></code></a>(t)</p></td>
 <td><p>Get actual travel time of vehicle who enters this link on time t.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.arrival_count" title="uxsim.Link.arrival_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arrival_count</span></code></a>(t)</p></td>
-<td><p>Get cumulative vehicle count of arrival to this link on time t</p></td>
+<td><p>Get cumulative vehicle count of arrival to this link on time t.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_free_flow_speed</span></code>(new_value)</p></td>
 <td><p></p></td>
@@ -758,7 +758,7 @@ gtag('config', 'UA-111714220-1');
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.departure_count" title="uxsim.Link.departure_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">departure_count</span></code></a>(t)</p></td>
-<td><p>Get cumulative vehicle count of departure from this link on time t</p></td>
+<td><p>Get cumulative vehicle count of departure from this link on time t.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.in_out_flow_constraint" title="uxsim.Link.in_out_flow_constraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_out_flow_constraint</span></code></a>()</p></td>
 <td><p>Link capacity updates.</p></td>
@@ -767,7 +767,7 @@ gtag('config', 'UA-111714220-1');
 <td><p>Initalization before simulation execution.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.instant_travel_time" title="uxsim.Link.instant_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">instant_travel_time</span></code></a>(t)</p></td>
-<td><p>Get instantaneous travel time of this link on time t</p></td>
+<td><p>Get instantaneous travel time of this link on time t.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.set_traveltime_instant" title="uxsim.Link.set_traveltime_instant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_traveltime_instant</span></code></a>()</p></td>
 <td><p>Compute instantaneous travel time.</p></td>
@@ -820,7 +820,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.arrival_count">
 <span class="sig-name descname"><span class="pre">arrival_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.arrival_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.arrival_count" title="Link to this definition">¶</a></dt>
-<dd><p>Get cumulative vehicle count of arrival to this link on time t</p>
+<dd><p>Get cumulative vehicle count of arrival to this link on time t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p>
@@ -837,7 +837,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.departure_count">
 <span class="sig-name descname"><span class="pre">departure_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.departure_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.departure_count" title="Link to this definition">¶</a></dt>
-<dd><p>Get cumulative vehicle count of departure from this link on time t</p>
+<dd><p>Get cumulative vehicle count of departure from this link on time t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p>
@@ -866,7 +866,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.instant_travel_time">
 <span class="sig-name descname"><span class="pre">instant_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.instant_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.instant_travel_time" title="Link to this definition">¶</a></dt>
-<dd><p>Get instantaneous travel time of this link on time t</p>
+<dd><p>Get instantaneous travel time of this link on time t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p>

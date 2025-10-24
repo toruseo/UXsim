@@ -289,7 +289,7 @@ gtag('config', 'UA-111714220-1');
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.analyzer.</span></span><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_pillow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_matplotlib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer" title="Link to this definition">¶</a></dt>
 <dd><p>Class for analyzing and visualizing a simulation result.</p>
-<p>Create result analysis object.</p>
+<p>Create a result analysis object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -302,7 +302,7 @@ gtag('config', 'UA-111714220-1');
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_pillow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_matplotlib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Create result analysis object.</p>
+<dd><p>Create a result analysis object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -319,7 +319,7 @@ gtag('config', 'UA-111714220-1');
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.__init__" title="uxsim.analyzer.Analyzer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W[, font_pillow, font_matplotlib])</p></td>
-<td><p>Create result analysis object.</p></td>
+<td><p>Create a result analysis object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.area_to_pandas" title="uxsim.analyzer.Analyzer.area_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">area_to_pandas</span></code></a>(areas[, area_names, ...])</p></td>
 <td><p>Compute traffic stats in area and return as pandas.DataFrame.</p></td>
@@ -364,7 +364,7 @@ gtag('config', 'UA-111714220-1');
 <td><p>Compute the traffic states in links and return as a pandas DataFrame.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.log_vehicles_to_pandas" title="uxsim.analyzer.Analyzer.log_vehicles_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_vehicles_to_pandas</span></code></a>()</p></td>
-<td><p>same to <cite>vehicles_to_pandas</cite>, just for backward compatibility</p></td>
+<td><p>Same to <cite>vehicles_to_pandas</cite>, just for backward compatibility.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.macroscopic_fundamental_diagram" title="uxsim.analyzer.Analyzer.macroscopic_fundamental_diagram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">macroscopic_fundamental_diagram</span></code></a>([kappa, ...])</p></td>
 <td><p>Plots the Macroscopic Fundamental Diagram (MFD) for the provided links.</p></td>
@@ -388,7 +388,7 @@ gtag('config', 'UA-111714220-1');
 <td><p>Visualizes the entire transportation network and its current traffic conditions.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.od_analysis" title="uxsim.analyzer.Analyzer.od_analysis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_analysis</span></code></a>()</p></td>
-<td><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled</p></td>
+<td><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.od_to_pandas" title="uxsim.analyzer.Analyzer.od_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">od_to_pandas</span></code></a>()</p></td>
 <td><p>Compute the OD-specific stats and return as a pandas DataFrame.</p></td>
@@ -415,7 +415,7 @@ gtag('config', 'UA-111714220-1');
 <td><p>Draws the time-space diagram of vehicle trajectories for vehicles on specified links.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj_links" title="uxsim.analyzer.Analyzer.time_space_diagram_traj_links"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_space_diagram_traj_links</span></code></a>(linkslist[, ...])</p></td>
-<td><p>Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</p></td>
+<td><p>Draws the time-space diagram of vehicle trajectories for vehicles on consecutive links.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.analyzer.Analyzer.vehicle_groups_to_pandas" title="uxsim.analyzer.Analyzer.vehicle_groups_to_pandas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vehicle_groups_to_pandas</span></code></a>(groups[, group_names])</p></td>
 <td><p>Computes the stats of vehicle group and return as a pandas DataFrame.</p></td>
@@ -570,7 +570,7 @@ The plots are saved to the directory <cite>out&lt;W.name&gt;</cite> with the fil
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.log_vehicles_to_pandas">
 <span class="sig-name descname"><span class="pre">log_vehicles_to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.log_vehicles_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.log_vehicles_to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>same to <cite>vehicles_to_pandas</cite>, just for backward compatibility</p>
+<dd><p>Same to <cite>vehicles_to_pandas</cite>, just for backward compatibility.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -783,7 +783,7 @@ Specific meaning of the colors (truncated “jet” colormap):</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.od_analysis">
 <span class="sig-name descname"><span class="pre">od_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.od_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.od_analysis" title="Link to this definition">¶</a></dt>
-<dd><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled</p>
+<dd><p>Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -885,11 +885,11 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.time_space_diagram_traj_links">
 <span class="sig-name descname"><span class="pre">time_space_diagram_traj_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linkslist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.time_space_diagram_traj_links"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.time_space_diagram_traj_links" title="Link to this definition">¶</a></dt>
-<dd><p>Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</p>
+<dd><p>Draws the time-space diagram of vehicle trajectories for vehicles on consecutive links.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>linkslist</strong> (<em>list</em><em> of </em><em>link</em><em> or </em><em>list</em><em> of </em><em>list</em><em> of </em><em>link</em>) – The names of the concective links for which the time-space diagram is to be plotted.</p></li>
+<li><p><strong>linkslist</strong> (<em>list</em><em> of </em><em>link</em><em> or </em><em>list</em><em> of </em><em>list</em><em> of </em><em>link</em>) – The names of the consecutive links for which the time-space diagram is to be plotted.</p></li>
 <li><p><strong>figsize</strong> (<em>tuple</em><em> of </em><em>int</em><em>, </em><em>optional</em>) – The size of the figure to be plotted, default is (12,4).</p></li>
 <li><p><strong>plot_signal</strong> (<em>bool</em><em>, </em><em>optional</em>) – Plot the signal red light.</p></li>
 </ul>

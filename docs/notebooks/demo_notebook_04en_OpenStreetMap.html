@@ -286,7 +286,7 @@ gtag('config', 'UA-111714220-1');
         <article role="main" id="furo-main-content">
           <section id="Network-data-import-from-OpenStreetMap">
 <h1>Network data import from OpenStreetMap<a class="headerlink" href="#Network-data-import-from-OpenStreetMap" title="Link to this heading">¶</a></h1>
-<p>This noteboook demonstrates how to import network data from <a class="reference external" href="https://www.openstreetmap.org/">OpenStreetMap</a> (OSM). This is enabled by <a class="reference external" href="https://geoffboeing.com/publications/osmnx-complex-street-networks/">OSMnx</a> (<a class="reference external" href="https://github.com/gboeing/osmnx">github</a>), a Python package for OSM data handling. OSMnx is an optional module for UXsim. If you haven’t installed it, please install it first.</p>
+<p>This notebook demonstrates how to import network data from <a class="reference external" href="https://www.openstreetmap.org/">OpenStreetMap</a> (OSM). This is enabled by <a class="reference external" href="https://geoffboeing.com/publications/osmnx-complex-street-networks/">OSMnx</a> (<a class="reference external" href="https://github.com/gboeing/osmnx">github</a>), a Python package for OSM data handling. OSMnx is an optional module for UXsim. If you haven’t installed it, please install it first.</p>
 <p>WARNING: Import from OSM is experimental and may not work as expected. It is functional but may produce inappropriate networks for simulation, such as too many nodes, too many deadends, fragmented networks.</p>
 <section id="Network-import">
 <h2>Network import<a class="headerlink" href="#Network-import" title="Link to this heading">¶</a></h2>
@@ -400,7 +400,7 @@ imported network size:
 </div>
 </div>
 <p>Unfortunately, the raw data is too detailed and not suitable for UXsim simulation. For example, many intersections of OSM consists of 4 nodes and may create strange traffic simulation results such as gridlocks.</p>
-<p>Therefore, postprocessing is required to make the network suitable for simulation as follows. First, it aggregates the network by merging nodes that are closer than the threshold (0.05 degree ~= 500 m). Second, we add reverse links for each link to eliminate dead-end nodes as much as possible. WIthout it, a lot of vehicles will lost their way and loiter the network randomly. Please be aware that in this postprocessing the original network topology is not preserved rigorously. This function is
+<p>Therefore, postprocessing is required to make the network suitable for simulation as follows. First, it aggregates the network by merging nodes that are closer than the threshold (0.05 degree ~= 500 m). Second, we add reverse links for each link to eliminate dead-end nodes as much as possible. Without it, a lot of vehicles will lost their way and loiter the network randomly. Please be aware that in this postprocessing the original network topology is not preserved rigorously. This function is
 just for convenience; if you need rigorous network data, you have to manually adjust it.</p>
 <p><code class="docutils literal notranslate"><span class="pre">OSMImporter.osm_network_to_World</span></code> will load the postprocessed network into the World.</p>
 <div class="nbinput docutils container">
@@ -445,7 +445,7 @@ aggregated network size:
 <img alt="../_images/notebooks_demo_notebook_04en_OpenStreetMap_11_1.png" src="../_images/notebooks_demo_notebook_04en_OpenStreetMap_11_1.png" />
 </div>
 </div>
-<p>As a result, the network data is significantly simplified. For example, the highway junction is represented by fewer number of nodes which is convinient. You can see that this is still similar to the real network shown before.</p>
+<p>As a result, the network data is significantly simplified. For example, the highway junction is represented by fewer number of nodes which is convenient. You can see that this is still similar to the real network shown before.</p>
 </section>
 <section id="Demand">
 <h2>Demand<a class="headerlink" href="#Demand" title="Link to this heading">¶</a></h2>
@@ -582,7 +582,7 @@ results:
 </div>
 </div>
 <p>Now we get somewhat plausible results. Traffic from outskirts goes to the central Tokyo, causing traffic congestion due to the concentration.</p>
-<p>Note that the above results is not very realistic. To obtain realistic results, you have to calibrate demands and scenario parameters very carefully. This usually requires hard work.</p>
+<p>Note that the above result is not very realistic. To obtain realistic results, you have to calibrate demands and scenario parameters very carefully. This usually requires hard work.</p>
 </section>
 </section>
 

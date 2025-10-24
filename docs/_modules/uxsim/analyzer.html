@@ -325,7 +325,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">font_pillow</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_matplotlib</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create result analysis object.</span>
+<span class="sd">        Create a result analysis object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -391,7 +391,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.od_analysis">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">od_analysis</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled</span>
+<span class="sd">        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">flag_od_analysis</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -483,7 +483,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories. It is assumed that vehicles are in free-flow travel at the end of the link.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;vehicle_logging_timestep_interval is not 1. The trajecotries are not exactly accurate.&quot;</span><span class="p">,</span> <span class="n">LoggingWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;vehicle_logging_timestep_interval is not 1. The trajectories are not exactly accurate.&quot;</span><span class="p">,</span> <span class="n">LoggingWarning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">flag_trajectory_computed</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -758,12 +758,12 @@ gtag('config', 'UA-111714220-1');
     <span class="nd">@catch_exceptions_and_warn</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">time_space_diagram_traj_links</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">linkslist</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">plot_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Draws the time-space diagram of vehicle trajectories for vehicles on concective links.</span>
+<span class="sd">        Draws the time-space diagram of vehicle trajectories for vehicles on consecutive links.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        linkslist : list of link or list of list of link</span>
-<span class="sd">            The names of the concective links for which the time-space diagram is to be plotted.</span>
+<span class="sd">            The names of the consecutive links for which the time-space diagram is to be plotted.</span>
 <span class="sd">        figsize : tuple of int, optional</span>
 <span class="sd">            The size of the figure to be plotted, default is (12,4).</span>
 <span class="sd">        plot_signal : bool, optional</span>
@@ -1943,7 +1943,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.analyzer.Analyzer.html#uxsim.analyzer.Analyzer.log_vehicles_to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">log_vehicles_to_pandas</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        same to `vehicles_to_pandas`, just for backward compatibility</span>
+<span class="sd">        Same to `vehicles_to_pandas`, just for backward compatibility.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">vehicles_to_pandas</span><span class="p">()</span></div>
 

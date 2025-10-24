@@ -407,26 +407,27 @@ simulation setting:
  number of platoons:     600
  number of links:        120
  number of nodes:        36
- setup time:             0.34 s
+ setup time:             0.52 s
 simulating...
       time| # of vehicles| ave speed| computation time
        0 s|        0 vehs|   0.0 m/s|     0.00 s
-     600 s|     3000 vehs|  13.3 m/s|     0.77 s
-    1200 s|     3000 vehs|  12.6 m/s|     1.44 s
-    1800 s|     3000 vehs|  14.4 m/s|     2.11 s
-    2400 s|     3000 vehs|  14.2 m/s|     2.88 s
-    3000 s|     3000 vehs|  14.2 m/s|     3.56 s
-    3600 s|     3000 vehs|  14.3 m/s|     4.25 s
-    4200 s|     3000 vehs|  14.3 m/s|     4.79 s
-    4800 s|     3000 vehs|  14.2 m/s|     5.32 s
-    5400 s|     3000 vehs|  14.6 m/s|     5.86 s
-    6000 s|     3000 vehs|  14.2 m/s|     6.35 s
-    6600 s|     3000 vehs|  14.1 m/s|     6.86 s
-    7195 s|     3000 vehs|  14.5 m/s|     7.36 s
+     600 s|     3000 vehs|  13.4 m/s|     2.83 s
+    1200 s|     3000 vehs|  15.0 m/s|     4.63 s
+    1800 s|     3000 vehs|  14.1 m/s|     5.85 s
+    2400 s|     3000 vehs|  14.8 m/s|     6.88 s
+    3000 s|     3000 vehs|  14.7 m/s|     7.98 s
+    3600 s|     3000 vehs|  14.3 m/s|     9.03 s
+    4200 s|     3000 vehs|  15.5 m/s|     9.81 s
+    4800 s|     3000 vehs|  14.5 m/s|    10.81 s
+    5400 s|     3000 vehs|  14.0 m/s|    11.55 s
+    6000 s|     3000 vehs|  14.9 m/s|    12.34 s
+    6600 s|     3000 vehs|  14.5 m/s|    13.13 s
+    7200 s|     3000 vehs|  14.9 m/s|    13.87 s
  simulation finished
 results:
- average speed:  14.3 m/s
+ average speed:  15.5 m/s
  number of completed trips:      0 / 0
+ total distance traveled:        0.0 m
 </pre></div></div>
 </div>
 <p>Note that the trip-related stats shown by <code class="docutils literal notranslate"><span class="pre">W.analyzer.print_simple_stats()</span></code> are only for non-taxi trips, so the current one shows 0.</p>
@@ -449,9 +450,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  6.67
- average waiting time:  84.6
- average in-vehicle time:  297.5
- average trip time:  382.0
+ average waiting time:  86.0
+ average in-vehicle time:  283.8
+ average trip time:  369.8
 </pre></div></div>
 </div>
 <p>You can also export the trip logs as pandas.Dataframe.</p>
@@ -499,58 +500,58 @@ results for taxi transportation:
   <tbody>
     <tr>
       <th>0</th>
-      <td>n(3, 2)</td>
-      <td>n(2, 2)</td>
+      <td>n(4, 2)</td>
+      <td>n(3, 1)</td>
       <td>0.0</td>
-      <td>155</td>
-      <td>210</td>
-      <td>210.0</td>
-      <td>155.0</td>
-      <td>12</td>
+      <td>165</td>
+      <td>340</td>
+      <td>340.0</td>
+      <td>165.0</td>
+      <td>418</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>n(1, 5)</td>
-      <td>n(4, 5)</td>
+      <td>n(5, 5)</td>
+      <td>n(4, 2)</td>
       <td>0.9</td>
-      <td>140</td>
-      <td>295</td>
-      <td>294.1</td>
-      <td>139.1</td>
-      <td>164</td>
+      <td>160</td>
+      <td>500</td>
+      <td>499.1</td>
+      <td>159.1</td>
+      <td>180</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>n(3, 2)</td>
-      <td>n(4, 4)</td>
+      <td>n(1, 3)</td>
+      <td>n(4, 3)</td>
       <td>1.8</td>
-      <td>55</td>
-      <td>225</td>
-      <td>223.2</td>
-      <td>53.2</td>
-      <td>175</td>
+      <td>65</td>
+      <td>220</td>
+      <td>218.2</td>
+      <td>63.2</td>
+      <td>230</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>n(2, 2)</td>
-      <td>n(2, 5)</td>
+      <td>n(3, 1)</td>
+      <td>n(3, 4)</td>
       <td>2.7</td>
-      <td>155</td>
-      <td>310</td>
-      <td>307.3</td>
-      <td>152.3</td>
-      <td>344</td>
+      <td>65</td>
+      <td>245</td>
+      <td>242.3</td>
+      <td>62.3</td>
+      <td>236</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>n(2, 0)</td>
-      <td>n(1, 0)</td>
+      <td>n(0, 5)</td>
+      <td>n(2, 3)</td>
       <td>3.6</td>
-      <td>55</td>
-      <td>105</td>
-      <td>101.4</td>
-      <td>51.4</td>
-      <td>101</td>
+      <td>65</td>
+      <td>325</td>
+      <td>321.4</td>
+      <td>61.4</td>
+      <td>131</td>
     </tr>
     <tr>
       <th>...</th>
@@ -566,57 +567,57 @@ results for taxi transportation:
     <tr>
       <th>3995</th>
       <td>n(4, 1)</td>
-      <td>n(4, 0)</td>
+      <td>n(2, 2)</td>
       <td>3595.5</td>
-      <td>3655</td>
-      <td>3715</td>
-      <td>119.5</td>
-      <td>59.5</td>
-      <td>86</td>
+      <td>3645</td>
+      <td>3850</td>
+      <td>254.5</td>
+      <td>49.5</td>
+      <td>452</td>
     </tr>
     <tr>
       <th>3996</th>
-      <td>n(0, 1)</td>
-      <td>n(3, 0)</td>
+      <td>n(2, 0)</td>
+      <td>n(3, 3)</td>
       <td>3596.4</td>
-      <td>3765</td>
-      <td>4005</td>
-      <td>408.6</td>
-      <td>168.6</td>
-      <td>111</td>
+      <td>3710</td>
+      <td>4095</td>
+      <td>498.6</td>
+      <td>113.6</td>
+      <td>547</td>
     </tr>
     <tr>
       <th>3997</th>
-      <td>n(5, 3)</td>
-      <td>n(0, 2)</td>
+      <td>n(5, 0)</td>
+      <td>n(3, 2)</td>
       <td>3597.3</td>
-      <td>3770</td>
-      <td>4330</td>
-      <td>732.7</td>
-      <td>172.7</td>
-      <td>528</td>
+      <td>3640</td>
+      <td>3870</td>
+      <td>272.7</td>
+      <td>42.7</td>
+      <td>355</td>
     </tr>
     <tr>
       <th>3998</th>
-      <td>n(5, 2)</td>
-      <td>n(2, 4)</td>
+      <td>n(1, 5)</td>
+      <td>n(0, 1)</td>
       <td>3598.2</td>
-      <td>3750</td>
-      <td>4040</td>
-      <td>441.8</td>
-      <td>151.8</td>
-      <td>332</td>
+      <td>3640</td>
+      <td>3945</td>
+      <td>346.8</td>
+      <td>41.8</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>3999</th>
-      <td>n(2, 2)</td>
-      <td>n(0, 3)</td>
+      <td>n(2, 5)</td>
+      <td>n(1, 3)</td>
       <td>3599.1</td>
-      <td>3655</td>
-      <td>3840</td>
-      <td>240.9</td>
-      <td>55.9</td>
-      <td>107</td>
+      <td>3725</td>
+      <td>3935</td>
+      <td>335.9</td>
+      <td>125.9</td>
+      <td>340</td>
     </tr>
   </tbody>
 </table>
@@ -732,9 +733,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  20.00
- average waiting time:  1508.5
- average in-vehicle time:  198.2
- average trip time:  1706.6
+ average waiting time:  1559.7
+ average in-vehicle time:  203.3
+ average trip time:  1763.1
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 1500
 results for taxi transportation:
@@ -742,9 +743,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  13.33
- average waiting time:  455.9
- average in-vehicle time:  206.8
- average trip time:  662.7
+ average waiting time:  473.8
+ average in-vehicle time:  208.4
+ average trip time:  682.2
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 2000
 results for taxi transportation:
@@ -752,9 +753,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  10.00
- average waiting time:  85.6
- average in-vehicle time:  220.2
- average trip time:  305.8
+ average waiting time:  90.2
+ average in-vehicle time:  223.5
+ average trip time:  313.8
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 2500
 results for taxi transportation:
@@ -762,9 +763,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  8.00
- average waiting time:  85.3
- average in-vehicle time:  261.3
- average trip time:  346.6
+ average waiting time:  83.1
+ average in-vehicle time:  243.4
+ average trip time:  326.5
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 3000
 results for taxi transportation:
@@ -772,9 +773,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  6.67
- average waiting time:  82.9
- average in-vehicle time:  286.6
- average trip time:  369.5
+ average waiting time:  84.1
+ average in-vehicle time:  285.2
+ average trip time:  369.4
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 3500
 results for taxi transportation:
@@ -782,9 +783,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  5.71
- average waiting time:  89.5
- average in-vehicle time:  325.6
- average trip time:  415.1
+ average waiting time:  92.0
+ average in-vehicle time:  334.4
+ average trip time:  426.4
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 4000
 results for taxi transportation:
@@ -792,9 +793,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  5.00
- average waiting time:  93.6
- average in-vehicle time:  375.2
- average trip time:  468.8
+ average waiting time:  93.4
+ average in-vehicle time:  359.5
+ average trip time:  452.9
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 4500
 results for taxi transportation:
@@ -802,9 +803,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  4.44
- average waiting time:  99.5
- average in-vehicle time:  413.0
- average trip time:  512.5
+ average waiting time:  101.5
+ average in-vehicle time:  418.1
+ average trip time:  519.6
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 5000
 results for taxi transportation:
@@ -812,9 +813,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  4.00
- average waiting time:  106.4
- average in-vehicle time:  461.3
- average trip time:  567.7
+ average waiting time:  107.1
+ average in-vehicle time:  466.5
+ average trip time:  573.7
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 5500
 results for taxi transportation:
@@ -822,9 +823,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  3.64
- average waiting time:  111.3
- average in-vehicle time:  505.8
- average trip time:  617.1
+ average waiting time:  115.2
+ average in-vehicle time:  489.8
+ average trip time:  604.9
 ################################################################################
 CASE WTIH NUMBER OF TAXIS = 6000
 results for taxi transportation:
@@ -832,9 +833,9 @@ results for taxi transportation:
  completed trip requests: 20000
  completed trip requests ratio:  1.00
  average number of completed requests per taxi:  3.33
- average waiting time:  127.9
- average in-vehicle time:  554.7
- average trip time:  682.5
+ average waiting time:  117.7
+ average in-vehicle time:  548.5
+ average trip time:  666.2
 </pre></div></div>
 </div>
 <p>Now visualize the results.</p>
@@ -873,7 +874,7 @@ results for taxi transportation:
 </section>
 <section id="Defining-custom-TaxiHandler">
 <h2>Defining custom TaxiHandler<a class="headerlink" href="#Defining-custom-TaxiHandler" title="Link to this heading">¶</a></h2>
-<p>You can also define your won TaxiHandler that may have smarter passenger-to-vehicle matching or even ridesharing. To do so, it is recommended to define a custom class by inheriting <code class="docutils literal notranslate"><span class="pre">TaxiHandler</span></code> class.</p>
+<p>You can also define your own TaxiHandler that may have smarter passenger-to-vehicle matching or even ridesharing. To do so, it is recommended to define a custom class by inheriting <code class="docutils literal notranslate"><span class="pre">TaxiHandler</span></code> class.</p>
 <p>Below is an example of (slightly) advanced taxi handler. Important built-in variables and functions are as follows:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">TaxiHandler.trip_requests</span></code>: A list of all of the trip requests that is handled by <code class="docutils literal notranslate"><span class="pre">TaxiHandler</span></code></p></li>
@@ -919,7 +920,7 @@ results for taxi transportation:
 </pre></div>
 </div>
 </div>
-<p>FYI, the following is an explanation by GPT-4 that I proofread. The function <code class="docutils literal notranslate"><span class="pre">assign_trip_request_to_taxi</span></code> is designed to assign trip requests to the nearest available taxi within a specified radius of the request’s origin point. Here’s a detailed explanation for its functionality:</p>
+<p>The function <code class="docutils literal notranslate"><span class="pre">assign_trip_request_to_taxi</span></code> is designed to assign trip requests to the nearest available taxi within a specified radius of the request’s origin point. Here’s a detailed explanation for its functionality:</p>
 <p><strong>Description</strong></p>
 <p>This function assigns each trip request to the nearest available taxi that is within the radius of the trip’s origin node. It ensures that trip requests are matched efficiently to taxis that are not currently occupied and are in a state ready to run.</p>
 <p><strong>Workflow</strong></p>

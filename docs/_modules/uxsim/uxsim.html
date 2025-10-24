@@ -306,7 +306,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.Node.html#uxsim.Node.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal_offset_old</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a node</span>
+<span class="sd">        Create a node.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -325,19 +325,19 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        signal_offset : float, optional</span>
 <span class="sd">            The offset of the signal. Default is 0.</span>
 <span class="sd">        signal_offset_old : float, optional</span>
-<span class="sd">            The old parameter used to set offset of the signal prior to v1.8.1. This is the opposite of the usual definition of offset. Default is None, meaning it is `signal_offset` is used.</span>
+<span class="sd">            The old parameter used to set offset of the signal prior to v1.8.1. This is the opposite of the usual definition of offset. Default is None, meaning `signal_offset` is used.</span>
 <span class="sd">        flow_capacity : float, optional</span>
 <span class="sd">            The maximum flow capacity of the node. Default is None, meaning infinite capacity.</span>
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the node if the name is already used. Default is False.</span>
 <span class="sd">        number_of_lanes : int, optional</span>
-<span class="sd">            The number of lanes that can be green simultaniously at the node. Default is None.</span>
+<span class="sd">            The number of lanes that can be green simultaneously at the node. Default is None.</span>
 <span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        user_attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
-<span class="sd">        user_function : func, optinal</span>
-<span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">        user_function : func, optional</span>
+<span class="sd">            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.</span>
 
 <span class="sd">            &gt;&gt;&gt; def user_function(node):</span>
 <span class="sd">            &gt;&gt;&gt;     print(len(node.incoming_vehicles))</span>
@@ -359,7 +359,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="n">s</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
 
-        <span class="c1">#custom attibutes</span>
+        <span class="c1">#custom attributes</span>
         <span class="n">s</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
         <span class="n">s</span><span class="o">.</span><span class="n">user_attribute</span> <span class="o">=</span> <span class="n">user_attribute</span>
         <span class="n">s</span><span class="o">.</span><span class="n">user_function</span> <span class="o">=</span> <span class="n">user_function</span>
@@ -401,7 +401,7 @@ gtag('config', 'UA-111714220-1');
 
         <span class="n">s</span><span class="o">.</span><span class="n">signal_log</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1">#flow capacity (macroscopic/continious representation for signal)</span>
+        <span class="c1">#flow capacity (macroscopic/continuous representation for signal)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">flag_lanes_automatically_determined</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">s</span><span class="o">.</span><span class="n">number_of_lanes</span> <span class="o">=</span> <span class="n">number_of_lanes</span>
         <span class="k">if</span> <span class="n">flow_capacity</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
@@ -674,7 +674,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.Link.html#uxsim.Link.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">capacity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a link</span>
+<span class="sd">        Create a link.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -710,8 +710,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        user_attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
-<span class="sd">        user_function : func, optinal</span>
-<span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">        user_function : func, optional</span>
+<span class="sd">            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</span>
 
 <span class="sd">            &gt;&gt;&gt; def user_function(link):</span>
 <span class="sd">            &gt;&gt;&gt;     print(len(link.vehicles))</span>
@@ -751,7 +751,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        Traffic Flow Model:</span>
 
 <span class="sd">        - The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.</span>
-<span class="sd">        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link&#39;s flow characteristics. Reaction time of drivers `REACTION_TIME` is a grobal parameter.</span>
+<span class="sd">        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link&#39;s flow characteristics. Reaction time of drivers `REACTION_TIME` is a global parameter.</span>
 <span class="sd">        - Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.</span>
 
 <span class="sd">        Traffic Flow Model Parameters:</span>
@@ -1011,7 +1011,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.arrival_count">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">arrival_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get cumulative vehicle count of arrival to this link on time t</span>
+<span class="sd">        Get cumulative vehicle count of arrival to this link on time t.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1035,7 +1035,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.departure_count">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">departure_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get cumulative vehicle count of departure from this link on time t</span>
+<span class="sd">        Get cumulative vehicle count of departure from this link on time t.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1059,7 +1059,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.instant_travel_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">instant_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get instantaneous travel time of this link on time t</span>
+<span class="sd">        Get instantaneous travel time of this link on time t.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1201,7 +1201,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../_autosummary/uxsim.Vehicle.html#uxsim.Vehicle.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;single_trip&quot;</span><span class="p">,</span> <span class="n">links_prefer</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a vehicle (more precisely, platoon)</span>
+<span class="sd">        Create a vehicle (more precisely, platoon).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1229,12 +1229,12 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The names of the links the vehicle avoids, default is empty list.</span>
 <span class="sd">        trip_abort : int, optional</span>
 <span class="sd">            Whether to abort the trip if a dead end is reached, default is 1.</span>
-<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        user_attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
-<span class="sd">        user_function : func, optinal</span>
-<span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">        user_function : func, optional</span>
+<span class="sd">            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.</span>
 
 <span class="sd">            &gt;&gt;&gt; def user_function(veh):</span>
 <span class="sd">            &gt;&gt;&gt;     print(veh.speed))</span>
@@ -1487,7 +1487,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Vehicle.enforce_route">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">enforce_route</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">route</span><span class="p">,</span> <span class="n">set_avoid</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check</span>
+<span class="sd">        Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1670,7 +1670,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        include_arrival_time : bool</span>
 <span class="sd">            If true, return the arrival time to the destination as well.  `-1` means it did not reach the destination.</span>
 <span class="sd">        include_departure_time : bool</span>
-<span class="sd">            If true, return the departure time from the origin as well. It will be different from the entering time to the first link if there are congestion (i.e., the vehicle need to enter the network). </span>
+<span class="sd">            If true, return the departure time from the origin as well. It will be different from the entering time to the first link if there is congestion (i.e., the vehicle needs to enter the network). </span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1863,7 +1863,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">s</span><span class="o">.</span><span class="n">adj_mat_time</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">adj_mat_time</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">new_link_tt</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># if there are multiple links between the same nodes, average the travel time</span>
                 <span class="c1"># s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line</span>
                 <span class="n">adj_mat_link_count</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">capacity_in</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1">#if the inflow is profibited, travel time is assumed to be infinite</span>
+                <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">capacity_in</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1">#if the inflow is prohibited, travel time is assumed to be infinite</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">adj_mat_time</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">adj_mat_time</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
@@ -1962,7 +1962,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        print_mode : int, optional</span>
 <span class="sd">            The print mode, whether print the simulation progress or not. Default is 1 (enabled).</span>
 <span class="sd">        save_mode : int, optional</span>
-<span class="sd">            The save mode,. whether save the simulation results or not.  Default is 1 (enabled).</span>
+<span class="sd">            The save mode, whether save the simulation results or not.  Default is 1 (enabled).</span>
 <span class="sd">        show_mode : int, optional</span>
 <span class="sd">            The show mode, whether show the matplotlib visualization results or not. Default is 0 (disabled).</span>
 <span class="sd">        route_choice_principle : str, optional</span>
@@ -1975,7 +1975,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The simulation duration, default is None (automatically determined).</span>
 <span class="sd">        vehicle_logging_timestep_interval : int, optional</span>
 <span class="sd">            The interval for logging vehicle data, default is 1. Logging is off if set to -1.</span>
-<span class="sd">            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.</span>
+<span class="sd">            Setting a large interval (2 or more) or turning off the logging makes the simulation significantly faster in large-scale scenarios without losing simulation internal accuracy, but outputted vehicle trajectory and other related data will become inaccurate.</span>
 <span class="sd">        instantaneous_TT_timestep_interval : int, optional</span>
 <span class="sd">            The interval for computing instantaneous travel time of each link. Default is 5.</span>
 <span class="sd">            If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.</span>
@@ -1983,12 +1983,12 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.</span>
 <span class="sd">        reduce_memory_delete_vehicle_route_pref : bool, optional</span>
 <span class="sd">            If True, the simulation will delete the route preference of vehicles after its ends. This is useful when the route preference is not needed after the simulation ends.</span>
-<span class="sd">        meta_data : dict, optinal</span>
+<span class="sd">        meta_data : dict, optional</span>
 <span class="sd">            Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.</span>
-<span class="sd">        user_attribute : any, optinal</span>
-<span class="sd">            Optinonal meta attributes that can be freely defined by a user.</span>
-<span class="sd">        user_function : func, optinal</span>
-<span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">        user_attribute : any, optional</span>
+<span class="sd">            Optional meta attributes that can be freely defined by a user.</span>
+<span class="sd">        user_function : func, optional</span>
+<span class="sd">            User-defined custom function that is automatically called when the timestep is incremented (more precisely, just before the timestep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.</span>
 <span class="sd">            </span>
 <span class="sd">            &gt;&gt;&gt; def user_function(W):</span>
 <span class="sd">            &gt;&gt;&gt;     print(W.TIME)</span>
@@ -1998,7 +1998,7 @@ gtag('config', 'UA-111714220-1');
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        A World object must be defined firstly to initiate simulation.</span>
+<span class="sd">        A World object must be defined first to initiate simulation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1">## parameter setting</span>
@@ -2080,7 +2080,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addNode">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">addNode</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        add a node to world</span>
+<span class="sd">        Add a node to world.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2101,7 +2101,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the node if the name is already used. Default is False.</span>
 <span class="sd">        number_of_lanes : int, optional</span>
-<span class="sd">            The number of lanes that can be green simultaniously at the node. Default is None.</span>
+<span class="sd">            The number of lanes that can be green simultaneously at the node. Default is None.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2120,7 +2120,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addLink">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">addLink</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        add a link to world</span>
+<span class="sd">        Add a link to world.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2173,7 +2173,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addVehicle">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">addVehicle</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        add a vehicle to world</span>
+<span class="sd">        Add a vehicle to world.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2199,7 +2199,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The names of the links the vehicle avoids, default is empty list.</span>
 <span class="sd">        trip_abort : int, optional</span>
 <span class="sd">            Whether to abort the trip if a dead end is reached, default is 1.</span>
-<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the vehicle if the name is already used. Default is False.</span>
@@ -2238,7 +2238,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The flow rate from the origin to the destination in vehicles per second.</span>
 <span class="sd">        volume: float, optional</span>
 <span class="sd">            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</span>
-<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2281,7 +2281,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The flow rate from the origin to the destination in vehicles per second.</span>
 <span class="sd">        volume: float, optional</span>
 <span class="sd">            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</span>
-<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">orig</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_nearest_node</span><span class="p">(</span><span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">)</span>
@@ -2318,7 +2318,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The flow rate from the origin to the destination in vehicles per second.</span>
 <span class="sd">        volume: float, optional</span>
 <span class="sd">            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</span>
-<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -2374,7 +2374,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The flow rate from the origin to the destination in vehicles per second.</span>
 <span class="sd">        volume: float, optional</span>
 <span class="sd">            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</span>
-<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -2433,7 +2433,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The flow rate from the origin to the destination in vehicles per second.</span>
 <span class="sd">        volume: float, optional</span>
 <span class="sd">            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</span>
-<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">origs</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_nodes_in_area</span><span class="p">(</span><span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span> <span class="n">radious_orig</span><span class="p">)</span>
@@ -2494,7 +2494,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The flow rate from the origin to the destination in vehicles per second.</span>
 <span class="sd">        volume: float, optional</span>
 <span class="sd">            The demand volume from the origin to the destination. If volume is specified, the flow is ignored.</span>
-<span class="sd">        attribute : any, optinonal</span>
+<span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
@@ -2539,7 +2539,7 @@ gtag('config', 'UA-111714220-1');
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        This function automatically called by `exec_simulation()` if it has not been called manually.</span>
+<span class="sd">        This function is automatically called by `exec_simulation()` if it has not been called manually.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">TMAX</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">tmax</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
@@ -2592,7 +2592,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.print_scenario_stats">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">print_scenario_stats</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print scenario stats</span>
+<span class="sd">        Print scenario stats.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">finalized</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;simulation setting:&quot;</span><span class="p">)</span>
@@ -2602,7 +2602,7 @@ gtag('config', 'UA-111714220-1');
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; simulation duration:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">TMAX</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; number of vehicles:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">)</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">,</span> <span class="s2">&quot;veh&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; total road length:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">length</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">]),</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; time discret. width:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; timestep size:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; platoon size:</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">,</span> <span class="s2">&quot;veh&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">finalized</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; number of timesteps:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="p">)</span>
@@ -2749,7 +2749,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.simulation_terminated">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">simulation_terminated</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Postprocessing after simulation finished</span>
+<span class="sd">        Postprocessing after simulation finished.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">W</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot; simulation finished&quot;</span><span class="p">)</span>
         <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">basic_analysis</span><span class="p">()</span></div>
@@ -3155,7 +3155,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Route">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Route</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class for a route that store concective links.</span>
+<span class="sd">    Class for a route that stores consecutive links.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Route.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Route.html#uxsim.Route.__init__">[docs]</a>
@@ -3196,7 +3196,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="k">if</span> <span class="n">l2</span> <span class="ow">in</span> <span class="n">l1</span><span class="o">.</span><span class="n">end_node</span><span class="o">.</span><span class="n">outlinks</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l1</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;route is not defined by concective links: </span><span class="si">{</span><span class="n">links</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">l1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;route is not defined by consecutive links: </span><span class="si">{</span><span class="n">links</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">l1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="c1">#todo: interpolation based on shotest path</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">links</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l2</span><span class="p">)</span>

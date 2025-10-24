@@ -278,7 +278,7 @@ gtag('config', 'UA-111714220-1');
         <article role="main" id="furo-main-content">
           <h1>Source code for uxsim.DTAsolvers.DTAsolvers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Submodule for Dynamic Traffic Assginment solvers</span>
+<span class="sd">Submodule for Dynamic Traffic Assignment solvers.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -328,7 +328,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">func_World</span> <span class="o">=</span> <span class="n">func_World</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#final solution</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#latest solution in the iterative process. Can be used when an user terminate the solution algorithm</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#latest solution in the iterative process. Can be used when a user terminates the solution algorithm</span>
         <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
@@ -338,7 +338,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.solve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">swap_prob</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP</span>
+<span class="sd">        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -359,7 +359,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        `self.W_sol` is the final solution. </span>
-<span class="sd">        `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.</span>
+<span class="sd">        `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -648,12 +648,12 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            </span>
 <span class="sd">            This algorithm is a loose generalization of &quot;DSO game&quot; of the following paper.</span>
 <span class="sd">            - Satsukawa, K., Wada, K., &amp; Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209.</span>
-<span class="sd">            In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weaken the convergence guarantee.</span>
+<span class="sd">            In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take a long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weakens the convergence guarantee.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">func_World</span> <span class="o">=</span> <span class="n">func_World</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#final solution</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#latest solution in the iterative process. Can be used when an user terminate the solution algorithm</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#latest solution in the iterative process. Can be used when a user terminates the solution algorithm</span>
         <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span> <span class="o">=</span> <span class="p">[]</span></div>
 
     
@@ -682,7 +682,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        `self.W_sol` is the final solution. </span>
-<span class="sd">        `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.</span>
+<span class="sd">        `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -979,7 +979,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">func_World</span> <span class="o">=</span> <span class="n">func_World</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#final solution</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#latest solution in the iterative process. Can be used when an user terminate the solution </span>
+        <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#latest solution in the iterative process. Can be used when a user terminates the solution </span>
         <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span> <span class="o">=</span> <span class="p">[]</span>
                 
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -1027,7 +1027,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        `self.W_sol` is the final solution. </span>
-<span class="sd">        `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.</span>
+<span class="sd">        `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.</span>
 <span class="sd">        </span>
 <span class="sd">        GA part is initially written by ChatGPT o1-preview, and reviewed and overwritten by human.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1754,7 +1754,7 @@ gtag('config', 'UA-111714220-1');
 <span class="c1">#         s.insensitive_ratio = insensitive_ratio</span>
 
 <span class="c1">#         s.W_sol = None  #final solution</span>
-<span class="c1">#         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when an user terminate the solution algorithm</span>
+<span class="c1">#         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm</span>
 <span class="c1">#         s.W_minimum_cost_gap = None #solution with minimum cost gap, considered as one closest to equilibrium state.</span>
 <span class="c1">#         s.dfs_link = []</span>
 
@@ -1783,7 +1783,7 @@ gtag('config', 'UA-111714220-1');
 <span class="c1">#         Notes</span>
 <span class="c1">#         -----</span>
 <span class="c1">#         `self.W_sol` is the final solution. </span>
-<span class="c1">#         `self.W_intermid_solution` is a latest solution in the iterative process. Can be used when an user terminate the solution algorithm.</span>
+<span class="c1">#         `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.</span>
 <span class="c1">#         &quot;&quot;&quot;</span>
 <span class="c1">#         s.start_time = time.time()</span>
 

@@ -278,7 +278,7 @@ gtag('config', 'UA-111714220-1');
         <article role="main" id="furo-main-content">
           <h1>Source code for uxsim.TaxiHandler.TaxiHandler</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Submodule for handling taxis</span>
+<span class="sd">Submodule for handling taxis.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span><span class="o">,</span><span class="w"> </span><span class="nn">math</span>
@@ -288,7 +288,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TripRequest</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class representing a trip request (or travelers, passengers, cargo, etc.)</span>
+<span class="sd">    A class representing a trip request (or travelers, passengers, cargo, etc.).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TripRequest.__init__">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest.__init__">[docs]</a>
@@ -334,7 +334,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest.get_on_taxi">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_on_taxi</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The event of getting on a taxi. This is called via `Vehicle.event_node`</span>
+<span class="sd">        The event of getting on a taxi. This is called via `Vehicle.event_node`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#print(f&quot;{s.W.TIME}: {s} is getting on a taxi {s.taxi}&quot;)        </span>
         <span class="n">s</span><span class="o">.</span><span class="n">taxi</span><span class="o">.</span><span class="n">add_dest</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span>
@@ -349,7 +349,7 @@ gtag('config', 'UA-111714220-1');
 <a class="viewcode-back" href="../../../_autosummary/uxsim.TaxiHandler.TripRequest.html#uxsim.TaxiHandler.TripRequest.arrive_at_dest">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">arrive_at_dest</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The event of arriving at the destination. This is called via `Vehicle.event_node`</span>
+<span class="sd">        The event of arriving at the destination. This is called via `Vehicle.event_node`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#print(f&quot;{s.W.TIME}: {s} arrived at the destination {s.dest}&quot;)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">TIME</span>
@@ -497,7 +497,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">compute_stats</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;results for taxi transportation:&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total trip rquests: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total trip requests: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; completed trip requests: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; completed trip requests ratio: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">s</span><span class="o">.</span><span class="n">n_total_requests</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">:</span><span class="s2"> .2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; average number of completed requests per taxi: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">n_completed_requests</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">number_of_taxis</span><span class="si">:</span><span class="s2"> .2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
