@@ -2670,7 +2670,7 @@ class World:
 
 class Route:
     """
-    Class for a route that store concective links.
+    Class for a route that stores consecutive links.
     """
     def __init__(s, W, links, name="", trust_input=False):
         """
@@ -2709,7 +2709,7 @@ class Route:
                 if l2 in l1.end_node.outlinks.values():
                     s.links.append(l1)
                 else:
-                    raise Exception(f"route is not defined by concective links: {links}, {l1}")
+                    raise Exception(f"route is not defined by consecutive links: {links}, {l1}")
                     #todo: interpolation based on shotest path
             if len(links) >= 2:
                 s.links.append(l2)
