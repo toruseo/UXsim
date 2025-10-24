@@ -9,7 +9,6 @@ from collections import defaultdict as ddict
 import warnings
 
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import dijkstra
 import dill as pickle
@@ -56,6 +55,7 @@ class Node:
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optinal
             User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
+
             >>> def user_function(node):
             >>>     print(len(node.incoming_vehicles))
             >>> W = World(...)
@@ -408,12 +408,14 @@ class Link:
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optinal
             User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.
+
             >>> def user_function(link):
             >>>     print(len(link.vehicles))
             >>> W = World(...)
             >>> W.addLink("link", "node1", "node2, 1000, user_function=user_function)
             >>> ... #define your scenario
             >>> W.exec_simulation()
+
         auto_rename : bool, optional
             Whether to automatically rename the link if the name is already used. Default is False (raise an exception).
 
@@ -899,12 +901,14 @@ class Vehicle:
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optinal
             User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
+
             >>> def user_function(veh):
             >>>     print(veh.speed))
             >>> W = World(...)
             >>> ... #define your scenario
             >>> W.addVehicle("orig", "dest", 100, user_function=user_function)
             >>> W.exec_simulation()
+
         auto_rename : bool, optional
             Whether to automatically rename the vehicle if the name is already used. Default is False.
         """
@@ -1594,6 +1598,7 @@ class World:
             Optinonal meta attributes that can be freely defined by a user.
         user_function : func, optinal
             User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
+            
             >>> def user_function(W):
             >>>     print(W.TIME)
             >>> W = World(user_function=user_function)
@@ -2593,6 +2598,7 @@ class World:
         node_size : int, optional
             The size of the nodes in the visualization. Default is 6.
         """
+        import matplotlib.pyplot as plt
         
         os.makedirs(f"out{W.name}", exist_ok=True)
 
