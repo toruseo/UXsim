@@ -336,13 +336,16 @@ This <cite>uxsim.py</cite> is the core of UXsim. It summarizes the classes and m
 <li><p><strong>eular_dx</strong> (<em>float</em><em>, </em><em>optional</em>) – The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.
-&gt;&gt;&gt; def user_function(link):
-&gt;&gt;&gt;     print(len(link.vehicles))
-&gt;&gt;&gt; W = World(…)
-&gt;&gt;&gt; W.addLink(“link”, “node1”, “node2, 1000, user_function=user_function)
-&gt;&gt;&gt; … #define your scenario
-&gt;&gt;&gt; W.exec_simulation()</p></li>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">link</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">vehicles</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span><span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;node1&quot;</span><span class="p">,</span> <span class="s2">&quot;node2, 1000, user_function=user_function)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define your scenario</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
 <li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the link if the name is already used. Default is False (raise an exception).</p></li>
 </ul>
 </dd>
@@ -651,13 +654,16 @@ For example, <a href="#id1"><span class="problematic" id="id2">`</span></a>signa
 <li><p><strong>number_of_lanes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of lanes that can be green simultaniously at the node. Default is None.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
-&gt;&gt;&gt; def user_function(node):
-&gt;&gt;&gt;     print(len(node.incoming_vehicles))
-&gt;&gt;&gt; W = World(…)
-&gt;&gt;&gt; W.addNode(“node”, 0, 0, user_function=user_function)
-&gt;&gt;&gt; … #define your scenario
-&gt;&gt;&gt; W.exec_simulation()</p></li>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">incoming_vehicles</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;node&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define your scenario</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -833,13 +839,16 @@ Vectorized by Claude 3.5 Sonnet.</p>
 <li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
-&gt;&gt;&gt; def user_function(veh):
-&gt;&gt;&gt;     print(veh.speed))
-&gt;&gt;&gt; W = World(…)
-&gt;&gt;&gt; … #define your scenario
-&gt;&gt;&gt; W.addVehicle(“orig”, “dest”, 100, user_function=user_function)
-&gt;&gt;&gt; W.exec_simulation()</p></li>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">veh</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">speed</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define your scenario</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">addVehicle</span><span class="p">(</span><span class="s2">&quot;orig&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
 <li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the vehicle if the name is already used. Default is False.</p></li>
 </ul>
 </dd>
@@ -1033,12 +1042,15 @@ If it is longer than the DUO update timestep interval, it is substituted by DUO 
 <li><p><strong>reduce_memory_delete_vehicle_route_pref</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the simulation will delete the route preference of vehicles after its ends. This is useful when the route preference is not needed after the simulation ends.</p></li>
 <li><p><strong>meta_data</strong> (<em>dict</em><em>, </em><em>optinal</em>) – Meta data for simulation scenario. Can store arbitrary data, such as licences and simulation explanation.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optinal</em>) – Optinonal meta attributes that can be freely defined by a user.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
-&gt;&gt;&gt; def user_function(W):
-&gt;&gt;&gt;     print(W.TIME)
-&gt;&gt;&gt; W = World(user_function=user_function)
-&gt;&gt;&gt; … #define your scenario
-&gt;&gt;&gt; W.exec_simulation()</p></li>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">TIME</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define your scenario</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
 </ul>
 </dd>
 </dl>

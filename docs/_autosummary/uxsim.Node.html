@@ -307,13 +307,16 @@ For example, <a href="#id1"><span class="problematic" id="id2">`</span></a>signa
 <li><p><strong>number_of_lanes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of lanes that can be green simultaniously at the node. Default is None.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
-&gt;&gt;&gt; def user_function(node):
-&gt;&gt;&gt;     print(len(node.incoming_vehicles))
-&gt;&gt;&gt; W = World(…)
-&gt;&gt;&gt; W.addNode(“node”, 0, 0, user_function=user_function)
-&gt;&gt;&gt; … #define your scenario
-&gt;&gt;&gt; W.exec_simulation()</p></li>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">incoming_vehicles</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;node&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define your scenario</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -360,13 +363,16 @@ For example, <a href="#id3"><span class="problematic" id="id4">`</span></a>signa
 <li><p><strong>number_of_lanes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of lanes that can be green simultaniously at the node. Default is None.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
-&gt;&gt;&gt; def user_function(node):
-&gt;&gt;&gt;     print(len(node.incoming_vehicles))
-&gt;&gt;&gt; W = World(…)
-&gt;&gt;&gt; W.addNode(“node”, 0, 0, user_function=user_function)
-&gt;&gt;&gt; … #define your scenario
-&gt;&gt;&gt; W.exec_simulation()</p></li>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">incoming_vehicles</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="s2">&quot;node&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define your scenario</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
 </ul>
 </dd>
 </dl>

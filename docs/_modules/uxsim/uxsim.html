@@ -288,7 +288,6 @@ gtag('config', 'UA-111714220-1');
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">csr_matrix</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse.csgraph</span><span class="w"> </span><span class="kn">import</span> <span class="n">dijkstra</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dill</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pickle</span>
@@ -339,6 +338,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
 <span class="sd">        user_function : func, optinal</span>
 <span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.</span>
+
 <span class="sd">            &gt;&gt;&gt; def user_function(node):</span>
 <span class="sd">            &gt;&gt;&gt;     print(len(node.incoming_vehicles))</span>
 <span class="sd">            &gt;&gt;&gt; W = World(...)</span>
@@ -712,12 +712,14 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
 <span class="sd">        user_function : func, optinal</span>
 <span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</span>
+
 <span class="sd">            &gt;&gt;&gt; def user_function(link):</span>
 <span class="sd">            &gt;&gt;&gt;     print(len(link.vehicles))</span>
 <span class="sd">            &gt;&gt;&gt; W = World(...)</span>
 <span class="sd">            &gt;&gt;&gt; W.addLink(&quot;link&quot;, &quot;node1&quot;, &quot;node2, 1000, user_function=user_function)</span>
 <span class="sd">            &gt;&gt;&gt; ... #define your scenario</span>
 <span class="sd">            &gt;&gt;&gt; W.exec_simulation()</span>
+
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the link if the name is already used. Default is False (raise an exception).</span>
 
@@ -1181,6 +1183,7 @@ gtag('config', 'UA-111714220-1');
             <span class="n">s</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">tau</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">kappa</span>
             <span class="n">s</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">u</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">w</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">kappa</span><span class="o">/</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">u</span><span class="o">+</span><span class="n">s</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">kappa</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">delta_per_lane</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">delta</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">number_of_lanes</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ignored negative jam_density at </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span></div>
 
@@ -1232,12 +1235,14 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
 <span class="sd">        user_function : func, optinal</span>
 <span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.</span>
+
 <span class="sd">            &gt;&gt;&gt; def user_function(veh):</span>
 <span class="sd">            &gt;&gt;&gt;     print(veh.speed))</span>
 <span class="sd">            &gt;&gt;&gt; W = World(...)</span>
 <span class="sd">            &gt;&gt;&gt; ... #define your scenario</span>
 <span class="sd">            &gt;&gt;&gt; W.addVehicle(&quot;orig&quot;, &quot;dest&quot;, 100, user_function=user_function)</span>
 <span class="sd">            &gt;&gt;&gt; W.exec_simulation()</span>
+
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the vehicle if the name is already used. Default is False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1984,6 +1989,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Optinonal meta attributes that can be freely defined by a user.</span>
 <span class="sd">        user_function : func, optinal</span>
 <span class="sd">            User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.</span>
+<span class="sd">            </span>
 <span class="sd">            &gt;&gt;&gt; def user_function(W):</span>
 <span class="sd">            &gt;&gt;&gt;     print(W.TIME)</span>
 <span class="sd">            &gt;&gt;&gt; W = World(user_function=user_function)</span>
@@ -3067,6 +3073,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        node_size : int, optional</span>
 <span class="sd">            The size of the nodes in the visualization. Default is 6.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
         
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;out</span><span class="si">{</span><span class="n">W</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 

@@ -26,7 +26,7 @@
    "source": [
     "## Basic definition\n",
     "\n",
-    "In UXsim, a node can have its traffic signal. A traffic signal determine which link can send vehicles to the node.\n",
+    "In UXsim, a node can have its traffic signal. A traffic signal determines which link can send vehicles to the node.\n",
     "To define a signal of a node, you need to set `signal` parameter of `Node` and `signal_group` parameter of `Link`s that are connected to the node.\n",
     "\n",
     "The following code shows a simple example of traffic signal definition."
@@ -83,7 +83,7 @@
     "\n",
     "`signal_group` parameter of `Link` (defined via `W.addLink()`) specifies the group to which this link belongs. For example, `signal_group=0` of \"link1\" means that this link will have green light when the signal phase is 0. \n",
     "\n",
-    "Thus, the above code means that the \"merge\" node has a traffic signal. The signal pattern is, \"link1\" will green light for 30 seconds at first. And then \"link2\" will have green light for 60 seconds. And this pattern is repeated forever.\n",
+    "Thus, the above code means that the \"merge\" node has a traffic signal. The signal pattern is, \"link1\" will green light for 30 seconds at first. After that, \"link2\" will have green light for 60 seconds. And this pattern is repeated forever.\n",
     "\n",
     "Now we set a demand and execute the simulation as follows."
    ]
@@ -255,7 +255,7 @@
    "source": [
     "The intersection nodes I1, I2, I3, and I4 have 2 phases. \n",
     "During phase 0, links in east-west direction will have green light.\n",
-    "Note that the links are added programatically by using for-loop, as manually adding this number of links is a little bit tedious.\n",
+    "Note that the links are added programmatically by using for-loop, as manually adding this number of links is a little bit tedious.\n",
     "\n",
     "The simulation results with random demand is shown below. "
    ]
@@ -458,14 +458,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The above code means that simulation is iteratively executed for 10 seconds. Thusm, users can write a code to interven the simulation. The while loop will automatically exit when the simulation is complete. \n",
+    "The above code means that simulation is iteratively executed for 10 seconds. Thus, users can write a code to intervene the simulation. The while loop will automatically exit when the simulation is complete. \n",
     "\n",
     "During the simulation, the signal phase is specified by `Node.signal_phase` so that a link with the largest number of vehicles `Link.num_vehicles` will have a green light.\n",
     "\n",
     "You can see how this code works in the above logs. For some time points, it shows number of vehicles for each phase and determines the phase.\n",
     "\n",
     "The results are visualized as follows.\n",
-    "You can see that, before 500 seconds, \"link1\" always had green light, as no vehicles were comming from \"link2\". \n",
+    "You can see that, before 500 seconds, \"link1\" always had green light, as no vehicles were coming from \"link2\". \n",
     "After 500 seconds, traffic started coming from \"link2\".\n",
     "Then, traffic signal changed efficiently to keep the waiting queue minimum.\n",
     "The efficiency can be confirmed by comparing to the results of the 1st example in this demo: The delay was smaller, the queues were shorter, the flow during the green time was always saturated, and so on."
@@ -525,7 +525,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Furthremore, more advanced control method such as AI (more specifically, deep reinforcement learning) can be easily integrated with UXsim's traffic signal control. \n",
+    "Furthermore, more advanced control method such as AI (more specifically, deep reinforcement learning) can be easily integrated with UXsim's traffic signal control. \n",
     "Please see [Jupyter notebook](https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb) or [document](https://toruseo.jp/UXsim/docs/notebooks/demo_notebook_03en_pytorch.html)."
    ]
   }

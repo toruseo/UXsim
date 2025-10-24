@@ -308,13 +308,16 @@ gtag('config', 'UA-111714220-1');
 <li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
-&gt;&gt;&gt; def user_function(veh):
-&gt;&gt;&gt;     print(veh.speed))
-&gt;&gt;&gt; W = World(…)
-&gt;&gt;&gt; … #define your scenario
-&gt;&gt;&gt; W.addVehicle(“orig”, “dest”, 100, user_function=user_function)
-&gt;&gt;&gt; W.exec_simulation()</p></li>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">veh</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">speed</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define your scenario</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">addVehicle</span><span class="p">(</span><span class="s2">&quot;orig&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
 <li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the vehicle if the name is already used. Default is False.</p></li>
 </ul>
 </dd>
@@ -341,13 +344,16 @@ gtag('config', 'UA-111714220-1');
 <li><p><strong>trip_abort</strong> (<em>int</em><em>, </em><em>optional</em>) – Whether to abort the trip if a dead end is reached, default is 1.</p></li>
 <li><p><strong>attribute</strong> (<em>any</em><em>, </em><em>optinonal</em>) – Additional (meta) attributes defined by users.</p></li>
 <li><p><strong>user_attribute</strong> (<em>any</em><em>, </em><em>optional</em>) – Additional (meta) attributes defined by users. Same functionality to <cite>attribute</cite>, but with more understandable name.</p></li>
-<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
-&gt;&gt;&gt; def user_function(veh):
-&gt;&gt;&gt;     print(veh.speed))
-&gt;&gt;&gt; W = World(…)
-&gt;&gt;&gt; … #define your scenario
-&gt;&gt;&gt; W.addVehicle(“orig”, “dest”, 100, user_function=user_function)
-&gt;&gt;&gt; W.exec_simulation()</p></li>
+<li><p><strong>user_function</strong> (<em>func</em><em>, </em><em>optinal</em>) – <p>User-defined custom function that is automatically called when timestep is incremented (more precisely, when <cite>update()</cite> is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">user_function</span><span class="p">(</span><span class="n">veh</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">veh</span><span class="o">.</span><span class="n">speed</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">World</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="c1">#define your scenario</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">addVehicle</span><span class="p">(</span><span class="s2">&quot;orig&quot;</span><span class="p">,</span> <span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
+</pre></div>
+</div>
+</p></li>
 <li><p><strong>auto_rename</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to automatically rename the vehicle if the name is already used. Default is False.</p></li>
 </ul>
 </dd>

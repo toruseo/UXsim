@@ -299,7 +299,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 <section id="Basic-definition">
 <h2>Basic definition<a class="headerlink" href="#Basic-definition" title="Link to this heading">¶</a></h2>
-<p>In UXsim, a node can have its traffic signal. A traffic signal determine which link can send vehicles to the node. To define a signal of a node, you need to set <code class="docutils literal notranslate"><span class="pre">signal</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Node</span></code> and <code class="docutils literal notranslate"><span class="pre">signal_group</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Link</span></code>s that are connected to the node.</p>
+<p>In UXsim, a node can have its traffic signal. A traffic signal determines which link can send vehicles to the node. To define a signal of a node, you need to set <code class="docutils literal notranslate"><span class="pre">signal</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Node</span></code> and <code class="docutils literal notranslate"><span class="pre">signal_group</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Link</span></code>s that are connected to the node.</p>
 <p>The following code shows a simple example of traffic signal definition.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -339,7 +339,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">signal</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Node</span></code> (defined via <code class="docutils literal notranslate"><span class="pre">W.addNode()</span></code>) is a list of duration of signal phases. For example, <code class="docutils literal notranslate"><span class="pre">signal=[30,</span> <span class="pre">60]</span></code> of “merge” node means that the signal of this node has 2 phases. And the duration of phase 0 is 30 seconds, and that of phase 1 is 60 seconds.</p>
 <p><code class="docutils literal notranslate"><span class="pre">signal_group</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">Link</span></code> (defined via <code class="docutils literal notranslate"><span class="pre">W.addLink()</span></code>) specifies the group to which this link belongs. For example, <code class="docutils literal notranslate"><span class="pre">signal_group=0</span></code> of “link1” means that this link will have green light when the signal phase is 0.</p>
-<p>Thus, the above code means that the “merge” node has a traffic signal. The signal pattern is, “link1” will green light for 30 seconds at first. And then “link2” will have green light for 60 seconds. And this pattern is repeated forever.</p>
+<p>Thus, the above code means that the “merge” node has a traffic signal. The signal pattern is, “link1” will green light for 30 seconds at first. After that, “link2” will have green light for 60 seconds. And this pattern is repeated forever.</p>
 <p>Now we set a demand and execute the simulation as follows.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -472,7 +472,7 @@ W2--I3--I4--E2
 <img alt="../_images/notebooks_demo_notebook_10en_traffic_signal_tutorial_8_0.png" src="../_images/notebooks_demo_notebook_10en_traffic_signal_tutorial_8_0.png" />
 </div>
 </div>
-<p>The intersection nodes I1, I2, I3, and I4 have 2 phases. During phase 0, links in east-west direction will have green light. Note that the links are added programatically by using for-loop, as manually adding this number of links is a little bit tedious.</p>
+<p>The intersection nodes I1, I2, I3, and I4 have 2 phases. During phase 0, links in east-west direction will have green light. Note that the links are added programmatically by using for-loop, as manually adding this number of links is a little bit tedious.</p>
 <p>The simulation results with random demand is shown below.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -643,10 +643,10 @@ t = 1100 s; phase 0 - number of vehicle =  0; phase 1 - number of vehicle =  0 ;
 t = 1200 s; phase 0 - number of vehicle =  0; phase 1 - number of vehicle =  0 ; green light - phase 0
 </pre></div></div>
 </div>
-<p>The above code means that simulation is iteratively executed for 10 seconds. Thusm, users can write a code to interven the simulation. The while loop will automatically exit when the simulation is complete.</p>
+<p>The above code means that simulation is iteratively executed for 10 seconds. Thus, users can write a code to intervene the simulation. The while loop will automatically exit when the simulation is complete.</p>
 <p>During the simulation, the signal phase is specified by <code class="docutils literal notranslate"><span class="pre">Node.signal_phase</span></code> so that a link with the largest number of vehicles <code class="docutils literal notranslate"><span class="pre">Link.num_vehicles</span></code> will have a green light.</p>
 <p>You can see how this code works in the above logs. For some time points, it shows number of vehicles for each phase and determines the phase.</p>
-<p>The results are visualized as follows. You can see that, before 500 seconds, “link1” always had green light, as no vehicles were comming from “link2”. After 500 seconds, traffic started coming from “link2”. Then, traffic signal changed efficiently to keep the waiting queue minimum. The efficiency can be confirmed by comparing to the results of the 1st example in this demo: The delay was smaller, the queues were shorter, the flow during the green time was always saturated, and so on.</p>
+<p>The results are visualized as follows. You can see that, before 500 seconds, “link1” always had green light, as no vehicles were coming from “link2”. After 500 seconds, traffic started coming from “link2”. Then, traffic signal changed efficiently to keep the waiting queue minimum. The efficiency can be confirmed by comparing to the results of the 1st example in this demo: The delay was smaller, the queues were shorter, the flow during the green time was always saturated, and so on.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -686,7 +686,7 @@ results:
 <img alt="../_images/notebooks_demo_notebook_10en_traffic_signal_tutorial_16_2.png" src="../_images/notebooks_demo_notebook_10en_traffic_signal_tutorial_16_2.png" />
 </div>
 </div>
-<p>Furthremore, more advanced control method such as AI (more specifically, deep reinforcement learning) can be easily integrated with UXsim’s traffic signal control. Please see <a class="reference external" href="https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb">Jupyter notebook</a> or <a class="reference external" href="https://toruseo.jp/UXsim/docs/notebooks/demo_notebook_03en_pytorch.html">document</a>.</p>
+<p>Furthermore, more advanced control method such as AI (more specifically, deep reinforcement learning) can be easily integrated with UXsim’s traffic signal control. Please see <a class="reference external" href="https://github.com/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_03en_pytorch.ipynb">Jupyter notebook</a> or <a class="reference external" href="https://toruseo.jp/UXsim/docs/notebooks/demo_notebook_03en_pytorch.html">document</a>.</p>
 </section>
 </section>
 
