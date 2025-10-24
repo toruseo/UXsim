@@ -2178,7 +2178,7 @@ class World:
         print(" simulation duration:\t", W.TMAX, "s")
         print(" number of vehicles:\t", len(W.VEHICLES)*W.DELTAN, "veh")
         print(" total road length:\t", sum([l.length for l in W.LINKS]),"m")
-        print(" time discretization width:\t", W.DELTAT, "s")
+        print(" timestep size:\t", W.DELTAT, "s")
         print(" platoon size:\t\t", W.DELTAN, "veh")
         if W.finalized:
             print(" number of timesteps:\t", W.TSIZE)
