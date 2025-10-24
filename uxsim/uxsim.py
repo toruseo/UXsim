@@ -895,7 +895,7 @@ class Vehicle:
             The names of the links the vehicle avoids, default is empty list.
         trip_abort : int, optional
             Whether to abort the trip if a dead end is reached, default is 1.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
@@ -1799,7 +1799,7 @@ class World:
             The names of the links the vehicle avoids, default is empty list.
         trip_abort : int, optional
             Whether to abort the trip if a dead end is reached, default is 1.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         auto_rename : bool, optional
             Whether to automatically rename the vehicle if the name is already used. Default is False.
@@ -1835,7 +1835,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
 
@@ -1875,7 +1875,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         orig = W.get_nearest_node(x_orig, y_orig)
@@ -1909,7 +1909,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         warnings.warn(
@@ -1962,7 +1962,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         warnings.warn(
@@ -2018,7 +2018,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         origs = W.get_nodes_in_area(x_orig, y_orig, radious_orig)
@@ -2076,7 +2076,7 @@ class World:
             The flow rate from the origin to the destination in vehicles per second.
         volume: float, optional
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
-        attribute : any, optinonal
+        attribute : any, optional
             Additional (meta) attributes defined by users.
         """
         

@@ -448,12 +448,12 @@ class Analyzer:
     @catch_exceptions_and_warn()
     def time_space_diagram_traj_links(s, linkslist, figsize=(12,4), plot_signal=True, xlim=None, ylim=None):
         """
-        Draws the time-space diagram of vehicle trajectories for vehicles on concective links.
+        Draws the time-space diagram of vehicle trajectories for vehicles on consecutive links.
 
         Parameters
         ----------
         linkslist : list of link or list of list of link
-            The names of the concective links for which the time-space diagram is to be plotted.
+            The names of the consecutive links for which the time-space diagram is to be plotted.
         figsize : tuple of int, optional
             The size of the figure to be plotted, default is (12,4).
         plot_signal : bool, optional
