@@ -13,7 +13,7 @@ import pandas as pd
 import networkx as nx
 
 
-if 1: #to avoid edior's failure
+if 1: #to avoid editor's failure
     if sys.version_info < (3, 11):
         raise RuntimeError("Python 3.11 or higher is required to use 'OSMImporter2'.")
 
@@ -73,7 +73,7 @@ def _obtain_simplify_osm_by_osmnx_neatnet(bbox, custom_filter, simplification, k
 
 def _extract_network_from_geodataframe(gdf):
     """
-    Function to extract road network nodes and links from a GeoDataFrame
+    Function to extract road network nodes and links from a GeoDataFrame.
     
     Parameters:
     -----------

@@ -42,7 +42,7 @@ class Analyzer:
 
     def __init__(s, W, font_pillow=None, font_matplotlib=None):
         """
-        Create result analysis object.
+        Create a result analysis object.
 
         Parameters
         ----------
@@ -102,7 +102,7 @@ class Analyzer:
 
     def od_analysis(s):
         """
-        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled
+        Analyze OD-specific stats: number of trips, number of completed trips, free-flow travel time, average travel time, its std, total distance traveled.
         """
         if s.flag_od_analysis:
             return 0
@@ -188,7 +188,7 @@ class Analyzer:
         Generate more complete vehicle trajectories for each link by extrapolating recorded trajectories. It is assumed that vehicles are in free-flow travel at the end of the link.
         """
         if s.W.vehicle_logging_timestep_interval != 1:
-            warnings.warn("vehicle_logging_timestep_interval is not 1. The trajecotries are not exactly accurate.", LoggingWarning)
+            warnings.warn("vehicle_logging_timestep_interval is not 1. The trajectories are not exactly accurate.", LoggingWarning)
 
         if s.flag_trajectory_computed:
             return 0
@@ -1594,7 +1594,7 @@ class Analyzer:
 
     def log_vehicles_to_pandas(s):
         """
-        same to `vehicles_to_pandas`, just for backward compatibility
+        Same to `vehicles_to_pandas`, just for backward compatibility.
         """
         return s.vehicles_to_pandas()
 

@@ -23,7 +23,7 @@ class Node:
     """
     def __init__(s, W, name, x, y, signal=[0], signal_offset=0, signal_offset_old=None, flow_capacity=None, auto_rename=False, number_of_lanes=None, attribute=None, user_attribute=None, user_function=None):
         """
-        Create a node
+        Create a node.
 
         Parameters
         ----------
@@ -54,7 +54,7 @@ class Node:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optional
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
+            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(node):
             >>>     print(len(node.incoming_vehicles))
@@ -118,7 +118,7 @@ class Node:
 
         s.signal_log = []
 
-        #flow capacity (macroscopic/continious representation for signal)
+        #flow capacity (macroscopic/continuous representation for signal)
         s.flag_lanes_automatically_determined = False
         s.number_of_lanes = number_of_lanes
         if flow_capacity != None:
@@ -370,7 +370,7 @@ class Link:
     """
     def __init__(s, W, name, start_node, end_node, length, free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None, number_of_lanes=1, merge_priority=1, signal_group=[0], capacity_out=None, capacity_in=None, eular_dx=None, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
-        Create a link
+        Create a link.
 
         Parameters
         ----------
@@ -407,7 +407,7 @@ class Link:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optional
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.
+            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(link):
             >>>     print(len(link.vehicles))
@@ -447,7 +447,7 @@ class Link:
         Traffic Flow Model:
 
         - The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.
-        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link's flow characteristics. Reaction time of drivers `REACTION_TIME` is a grobal parameter.
+        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link's flow characteristics. Reaction time of drivers `REACTION_TIME` is a global parameter.
         - Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.
 
         Traffic Flow Model Parameters:
@@ -692,7 +692,7 @@ class Link:
 
     def arrival_count(s, t):
         """
-        Get cumulative vehicle count of arrival to this link on time t
+        Get cumulative vehicle count of arrival to this link on time t.
 
         Parameters
         ----------
@@ -713,7 +713,7 @@ class Link:
 
     def departure_count(s, t):
         """
-        Get cumulative vehicle count of departure from this link on time t
+        Get cumulative vehicle count of departure from this link on time t.
 
         Parameters
         ----------
@@ -734,7 +734,7 @@ class Link:
 
     def instant_travel_time(s, t):
         """
-        Get instantaneous travel time of this link on time t
+        Get instantaneous travel time of this link on time t.
 
         Parameters
         ----------
@@ -867,7 +867,7 @@ class Vehicle:
     """
     def __init__(s, W, orig, dest, departure_time, name=None, route_pref=None, route_choice_principle=None, mode="single_trip", links_prefer=[], links_avoid=[], trip_abort=1, departure_time_is_time_step=0, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
-        Create a vehicle (more precisely, platoon)
+        Create a vehicle (more precisely, platoon).
 
         Parameters
         ----------
@@ -900,7 +900,7 @@ class Vehicle:
         user_attribute : any, optional
             Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.
         user_function : func, optional
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
+            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Vehicle object itself. Example: The following code prints the current speed of vehicle at each timestep. If user_function=None (default), no functions will be executed.
 
             >>> def user_function(veh):
             >>>     print(veh.speed))
@@ -1141,7 +1141,7 @@ class Vehicle:
     
     def enforce_route(s, route, set_avoid=False):
         """
-        Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check
+        Enforce the vehicle to use the specified route. The route should connect the origin to the destination. TODO: add consistency check.
 
         Parameters
         ----------
@@ -1303,7 +1303,7 @@ class Vehicle:
         include_arrival_time : bool
             If true, return the arrival time to the destination as well.  `-1` means it did not reach the destination.
         include_departure_time : bool
-            If true, return the departure time from the origin as well. It will be different from the entering time to the first link if there are congestion (i.e., the vehicle need to enter the network). 
+            If true, return the departure time from the origin as well. It will be different from the entering time to the first link if there is congestion (i.e., the vehicle needs to enter the network). 
 
         Returns
         -------
@@ -1481,7 +1481,7 @@ class RouteChoice:
                 s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
                 # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
                 adj_mat_link_count[i,j] += 1
-                if link.capacity_in == 0: #if the inflow is profibited, travel time is assumed to be infinite
+                if link.capacity_in == 0: #if the inflow is prohibited, travel time is assumed to be infinite
                     s.adj_mat_time[i,j] = np.inf
             else:
                 s.adj_mat_time[i,j] = np.inf
@@ -1571,7 +1571,7 @@ class World:
         print_mode : int, optional
             The print mode, whether print the simulation progress or not. Default is 1 (enabled).
         save_mode : int, optional
-            The save mode,. whether save the simulation results or not.  Default is 1 (enabled).
+            The save mode, whether save the simulation results or not.  Default is 1 (enabled).
         show_mode : int, optional
             The show mode, whether show the matplotlib visualization results or not. Default is 0 (disabled).
         route_choice_principle : str, optional
@@ -1584,7 +1584,7 @@ class World:
             The simulation duration, default is None (automatically determined).
         vehicle_logging_timestep_interval : int, optional
             The interval for logging vehicle data, default is 1. Logging is off if set to -1.
-            Setting large intervel (2 or more) or turn off the logging makes the simulation significantly faster in large-scale scenarios without loosing simulation internal accuracy, but outputed vehicle trajecotry and other related data will become inaccurate.
+            Setting a large interval (2 or more) or turning off the logging makes the simulation significantly faster in large-scale scenarios without losing simulation internal accuracy, but outputted vehicle trajectory and other related data will become inaccurate.
         instantaneous_TT_timestep_interval : int, optional
             The interval for computing instantaneous travel time of each link. Default is 5.
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
@@ -1597,7 +1597,7 @@ class World:
         user_attribute : any, optional
             Optional meta attributes that can be freely defined by a user.
         user_function : func, optional
-            User-defined custom function that is automatically called when timestep is incremented (more precisely, just before timesptep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
+            User-defined custom function that is automatically called when the timestep is incremented (more precisely, just before the timestep is incremented). It takes only one argument: the World object itself. Example: The following code prints the current simulation time at each timestep. If user_function=None (default), no functions will be executed.
             
             >>> def user_function(W):
             >>>     print(W.TIME)
@@ -1607,7 +1607,7 @@ class World:
 
         Notes
         -----
-        A World object must be defined firstly to initiate simulation.
+        A World object must be defined first to initiate simulation.
         """
 
         ## parameter setting
@@ -1686,7 +1686,7 @@ class World:
 
     def addNode(W, *args, **kwargs):
         """
-        add a node to world
+        Add a node to world.
 
         Parameters
         ----------
@@ -1723,7 +1723,7 @@ class World:
 
     def addLink(W, *args, **kwargs):
         """
-        add a link to world
+        Add a link to world.
 
         Parameters
         ----------
@@ -1773,7 +1773,7 @@ class World:
 
     def addVehicle(W, *args, direct_call=True, **kwargs):
         """
-        add a vehicle to world
+        Add a vehicle to world.
 
         Parameters
         ----------
@@ -2118,7 +2118,7 @@ class World:
 
         Notes
         -----
-        This function automatically called by `exec_simulation()` if it has not been called manually.
+        This function is automatically called by `exec_simulation()` if it has not been called manually.
         """
         if W.TMAX == None:
             if tmax == None:
@@ -2168,7 +2168,7 @@ class World:
 
     def print_scenario_stats(W):
         """
-        Print scenario stats
+        Print scenario stats.
         """
         if W.finalized:
             print("simulation setting:")
@@ -2178,7 +2178,7 @@ class World:
         print(" simulation duration:\t", W.TMAX, "s")
         print(" number of vehicles:\t", len(W.VEHICLES)*W.DELTAN, "veh")
         print(" total road length:\t", sum([l.length for l in W.LINKS]),"m")
-        print(" time discret. width:\t", W.DELTAT, "s")
+        print(" timestep size:\t", W.DELTAT, "s")
         print(" platoon size:\t\t", W.DELTAN, "veh")
         if W.finalized:
             print(" number of timesteps:\t", W.TSIZE)
@@ -2316,7 +2316,7 @@ class World:
 
     def simulation_terminated(W):
         """
-        Postprocessing after simulation finished
+        Postprocessing after simulation finished.
         """
         W.print(" simulation finished")
         W.analyzer.basic_analysis()

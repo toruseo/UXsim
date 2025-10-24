@@ -1,1 +1,1 @@
-These are utility files required for `usxim.py`
+These are utility files required for `uxsim.py`.

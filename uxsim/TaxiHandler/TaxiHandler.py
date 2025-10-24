@@ -1,5 +1,5 @@
 """
-Submodule for handling taxis
+Submodule for handling taxis.
 """
 
 import random, math
@@ -7,7 +7,7 @@ import pandas as pd
 
 class TripRequest:
     """
-    A class representing a trip request (or travelers, passengers, cargo, etc.)
+    A class representing a trip request (or travelers, passengers, cargo, etc.).
     """
     def __init__(s, W, H, orig, dest, depart_time, name=None, attribute=None):
         """
@@ -48,7 +48,7 @@ class TripRequest:
 
     def get_on_taxi(s):
         """
-        The event of getting on a taxi. This is called via `Vehicle.event_node`
+        The event of getting on a taxi. This is called via `Vehicle.event_node`.
         """
         #print(f"{s.W.TIME}: {s} is getting on a taxi {s.taxi}")        
         s.taxi.add_dest(s.dest)
@@ -60,7 +60,7 @@ class TripRequest:
     
     def arrive_at_dest(s):
         """
-        The event of arriving at the destination. This is called via `Vehicle.event_node`
+        The event of arriving at the destination. This is called via `Vehicle.event_node`.
         """
         #print(f"{s.W.TIME}: {s} arrived at the destination {s.dest}")
         s.arrival_time = s.W.TIME
@@ -184,7 +184,7 @@ class TaxiHandler:
         """
         s.compute_stats()
         print("results for taxi transportation:")
-        print(f" total trip rquests: {s.n_total_requests}")
+        print(f" total trip requests: {s.n_total_requests}")
         print(f" completed trip requests: {s.n_completed_requests}")
         print(f" completed trip requests ratio: {s.n_completed_requests/s.n_total_requests if s.n_total_requests > 0 else 0: .2f}")
         print(f" average number of completed requests per taxi: {s.n_completed_requests/s.number_of_taxis: .2f}")
