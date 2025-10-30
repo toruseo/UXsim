@@ -22,7 +22,7 @@ class Node:
     """
     Node in a network.
     """
-    def __init__(s, W: "World", name: str, x: float, y: float, signal: list[float]=[0], signal_offset: float=0, signal_offset_old: float|None=None, flow_capacity: float|None=None, number_of_lanes: int=None, auto_rename=False, attribute=None, user_attribute=None, user_function=None):
+    def __init__(s, W: "World", name: str, x: float, y: float, signal: list[float]=[0], signal_offset: float=0, signal_offset_old: float|None=None, flow_capacity: float|None=None, number_of_lanes: int|None=None, auto_rename=False, attribute=None, user_attribute=None, user_function=None):
         """
         Create a node.
 
@@ -83,14 +83,14 @@ class Node:
         s.user_function = user_function
         
         #incoming/outgoing links
-        s.inlinks: dict[Link] = dict()
-        s.outlinks: dict[Link] = dict()
+        s.inlinks: dict[str,Link] = dict()
+        s.outlinks: dict[str,Link] = dict()
 
         #request for inter-link transfer (demand for node model)
         s.incoming_vehicles: list[Vehicle] = []
 
         #vertical queue for vehicle generation
-        s.generation_queue: list[Vehicle] = deque()
+        s.generation_queue: deque[Vehicle] = deque()
 
         #signal settings
         #If this node does not have a signal, set `signal=[0]`
@@ -199,7 +199,7 @@ class Node:
                         if veh.specified_route[0] in outlinks:
                             outlinks = [veh.specified_route[0]]
                         else:
-                            raise ValueError(f"Vehicle {veh.name}: specified route {s.specified_route} is inconsistent at the origin node {s.name}. Debug info: {outlinks=}")
+                            raise ValueError(f"Vehicle {veh.name}: specified route {veh.specified_route} is inconsistent at the origin node {s.name}. Debug info: {outlinks=}")
                     
                     preference = np.array([veh.route_pref[l.id] for l in outlinks], dtype=float)
                     if s.W.hard_deterministic_mode == False:
@@ -807,7 +807,7 @@ class Vehicle:
     """
     Vehicle or platoon in a network.
     """
-    def __init__(s, W: "World", orig: Node|str, dest: Node|str, departure_time:float, name: str|None=None, route_pref: dict=None, route_choice_principle=None, mode: str="single_trip", links_prefer: list=[], links_avoid: list=[], trip_abort: int=1, departure_time_is_time_step: int=0, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
+    def __init__(s, W: "World", orig: Node|str, dest: Node|str, departure_time:int|float, name: str|None=None, route_pref: dict=None, route_choice_principle=None, mode: str="single_trip", links_prefer: list=[], links_avoid: list=[], trip_abort: int=1, departure_time_is_time_step: int=0, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
         Create a vehicle (more precisely, platoon).
 
@@ -819,8 +819,8 @@ class Vehicle:
             The origin node.
         dest : str | Node
             The destination node.
-        departure_time : int
-            The departure time of the vehicle.
+        departure_time : int | float
+            The departure time of the vehicle. This can be timestep or time in second.
         name : str, optional
             The name of the vehicle, default is the id of the vehicle.
         route_pref : dict, optional
@@ -862,13 +862,13 @@ class Vehicle:
 
         #出発・到着時刻
         if departure_time_is_time_step:#互換性のため，departure_timeは常にタイムステップ表記 -> TODO: 要訂正！
-            s.departure_time = departure_time
+            s.departure_time: int = departure_time
         else:
-            s.departure_time = int(departure_time/s.W.DELTAT)
-        s.departure_time_in_second = departure_time*s.W.DELTAT  #TODO: temporal workaround
-        s.arrival_time = -1
-        s.link_arrival_time = -1
-        s.travel_time = -1
+            s.departure_time: int = int(departure_time/s.W.DELTAT)
+        s.departure_time_in_second: float = departure_time*s.W.DELTAT  #TODO: temporal workaround
+        s.arrival_time: int = -1
+        s.link_arrival_time: float = -1
+        s.travel_time: float = -1
 
         #状態：home, wait, run，end
         s.state: str = "home"
@@ -2291,7 +2291,7 @@ class World:
             Returns 1 if the simulation is ongoing and has not reached its final time.
         """
         if W.finalized == 0:
-            return 1
+            return True
         return W.T <= W.TSIZE-1
 
     def simulation_terminated(W):
@@ -2357,7 +2357,7 @@ class World:
                 return W.LINKS_NAME_DICT[link]
         raise Exception(f"'{link}' is not Link in this World")
 
-    def get_nearest_node(W, x:float, y:float) -> Node:
+    def get_nearest_node(W, x:float, y:float) -> Node|None:
         """
         Get the nearest node to the given coordinates.
 
