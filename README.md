@@ -11,8 +11,8 @@
 [![Static Badge](https://img.shields.io/badge/docs-%F0%9F%93%96-lightblue)](https://toruseo.jp/UXsim/docs/)
 
 *UXsim* is a lightweight traffic flow simulator in pure Python.
-It enables users to model various traffic scenarios, from small toy networks to large metropolitan areas, without external dependencies.
-Especially ideal for academic research and educational use.
+You can model various traffic scenarios, from small toy networks to large metropolitan areas, by intuitive Python coding.
+Especially useful for academic research and educational use.
 
 ## Quick Start
 ### Install
@@ -49,7 +49,7 @@ W.analyzer.network_fancy()
 
 Traffic congestion caused by the bottleneck
 
-![anim_network_fancy](https://github.com/user-attachments/assets/ab5e5fac-e2b3-4548-90ac-e4a5d7d302b0)
+<img src="https://github.com/toruseo/UXsim/blob/images/anim_network_fancy_simple.gif"/>
 
 ## Simulation Examples
 
@@ -138,13 +138,13 @@ A [Jupyter Notebook of this example](https://github.com/toruseo/UXsim/blob/main/
 
 ## Main Features
 
-- Lightweight, dependency-free, and fast mesoscopic simulation
-- Simulate large-scale traffic networks with 1 million vehicles in a minute
+- Lightweight, pure-Python, and fast mesoscopic simulation
+- Simulate large-scale traffic networks, such as metropolitan areas with 1 million vehicles in a minute
 - Based on theoretically valid models used in transportation research
 - Apply traffic control mechanisms such as signals, tolls, and shared mobility
 - Fully written in Python (core code ~1200 lines), easy to read and modify
 - Supports approximate solvers for Dynamic User Equilibrium and Dynamic System Optimum
-- Built-in analysis tool using `matplotlib` and `pandas`
+- Includes built-in analysis tools using `matplotlib` and `pandas`
 
 ## Further Reading
 
@@ -176,6 +176,7 @@ When publishing works based on UXsim, please cite:
   url       = {https://doi.org/10.21105/joss.07617},
 }
 ```
+
 Works using UXsim are summarized on the [Github Wiki page](https://github.com/toruseo/UXsim/wiki). Please feel free to edit.
 
 ## Contributing and Discussion
