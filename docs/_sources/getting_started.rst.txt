@@ -5,53 +5,80 @@ Getting started
 Install
 -------
 
-First, install UXsim package using pip::
+Basic
+~~~~~
+
+UXsim package can be installed using pip::
 
    pip install uxsim
 
+Advanced (can be skipped)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Then import the module using::
+For advanced usage, the following alternative methods are available.
 
-   from uxsim import *
+Using conda with conda-forge channel:: 
+
+    conda install uxsim
+
+Using pip with custom configuration.
+The GitHub version:: 
+
+    pip install -U -e git+https://github.com/toruseo/uxsim@main#egg=uxsim
+
+Or any other (development) branch on this repo or your own fork::
+
+    pip install -U -e git+https://github.com/YOUR_FORK/uxsim@YOUR_BRANCH#egg=uxsim
+
+Manual install is also available. 
+Download the uxsim directory from the Github repo or `the latest release <https://github.com/toruseo/UXsim/releases/latest/download/uxsim.zip>`_ and place it in your local directory as follows::
+
+    your_project_directory/
+    ├── uxsim/          # The uxsim directory
+    │ ├── uxsim.py     # The main code of UXsim. You can customize this as you wish
+    │ └── ...         # Other files and directories in uxsim
+    ├── your_simulation_code.py         # Your code if necessary
+    ├── your_simulation_notebook.ipynb  # Your Jupyter notebook if necessary
+    ├── ...                             # Other files if necessary
 
 Test scenario
 -------------
 
 The following code can be used to test UXsim in simple setting::
 
-	from uxsim import *
+    from uxsim import *
 
-	# Define the main simulation
-	# Units are standardized to seconds (s) and meters (m)
-	W = World(
-	    name="",    # Scenario name
-	    deltan=5,   # Simulation aggregation unit delta n
-	    tmax=1200,  # Total simulation time (s)
-	    print_mode=1, save_mode=1, show_mode=0,    # Various options
-	    random_seed=0    # Set the random seed
-	)
+    # Define the main simulation
+    # Units are standardized to seconds (s) and meters (m)
+    W = World(
+        name="",    # Scenario name
+        deltan=5,   # Simulation aggregation unit delta n
+        tmax=1200,  # Total simulation time (s)
+        print_mode=1, save_mode=1, show_mode=0,    # Various options
+        random_seed=0    # Set the random seed
+    )
 
-	# Define the scenario
-	W.addNode("orig1", 0, 0) # Create a node
-	W.addNode("orig2", 0, 2)
-	W.addNode("merge", 1, 1)
-	W.addNode("dest", 2, 1)
-	W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20) # Create a link
-	W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20)
-	W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20)
-	W.adddemand("orig1", "dest", 0, 1000, 0.45) # Create OD traffic demand
-	W.adddemand("orig2", "dest", 400, 1000, 0.6)
+    # Define the scenario
+    W.addNode("orig1", 0, 0) # Create a node
+    W.addNode("orig2", 0, 2)
+    W.addNode("merge", 1, 1)
+    W.addNode("dest", 2, 1)
+    W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20) # Create a link
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20)
+    W.adddemand("orig1", "dest", 0, 1000, 0.45) # Create OD traffic demand
+    W.adddemand("orig2", "dest", 400, 1000, 0.6)
 
-	# Run the simulation to the end
-	W.exec_simulation()
+    # Run the simulation to the end
+    W.exec_simulation()
 
-	# Print summary of simulation result
-	W.analyzer.print_simple_stats()
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
 
-	# Visualize snapshots of network traffic state for several timesteps
-	W.analyzer.network(100, detailed=1, network_font_size=12)
-	W.analyzer.network(600, detailed=1, network_font_size=12)
-	W.analyzer.network(800, detailed=1, network_font_size=12)
+    # Visualize snapshots of network traffic state for several timesteps
+    W.analyzer.network(100, detailed=1, network_font_size=12)
+    W.analyzer.network(600, detailed=1, network_font_size=12)
+    W.analyzer.network(800, detailed=1, network_font_size=12)
 
 It simulates traffic flow in Y-shaped simple network.
 It will print simple statistics of the simulation results as follows (the details may vary depending on the environment).
@@ -59,29 +86,29 @@ It will also save visualizations of network traffic states to `out` directory.
 
 .. code-block:: node
 
-	simulation setting:
-	 scenario name:
-	 simulation duration:    1200 s
-	 number of vehicles:     810 veh
-	 total road length:      3000 m
-	 time discret. width:    5 s
-	 platoon size:           5 veh
-	 number of timesteps:    240
-	 number of platoons:     162
-	 number of links:        3
-	 number of nodes:        4
-	 setup time:             0.00 s
-	simulating...
-	      time| # of vehicles| ave speed| computation time
-	       0 s|        0 vehs|   0.0 m/s|     0.00 s
-	     600 s|      130 vehs|  13.7 m/s|     0.03 s
-	    1195 s|       75 vehs|  12.3 m/s|     0.06 s
-	 simulation finished
-	results:
-	 average speed:  11.6 m/s
-	 number of completed trips:      735 / 810
-	 average travel time of trips:   162.6 s
-	 average delay of trips:         62.6 s
-	 delay ratio:                    0.385
-	 
+    simulation setting:
+     scenario name:
+     simulation duration:    1200 s
+     number of vehicles:     810 veh
+     total road length:      3000 m
+     time discret. width:    5 s
+     platoon size:           5 veh
+     number of timesteps:    240
+     number of platoons:     162
+     number of links:        3
+     number of nodes:        4
+     setup time:             0.00 s
+    simulating...
+          time| # of vehicles| ave speed| computation time
+           0 s|        0 vehs|   0.0 m/s|     0.00 s
+         600 s|      130 vehs|  13.7 m/s|     0.03 s
+        1195 s|       75 vehs|  12.3 m/s|     0.06 s
+     simulation finished
+    results:
+     average speed:  11.6 m/s
+     number of completed trips:      735 / 810
+     average travel time of trips:   162.6 s
+     average delay of trips:         62.6 s
+     delay ratio:                    0.385
+     
 For further usage, please see :doc:`tutorial`.

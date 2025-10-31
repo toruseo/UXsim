@@ -287,14 +287,41 @@ gtag('config', 'UA-111714220-1');
 <h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h1>
 <section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Link to this heading">¶</a></h2>
-<p>First, install UXsim package using pip:</p>
+<section id="basic">
+<h3>Basic<a class="headerlink" href="#basic" title="Link to this heading">¶</a></h3>
+<p>UXsim package can be installed using pip:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">uxsim</span>
 </pre></div>
 </div>
-<p>Then import the module using:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">uxsim</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</section>
+<section id="advanced-can-be-skipped">
+<h3>Advanced (can be skipped)<a class="headerlink" href="#advanced-can-be-skipped" title="Link to this heading">¶</a></h3>
+<p>For advanced usage, the following alternative methods are available.</p>
+<p>Using conda with conda-forge channel:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">uxsim</span>
 </pre></div>
 </div>
+<p>Using pip with custom configuration.
+The GitHub version:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="o">-</span><span class="n">e</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">toruseo</span><span class="o">/</span><span class="n">uxsim</span><span class="nd">@main</span><span class="c1">#egg=uxsim</span>
+</pre></div>
+</div>
+<p>Or any other (development) branch on this repo or your own fork:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="o">-</span><span class="n">e</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">YOUR_FORK</span><span class="o">/</span><span class="n">uxsim</span><span class="nd">@YOUR_BRANCH</span><span class="c1">#egg=uxsim</span>
+</pre></div>
+</div>
+<p>Manual install is also available.
+Download the uxsim directory from the Github repo or <a class="reference external" href="https://github.com/toruseo/UXsim/releases/latest/download/uxsim.zip">the latest release</a> and place it in your local directory as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>your_project_directory/
+├── uxsim/          # The uxsim directory
+│ ├── uxsim.py     # The main code of UXsim. You can customize this as you wish
+│ └── ...         # Other files and directories in uxsim
+├── your_simulation_code.py         # Your code if necessary
+├── your_simulation_notebook.ipynb  # Your Jupyter notebook if necessary
+├── ...                             # Other files if necessary
+</pre></div>
+</div>
+</section>
 </section>
 <section id="test-scenario">
 <h2>Test scenario<a class="headerlink" href="#test-scenario" title="Link to this heading">¶</a></h2>
@@ -423,7 +450,11 @@ results:
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Getting started</a><ul>
-<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#install">Install</a><ul>
+<li><a class="reference internal" href="#basic">Basic</a></li>
+<li><a class="reference internal" href="#advanced-can-be-skipped">Advanced (can be skipped)</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#test-scenario">Test scenario</a></li>
 </ul>
 </li>
