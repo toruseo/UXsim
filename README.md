@@ -49,7 +49,9 @@ W.analyzer.network_fancy()
 
 Traffic congestion caused by the bottleneck
 
+<p>
 <img src="https://github.com/toruseo/UXsim/blob/images/anim_network_fancy_simple.gif"/>
+</p>
 
 ## Simulation Examples
 
