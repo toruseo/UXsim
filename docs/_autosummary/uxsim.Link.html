@@ -287,7 +287,7 @@ gtag('config', 'UA-111714220-1');
 <h1>uxsim.Link<a class="headerlink" href="#uxsim-link" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.Link">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><span class="pre">World</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link" title="Link to this definition">¶</a></dt>
 <dd><p>Link in a network.</p>
 <p>Create a link.</p>
 <dl class="field-list simple">
@@ -433,87 +433,9 @@ gtag('config', 'UA-111714220-1');
 </dl>
 </dd></dl>
 
-<p class="rubric">Notes</p>
-<p>Traffic Flow Model:</p>
-<ul class="simple">
-<li><p>The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.</p></li>
-<li><p>Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link’s flow characteristics. Reaction time of drivers <cite>REACTION_TIME</cite> is a global parameter.</p></li>
-<li><p>Real-time link status for external reference is maintained with attributes <cite>speed</cite>, <cite>density</cite>, <cite>flow</cite>, <cite>num_vehicles</cite>, and <cite>num_vehicles_queue</cite>.</p></li>
-</ul>
-<p>Traffic Flow Model Parameters:</p>
-<ul class="simple">
-<li><p>Their definition is illustrated as <a class="reference external" href="https://toruseo.jp/UXsim/docs/_images/fundamental_diagram.png">https://toruseo.jp/UXsim/docs/_images/fundamental_diagram.png</a></p></li>
-<li><p>If you are not familiar to the traffic flow theory, it is recommended that you adjust only <cite>free_flow_speed</cite> and <cite>number_of_lanes</cite> for the traffic flow model parameters, leaving the other parameters at their default values.</p></li>
-</ul>
-<p>Capacity and Bottlenecks:</p>
-<ul class="simple">
-<li><p>The <cite>capacity_out</cite> and <cite>capacity_in</cite> parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.</p></li>
-<li><p>These capacities can represent bottlenecks at the beginning or end of the link.</p></li>
-</ul>
-<p>Connection to Node Model:</p>
-<ul class="simple">
-<li><p>At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.</p></li>
-<li><p>At the upstream end of a receiving link, all lanes can accept vehicles.</p></li>
-</ul>
-<p>Parameter Adjustments:</p>
-<ul class="simple">
-<li><p>Some traffic flow model parameters like <cite>free_flow_speed</cite>, <cite>jam_density</cite>, <cite>capacity_out</cite>, <cite>capacity_in</cite>, and <cite>merge_priority</cite> can be altered during simulation to reflect changing conditions.</p></li>
-</ul>
-<p>Details on Multi-lane model:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>Link model:</dt><dd><ul>
-<li><p>Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.</p></li>
-<li><p>Links have a <cite>lanes</cite> attribute representing the number of lanes.</p></li>
-<li><p>Each vehicle has a <cite>lane</cite> attribute.</p></li>
-<li><p>Each vehicle follows the leader vehicle in the same lane, i.e., the vehicle <cite>lanes</cite> steps ahead on the link.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Node model:</dt><dd><ul>
-<li><dl class="simple">
-<dt>Sending links:</dt><dd><ul>
-<li><p>Vehicles in all lanes at the downstream end of the link have the right to be sent out.</p></li>
-<li><p>However, to ensure link FIFO, vehicles are tried to be sent out in the order they entered the link. If a vehicle cannot be accepted, the outflow from that link stops.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Receiving links:</dt><dd><ul>
-<li><p>All lanes at the upstream end of the link can accept vehicles.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-<p>Details on Fundamental diagram parameters (+: input, ++: alternative input):</p>
-<ul class="simple">
-<li><p>free_flow_speed (m/s)+</p></li>
-<li><p>jam_density (veh/m/LINK)+</p></li>
-<li><p>jam_density_per_lane (veh/m/lane)++</p></li>
-<li><p>lanes, number_of_lane (lane)+</p></li>
-<li><p>tau: y-intercept of link FD (s/veh*LINK)</p></li>
-<li><p>REACTION_TIME, World.reaction_time (s/veh*lane)</p></li>
-<li><p>w (m/s)</p></li>
-<li><p>capacity (veh/s/LINK)</p></li>
-<li><p>capacity_per_lane (veh/s/lane)</p></li>
-<li><p>delta: minimum spacing (m/veh*LINK)</p></li>
-<li><p>delta_per_lane: minimum spacing in lane (m/veh*lane)</p></li>
-<li><p>q_star: capacity (veh/s/LINK)</p></li>
-<li><p>k_star: critical density (veh/s/LINK)</p></li>
-<li><p>capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)+</p></li>
-<li><p>Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE)+</p></li>
-</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><span class="pre">World</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Create a link.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -658,84 +580,6 @@ gtag('config', 'UA-111714220-1');
 </dl>
 </dd></dl>
 
-<p class="rubric">Notes</p>
-<p>Traffic Flow Model:</p>
-<ul class="simple">
-<li><p>The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.</p></li>
-<li><p>Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link’s flow characteristics. Reaction time of drivers <cite>REACTION_TIME</cite> is a global parameter.</p></li>
-<li><p>Real-time link status for external reference is maintained with attributes <cite>speed</cite>, <cite>density</cite>, <cite>flow</cite>, <cite>num_vehicles</cite>, and <cite>num_vehicles_queue</cite>.</p></li>
-</ul>
-<p>Traffic Flow Model Parameters:</p>
-<ul class="simple">
-<li><p>Their definition is illustrated as <a class="reference external" href="https://toruseo.jp/UXsim/docs/_images/fundamental_diagram.png">https://toruseo.jp/UXsim/docs/_images/fundamental_diagram.png</a></p></li>
-<li><p>If you are not familiar to the traffic flow theory, it is recommended that you adjust only <cite>free_flow_speed</cite> and <cite>number_of_lanes</cite> for the traffic flow model parameters, leaving the other parameters at their default values.</p></li>
-</ul>
-<p>Capacity and Bottlenecks:</p>
-<ul class="simple">
-<li><p>The <cite>capacity_out</cite> and <cite>capacity_in</cite> parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.</p></li>
-<li><p>These capacities can represent bottlenecks at the beginning or end of the link.</p></li>
-</ul>
-<p>Connection to Node Model:</p>
-<ul class="simple">
-<li><p>At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.</p></li>
-<li><p>At the upstream end of a receiving link, all lanes can accept vehicles.</p></li>
-</ul>
-<p>Parameter Adjustments:</p>
-<ul class="simple">
-<li><p>Some traffic flow model parameters like <cite>free_flow_speed</cite>, <cite>jam_density</cite>, <cite>capacity_out</cite>, <cite>capacity_in</cite>, and <cite>merge_priority</cite> can be altered during simulation to reflect changing conditions.</p></li>
-</ul>
-<p>Details on Multi-lane model:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>Link model:</dt><dd><ul>
-<li><p>Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.</p></li>
-<li><p>Links have a <cite>lanes</cite> attribute representing the number of lanes.</p></li>
-<li><p>Each vehicle has a <cite>lane</cite> attribute.</p></li>
-<li><p>Each vehicle follows the leader vehicle in the same lane, i.e., the vehicle <cite>lanes</cite> steps ahead on the link.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Node model:</dt><dd><ul>
-<li><dl class="simple">
-<dt>Sending links:</dt><dd><ul>
-<li><p>Vehicles in all lanes at the downstream end of the link have the right to be sent out.</p></li>
-<li><p>However, to ensure link FIFO, vehicles are tried to be sent out in the order they entered the link. If a vehicle cannot be accepted, the outflow from that link stops.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Receiving links:</dt><dd><ul>
-<li><p>All lanes at the upstream end of the link can accept vehicles.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-<p>Details on Fundamental diagram parameters (+: input, ++: alternative input):</p>
-<ul class="simple">
-<li><p>free_flow_speed (m/s)+</p></li>
-<li><p>jam_density (veh/m/LINK)+</p></li>
-<li><p>jam_density_per_lane (veh/m/lane)++</p></li>
-<li><p>lanes, number_of_lane (lane)+</p></li>
-<li><p>tau: y-intercept of link FD (s/veh*LINK)</p></li>
-<li><p>REACTION_TIME, World.reaction_time (s/veh*lane)</p></li>
-<li><p>w (m/s)</p></li>
-<li><p>capacity (veh/s/LINK)</p></li>
-<li><p>capacity_per_lane (veh/s/lane)</p></li>
-<li><p>delta: minimum spacing (m/veh*LINK)</p></li>
-<li><p>delta_per_lane: minimum spacing in lane (m/veh*lane)</p></li>
-<li><p>q_star: capacity (veh/s/LINK)</p></li>
-<li><p>k_star: critical density (veh/s/LINK)</p></li>
-<li><p>capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)+</p></li>
-<li><p>Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE)+</p></li>
-</ul>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -751,23 +595,35 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.arrival_count" title="uxsim.Link.arrival_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arrival_count</span></code></a>(t)</p></td>
 <td><p>Get cumulative vehicle count of arrival to this link on time t.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_free_flow_speed</span></code>(new_value)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.average_density" title="uxsim.Link.average_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">average_density</span></code></a>(t)</p></td>
+<td><p>Get average density of this link on time t.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.average_flow" title="uxsim.Link.average_flow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">average_flow</span></code></a>(t)</p></td>
+<td><p>Get average flow of this link on time t.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.average_speed" title="uxsim.Link.average_speed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">average_speed</span></code></a>(t)</p></td>
+<td><p>Get average speed (=inverse of instantaneous travel time) of this link on time t.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_free_flow_speed</span></code>(new_value)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_jam_density</span></code>(new_value)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_jam_density</span></code>(new_value)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.departure_count" title="uxsim.Link.departure_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">departure_count</span></code></a>(t)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.departure_count" title="uxsim.Link.departure_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">departure_count</span></code></a>(t)</p></td>
 <td><p>Get cumulative vehicle count of departure from this link on time t.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.in_out_flow_constraint" title="uxsim.Link.in_out_flow_constraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_out_flow_constraint</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.in_out_flow_constraint" title="uxsim.Link.in_out_flow_constraint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_out_flow_constraint</span></code></a>()</p></td>
 <td><p>Link capacity updates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.init_after_tmax_fix" title="uxsim.Link.init_after_tmax_fix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_after_tmax_fix</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.init_after_tmax_fix" title="uxsim.Link.init_after_tmax_fix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_after_tmax_fix</span></code></a>()</p></td>
 <td><p>Initalization before simulation execution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.instant_travel_time" title="uxsim.Link.instant_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">instant_travel_time</span></code></a>(t)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.instant_travel_time" title="uxsim.Link.instant_travel_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">instant_travel_time</span></code></a>(t)</p></td>
 <td><p>Get instantaneous travel time of this link on time t.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.num_vehicles_t" title="uxsim.Link.num_vehicles_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_vehicles_t</span></code></a>(t)</p></td>
+<td><p>Get number of vehicles on this link on time t.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.set_traveltime_instant" title="uxsim.Link.set_traveltime_instant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_traveltime_instant</span></code></a>()</p></td>
 <td><p>Compute instantaneous travel time.</p></td>
@@ -802,7 +658,7 @@ gtag('config', 'UA-111714220-1');
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.actual_travel_time">
-<span class="sig-name descname"><span class="pre">actual_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.actual_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.actual_travel_time" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">actual_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.actual_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.actual_travel_time" title="Link to this definition">¶</a></dt>
 <dd><p>Get actual travel time of vehicle who enters this link on time t. Note that small error may occur due to fractional processing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -819,7 +675,7 @@ gtag('config', 'UA-111714220-1');
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.arrival_count">
-<span class="sig-name descname"><span class="pre">arrival_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.arrival_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.arrival_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">arrival_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.arrival_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.arrival_count" title="Link to this definition">¶</a></dt>
 <dd><p>Get cumulative vehicle count of arrival to this link on time t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -835,8 +691,59 @@ gtag('config', 'UA-111714220-1');
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.average_density">
+<span class="sig-name descname"><span class="pre">average_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.average_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.average_density" title="Link to this definition">¶</a></dt>
+<dd><p>Get average density of this link on time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average density.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.average_flow">
+<span class="sig-name descname"><span class="pre">average_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.average_flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.average_flow" title="Link to this definition">¶</a></dt>
+<dd><p>Get average flow of this link on time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The average flow.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.average_speed">
+<span class="sig-name descname"><span class="pre">average_speed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.average_speed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.average_speed" title="Link to this definition">¶</a></dt>
+<dd><p>Get average speed (=inverse of instantaneous travel time) of this link on time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The instantaneous travel time.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.departure_count">
-<span class="sig-name descname"><span class="pre">departure_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.departure_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.departure_count" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">departure_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.departure_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.departure_count" title="Link to this definition">¶</a></dt>
 <dd><p>Get cumulative vehicle count of departure from this link on time t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -865,7 +772,7 @@ gtag('config', 'UA-111714220-1');
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.instant_travel_time">
-<span class="sig-name descname"><span class="pre">instant_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.instant_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.instant_travel_time" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">instant_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.instant_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.instant_travel_time" title="Link to this definition">¶</a></dt>
 <dd><p>Get instantaneous travel time of this link on time t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -873,6 +780,23 @@ gtag('config', 'UA-111714220-1');
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The instantaneous travel time.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.num_vehicles_t">
+<span class="sig-name descname"><span class="pre">num_vehicles_t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.num_vehicles_t"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.num_vehicles_t" title="Link to this definition">¶</a></dt>
+<dd><p>Get number of vehicles on this link on time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of vehicles.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
@@ -978,10 +902,14 @@ gtag('config', 'UA-111714220-1');
 </li>
 <li><a class="reference internal" href="#uxsim.Link.actual_travel_time"><code class="docutils literal notranslate"><span class="pre">Link.actual_travel_time()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.arrival_count"><code class="docutils literal notranslate"><span class="pre">Link.arrival_count()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Link.average_density"><code class="docutils literal notranslate"><span class="pre">Link.average_density()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Link.average_flow"><code class="docutils literal notranslate"><span class="pre">Link.average_flow()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Link.average_speed"><code class="docutils literal notranslate"><span class="pre">Link.average_speed()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.departure_count"><code class="docutils literal notranslate"><span class="pre">Link.departure_count()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.in_out_flow_constraint"><code class="docutils literal notranslate"><span class="pre">Link.in_out_flow_constraint()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.init_after_tmax_fix"><code class="docutils literal notranslate"><span class="pre">Link.init_after_tmax_fix()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.instant_travel_time"><code class="docutils literal notranslate"><span class="pre">Link.instant_travel_time()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Link.num_vehicles_t"><code class="docutils literal notranslate"><span class="pre">Link.num_vehicles_t()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.set_traveltime_instant"><code class="docutils literal notranslate"><span class="pre">Link.set_traveltime_instant()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.update"><code class="docutils literal notranslate"><span class="pre">Link.update()</span></code></a></li>
 </ul>

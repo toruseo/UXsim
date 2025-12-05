@@ -286,6 +286,7 @@ gtag('config', 'UA-111714220-1');
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span> <span class="k">as</span> <span class="n">ddict</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">csr_matrix</span>
@@ -304,7 +305,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Node.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Node.html#uxsim.Node.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal_offset_old</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">:</span> <span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal_offset_old</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="p">:</span> <span class="nb">int</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a node.</span>
 
@@ -318,7 +319,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The x-coordinate of the node (for visualization purposes).</span>
 <span class="sd">        y : float</span>
 <span class="sd">            The y-coordinate of the node (for visualization purposes).</span>
-<span class="sd">        signal : list of int, optional</span>
+<span class="sd">        signal : list of float, optional</span>
 <span class="sd">            A list representing the signal at the node. Default is [0], representing no signal.</span>
 <span class="sd">            If a signal is present, the list contains the green times for each group.</span>
 <span class="sd">            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</span>
@@ -365,14 +366,14 @@ gtag('config', 'UA-111714220-1');
         <span class="n">s</span><span class="o">.</span><span class="n">user_function</span> <span class="o">=</span> <span class="n">user_function</span>
         
         <span class="c1">#incoming/outgoing links</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">inlinks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">outlinks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">inlinks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Link</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">outlinks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Link</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
         <span class="c1">#request for inter-link transfer (demand for node model)</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">incoming_vehicles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">incoming_vehicles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vehicle</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1">#vertical queue for vehicle generation</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">generation_queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">generation_queue</span><span class="p">:</span> <span class="n">deque</span><span class="p">[</span><span class="n">Vehicle</span><span class="p">]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
 
         <span class="c1">#signal settings</span>
         <span class="c1">#If this node does not have a signal, set `signal=[0]`</span>
@@ -490,7 +491,7 @@ gtag('config', 'UA-111714220-1');
                         <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">specified_route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">outlinks</span><span class="p">:</span>
                             <span class="n">outlinks</span> <span class="o">=</span> <span class="p">[</span><span class="n">veh</span><span class="o">.</span><span class="n">specified_route</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vehicle </span><span class="si">{</span><span class="n">veh</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: specified route </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">specified_route</span><span class="si">}</span><span class="s2"> is inconsistent at the origin node </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. Debug info: </span><span class="si">{</span><span class="n">outlinks</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vehicle </span><span class="si">{</span><span class="n">veh</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: specified route </span><span class="si">{</span><span class="n">veh</span><span class="o">.</span><span class="n">specified_route</span><span class="si">}</span><span class="s2"> is inconsistent at the origin node </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. Debug info: </span><span class="si">{</span><span class="n">outlinks</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
                     
                     <span class="n">preference</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">veh</span><span class="o">.</span><span class="n">route_pref</span><span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">outlinks</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">hard_deterministic_mode</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
@@ -672,7 +673,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Link.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Link.html#uxsim.Link.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">capacity_out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">:</span> <span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start_node</span><span class="p">:</span> <span class="n">Node</span><span class="o">|</span><span class="nb">str</span><span class="p">,</span> <span class="n">end_node</span><span class="p">:</span> <span class="n">Node</span><span class="o">|</span><span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">capacity_out</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a link.</span>
 
@@ -745,65 +746,6 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Capacity for inflow to the link.</span>
 <span class="sd">        merge_priority : float</span>
 <span class="sd">            The priority of the link when merging at the downstream node.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        Traffic Flow Model:</span>
-
-<span class="sd">        - The link model follows a multi-lane, single-pipe approach where FIFO is guaranteed per link and no lane changing occurs.</span>
-<span class="sd">        - Fundamental diagram parameters such as free_flow_speed, jam_density (or jam_density_per_lane), and number_of_lanes determine the link&#39;s flow characteristics. Reaction time of drivers `REACTION_TIME` is a global parameter.</span>
-<span class="sd">        - Real-time link status for external reference is maintained with attributes `speed`, `density`, `flow`, `num_vehicles`, and `num_vehicles_queue`.</span>
-
-<span class="sd">        Traffic Flow Model Parameters:</span>
-
-<span class="sd">        - Their definition is illustrated as https://toruseo.jp/UXsim/docs/_images/fundamental_diagram.png</span>
-<span class="sd">        - If you are not familiar to the traffic flow theory, it is recommended that you adjust only `free_flow_speed` and `number_of_lanes` for the traffic flow model parameters, leaving the other parameters at their default values.</span>
-
-<span class="sd">        Capacity and Bottlenecks:</span>
-
-<span class="sd">        - The `capacity_out` and `capacity_in` parameters set the outflow and inflow capacities of the link. If not provided, the capacities are unlimited.</span>
-<span class="sd">        - These capacities can represent bottlenecks at the beginning or end of the link.</span>
-
-<span class="sd">        Connection to Node Model:</span>
-
-<span class="sd">        - At the downstream end of a sending link, vehicles in all lanes have the right to be sent out, but FIFO order is maintained.</span>
-<span class="sd">        - At the upstream end of a receiving link, all lanes can accept vehicles.</span>
-
-<span class="sd">        Parameter Adjustments:</span>
-
-<span class="sd">        - Some traffic flow model parameters like `free_flow_speed`, `jam_density`, `capacity_out`, `capacity_in`, and `merge_priority` can be altered during simulation to reflect changing conditions.</span>
-<span class="sd">            </span>
-<span class="sd">        Details on Multi-lane model:</span>
-
-<span class="sd">        - Link model:</span>
-<span class="sd">            - Multiple lanes with single-pipe model. FIFO is guaranteed per link. No lane changing.</span>
-<span class="sd">            - Links have a `lanes` attribute representing the number of lanes. </span>
-<span class="sd">            - Each vehicle has a `lane` attribute.</span>
-<span class="sd">            - Each vehicle follows the leader vehicle in the same lane, i.e., the vehicle `lanes` steps ahead on the link.</span>
-<span class="sd">        - Node model: </span>
-<span class="sd">            - Sending links:</span>
-<span class="sd">                - Vehicles in all lanes at the downstream end of the link have the right to be sent out.</span>
-<span class="sd">                - However, to ensure link FIFO, vehicles are tried to be sent out in the order they entered the link. If a vehicle cannot be accepted, the outflow from that link stops.</span>
-<span class="sd">            - Receiving links:  </span>
-<span class="sd">                - All lanes at the upstream end of the link can accept vehicles.</span>
-
-<span class="sd">        Details on Fundamental diagram parameters (+: input, ++: alternative input):</span>
-
-<span class="sd">        - free_flow_speed (m/s)+</span>
-<span class="sd">        - jam_density (veh/m/LINK)+</span>
-<span class="sd">        - jam_density_per_lane (veh/m/lane)++</span>
-<span class="sd">        - lanes, number_of_lane (lane)+</span>
-<span class="sd">        - tau: y-intercept of link FD (s/veh*LINK)</span>
-<span class="sd">        - REACTION_TIME, World.reaction_time (s/veh*lane) </span>
-<span class="sd">        - w (m/s)</span>
-<span class="sd">        - capacity (veh/s/LINK)</span>
-<span class="sd">        - capacity_per_lane (veh/s/lane)</span>
-<span class="sd">        - delta: minimum spacing (m/veh*LINK)</span>
-<span class="sd">        - delta_per_lane: minimum spacing in lane (m/veh*lane) </span>
-<span class="sd">        - q_star: capacity (veh/s/LINK)</span>
-<span class="sd">        - k_star: critical density (veh/s/LINK)</span>
-<span class="sd">        - capacity_in, capacity_out: bottleneck capacity at beginning/end of link (veh/s/LINK)+</span>
-<span class="sd">        - Node.flow_capacity: node flow capacity (veh/s/LINK-LIKE)+</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
@@ -1009,7 +951,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.arrival_count">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.arrival_count">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">arrival_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">arrival_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get cumulative vehicle count of arrival to this link on time t.</span>
 
@@ -1033,7 +975,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Link.departure_count">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.departure_count">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">departure_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">departure_count</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get cumulative vehicle count of departure from this link on time t.</span>
 
@@ -1054,10 +996,48 @@ gtag('config', 'UA-111714220-1');
             <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">cum_departure</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">cum_departure</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span></div>
 
+    
+<div class="viewcode-block" id="Link.num_vehicles_t">
+<a class="viewcode-back" href="../../uxsim.html#uxsim.Link.num_vehicles_t">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_vehicles_t</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get number of vehicles on this link on time t.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t : float</span>
+<span class="sd">            Time in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The number of vehicles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">arrival_count</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">-</span><span class="n">s</span><span class="o">.</span><span class="n">departure_count</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+   
+<div class="viewcode-block" id="Link.average_density">
+<a class="viewcode-back" href="../../uxsim.html#uxsim.Link.average_density">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">average_density</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get average density of this link on time t.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t : float</span>
+<span class="sd">            Time in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The average density.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">num_vehicles_t</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">length</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Link.instant_travel_time">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.instant_travel_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">instant_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instant_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get instantaneous travel time of this link on time t.</span>
 
@@ -1078,10 +1058,10 @@ gtag('config', 'UA-111714220-1');
             <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">traveltime_instant</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">traveltime_instant</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span></div>
 
-
+    
 <div class="viewcode-block" id="Link.actual_travel_time">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Link.actual_travel_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">actual_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">actual_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get actual travel time of vehicle who enters this link on time t. Note that small error may occur due to fractional processing.</span>
 
@@ -1101,6 +1081,44 @@ gtag('config', 'UA-111714220-1');
         <span class="k">if</span> <span class="n">tt</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Link.average_speed">
+<a class="viewcode-back" href="../../uxsim.html#uxsim.Link.average_speed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">average_speed</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get average speed (=inverse of instantaneous travel time) of this link on time t.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t : float</span>
+<span class="sd">            Time in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The instantaneous travel time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">instant_travel_time</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Link.average_flow">
+<a class="viewcode-back" href="../../uxsim.html#uxsim.Link.average_flow">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">average_flow</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get average flow of this link on time t.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t : float</span>
+<span class="sd">            Time in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The average flow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">average_speed</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">average_density</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></div>
 
 
     <span class="c1">#getter/setter</span>
@@ -1199,7 +1217,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Vehicle.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Vehicle.html#uxsim.Vehicle.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;single_trip&quot;</span><span class="p">,</span> <span class="n">links_prefer</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">:</span> <span class="s2">&quot;World&quot;</span><span class="p">,</span> <span class="n">orig</span><span class="p">:</span> <span class="n">Node</span><span class="o">|</span><span class="nb">str</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="n">Node</span><span class="o">|</span><span class="nb">str</span><span class="p">,</span> <span class="n">departure_time</span><span class="p">:</span><span class="nb">int</span><span class="o">|</span><span class="nb">float</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_pref</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;single_trip&quot;</span><span class="p">,</span> <span class="n">links_prefer</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="p">[],</span> <span class="n">links_avoid</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="p">[],</span> <span class="n">trip_abort</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a vehicle (more precisely, platoon).</span>
 
@@ -1211,8 +1229,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The origin node.</span>
 <span class="sd">        dest : str | Node</span>
 <span class="sd">            The destination node.</span>
-<span class="sd">        departure_time : int</span>
-<span class="sd">            The departure time of the vehicle.</span>
+<span class="sd">        departure_time : int | float</span>
+<span class="sd">            The departure time of the vehicle. This can be timestep or time in second.</span>
 <span class="sd">        name : str, optional</span>
 <span class="sd">            The name of the vehicle, default is the id of the vehicle.</span>
 <span class="sd">        route_pref : dict, optional</span>
@@ -1254,30 +1272,30 @@ gtag('config', 'UA-111714220-1');
 
         <span class="c1">#出発・到着時刻</span>
         <span class="k">if</span> <span class="n">departure_time_is_time_step</span><span class="p">:</span><span class="c1">#互換性のため，departure_timeは常にタイムステップ表記 -&gt; TODO: 要訂正！</span>
-            <span class="n">s</span><span class="o">.</span><span class="n">departure_time</span> <span class="o">=</span> <span class="n">departure_time</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">departure_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">departure_time</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">s</span><span class="o">.</span><span class="n">departure_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">departure_time</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">departure_time_in_second</span> <span class="o">=</span> <span class="n">departure_time</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>  <span class="c1">#TODO: temporal workaround</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">arrival_time</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">link_arrival_time</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">travel_time</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">departure_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">departure_time</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">departure_time_in_second</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">departure_time</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>  <span class="c1">#TODO: temporal workaround</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">arrival_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">link_arrival_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">travel_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
         <span class="c1">#状態：home, wait, run，end</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;home&quot;</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;home&quot;</span>
 
         <span class="c1">#リンク内位置</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">link</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">x_next</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">x_old</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">link</span><span class="p">:</span> <span class="n">Link</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">x_next</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">x_old</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">v</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1">#走行車線</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">lane</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">lane</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1">#先行・後行車</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">leader</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">follower</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">leader</span><span class="p">:</span> <span class="n">Vehicle</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">follower</span><span class="p">:</span> <span class="n">Vehicle</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1">#トリップ終了準備フラグ</span>
         <span class="n">s</span><span class="o">.</span><span class="n">flag_waiting_for_trip_end</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1293,7 +1311,7 @@ gtag('config', 'UA-111714220-1');
 
         <span class="c1">#private vehicle or taxi</span>
         <span class="n">s</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">dest_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">dest_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1">#dict of events that are triggered when this vehicle reaches a certain node {Node: func}</span>
         <span class="n">s</span><span class="o">.</span><span class="n">node_event</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -1926,16 +1944,16 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.uxsim.World.html#uxsim.World.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">deltan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">reaction_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
-                 <span class="n">duo_update_time</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">duo_update_weight</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">duo_noise</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="o">=</span><span class="s2">&quot;homogeneous_DUO&quot;</span><span class="p">,</span> <span class="n">route_choice_update_gradual</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">instantaneous_TT_timestep_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
-                 <span class="n">eular_dt</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
-                 <span class="n">random_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-                 <span class="n">print_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_progress_deltat</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> 
-                 <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-                 <span class="n">vehicle_logging_timestep_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
-                 <span class="n">reduce_memory_delete_vehicle_route_pref</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">hard_deterministic_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-                 <span class="n">meta_data</span><span class="o">=</span><span class="p">{},</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">deltan</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">reaction_time</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+                 <span class="n">duo_update_time</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">duo_update_weight</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">duo_noise</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">route_choice_principle</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;homogeneous_DUO&quot;</span><span class="p">,</span> <span class="n">route_choice_update_gradual</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">instantaneous_TT_timestep_interval</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+                 <span class="n">eular_dt</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">eular_dx</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+                 <span class="n">random_seed</span><span class="p">:</span> <span class="n">Any</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">print_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_progress_deltat</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> 
+                 <span class="n">tmax</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">vehicle_logging_timestep_interval</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+                 <span class="n">reduce_memory_delete_vehicle_route_pref</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">hard_deterministic_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                 <span class="n">meta_data</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a World.</span>
 
@@ -2022,11 +2040,11 @@ gtag('config', 'UA-111714220-1');
             <span class="n">W</span><span class="o">.</span><span class="n">DELTAT_ROUTE</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="c1">## data storage</span>
-        <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>            <span class="c1">#home, wait, run, end</span>
-        <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES_LIVING</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>     <span class="c1">#home, wait, run</span>
-        <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES_RUNNING</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>    <span class="c1">#run</span>
-        <span class="n">W</span><span class="o">.</span><span class="n">NODES</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Vehicle</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>            <span class="c1">#home, wait, run, end</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES_LIVING</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Vehicle</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>     <span class="c1">#home, wait, run</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES_RUNNING</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Vehicle</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>    <span class="c1">#run</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">W</span><span class="o">.</span><span class="n">LINKS</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Link</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="n">W</span><span class="o">.</span><span class="n">NODES_NAME_DICT</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1">#map from name to node object</span>
         <span class="n">W</span><span class="o">.</span><span class="n">LINKS_NAME_DICT</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2078,7 +2096,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.addNode">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addNode">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">addNode</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addNode</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_offset</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal_offset_old</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a node to world.</span>
 
@@ -2090,42 +2108,56 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The x-coordinate of the node (for visualization purposes).</span>
 <span class="sd">        y : float</span>
 <span class="sd">            The y-coordinate of the node (for visualization purposes).</span>
-<span class="sd">        signal : list of int, optional</span>
+<span class="sd">        signal : list of float, optional</span>
 <span class="sd">            A list representing the signal at the node. Default is [0], representing no signal.</span>
 <span class="sd">            If a signal is present, the list contains the green times for each group.</span>
 <span class="sd">            For example, `signal`=[60, 10, 50, 5] means that this signal has 4 phases, and green time for the 1st group is 60 s.</span>
 <span class="sd">        signal_offset : float, optional</span>
 <span class="sd">            The offset of the signal. Default is 0.</span>
+<span class="sd">        signal_offset_old : float, optional</span>
+<span class="sd">            The old parameter used to set offset of the signal prior to v1.8.1. This is the opposite of the usual definition of offset. Default is None, meaning `signal_offset` is used.</span>
 <span class="sd">        flow_capacity : float, optional</span>
 <span class="sd">            The maximum flow capacity of the node. Default is None, meaning infinite capacity.</span>
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the node if the name is already used. Default is False.</span>
 <span class="sd">        number_of_lanes : int, optional</span>
 <span class="sd">            The number of lanes that can be green simultaneously at the node. Default is None.</span>
+<span class="sd">        attribute : any, optional</span>
+<span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        user_attribute : any, optional</span>
+<span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
+<span class="sd">        user_function : func, optional</span>
+<span class="sd">            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Node object itself. Example: The following code prints the current number of incoming vehicles to the node at each timestep. If user_function=None (default), no functions will be executed.</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        object</span>
-<span class="sd">            the added Node object.</span>
+<span class="sd">            &gt;&gt;&gt; def user_function(node):</span>
+<span class="sd">            &gt;&gt;&gt;     print(len(node.incoming_vehicles))</span>
+<span class="sd">            &gt;&gt;&gt; W = World(...)</span>
+<span class="sd">            &gt;&gt;&gt; W.addNode(&quot;node&quot;, 0, 0, user_function=user_function)</span>
+<span class="sd">            &gt;&gt;&gt; ... #define your scenario</span>
+<span class="sd">            &gt;&gt;&gt; W.exec_simulation()</span>
 
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This function acts as a wrapper for creating a Node object and adding it to the network.</span>
-<span class="sd">        It passes all given arguments and keyword arguments to the Node class initialization.</span>
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal_phase : int</span>
+<span class="sd">            The phase of current signal. Links that have the same `signal_group` have a green signal.</span>
+<span class="sd">        signal_t : float</span>
+<span class="sd">            The elapsed time since the current signal phase started. When it is larger than `Link.signal[Link.signal_phase]`, the phase changes to the next one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="n">signal</span><span class="p">,</span> <span class="n">signal_offset</span><span class="o">=</span><span class="n">signal_offset</span><span class="p">,</span> <span class="n">signal_offset_old</span><span class="o">=</span><span class="n">signal_offset_old</span><span class="p">,</span> <span class="n">flow_capacity</span><span class="o">=</span><span class="n">flow_capacity</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="n">number_of_lanes</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="n">auto_rename</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="n">user_attribute</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="World.addLink">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addLink">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">addLink</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addLink</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start_node</span><span class="p">:</span> <span class="n">Node</span><span class="o">|</span><span class="nb">str</span><span class="p">,</span> <span class="n">end_node</span><span class="p">:</span> <span class="n">Node</span><span class="o">|</span><span class="nb">str</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">jam_density</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">merge_priority</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal_group</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">capacity_out</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capacity_in</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Link</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a link to world.</span>
+<span class="sd">        Create a link.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        name : str</span>
-<span class="sd">            The name of the link.</span>
+<span class="sd">        W : object</span>
+<span class="sd">            The world to which the link belongs.</span>
+<span class="sd">        name : str | None</span>
+<span class="sd">            The name of the link. If None, the name is automatically generated as &quot;{start_node.name}-{end_node.name}&quot;.</span>
 <span class="sd">        start_node : str | Node</span>
 <span class="sd">            The name of the start node of the link.</span>
 <span class="sd">        end_node : str | Node</span>
@@ -2152,26 +2184,50 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.</span>
 <span class="sd">        attribute : any, optional</span>
 <span class="sd">            Additional (meta) attributes defined by users.</span>
+<span class="sd">        user_attribute : any, optional</span>
+<span class="sd">            Additional (meta) attributes defined by users. Same functionality to `attribute`, but with more understandable name.</span>
+<span class="sd">        user_function : func, optional</span>
+<span class="sd">            User-defined custom function that is automatically called when the timestep is incremented (more precisely, when `update()` is called). It takes only one argument: the Link object itself. Example: The following code prints the current number of vehicles on the link at each timestep. If user_function=None (default), no functions will be executed.</span>
+
+<span class="sd">            &gt;&gt;&gt; def user_function(link):</span>
+<span class="sd">            &gt;&gt;&gt;     print(len(link.vehicles))</span>
+<span class="sd">            &gt;&gt;&gt; W = World(...)</span>
+<span class="sd">            &gt;&gt;&gt; W.addLink(&quot;link&quot;, &quot;node1&quot;, &quot;node2, 1000, user_function=user_function)</span>
+<span class="sd">            &gt;&gt;&gt; ... #define your scenario</span>
+<span class="sd">            &gt;&gt;&gt; W.exec_simulation()</span>
+
 <span class="sd">        auto_rename : bool, optional</span>
 <span class="sd">            Whether to automatically rename the link if the name is already used. Default is False (raise an exception).</span>
 
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        object</span>
-<span class="sd">            the added Link object.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This function acts as a wrapper for creating a Link object and adding it to the network.</span>
-<span class="sd">        It passes all given arguments and keyword arguments to the Link class initialization.</span>
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        speed : float</span>
+<span class="sd">            Average speed of traffic on the link.</span>
+<span class="sd">        density : float</span>
+<span class="sd">            Density of traffic on the link.</span>
+<span class="sd">        flow : float</span>
+<span class="sd">            Flow of traffic on the link.</span>
+<span class="sd">        num_vehicles : float</span>
+<span class="sd">            Number of vehicles on the link.</span>
+<span class="sd">        num_vehicles_queue : float</span>
+<span class="sd">            Number of slow vehicles (due to congestion) on the link.</span>
+<span class="sd">        free_flow_speed : float</span>
+<span class="sd">            Free flow speed of the link.</span>
+<span class="sd">        jam_density : float</span>
+<span class="sd">            Jam density of the link.</span>
+<span class="sd">        capacity_out : float</span>
+<span class="sd">            Capacity for outflow from the link.</span>
+<span class="sd">        capacity_in : float</span>
+<span class="sd">            Capacity for inflow to the link.</span>
+<span class="sd">        merge_priority : float</span>
+<span class="sd">            The priority of the link when merging at the downstream node.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">free_flow_speed</span><span class="o">=</span><span class="n">free_flow_speed</span><span class="p">,</span> <span class="n">jam_density</span><span class="o">=</span><span class="n">jam_density</span><span class="p">,</span> <span class="n">jam_density_per_lane</span><span class="o">=</span><span class="n">jam_density_per_lane</span><span class="p">,</span> <span class="n">number_of_lanes</span><span class="o">=</span><span class="n">number_of_lanes</span><span class="p">,</span> <span class="n">merge_priority</span><span class="o">=</span><span class="n">merge_priority</span><span class="p">,</span> <span class="n">signal_group</span><span class="o">=</span><span class="n">signal_group</span><span class="p">,</span> <span class="n">capacity_out</span><span class="o">=</span><span class="n">capacity_out</span><span class="p">,</span> <span class="n">capacity_in</span><span class="o">=</span><span class="n">capacity_in</span><span class="p">,</span> <span class="n">eular_dx</span><span class="o">=</span><span class="n">eular_dx</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">user_attribute</span><span class="o">=</span><span class="n">user_attribute</span><span class="p">,</span> <span class="n">user_function</span><span class="o">=</span><span class="n">user_function</span><span class="p">,</span> <span class="n">auto_rename</span><span class="o">=</span><span class="n">auto_rename</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="World.addVehicle">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.addVehicle">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">addVehicle</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addVehicle</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vehicle</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a vehicle to world.</span>
 
@@ -2220,7 +2276,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">orig</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Node</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span><span class="n">Node</span><span class="p">,</span> <span class="n">t_start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">t_end</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">flow</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand.</span>
 
@@ -2356,7 +2412,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand_nodes2nodes">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_nodes2nodes">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_nodes2nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">origs</span><span class="p">,</span> <span class="n">dests</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_nodes2nodes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">origs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="o">|</span><span class="n">Node</span><span class="p">],</span> <span class="n">dests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="o">|</span><span class="n">Node</span><span class="p">],</span> <span class="n">t_start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">t_end</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">flow</span><span class="p">:</span> <span class="nb">float</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one. `adddemand_nodes2nodes()` is not recommended as it may truncate demand. Consider to use new `adddemand_nodes2nodes2() which is more accurate, smooth, and fast.</span>
 
@@ -2407,7 +2463,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand_area2area2">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_area2area2">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_area2area2</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">,</span>  <span class="n">radious_orig</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">,</span> <span class="n">radious_dest</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_area2area2</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x_orig</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">y_orig</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span>  <span class="n">radious_orig</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">x_dest</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">y_dest</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">radious_dest</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">t_start</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">t_end</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">flow</span><span class="p">:</span><span class="nb">float</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span><span class="nb">float</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas. This is new version of `adddemand_area2area`, more efficient, more smooth, and more accurate. However, it introduces some randomness.</span>
 
@@ -2476,7 +2532,7 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="World.adddemand_nodes2nodes2">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_nodes2nodes2">[docs]</a>
     <span class="nd">@demand_info_record</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_nodes2nodes2</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">origs</span><span class="p">,</span> <span class="n">dests</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">flow</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adddemand_nodes2nodes2</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">origs</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="o">|</span><span class="n">Node</span><span class="p">],</span> <span class="n">dests</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="o">|</span><span class="n">Node</span><span class="p">],</span> <span class="n">t_start</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">t_end</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">flow</span><span class="p">:</span><span class="nb">float</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span><span class="nb">float</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate vehicles by specifying time-dependent origin-destination demand by specifying origin area (i.e., list of nodes) and destination one. This is new version of `adddemand_nodes2nodes`, more efficient, more smooth, and more accurate. However, it introduces some randomness.</span>
 
@@ -2528,7 +2584,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.finalize_scenario">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.finalize_scenario">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">finalize_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">finalize_scenario</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">tmax</span><span class="p">:</span><span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finalizes the settings and preparations for the simulation scenario execution.</span>
 
@@ -2616,7 +2672,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.exec_simulation">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.exec_simulation">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">exec_simulation</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">until_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exec_simulation</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">until_t</span><span class="p">:</span><span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t</span><span class="p">:</span><span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_t2</span><span class="p">:</span><span class="nb">float</span><span class="o">|</span><span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute the main loop of the simulation.</span>
 
@@ -2731,7 +2787,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.check_simulation_ongoing">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.check_simulation_ongoing">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_simulation_ongoing</span><span class="p">(</span><span class="n">W</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_simulation_ongoing</span><span class="p">(</span><span class="n">W</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether the simulation is has not reached its final time.</span>
 
@@ -2741,7 +2797,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Returns 1 if the simulation is ongoing and has not reached its final time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">finalized</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;=</span> <span class="n">W</span><span class="o">.</span><span class="n">TSIZE</span><span class="o">-</span><span class="mi">1</span></div>
 
 
@@ -2757,8 +2813,9 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.get_node">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_node">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a Node instance by name or object.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span><span class="nb">str</span><span class="o">|</span><span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a Node instance by name or object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2787,7 +2844,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.get_link">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_link">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">link</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">link</span><span class="p">:</span><span class="nb">str</span><span class="o">|</span><span class="n">Link</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Link</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a Link instance by name or object.</span>
 
@@ -2818,7 +2875,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.get_nearest_node">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_nearest_node">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_nearest_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nearest_node</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="o">|</span><span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the nearest node to the given coordinates.</span>
 
@@ -2846,7 +2903,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.get_nodes_in_area">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.get_nodes_in_area">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_nodes_in_area</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nodes_in_area</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the nodes in the area defined by the center coordinates and radius.</span>
 <span class="sd">        </span>
@@ -2873,7 +2930,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="World.defRoute">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.defRoute">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">defRoute</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">defRoute</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">links</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">Link</span><span class="o">|</span><span class="nb">str</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">trust_input</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Route&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Define Route object for this World.</span>
 
@@ -2887,7 +2944,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            True if you trust the `links` in order to reduce the computation cost by omitting verification.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">Route</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Route</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">trust_input</span><span class="o">=</span><span class="n">trust_input</span><span class="p">)</span></div>
 
 
 
@@ -3159,7 +3216,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Route.__init__">
 <a class="viewcode-back" href="../../_autosummary/uxsim.Route.html#uxsim.Route.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">trust_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">W</span><span class="p">:</span><span class="n">World</span><span class="p">,</span> <span class="n">links</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">Link</span><span class="o">|</span><span class="nb">str</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">trust_input</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Define a route.</span>
 
@@ -3187,7 +3244,7 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
         <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">links</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">links</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Link</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">trust_input</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
             <span class="c1">#入力データを検査する場合</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">links</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
@@ -3235,7 +3292,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="Route.actual_travel_time">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.Route.actual_travel_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">actual_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">return_details</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">actual_travel_time</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">return_details</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Actual travel time for a (hypothetical) vehicle who start traveling this route on time t.</span>
 
