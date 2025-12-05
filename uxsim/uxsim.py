@@ -632,7 +632,7 @@ class Link:
             s.traveltime_instant.append(s.traveltime_instant[-1])
 
 
-    def arrival_count(s, t):
+    def arrival_count(s, t: float) -> float:
         """
         Get cumulative vehicle count of arrival to this link on time t.
 
@@ -653,7 +653,7 @@ class Link:
             return s.cum_arrival[0]
         return s.cum_arrival[tt]
 
-    def departure_count(s, t):
+    def departure_count(s, t: float) -> float:
         """
         Get cumulative vehicle count of departure from this link on time t.
 
@@ -673,8 +673,40 @@ class Link:
         if tt < 0:
             return s.cum_departure[0]
         return s.cum_departure[tt]
+    
+    def num_vehicles_t(s, t: float) -> float:
+        """
+        Get number of vehicles on this link on time t.
 
-    def instant_travel_time(s, t):
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+
+        Returns
+        -------
+        float
+            The number of vehicles.
+        """
+        return s.arrival_count(t)-s.departure_count(t)
+   
+    def average_density(s, t: float) -> float:
+        """
+        Get average density of this link on time t.
+
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+
+        Returns
+        -------
+        float
+            The average density.
+        """
+        return float(s.num_vehicles_t(t)/s.length)
+
+    def instant_travel_time(s, t: float) -> float:
         """
         Get instantaneous travel time of this link on time t.
 
@@ -694,8 +726,8 @@ class Link:
         if tt < 0:
             return s.traveltime_instant[0]
         return s.traveltime_instant[tt]
-
-    def actual_travel_time(s, t):
+    
+    def actual_travel_time(s, t: float) -> float:
         """
         Get actual travel time of vehicle who enters this link on time t. Note that small error may occur due to fractional processing.
 
@@ -715,6 +747,38 @@ class Link:
         if tt < 0:
             return s.traveltime_actual[0]
         return s.traveltime_actual[tt]
+
+    def average_speed(s, t: float) -> float:
+        """
+        Get average speed (=inverse of instantaneous travel time) of this link on time t.
+
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+
+        Returns
+        -------
+        float
+            The instantaneous travel time.
+        """
+        return float(s.length/s.instant_travel_time(t))
+
+    def average_flow(s, t: float) -> float:
+        """
+        Get average flow of this link on time t.
+
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+
+        Returns
+        -------
+        float
+            The average flow.
+        """
+        return float(s.average_speed(t)*s.average_density(t))
 
     #getter/setter
     @property

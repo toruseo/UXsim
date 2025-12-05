@@ -946,6 +946,30 @@ def test_change_jam_density():
 
     #W.analyzer.time_space_diagram_traj_links(["link1","link2","link3"])
 
+def test_get_linkstats():
+    W = World(name="simple", tmax=2000, show_mode=1)
+
+    W.addNode("start", x=0, y=0)
+    W.addNode("end", x=7500, y=0)
+
+    l = W.addLink("road", start_node="start", end_node="end", length=10000, free_flow_speed=10)
+
+    W.adddemand(orig="start", dest="end", t_start=100, t_end=600, volume=500)
+
+    W.exec_simulation()
+
+    t = 50
+    assert equal_tolerance(l.num_vehicles_t(t), 0)
+    assert equal_tolerance(l.average_density(t), 0.0)
+    assert equal_tolerance(l.average_speed(t), 10.0)
+    assert equal_tolerance(l.average_flow(t), 0.0)
+
+    t = 1000
+    assert equal_tolerance(l.num_vehicles_t(t), 500)
+    assert equal_tolerance(l.average_density(t), 0.05)
+    assert equal_tolerance(l.average_speed(t), 10.0)
+    assert equal_tolerance(l.average_flow(t), 0.5)
+
 def test_user_functions():
     # define custom user_functions
 
