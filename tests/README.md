@@ -30,7 +30,7 @@ pip install .[dev,advanced,extra]
 
 Then run the tests:
 ```bash
-pytest test_spam.py --durations=0 -v
+pytest tests/test_*.py --durations=0 -v
 ```
 
 These dependency groups are defined in `pyproject.toml`. For more details, please see the yml files in https://github.com/toruseo/UXsim/tree/main/.github/workflows.
