@@ -54,7 +54,6 @@ extra = [
     "torch",
     "deap",
     "streamlit",
-    "osmnx>=2.0.0",
     "requests"
 ]
 
