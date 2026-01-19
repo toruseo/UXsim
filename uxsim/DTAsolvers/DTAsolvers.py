@@ -51,7 +51,7 @@ class SolverDUE:
 
         #warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
     
-    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, print_progress=True):
+    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, route_sets=None, print_progress=True):
         """
         Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP.
 
@@ -63,6 +63,25 @@ class SolverDUE:
             number of routes to enumerate for each OD pair
         swap_prob : float
             probability of route swap
+        route_sets : dict or None
+            Predefined route sets for each vehicle. If provided, these routes will be used instead of enumerating new routes.
+            If None, routes will be enumerated automatically. If provided, `n_routes_per_od` is ignored.
+            The format:
+
+            >>> {
+            >>>     [origin_node1, destination_node1]: [
+            >>>         [linkA1, linkA2, ...],
+            >>>         [linkB1, linkB2, ...],
+            >>>         ...
+            >>>     ],
+            >>>     [origin_node2, destination_node2]:
+            >>>         ...
+            >>>     ],
+            >>>     ...
+            >>> }
+
+            See test scrpt for an example.
+
         print_progress : bool
             whether to print the information
 
@@ -100,6 +119,15 @@ class SolverDUE:
             W_orig.finalize_scenario()
         dict_od_to_routes = enumerate_k_random_routes(W_orig, k=n_routes_per_od)
 
+        if route_sets != None:
+            dict_od_to_routes = {}
+            for key, routes in route_sets.items():
+                o = W_orig.get_node(key[0]).name
+                d = W_orig.get_node(key[1]).name
+                dict_od_to_routes[o,d] = []
+                for route in routes:
+                    dict_od_to_routes[o,d].append([W_orig.get_link(l).name for l in route])
+
         if print_progress:
             print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
 
@@ -127,7 +155,7 @@ class SolverDUE:
             route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
             for o,d in dict_od_to_vehid.keys():
                 for r in dict_od_to_routes[o,d]:
-                    route_set[o,d].append(W.defRoute(r))
+                    route_set[o,d].append(W.defRoute(r)) 
 
             # simulation
             W.exec_simulation()
@@ -166,6 +194,11 @@ class SolverDUE:
                 cost_actual[key] = travel_time
 
                 if veh.state != "end":
+                    continue
+
+                #route_setsが所与で，route_setの経路を何らかの理由で走っていない場合（初期解で経路指定が整合的でない場合がメイン），強制的に設定する
+                if route_sets != None and r not in route_set[o,d]:
+                    routes_specified[key] = route_set[o,d][0]
                     continue
 
                 flag_route_changed = False
@@ -358,7 +391,7 @@ class SolverDSO_D2D:
         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm
         s.dfs_link = []
     
-    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, print_progress=True):
+    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, route_sets=None, print_progress=True):
         """
         Solve quasi DSO problem using day-to-day dynamics.
 
@@ -370,6 +403,27 @@ class SolverDSO_D2D:
             number of routes to enumerate for each OD pair
         swap_prob : float
             probability of route swap
+        swap_num : int or None
+            number of vehicles to swap route each iteration. If specified, `swap_prob` is ignored.
+        route_sets : dict or None
+            Predefined route sets for each vehicle. If provided, these routes will be used instead of enumerating new routes.
+            If None, routes will be enumerated automatically. If provided, `n_routes_per_od` is ignored.
+            The format:
+
+            >>> {
+            >>>     [origin_node1, destination_node1]: [
+            >>>         [linkA1, linkA2, ...],
+            >>>         [linkB1, linkB2, ...],
+            >>>         ...
+            >>>     ],
+            >>>     [origin_node2, destination_node2]:
+            >>>         ...
+            >>>     ],
+            >>>     ...
+            >>> }
+
+            See test scrpt for an example.
+
         print_progress : bool
             whether to print the information
 
@@ -407,6 +461,15 @@ class SolverDSO_D2D:
             W_orig.finalize_scenario()
         dict_od_to_routes = enumerate_k_random_routes(W_orig, k=n_routes_per_od)
 
+        if route_sets != None:
+            dict_od_to_routes = {}
+            for key, routes in route_sets.items():
+                o = W_orig.get_node(key[0]).name
+                d = W_orig.get_node(key[1]).name
+                dict_od_to_routes[o,d] = []
+                for route in routes:
+                    dict_od_to_routes[o,d].append([W_orig.get_link(l).name for l in route])
+        
         if print_progress:
             print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
 
@@ -482,6 +545,11 @@ class SolverDSO_D2D:
                 cost_actual[key] = travel_time
 
                 if veh.state != "end":
+                    continue
+
+                #route_setsが所与で，route_setの経路を何らかの理由で走っていない場合（初期解で経路指定が整合的でない場合がメイン），強制的に設定する
+                if route_sets != None and r not in route_set[o,d]:
+                    routes_specified[key] = route_set[o,d][0]
                     continue
 
                 flag_route_changed = False

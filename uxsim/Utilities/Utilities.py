@@ -9,6 +9,7 @@ from scipy.sparse.csgraph import dijkstra
 import tqdm
 import random
 from collections import defaultdict
+from typing import DefaultDict
 import warnings
 
 def generate_grid_network(W, imax, jmax, **kwargs):
@@ -161,7 +162,7 @@ def enumerate_k_shortest_routes_on_t(W, source, target, t, k=1, cost_function=la
     else:
         return routes
 
-def enumerate_k_random_routes(W, k):
+def enumerate_k_random_routes(W, k) -> DefaultDict[tuple[str], list[str]]:
     """
     Enumerate k random routes between all node pairs in a network. The shortest path with free flow travel time is always included. This is much faster than `enumerate_k_shortest_routes` and could be useful for a plausible choice set generation for route choice problems.
 
