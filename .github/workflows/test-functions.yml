@@ -19,11 +19,7 @@ jobs:
     - name: Install uxsim and dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install .
-    - name: Install pytest other dependencies
-      run: |
-        # Install testing dependencies with compatible versions for parallel execution
-        pip install "pytest>=8.4.0" "pytest-xdist>=3.8.0" "pytest-rerunfailures>=16.0" setuptools osmnx requests
+        pip install .[dev,extra]
     - name: Run tests with pytest
       run: pytest -n auto tests/test_other_functions.py --durations=0 -v
 

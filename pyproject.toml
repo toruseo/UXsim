@@ -40,6 +40,23 @@ advanced = [
     "geopandas>=1.0.0",
     "shapely>=2.1.0"
 ]
+dev = [
+    "pytest>=8.4.0",
+    "pytest-xdist>=3.8.0",
+    "pytest-rerunfailures>=16.0",
+    "pytest-cov",
+    "setuptools",
+    "jupyter",
+    "nbformat"
+]
+extra = [
+    "gymnasium",
+    "torch",
+    "deap",
+    "streamlit",
+    "osmnx>=2.0.0",
+    "requests"
+]
 
 [project.urls]
 Homepage = "https://github.com/toruseo/UXsim"
