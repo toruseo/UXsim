@@ -22,10 +22,10 @@ jobs:
     - name: Install uxsim and dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install .
+        pip install .[dev]
     - name: Install pytest other dependencies
       run: |
-        # Install testing dependencies with compatible versions for parallel execution
-        pip install "pytest>=8.4.0" "pytest-xdist>=3.8.0" "pytest-rerunfailures>=16.0" setuptools gymnasium torch osmnx deap streamlit
+        # Install optional packages required for these tests
+        pip install gymnasium torch osmnx deap streamlit
     - name: Run examples with pytest
       run: pytest -n auto tests/test_examples.py --durations=0 -v
