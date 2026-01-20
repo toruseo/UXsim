@@ -22,7 +22,7 @@ jobs:
         pip install .[dev]
     - name: Install pytest other dependencies
       run: |
-        # Install testing dependencies with compatible versions for parallel execution
+        # Install optional packages required for these tests
         pip install osmnx requests
     - name: Run tests with pytest
       run: pytest -n auto tests/test_other_functions.py --durations=0 -v

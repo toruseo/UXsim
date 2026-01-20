@@ -24,7 +24,7 @@ jobs:
         pip install -e .[dev,advanced]
     - name: Install pytest other dependencies
       run: |
-        # Install testing dependencies with compatible versions for parallel execution
+        # Install optional packages required for these tests
         pip install osmnx requests
     - name: Run verifications with pytest
       run: pytest -n auto tests/test_verification_straight_road.py tests/test_verification_route_choice.py tests/test_verification_node.py tests/test_verification_exceptional.py tests/test_verification_sioux_falls.py tests/test_verification_multilane.py tests/test_verification_taxi.py tests/test_verification_dta_solvers.py tests/test_other_functions.py tests/test_optional_functions_python313.py --durations=0 -v --cov=uxsim --cov-report=xml --cov-config=.github/.coveragerc
