@@ -13,19 +13,14 @@ If a user would like to run these tests locally for development purposes, first 
 pip install .[dev]
 ```
 
-For tests that require additional optional packages (e.g., `torch`, `gymnasium`, `deap`, `streamlit`), install the extra dependencies:
-```bash
-pip install .[dev,extra]
-```
-
 For tests that require advanced features (e.g., `osmnx`, `geopandas`, `shapely`, `neatnet`), install the advanced dependencies:
 ```bash
 pip install .[dev,advanced]
 ```
 
-For tests that require all optional features:
+For tests that require additional optional packages (e.g., `torch`, `gymnasium`, `deap`, `streamlit`), install them manually:
 ```bash
-pip install .[dev,advanced,extra]
+pip install torch gymnasium deap streamlit requests
 ```
 
 Then run the tests:

@@ -49,13 +49,6 @@ dev = [
     "jupyter",
     "nbformat"
 ]
-extra = [
-    "gymnasium",
-    "torch",
-    "deap",
-    "streamlit",
-    "requests"
-]
 
 [project.urls]
 Homepage = "https://github.com/toruseo/UXsim"
