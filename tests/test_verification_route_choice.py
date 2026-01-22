@@ -859,3 +859,78 @@ def test_route_choice_4route_congestion_avoidance_gradual():
     assert equal_tolerance(np.average(vol3s), volave, rel_tol=0.1)
     assert equal_tolerance(np.average(vol4s), volave, rel_tol=0.1)
     assert equal_tolerance(volave*4, 2000*0.8)
+
+    
+@pytest.mark.flaky(reruns=5)
+def test_route_choice_dynamic_congestion_pricing():
+    W = World(
+        name="aaa",    # Scenario name
+        deltan=5,   # Simulation aggregation unit delta n
+        tmax=5000,  # Total simulation time (s)
+        print_mode=1, save_mode=1, show_mode=1,    # Various options
+        duo_update_time=120,
+        duo_update_weight=0.8,
+    )
+
+    def congestion_pricing(t):
+        coef = 0.01
+        change_t = 2500
+        p = t*coef
+        if t > change_t:
+            p = change_t*coef - (t-change_t)*coef
+        return p
+
+    # Define the scenario
+    ## Create nodes
+    W.addNode("orig", 0, 1)
+    W.addNode("diverge", 1, 1)
+    W.addNode("nodeA", 2, 2)
+    W.addNode("nodeB", 2, 0)
+    W.addNode("merge", 3, 1)
+    W.addNode("dest", 4, 1)
+    ## Create links between nodes
+    W.addLink("link1", "orig", "diverge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    linkA = W.addLink("linkA1", "diverge", "nodeA", length=1000, free_flow_speed=30, number_of_lanes=1, congestion_pricing=congestion_pricing)
+    W.addLink("linkA2", "nodeA", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    linkB = W.addLink("linkB1", "diverge", "nodeB", length=1000, free_flow_speed=20, number_of_lanes=1) #time difference: 1000/20-1000/30 = 16 s
+    W.addLink("linkB2", "nodeB", "merge", length=1000, free_flow_speed=20, number_of_lanes=1)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+    ## Create OD traffic demand between nodes
+    W.adddemand(orig="orig", dest="dest", t_start=0, t_end=5000, flow=0.6)
+
+    W.show_network()
+
+    # Run the simulation to the end
+    W.exec_simulation()
+
+    # Print summary of simulation result
+    W.analyzer.print_simple_stats()
+
+    # W.analyzer.network_average()
+
+    # # Plot
+    # fig, ax1 = np.subplots()
+    # tt = np.linspace(0, 5000, 100)
+    # # Plot cumulative arrivals on the left y-axis
+    # ax1.plot(tt, [linkA.arrival_count(ti) for ti in tt], label='linkA', color='tab:blue')
+    # ax1.plot(tt, [linkB.arrival_count(ti) for ti in tt], label='linkB', color='tab:orange')
+    # ax1.set_xlabel('Time (s)')
+    # ax1.set_ylabel('Cumulative arrivals', color='k')
+    # ax1.tick_params(axis='y', labelcolor='k')
+    # ax1.legend(loc='upper left')
+    # # Create a second y-axis for congestion pricing
+    # ax2 = ax1.twinx()
+    # ax2.plot(tt, [congestion_pricing(ti) for ti in tt], color='tab:green', linestyle='--', label='Congestion Pricing')
+    # ax2.set_ylabel('Toll', color='tab:green')
+    # ax2.tick_params(axis='y', labelcolor='tab:green')
+    # ax2.legend(loc='upper right')
+    # np.tight_layout()
+
+    assert eq_tol(linkA.average_flow(1000), 0.6)
+    assert eq_tol(linkA.average_flow(2000), 0.0)
+    assert eq_tol(linkA.average_flow(3000), 0.0)
+    assert eq_tol(linkA.average_flow(4500), 0.6)
+    assert eq_tol(linkB.average_flow(1000), 0.0)
+    assert eq_tol(linkB.average_flow(2000), 0.6)
+    assert eq_tol(linkB.average_flow(3000), 0.6)
+    assert eq_tol(linkB.average_flow(4500), 0.0)

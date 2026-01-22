@@ -191,3 +191,5 @@ def equal_tolerance(val, check, rel_tol=0.1, abs_tol=0.0):
     if check == 0 and abs_tol == 0:
         abs_tol = 0.1
     return abs(val - check) <= abs(check*rel_tol) + abs_tol
+
+eq_tol = equal_tolerance
