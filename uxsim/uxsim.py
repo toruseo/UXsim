@@ -7,7 +7,7 @@ import csv, time, math, string, warnings, copy
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
 import warnings
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -369,7 +369,7 @@ class Link:
     """
     Link in a network.
     """
-    def __init__(s, W: "World", name: str, start_node: Node|str, end_node: Node|str, length: float, free_flow_speed: float=20, jam_density: float=0.2, jam_density_per_lane: float|None=None, number_of_lanes: int=1, merge_priority: float=1, signal_group: list[int]=[0], capacity_out: float|None=None, capacity_in: float|None=None, eular_dx=None, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
+    def __init__(s, W: "World", name: str, start_node: Node|str, end_node: Node|str, length: float, free_flow_speed: float=20, jam_density: float=0.2, jam_density_per_lane: float|None=None, number_of_lanes: int=1, merge_priority: float=1, signal_group: list[int]=[0], capacity_out: float|None=None, capacity_in: float|None=None, congestion_pricing: Callable[[float],float]|None=None, eular_dx=None, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
         Create a link.
 
@@ -401,6 +401,8 @@ class Link:
             The capacity out of the link, default is calculated based on other parameters.
         capacity_in : float, optional
             The capacity into the link, default is calculated based on other parameters.
+        congestion_pricing : function or None
+            Dynamic congestion pricing setting. A function that takes float (time in seconds) as input and returns float (the congestion toll at that time). If None, there are no congestion toll (unless you manually specify `route_choice_penalty` - old feature).
         eular_dx : float, optional
             The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.
         attribute : any, optional
@@ -492,7 +494,8 @@ class Link:
         #旅行時間
         s.traveltime_instant = []
 
-        #経路選択補正
+        #経路選択補正（混雑課金）
+        s.congestion_pricing = congestion_pricing
         s.route_choice_penalty = 0
 
         #累積図関係
@@ -779,6 +782,28 @@ class Link:
             The average flow.
         """
         return float(s.average_speed(t)*s.average_density(t))
+
+    def get_toll(s, t: float) -> float:
+        """
+        Get congestion toll of this link on time t.
+
+        Parameters
+        ----------
+        t : float
+            Time in seconds.
+
+        Returns
+        -------
+        float
+            The congestion toll.
+        """
+        if s.congestion_pricing != None:
+            return s.congestion_pricing(t)
+        else:
+            if s.route_choice_penalty != 0:
+                warnings.warn(f"{s}: route_choice_penalty is deprecated. Please use congestion_pricing instead.", DeprecationWarning)
+                return s.route_choice_penalty
+        return 0
 
     #getter/setter
     @property
@@ -1436,7 +1461,7 @@ class RouteChoice:
     Class for computing shortest path for all vehicles.
     """
 
-    def __init__(s, W):
+    def __init__(s, W: "World"):
         """
         Create route choice computation object.
 
@@ -1461,12 +1486,14 @@ class RouteChoice:
         #s.route_pref = {k.id: {l:0 for l in s.W.LINKS} for k in s.W.NODES} #old definition, {node_id: {link: preference}. preference of link is 1 if it is on the shortest path to node_id
         s.route_pref = np.zeros([len(W.NODES), len(W.LINKS)])
 
-    def route_search_all(s, infty=np.inf, noise=0):
+    def route_search_all(s, t:float, infty=np.inf, noise=0):
         """
         Compute the current shortest path based on instantaneous travel time.
 
         Parameters
         ----------
+        t : float
+            Time in seconds.
         infty : float
             value representing infinity.
         noise : float
@@ -1480,9 +1507,9 @@ class RouteChoice:
             j = link.end_node.id
             if s.W.ADJ_MAT[i,j]:
                 if s.W.hard_deterministic_mode == False:
-                    new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.route_choice_penalty
+                    new_link_tt = link.traveltime_instant[-1]*s.W.rng.uniform(1, 1+noise) + link.get_toll(t)
                 else:
-                    new_link_tt = link.traveltime_instant[-1] + link.route_choice_penalty
+                    new_link_tt = link.traveltime_instant[-1] + link.get_toll(t)
                 n = adj_mat_link_count[i,j]
                 s.adj_mat_time[i,j] = s.adj_mat_time[i,j]*n/(n+1) + new_link_tt/(n+1) # if there are multiple links between the same nodes, average the travel time
                 # s.adj_mat_time[i,j] = new_link_tt #if there is only one link between the nodes, this line is fine, but for generality we use the above line
@@ -1739,7 +1766,7 @@ class World:
         """
         return Node(W, name, x, y, signal=signal, signal_offset=signal_offset, signal_offset_old=signal_offset_old, flow_capacity=flow_capacity, number_of_lanes=number_of_lanes, auto_rename=auto_rename, attribute=attribute, user_attribute=user_attribute, user_function=user_function)
 
-    def addLink(W, name: str, start_node: Node|str, end_node: Node|str, length: float, free_flow_speed: float=20, jam_density: float=0.2, jam_density_per_lane: float|None=None, number_of_lanes: int=1, merge_priority: float=1, signal_group: list[int]=[0], capacity_out: float|None=None, capacity_in: float|None=None, eular_dx=None, attribute=None, user_attribute=None, user_function=None, auto_rename=False) -> Link:
+    def addLink(W, name: str, start_node: Node|str, end_node: Node|str, length: float, free_flow_speed: float=20, jam_density: float=0.2, jam_density_per_lane: float|None=None, number_of_lanes: int=1, merge_priority: float=1, signal_group: list[int]=[0], capacity_out: float|None=None, capacity_in: float|None=None, congestion_pricing: Callable[[float],float]|None=None, eular_dx=None, attribute=None, user_attribute=None, user_function=None, auto_rename=False):
         """
         Create a link.
 
@@ -1771,6 +1798,8 @@ class World:
             The capacity out of the link, default is calculated based on other parameters.
         capacity_in : float, optional
             The capacity into the link, default is calculated based on other parameters.
+        congestion_pricing : function or None
+            Dynamic congestion pricing setting. A function that takes float (time in seconds) as input and returns float (the congestion toll at that time). If None, there are no congestion toll (unless you manually specify `route_choice_penalty` - old feature).
         eular_dx : float, optional
             The space aggregation size for link traffic state computation, default is 1/10 of link length or free flow distance per simulation step, whichever is larger.
         attribute : any, optional
@@ -1813,7 +1842,8 @@ class World:
         merge_priority : float
             The priority of the link when merging at the downstream node.
         """
-        return Link(W, name, start_node, end_node, length, free_flow_speed=free_flow_speed, jam_density=jam_density, jam_density_per_lane=jam_density_per_lane, number_of_lanes=number_of_lanes, merge_priority=merge_priority, signal_group=signal_group, capacity_out=capacity_out, capacity_in=capacity_in, eular_dx=eular_dx, attribute=attribute, user_attribute=user_attribute, user_function=user_function, auto_rename=auto_rename)
+
+        return Link(W, name, start_node, end_node, length, free_flow_speed=free_flow_speed, jam_density=jam_density, jam_density_per_lane=jam_density_per_lane, number_of_lanes=number_of_lanes, merge_priority=merge_priority, signal_group=signal_group, capacity_out=capacity_out, capacity_in=capacity_in, congestion_pricing=congestion_pricing, eular_dx=eular_dx, attribute=attribute, user_attribute=user_attribute, user_function=user_function, auto_rename=auto_rename)
 
     def addVehicle(W, *args, direct_call=True, **kwargs) -> Vehicle:
         """
@@ -2313,11 +2343,11 @@ class World:
 
             if W.route_choice_update_gradual == True:
                 if W.T % W.DELTAT_ROUTE == 0:
-                    W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
+                    W.ROUTECHOICE.route_search_all(W.T*W.DELTAT, noise=W.DUO_NOISE)
                 W.ROUTECHOICE.homogeneous_DUO_update()
             else:
                 if W.T % W.DELTAT_ROUTE == 0:
-                    W.ROUTECHOICE.route_search_all(noise=W.DUO_NOISE)
+                    W.ROUTECHOICE.route_search_all(W.T*W.DELTAT, noise=W.DUO_NOISE)
                     W.ROUTECHOICE.homogeneous_DUO_update()
                     for veh in W.VEHICLES_LIVING.values():
                         veh.route_pref_update(weight=W.DUO_UPDATE_WEIGHT)
