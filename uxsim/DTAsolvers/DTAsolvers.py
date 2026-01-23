@@ -53,7 +53,7 @@ class SolverDUE:
     
     def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, route_sets=None, print_progress=True):
         """
-        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP.
+        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.
 
         Parameters
         ----------
@@ -205,11 +205,12 @@ class SolverDUE:
                 route_changed = None
                 t_gap = 0
 
-                cost_current = r.actual_travel_time(ts[0])
+                cost_current = r.actual_travel_time(ts[0]) + sum([l.get_toll(ts[i]) for i,l in enumerate(r)])
                 
                 potential_n_swap_updated = potential_n_swap
                 for alt_route in route_set[o,d]:
-                    cost_alt = alt_route.actual_travel_time(ts[0])
+                    alt_route_tts = alt_route.actual_travel_time(ts[0], return_details=True)[1]
+                    cost_alt = alt_route.actual_travel_time(ts[0]) + sum([l.get_toll(ts[0]+sum(alt_route_tts[:i])) for i,l in enumerate(alt_route)])
                     if cost_alt < cost_current:
                         if flag_route_changed == False or (cost_alt < cost_current):
                             t_gap = cost_current - cost_alt
@@ -245,7 +246,7 @@ class SolverDUE:
         last_iters = int(max_iter/4)
         print(f" total travel time: initial {s.ttts[0]:.1f} -> average of last {last_iters} iters {np.average(s.ttts[-last_iters:]):.1f}")
         print(f" number of potential route changes: initial {s.potential_swaps[0]:.1f} -> average of last {last_iters} iters {np.average(s.potential_swaps[-last_iters:]):.1f}")
-        print(f" route travel time gap: initial {s.t_gaps[0]:.1f} -> average of last {last_iters} iters {np.average(s.t_gaps[-last_iters:]):.1f}")
+        print(f" route travel cost gap: initial {s.t_gaps[0]:.1f} -> average of last {last_iters} iters {np.average(s.t_gaps[-last_iters:]):.1f}")
         print(f" computation time: {s.end_time - s.start_time:.1f} seconds")
 
         s.W_sol = W
@@ -273,7 +274,7 @@ class SolverDUE:
         plt.xlabel("iter")
 
         plt.figure(figsize=(6,2))
-        plt.title("travel time difference between chosen route and minimum cost route")
+        plt.title("travel cost difference between chosen route and minimum cost route")
         plt.plot(s.t_gaps)
         plt.ylim(0,None)
         plt.xlabel("iter")
