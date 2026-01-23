@@ -459,9 +459,7 @@ class Link:
         if s.number_of_lanes != number_of_lanes:
             raise ValueError(f"number_of_lanes must be an integer. Got {number_of_lanes} at {s}.")
         
-
         #フローモデルパラメータ:per link
-
         s.u = free_flow_speed
         s.kappa = jam_density
         if jam_density == 0.2 and jam_density_per_lane != None:
@@ -634,7 +632,6 @@ class Link:
         else:
             s.traveltime_instant.append(s.traveltime_instant[-1])
 
-
     def arrival_count(s, t: float) -> float:
         """
         Get cumulative vehicle count of arrival to this link on time t.
@@ -676,6 +673,45 @@ class Link:
         if tt < 0:
             return s.cum_departure[0]
         return s.cum_departure[tt]
+    
+    def inflow_between(s, t0: float, t1: float) -> float:
+        """
+        Get inflow to this link between time t0 and t1.
+
+        Parameters
+        ----------
+        t0 : float
+            Start time in seconds.
+        t1 : float
+            End time in seconds.
+
+        Returns
+        -------
+        float
+            The inflow.
+        """
+        return (s.arrival_count(t1)-s.arrival_count(t0))/(t1-t0)
+    
+    def average_travel_time_between(s, t0: float, t1: float) -> float:
+        """
+        Get average travel time on this link between time t0 and t1 based on the cumulative curves. More precisely, average travel time of vehicles that entered this link during [t0, t1).
+
+        Parameters
+        ----------
+        t0 : float
+            Start time in seconds.
+        t1 : float
+            End time in seconds.
+
+        Returns
+        -------
+        float
+            The average travel time.
+        """
+        t_list = [t for t in s.vehicles_enter_log.keys() if t0 <= t < t1]
+        if len(t_list) == 0:
+            return s.length/s.u
+        return np.average([s.actual_travel_time(t) for t in t_list])
     
     def num_vehicles_t(s, t: float) -> float:
         """
