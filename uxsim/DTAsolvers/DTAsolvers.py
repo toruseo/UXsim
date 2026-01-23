@@ -53,7 +53,7 @@ class SolverDUE:
     
     def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, route_sets=None, print_progress=True):
         """
-        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP.
+        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.
 
         Parameters
         ----------
