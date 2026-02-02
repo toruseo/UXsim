@@ -7,6 +7,7 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/uxsim)
 [![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.07617/status.svg)](https://doi.org/10.21105/joss.07617)
+[![citations](https://img.shields.io/badge/dynamic/json?url=https://toruseo.github.io/misc_worker/citations.json&query=$.total_citations&label=citations)](https://github.com/toruseo/UXsim/wiki)
 [![Static Badge](https://img.shields.io/badge/readme-%E6%97%A5%E6%9C%AC%E8%AA%9E%20%F0%9F%87%AF%F0%9F%87%B5%20-pink)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
 
 *UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator written in Python.
