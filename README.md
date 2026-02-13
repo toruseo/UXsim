@@ -8,6 +8,7 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2309.17114-b31b1b.svg)](http://dx.doi.org/10.48550/arXiv.2309.17114)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.07617/status.svg)](https://doi.org/10.21105/joss.07617)
 [![citations](https://img.shields.io/badge/dynamic/json?url=https://toruseo.github.io/misc_worker/citations.json&query=$.total_citations&label=citations)](https://github.com/toruseo/UXsim/wiki)
+[![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://toruseo.jp/UXsim/docs/index.html)
 [![Static Badge](https://img.shields.io/badge/readme-%E6%97%A5%E6%9C%AC%E8%AA%9E%20%F0%9F%87%AF%F0%9F%87%B5%20-pink)](https://github.com/toruseo/UXsim/blob/main/README.jp.md)
 
 *UXsim* is a free, open-source macroscopic and mesoscopic network traffic flow simulator written in Python.
@@ -33,7 +34,8 @@ If you are interested, please see:
 	- Visualization of simulation results using `Matplotlib`; interactive GUI is also available
 	- Can also be directly integrated with other Python-based frameworks, such as `PyTorch` for deep reinforcement learning traffic control
 	- The main code `uxsim.py` is only about 1200 lines of code. Users may easily understand and customize it
-- Dependency-free: you can use the simulator by doing `pip install uxsim` only
+  - Dependency-free: you can use the simulator by doing `pip install uxsim` only
+- Provides a seamless user experience by integrating scenario construction, simulation, and data analysis into a unified, transparent Python workflow
 
 ## Simulation Examples
 
