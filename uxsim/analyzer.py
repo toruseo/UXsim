@@ -92,7 +92,7 @@ class Analyzer:
         -------
         >>> plt.savefig(s.outdir_set(f"out{s.W.name}/network_average.png"))
         """
-        os.makedirs(f"out{s.W.name}", exist_ok=True)
+        os.makedirs(Path(fname).parent, exist_ok=True)
         return fname
 
     def basic_analysis(s):

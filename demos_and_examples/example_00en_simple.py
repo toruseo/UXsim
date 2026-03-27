@@ -4,7 +4,7 @@ W = World(
     name="",
     deltan=5,
     tmax=1200,
-    print_mode=1, save_mode=1, show_mode=0,
+    print_mode=1, save_mode=0, show_mode=1,
     random_seed=0
 )
 
