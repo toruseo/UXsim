@@ -2723,7 +2723,8 @@ class World:
         """
         import matplotlib.pyplot as plt
         
-        os.makedirs(f"out{W.name}", exist_ok=True)
+        if W.save_mode:
+            os.makedirs(f"out{W.name}", exist_ok=True)
 
         plt.rcParams["font.family"] = get_font_for_matplotlib()
 

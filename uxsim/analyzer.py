@@ -55,8 +55,6 @@ class Analyzer:
         """
         s.W = W
 
-        os.makedirs(f"out{s.W.name}", exist_ok=True)
-
         #基礎統計量
         s.average_speed = 0
         s.average_speed_count = 0
@@ -76,6 +74,26 @@ class Analyzer:
         s.font_file_like = io.BytesIO(s.font_data)
         
         plt.rcParams["font.family"] = get_font_for_matplotlib(font_matplotlib)
+
+    def outdir_set(s, fname:str):
+        """
+        Create the file output directory if it does not exist. Use this when you specify the filename. A kind of lazy directory creation to avoid unnecessary directory creation.
+
+        Parameters
+        ----------
+        fname : str
+            The filename to be saved.
+        Returns
+        -------
+        str
+            The path to which the file is saved.
+
+        Example
+        -------
+        >>> plt.savefig(s.outdir_set(f"out{s.W.name}/network_average.png"))
+        """
+        os.makedirs(f"out{s.W.name}", exist_ok=True)
+        return fname
 
     def basic_analysis(s):
         """
@@ -439,7 +457,7 @@ class Analyzer:
             plt.tight_layout()
 
             if s.W.save_mode:
-                plt.savefig(f"out{s.W.name}/tsd_k_{l.name}.png")
+                plt.savefig(s.outdir_set(f"out{s.W.name}/tsd_k_{l.name}.png"))
             if s.W.show_mode:
                 plt.show()
             else:
@@ -512,9 +530,9 @@ class Analyzer:
             plt.tight_layout()
             if s.W.save_mode:
                 if len(links) == 1:
-                    plt.savefig(f"out{s.W.name}/tsd_traj_{s.W.get_link(links[0]).name}.png")
+                    plt.savefig(s.outdir_set(f"out{s.W.name}/tsd_traj_{s.W.get_link(links[0]).name}.png"))
                 else:
-                    plt.savefig(f"out{s.W.name}/tsd_traj_links_{'-'.join([s.W.get_link(l).name for l in links])}.png")
+                    plt.savefig(s.outdir_set(f"out{s.W.name}/tsd_traj_links_{'-'.join([s.W.get_link(l).name for l in links])}.png"))
             if s.W.show_mode:
                 plt.show()
             else:
@@ -576,7 +594,7 @@ class Analyzer:
             ax1.grid()
             plt.tight_layout()
             if s.W.save_mode:
-                plt.savefig(f"out{s.W.name}/cumlative_curves_{link.name}.png")
+                plt.savefig(s.outdir_set(f"out{s.W.name}/cumlative_curves_{link.name}.png"))
             if s.W.show_mode:
                 plt.show()
             else:
@@ -778,11 +796,11 @@ class Analyzer:
 
         plt.tight_layout()
         if tmp_anim:
-            plt.savefig(f"out{s.W.name}/tmp_anim_{t}.png")
+            plt.savefig(s.outdir_set(f"out{s.W.name}/tmp_anim_{t}.png"))
             plt.close("all")
         else:
             if s.W.save_mode:
-                plt.savefig(f"out{s.W.name}/network{detailed}_{t}.png")
+                plt.savefig(s.outdir_set(f"out{s.W.name}/network{detailed}_{t}.png"))
             if s.W.show_mode:
                 plt.show()
             else:
@@ -903,7 +921,7 @@ class Analyzer:
         plt.tight_layout()
 
         if s.W.save_mode:
-            plt.savefig(f"out{s.W.name}/network_average.png")
+            plt.savefig(s.outdir_set(f"out{s.W.name}/network_average.png"))
         if s.W.show_mode:
             plt.show()
         else:
@@ -1122,10 +1140,10 @@ class Analyzer:
         if image_return:
             return img
         elif tmp_anim:
-            img.save(f"out{s.W.name}/tmp_anim_{t}.png")
+            img.save(s.outdir_set(f"out{s.W.name}/tmp_anim_{t}.png"))
         else:
             if s.W.save_mode:
-                img.save(f"out{s.W.name}/network{detailed}_{t}.png")
+                img.save(s.outdir_set(f"out{s.W.name}/network{detailed}_{t}.png"))
 
     @catch_exceptions_and_warn()
     def show_simulation_progress(s):
@@ -1209,7 +1227,7 @@ class Analyzer:
         fname = f"out{s.W.name}/anim_network{detailed}.gif"
         if file_name != None:
             fname = file_name
-        pics[0].save(fname, save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
+        pics[0].save(s.outdir_set(fname), save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*timestep_skip, loop=0)
         for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
             os.remove(f)
 
@@ -1393,7 +1411,7 @@ class Analyzer:
         fname = f"out{s.W.name}/anim_network_fancy.gif"
         if file_name != None:
             fname = file_name
-        pics[0].save(fname, save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*speed_coef, loop=0)
+        pics[0].save(s.outdir_set(fname), save_all=True, append_images=pics[1:], optimize=False, duration=animation_speed_inverse*speed_coef, loop=0)
 
         # for f in glob.glob(f"out{s.W.name}/tmp_anim_*.png"):
         #     os.remove(f)
@@ -1458,7 +1476,7 @@ class Analyzer:
         plt.grid()
         plt.tight_layout()
         if s.W.save_mode:
-            plt.savefig(f"out{s.W.name}/mfd{fname}.png")
+            plt.savefig(s.outdir_set(f"out{s.W.name}/mfd{fname}.png"))
         if s.W.show_mode:
             plt.show()
         else:
@@ -1501,7 +1519,7 @@ class Analyzer:
         plt.tight_layout()
 
         if s.W.save_mode:
-            plt.savefig(f"out{s.W.name}/vehicle_{vehname}.png")
+            plt.savefig(s.outdir_set(f"out{s.W.name}/vehicle_{vehname}.png"))
         if s.W.show_mode:
             plt.show()
         else:
@@ -1540,7 +1558,7 @@ class Analyzer:
         plt.tight_layout()
 
         if s.W.save_mode:
-            plt.savefig(f"out{s.W.name}/vehicles_{vehnamelist}.png")
+            plt.savefig(s.outdir_set(f"out{s.W.name}/vehicles_{vehnamelist}.png"))
         if s.W.show_mode:
             plt.show()
         else:
@@ -2053,7 +2071,7 @@ class Analyzer:
         Save all results to CSV files. This is obsolute; not all functions are implemented.
         """
         if fname == None:
-            fname = f"out{s.W.name}/data"
+            fname = s.outdir_set(f"out{s.W.name}/data")
         s.basic_to_pandas().to_csv(fname+"_basic.csv", index=False)
         s.od_to_pandas().to_csv(fname+"_od.csv", index=False)
         s.mfd_to_pandas().to_csv(fname+"_mfd.csv", index=False)
