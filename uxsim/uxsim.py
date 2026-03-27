@@ -1665,7 +1665,7 @@ class World:
         instantaneous_TT_timestep_interval : int, optional
             The interval for computing instantaneous travel time of each link. Default is 5.
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
-        no_cyclic_path : bool, optional
+        no_cyclic_routing : bool, optional
             If True, normal vehicles do not travel the same node twice. This will prevent cyclic paths, but may introduce some detours. Default is False.
         hard_deterministic_mode : bool, optional
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.

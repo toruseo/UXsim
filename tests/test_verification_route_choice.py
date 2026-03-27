@@ -936,7 +936,7 @@ def test_route_choice_dynamic_congestion_pricing():
     assert eq_tol(linkB.average_flow(4500), 0.0)
 
 @pytest.mark.flaky(reruns=5)
-def test_route_choice_no_cyclic_path():
+def test_route_choice_no_cyclic_routing():
     W = World(
         name="",
         deltan=10,
