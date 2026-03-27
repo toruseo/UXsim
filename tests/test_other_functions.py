@@ -2,12 +2,12 @@
 This script tests various other functions in UXsim.
 """
 
+import os
 import pytest
 from numpy import *
 from uxsim import *
 from uxsim.Utilities import *
 import dill as pickle
-
 
 
 def test_analyzer():
@@ -172,6 +172,8 @@ def test_scenario_write_and_read():
     W.adddemand_point2point(0.5, 0.5, 2.5, 2.5, 0, 1800, volume=100)
     W.adddemand_area2area(0.5, 0.5, 2, 2.5, 2.5, 2, 0, 1800, volume=100)
 
+    os.makedirs("out", exist_ok=True)
+
     W.save_scenario("out/test_grid.uxsim_scenario")
 
     W.exec_simulation()
@@ -245,6 +247,8 @@ def test_scenario_write_and_read_areas():
     }
 
     W.adddemand_nodes2nodes(areas["areaN"], areas["areaS"], 0, 3000, volume=7000)
+
+    os.makedirs("out", exist_ok=True)
 
     W.save_scenario("out/test_area.uxsim_scenario")
 
