@@ -337,9 +337,9 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="SolverDUE.solve">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.solve">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">swap_prob</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">swap_prob</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">route_sets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. WIP.</span>
+<span class="sd">        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -349,6 +349,25 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            number of routes to enumerate for each OD pair</span>
 <span class="sd">        swap_prob : float</span>
 <span class="sd">            probability of route swap</span>
+<span class="sd">        route_sets : dict or None</span>
+<span class="sd">            Predefined route sets for each vehicle. If provided, these routes will be used instead of enumerating new routes.</span>
+<span class="sd">            If None, routes will be enumerated automatically. If provided, `n_routes_per_od` is ignored.</span>
+<span class="sd">            The format:</span>
+
+<span class="sd">            &gt;&gt;&gt; {</span>
+<span class="sd">            &gt;&gt;&gt;     [origin_node1, destination_node1]: [</span>
+<span class="sd">            &gt;&gt;&gt;         [linkA1, linkA2, ...],</span>
+<span class="sd">            &gt;&gt;&gt;         [linkB1, linkB2, ...],</span>
+<span class="sd">            &gt;&gt;&gt;         ...</span>
+<span class="sd">            &gt;&gt;&gt;     ],</span>
+<span class="sd">            &gt;&gt;&gt;     [origin_node2, destination_node2]:</span>
+<span class="sd">            &gt;&gt;&gt;         ...</span>
+<span class="sd">            &gt;&gt;&gt;     ],</span>
+<span class="sd">            &gt;&gt;&gt;     ...</span>
+<span class="sd">            &gt;&gt;&gt; }</span>
+
+<span class="sd">            See test scrpt for an example.</span>
+
 <span class="sd">        print_progress : bool</span>
 <span class="sd">            whether to print the information</span>
 
@@ -386,6 +405,15 @@ gtag('config', 'UA-111714220-1');
             <span class="n">W_orig</span><span class="o">.</span><span class="n">finalize_scenario</span><span class="p">()</span>
         <span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">enumerate_k_random_routes</span><span class="p">(</span><span class="n">W_orig</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n_routes_per_od</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">route_sets</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">routes</span> <span class="ow">in</span> <span class="n">route_sets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">o</span> <span class="o">=</span> <span class="n">W_orig</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">W_orig</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">:</span>
+                    <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">W_orig</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">route</span><span class="p">])</span>
+
         <span class="k">if</span> <span class="n">print_progress</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;number of OD pairs: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dict_od_to_routes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">, number of routes: </span><span class="si">{</span><span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">dict_od_to_routes</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -413,7 +441,7 @@ gtag('config', 'UA-111714220-1');
             <span class="n">route_set</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span> <span class="c1">#routes[o,d] = [Route, Route, ...]</span>
             <span class="k">for</span> <span class="n">o</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="n">dict_od_to_vehid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
-                    <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">defRoute</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+                    <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">defRoute</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> 
 
             <span class="c1"># simulation</span>
             <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
@@ -454,15 +482,21 @@ gtag('config', 'UA-111714220-1');
                 <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
                     <span class="k">continue</span>
 
+                <span class="c1">#route_setsが所与で，route_setの経路を何らかの理由で走っていない場合（初期解で経路指定が整合的でない場合がメイン），強制的に設定する</span>
+                <span class="k">if</span> <span class="n">route_sets</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
+                    <span class="n">routes_specified</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">continue</span>
+
                 <span class="n">flag_route_changed</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">route_changed</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">t_gap</span> <span class="o">=</span> <span class="mi">0</span>
 
-                <span class="n">cost_current</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">cost_current</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">get_toll</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r</span><span class="p">)])</span>
                 
                 <span class="n">potential_n_swap_updated</span> <span class="o">=</span> <span class="n">potential_n_swap</span>
                 <span class="k">for</span> <span class="n">alt_route</span> <span class="ow">in</span> <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
-                    <span class="n">cost_alt</span> <span class="o">=</span> <span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">alt_route_tts</span> <span class="o">=</span> <span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">return_details</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">cost_alt</span> <span class="o">=</span> <span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">get_toll</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="nb">sum</span><span class="p">(</span><span class="n">alt_route_tts</span><span class="p">[:</span><span class="n">i</span><span class="p">]))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">alt_route</span><span class="p">)])</span>
                     <span class="k">if</span> <span class="n">cost_alt</span> <span class="o">&lt;</span> <span class="n">cost_current</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">flag_route_changed</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">or</span> <span class="p">(</span><span class="n">cost_alt</span> <span class="o">&lt;</span> <span class="n">cost_current</span><span class="p">):</span>
                             <span class="n">t_gap</span> <span class="o">=</span> <span class="n">cost_current</span> <span class="o">-</span> <span class="n">cost_alt</span>
@@ -498,7 +532,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">last_iters</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_iter</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; total travel time: initial </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">ttts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> -&gt; average of last </span><span class="si">{</span><span class="n">last_iters</span><span class="si">}</span><span class="s2"> iters </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">ttts</span><span class="p">[</span><span class="o">-</span><span class="n">last_iters</span><span class="p">:])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; number of potential route changes: initial </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">potential_swaps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> -&gt; average of last </span><span class="si">{</span><span class="n">last_iters</span><span class="si">}</span><span class="s2"> iters </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">potential_swaps</span><span class="p">[</span><span class="o">-</span><span class="n">last_iters</span><span class="p">:])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; route travel time gap: initial </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">t_gaps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> -&gt; average of last </span><span class="si">{</span><span class="n">last_iters</span><span class="si">}</span><span class="s2"> iters </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">t_gaps</span><span class="p">[</span><span class="o">-</span><span class="n">last_iters</span><span class="p">:])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; route travel cost gap: initial </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">t_gaps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> -&gt; average of last </span><span class="si">{</span><span class="n">last_iters</span><span class="si">}</span><span class="s2"> iters </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">t_gaps</span><span class="p">[</span><span class="o">-</span><span class="n">last_iters</span><span class="p">:])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; computation time: </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">s</span><span class="o">.</span><span class="n">start_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span> <span class="o">=</span> <span class="n">W</span>
@@ -529,7 +563,7 @@ gtag('config', 'UA-111714220-1');
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;iter&quot;</span><span class="p">)</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;travel time difference between chosen route and minimum cost route&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;travel cost difference between chosen route and minimum cost route&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">t_gaps</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;iter&quot;</span><span class="p">)</span>
@@ -662,7 +696,7 @@ gtag('config', 'UA-111714220-1');
     
 <div class="viewcode-block" id="SolverDSO_D2D.solve">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_D2D.html#uxsim.DTAsolvers.SolverDSO_D2D.solve">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">swap_prob</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">swap_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">swap_prob</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">swap_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_sets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solve quasi DSO problem using day-to-day dynamics.</span>
 
@@ -674,6 +708,27 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            number of routes to enumerate for each OD pair</span>
 <span class="sd">        swap_prob : float</span>
 <span class="sd">            probability of route swap</span>
+<span class="sd">        swap_num : int or None</span>
+<span class="sd">            number of vehicles to swap route each iteration. If specified, `swap_prob` is ignored.</span>
+<span class="sd">        route_sets : dict or None</span>
+<span class="sd">            Predefined route sets for each vehicle. If provided, these routes will be used instead of enumerating new routes.</span>
+<span class="sd">            If None, routes will be enumerated automatically. If provided, `n_routes_per_od` is ignored.</span>
+<span class="sd">            The format:</span>
+
+<span class="sd">            &gt;&gt;&gt; {</span>
+<span class="sd">            &gt;&gt;&gt;     [origin_node1, destination_node1]: [</span>
+<span class="sd">            &gt;&gt;&gt;         [linkA1, linkA2, ...],</span>
+<span class="sd">            &gt;&gt;&gt;         [linkB1, linkB2, ...],</span>
+<span class="sd">            &gt;&gt;&gt;         ...</span>
+<span class="sd">            &gt;&gt;&gt;     ],</span>
+<span class="sd">            &gt;&gt;&gt;     [origin_node2, destination_node2]:</span>
+<span class="sd">            &gt;&gt;&gt;         ...</span>
+<span class="sd">            &gt;&gt;&gt;     ],</span>
+<span class="sd">            &gt;&gt;&gt;     ...</span>
+<span class="sd">            &gt;&gt;&gt; }</span>
+
+<span class="sd">            See test scrpt for an example.</span>
+
 <span class="sd">        print_progress : bool</span>
 <span class="sd">            whether to print the information</span>
 
@@ -711,6 +766,15 @@ gtag('config', 'UA-111714220-1');
             <span class="n">W_orig</span><span class="o">.</span><span class="n">finalize_scenario</span><span class="p">()</span>
         <span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">enumerate_k_random_routes</span><span class="p">(</span><span class="n">W_orig</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">n_routes_per_od</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">route_sets</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">routes</span> <span class="ow">in</span> <span class="n">route_sets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">o</span> <span class="o">=</span> <span class="n">W_orig</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">W_orig</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">:</span>
+                    <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">W_orig</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">route</span><span class="p">])</span>
+        
         <span class="k">if</span> <span class="n">print_progress</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;number of OD pairs: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dict_od_to_routes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">, number of routes: </span><span class="si">{</span><span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">dict_od_to_routes</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -786,6 +850,11 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">cost_actual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">travel_time</span>
 
                 <span class="k">if</span> <span class="n">veh</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c1">#route_setsが所与で，route_setの経路を何らかの理由で走っていない場合（初期解で経路指定が整合的でない場合がメイン），強制的に設定する</span>
+                <span class="k">if</span> <span class="n">route_sets</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
+                    <span class="n">routes_specified</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
                     <span class="k">continue</span>
 
                 <span class="n">flag_route_changed</span> <span class="o">=</span> <span class="kc">False</span>

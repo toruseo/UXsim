@@ -287,7 +287,7 @@ gtag('config', 'UA-111714220-1');
 <h1>uxsim.RouteChoice<a class="headerlink" href="#uxsim-routechoice" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.RouteChoice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">RouteChoice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#RouteChoice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.</span></span><span class="sig-name descname"><span class="pre">RouteChoice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><span class="pre">World</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#RouteChoice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice" title="Link to this definition">¶</a></dt>
 <dd><p>Class for computing shortest path for all vehicles.</p>
 <p>Create route choice computation object.</p>
 <dl class="field-list simple">
@@ -297,7 +297,7 @@ gtag('config', 'UA-111714220-1');
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.RouteChoice.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#RouteChoice.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><span class="pre">World</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#RouteChoice.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.__init__" title="Link to this definition">¶</a></dt>
 <dd><p>Create route choice computation object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -316,7 +316,7 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.RouteChoice.homogeneous_DUO_update" title="uxsim.RouteChoice.homogeneous_DUO_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">homogeneous_DUO_update</span></code></a>()</p></td>
 <td><p>Update link preference of all homogeneous travelers based on DUO principle.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.RouteChoice.route_search_all" title="uxsim.RouteChoice.route_search_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_search_all</span></code></a>([infty, noise])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.RouteChoice.route_search_all" title="uxsim.RouteChoice.route_search_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">route_search_all</span></code></a>(t[, infty, noise])</p></td>
 <td><p>Compute the current shortest path based on instantaneous travel time.</p></td>
 </tr>
 </tbody>
@@ -331,11 +331,12 @@ Vectorized by Claude 3.5 Sonnet.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.RouteChoice.route_search_all">
-<span class="sig-name descname"><span class="pre">route_search_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#RouteChoice.route_search_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.route_search_all" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">route_search_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#RouteChoice.route_search_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.RouteChoice.route_search_all" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the current shortest path based on instantaneous travel time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>float</em>) – Time in seconds.</p></li>
 <li><p><strong>infty</strong> (<em>float</em>) – value representing infinity.</p></li>
 <li><p><strong>noise</strong> (<em>float</em>) – very small noise to slightly randomize route choice. useful to eliminate strange results at an initial stage of simulation where many routes has identical travel time.</p></li>
 </ul>

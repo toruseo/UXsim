@@ -146,6 +146,7 @@ p*_*.py
 demos_and_examples/uxsim/*
 /*.pkl
 _bench*
+demo_*
 
 *.prof
 

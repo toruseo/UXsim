@@ -10,6 +10,7 @@
    
       catch_exceptions_and_warn
       display_image_in_notebook
+      eq_tol
       equal_tolerance
       get_font_for_matplotlib
       lange

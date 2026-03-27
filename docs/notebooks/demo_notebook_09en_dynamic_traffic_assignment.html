@@ -635,11 +635,10 @@ results:
 </ul>
 <p>In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take a long time. This <code class="docutils literal notranslate"><span class="pre">SolverDSO_D2D</span></code> speeds up the solution process significantly, but it weakens the convergence guarantee.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># DSO by ALNS</span>
-<span class="n">solver_DSO</span> <span class="o">=</span> <span class="n">SolverDSO_D2D</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solver_DSO</span> <span class="o">=</span> <span class="n">SolverDSO_D2D</span><span class="p">(</span><span class="n">create_World</span><span class="p">)</span>
 <span class="n">solver_DSO</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">W_DSO</span> <span class="o">=</span> <span class="n">solver_DSO</span><span class="o">.</span><span class="n">W_sol</span>
 <span class="n">W_DSO</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">print_simple_stats</span><span class="p">(</span><span class="n">force_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

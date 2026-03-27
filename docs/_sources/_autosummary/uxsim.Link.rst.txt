@@ -19,10 +19,13 @@
       ~Link.average_density
       ~Link.average_flow
       ~Link.average_speed
+      ~Link.average_travel_time_between
       ~Link.change_free_flow_speed
       ~Link.change_jam_density
       ~Link.departure_count
+      ~Link.get_toll
       ~Link.in_out_flow_constraint
+      ~Link.inflow_between
       ~Link.init_after_tmax_fix
       ~Link.instant_travel_time
       ~Link.num_vehicles_t

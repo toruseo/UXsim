@@ -391,7 +391,7 @@ with error bars representing the standard deviation.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.DTAsolvers.SolverDSO_D2D.solve">
-<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_routes_per_od</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/DTAsolvers/DTAsolvers.html#SolverDSO_D2D.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.DTAsolvers.SolverDSO_D2D.solve" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_routes_per_od</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swap_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_sets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/DTAsolvers/DTAsolvers.html#SolverDSO_D2D.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.DTAsolvers.SolverDSO_D2D.solve" title="Link to this definition">¶</a></dt>
 <dd><p>Solve quasi DSO problem using day-to-day dynamics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -399,6 +399,25 @@ with error bars representing the standard deviation.</p></li>
 <li><p><strong>max_iter</strong> (<em>int</em>) – maximum number of iterations</p></li>
 <li><p><strong>n_routes_per_od</strong> (<em>int</em>) – number of routes to enumerate for each OD pair</p></li>
 <li><p><strong>swap_prob</strong> (<em>float</em>) – probability of route swap</p></li>
+<li><p><strong>swap_num</strong> (<em>int</em><em> or </em><em>None</em>) – number of vehicles to swap route each iteration. If specified, <cite>swap_prob</cite> is ignored.</p></li>
+<li><p><strong>route_sets</strong> (<em>dict</em><em> or </em><em>None</em>) – <p>Predefined route sets for each vehicle. If provided, these routes will be used instead of enumerating new routes.
+If None, routes will be enumerated automatically. If provided, <cite>n_routes_per_od</cite> is ignored.
+The format:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">[</span><span class="n">origin_node1</span><span class="p">,</span> <span class="n">destination_node1</span><span class="p">]:</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="n">linkA1</span><span class="p">,</span> <span class="n">linkA2</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="n">linkB1</span><span class="p">,</span> <span class="n">linkB2</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">[</span><span class="n">origin_node2</span><span class="p">,</span> <span class="n">destination_node2</span><span class="p">]:</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>See test scrpt for an example.</p>
+</p></li>
 <li><p><strong>print_progress</strong> (<em>bool</em>) – whether to print the information</p></li>
 </ul>
 </dd>

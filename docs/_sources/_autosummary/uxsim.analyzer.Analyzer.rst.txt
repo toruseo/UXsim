@@ -38,6 +38,7 @@
       ~Analyzer.network_pillow
       ~Analyzer.od_analysis
       ~Analyzer.od_to_pandas
+      ~Analyzer.outdir_set
       ~Analyzer.output_data
       ~Analyzer.plot_vehicle_log
       ~Analyzer.plot_vehicles_log

@@ -690,6 +690,27 @@ Specific meaning of the colors (truncated “jet” colormap):</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.outdir_set">
+<span class="sig-name descname"><span class="pre">outdir_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.outdir_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.outdir_set" title="Link to this definition">¶</a></dt>
+<dd><p>Create the file output directory if it does not exist. Use this when you specify the filename. A kind of lazy directory creation to avoid unnecessary directory creation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – The filename to be saved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The path to which the file is saved.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">outdir_set</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;out</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/network_average.png&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.analyzer.Analyzer.output_data">
 <span class="sig-name descname"><span class="pre">output_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/analyzer.html#Analyzer.output_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.analyzer.Analyzer.output_data" title="Link to this definition">¶</a></dt>
 <dd><p>Save all results to CSV files. This is obsolute; not all functions are implemented.</p>
@@ -923,6 +944,7 @@ If None, the diagram is plotted for all links in the network. Default is None.</
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.network_pillow"><code class="docutils literal notranslate"><span class="pre">Analyzer.network_pillow()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.od_analysis"><code class="docutils literal notranslate"><span class="pre">Analyzer.od_analysis()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.od_to_pandas"><code class="docutils literal notranslate"><span class="pre">Analyzer.od_to_pandas()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.analyzer.Analyzer.outdir_set"><code class="docutils literal notranslate"><span class="pre">Analyzer.outdir_set()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.output_data"><code class="docutils literal notranslate"><span class="pre">Analyzer.output_data()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.plot_vehicle_log"><code class="docutils literal notranslate"><span class="pre">Analyzer.plot_vehicle_log()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.analyzer.Analyzer.plot_vehicles_log"><code class="docutils literal notranslate"><span class="pre">Analyzer.plot_vehicles_log()</span></code></a></li>

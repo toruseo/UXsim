@@ -288,6 +288,7 @@ gtag('config', 'UA-111714220-1');
 <span class="kn">import</span><span class="w"> </span><span class="nn">tqdm</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultDict</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <div class="viewcode-block" id="generate_grid_network">
@@ -451,7 +452,7 @@ gtag('config', 'UA-111714220-1');
 
 <div class="viewcode-block" id="enumerate_k_random_routes">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.Utilities.Utilities.html#uxsim.Utilities.Utilities.enumerate_k_random_routes">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">enumerate_k_random_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enumerate_k_random_routes</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefaultDict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Enumerate k random routes between all node pairs in a network. The shortest path with free flow travel time is always included. This is much faster than `enumerate_k_shortest_routes` and could be useful for a plausible choice set generation for route choice problems.</span>
 
