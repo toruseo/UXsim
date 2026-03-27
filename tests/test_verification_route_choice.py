@@ -943,7 +943,7 @@ def test_route_choice_no_cyclic_path():
         tmax=7200,
         print_mode=1, save_mode=0, show_mode=1,
         random_seed=None,
-        no_cyclic_path=True
+        no_cyclic_routing=True
     )
 
     # scenario

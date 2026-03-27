@@ -1281,7 +1281,7 @@ class Vehicle:
                     if set(outlinks) & set(s.links_avoid):
                         outlinks = sorted(set(outlinks) - set(s.links_avoid), key=lambda l:l.name)
 
-                    if s.W.no_cyclic_path and s.mode != "taxi":
+                    if s.W.no_cyclic_routing and s.mode != "taxi":
                         traveled_nodes = set([l[1].start_node for l in s.log_t_link[1:]])
                         outlinks_no_overlapping_nodes = [l for l in outlinks if l.end_node not in traveled_nodes]
                         if len(outlinks_no_overlapping_nodes) > 0:
@@ -1613,7 +1613,7 @@ class World:
 
     def __init__(W, name: str="", deltan: int=5, reaction_time: float=1, 
                  duo_update_time: float=600, duo_update_weight: float=0.5, duo_noise: float=0.01, route_choice_principle: str="homogeneous_DUO", route_choice_update_gradual: bool=False, instantaneous_TT_timestep_interval: int=5, 
-                 no_cyclic_path: bool = False,
+                 no_cyclic_routing: bool = False,
                  eular_dt: float=120, eular_dx: float=100, 
                  random_seed: Any|None=None, 
                  print_mode: bool=1, save_mode: bool=1, show_mode: bool=0, show_progress: bool=1, show_progress_deltat: float=600, 
@@ -1729,7 +1729,7 @@ class World:
         if W.DELTAT_ROUTE < W.instantaneous_TT_timestep_interval:
             W.instantaneous_TT_timestep_interval = W.DELTAT_ROUTE
 
-        W.no_cyclic_path = no_cyclic_path
+        W.no_cyclic_routing = no_cyclic_routing
 
         W.route_pref_for_vehs = None
 
