@@ -4,6 +4,7 @@ W = World(
     name="",
     deltan=5,
     tmax=1200,
+    no_cyclic_routing=True,
     print_mode=1, save_mode=0, show_mode=1,
     random_seed=0
 )

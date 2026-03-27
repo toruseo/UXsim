@@ -6,6 +6,7 @@ W = World(
     name="",    #シナリオ名称．空白でも可．結果保存のフォルダ名に使われる
     deltan=5,   #シミュレーション集計単位Δn．何台の車両をまとめて計算するか．計算コストは基本的にdeltan^2に逆比例する
     tmax=1200,  #総シミュレーション時間（s）
+    no_cyclic_routing=True, #経路探索で同じノードを再訪しないようにして循環経路を防止する
     print_mode=1, save_mode=1, show_mode=0,    #各種オプション．print_modeは各種情報をprintするかどうか．普段は1とし，自動で多数のシミュレーションを回すときは0を推奨．save_modeは可視化結果等を保存するかどうか．show_mode可視化結果を表示するかどうか．Jupyter Notebook上ではshow_mode=1が良いが，それ以外は0を推奨．
     random_seed=0    #乱数シードの設定．再現性のある実験をしたいときは指定，そうでないときはNone．Jupyter Notebook上では乱数が固定されない場合有り（要修正）
 )
