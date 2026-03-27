@@ -1059,7 +1059,7 @@ class Vehicle:
         s.log_lane = [] #車線
         s.color = (s.W.rng.random(), s.W.rng.random(), s.W.rng.random())
 
-        s.log_t_link = [[int(s.departure_time*s.W.DELTAT), "home"]] #route-level log. It records the time and link when the vehicle entered new link
+        s.log_t_link : list[tuple[int,str|Link]] = [[int(s.departure_time*s.W.DELTAT), "home"]] #route-level log. It records the time and link when the vehicle entered new link. The typehint is technically incorrect; it is actually not tuple, but list
         s.link_old = None
         
         s.distance_traveled = 0
@@ -1281,12 +1281,19 @@ class Vehicle:
                     if set(outlinks) & set(s.links_avoid):
                         outlinks = sorted(set(outlinks) - set(s.links_avoid), key=lambda l:l.name)
 
+                    if s.W.no_cyclic_routing and s.mode != "taxi":
+                        traveled_nodes = set([l[1].start_node for l in s.log_t_link[1:]])
+                        outlinks_no_overlapping_nodes = [l for l in outlinks if l.end_node not in traveled_nodes]
+                        if len(outlinks_no_overlapping_nodes) > 0:
+                            outlinks = outlinks_no_overlapping_nodes
+
                     preference = np.array([s.route_pref[l.id] for l in outlinks], dtype=float)
                     if s.W.hard_deterministic_mode == False:
                         if sum(preference) > 0:
                             s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
                         else:
                             s.route_next_link = s.W.rng.choice(outlinks)
+
                     else:
                         s.route_next_link = max(zip(preference, outlinks), key=lambda x:x[0])[1]
 
@@ -1606,6 +1613,7 @@ class World:
 
     def __init__(W, name: str="", deltan: int=5, reaction_time: float=1, 
                  duo_update_time: float=600, duo_update_weight: float=0.5, duo_noise: float=0.01, route_choice_principle: str="homogeneous_DUO", route_choice_update_gradual: bool=False, instantaneous_TT_timestep_interval: int=5, 
+                 no_cyclic_routing: bool = False,
                  eular_dt: float=120, eular_dx: float=100, 
                  random_seed: Any|None=None, 
                  print_mode: bool=1, save_mode: bool=1, show_mode: bool=0, show_progress: bool=1, show_progress_deltat: float=600, 
@@ -1657,6 +1665,8 @@ class World:
         instantaneous_TT_timestep_interval : int, optional
             The interval for computing instantaneous travel time of each link. Default is 5.
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
+        no_cyclic_routing : bool, optional
+            If True, normal vehicles do not travel the same node twice. This will prevent cyclic paths, but may introduce some detours. Default is False.
         hard_deterministic_mode : bool, optional
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
         reduce_memory_delete_vehicle_route_pref : bool, optional
@@ -1718,6 +1728,8 @@ class World:
         W.instantaneous_TT_timestep_interval = int(instantaneous_TT_timestep_interval)
         if W.DELTAT_ROUTE < W.instantaneous_TT_timestep_interval:
             W.instantaneous_TT_timestep_interval = W.DELTAT_ROUTE
+
+        W.no_cyclic_routing = no_cyclic_routing
 
         W.route_pref_for_vehs = None
 
