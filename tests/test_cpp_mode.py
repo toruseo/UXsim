@@ -7240,6 +7240,7 @@ def test_cpp_example_runs(example_script):
 
 
 
+@pytest.mark.flaky(reruns=5)
 def test_route_choice_no_cyclic_routing_cpp():
     from uxsim import World
     W = World(

@@ -5,7 +5,7 @@
 UXsimはPython製の交通流シミュレータ．このリポジトリでは，C++製の高速シミュレーションエンジンをオプションとして組み込んでいる．
 
 - `W = World(cpp=True)` でC++エンジンに切り替え．Pythonとほぼ完全な互換性
-- 互換性の例外：浮動小数点精度・乱数生成・Pythonコールバック関数（user_function）・pickle/copy/save_scenario/load_scenario
+- 互換性の例外：taxiモード・Pythonコールバック関数（user_function）・pickle/copy/save_scenario/load_scenario．厳密には浮動小数点精度・乱数生成も完全互換ではないが，通常の使用であれば問題ないので気にする必要はない
 
 初期統合フェーズ（フェーズ1〜5）は完了済み．詳細は `devlog/CLAUDE_uxsimpp_integration_phase.md` および他のファイルを参照．
 

@@ -21,10 +21,11 @@ warnings.filterwarnings("ignore", message=".*cannot collect 'test' because it is
 # Helpers (equivalent to UXsimpp's Python wrapper functions)
 # -----------------------------------------------------------------------
 
-def eq_tol(val, check, rel_tol=0.1, abs_tol=0.0):
+def eq_tol(val, check, rel_tol=0.1, abs_tol=0.0, verbose=False):
     if check == 0 and abs_tol == 0:
         abs_tol = 0.1
-    print(f"  eq_tol: {val} vs {check}")
+    if verbose:
+        print(f"  eq_tol: {val} vs {check}")
     return abs(val - check) <= abs(check * rel_tol) + abs_tol
 
 
