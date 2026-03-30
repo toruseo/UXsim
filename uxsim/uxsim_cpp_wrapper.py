@@ -749,6 +749,7 @@ class CppWorld:
                  vehicle_logging_timestep_interval=1,
                  reduce_memory_delete_vehicle_route_pref=False,
                  hard_deterministic_mode=False,
+                 no_cyclic_routing=False,
                  meta_data={}, user_attribute=None, user_function=None):
 
         self.W = self  # self-reference for W.W access pattern
@@ -782,6 +783,7 @@ class CppWorld:
         self.reduce_memory_delete_vehicle_route_pref = reduce_memory_delete_vehicle_route_pref
         self.name = name
         self.hard_deterministic_mode = hard_deterministic_mode
+        self.no_cyclic_routing = no_cyclic_routing
         self.meta_data = meta_data
         self.network_info = ddict(list)
         self.demand_info = ddict(list)
@@ -807,13 +809,16 @@ class CppWorld:
         try:
             self._cpp_world = _create_world(self.name, tmax, self.DELTAN, self.REACTION_TIME,
                 self.DUO_UPDATE_TIME, self.DUO_UPDATE_WEIGHT, 0, int(self.print_mode), seed,
-                self._cpp_vehicle_log_mode, int(self.hard_deterministic_mode))
+                self._cpp_vehicle_log_mode, int(self.hard_deterministic_mode),
+                route_choice_update_gradual=self.route_choice_update_gradual,
+                no_cyclic_routing=self.no_cyclic_routing)
         except TypeError:
             self._cpp_world = _create_world(self.name, tmax, self.DELTAN, self.REACTION_TIME,
                 self.DUO_UPDATE_TIME, self.DUO_UPDATE_WEIGHT, 0, int(self.print_mode), seed,
                 self._cpp_vehicle_log_mode)
         self._cpp_world_created = True
         self._cpp_world.route_choice_update_gradual = self.route_choice_update_gradual
+        self._cpp_world.no_cyclic_routing = self.no_cyclic_routing
 
     # --- Scenario definition ---
 

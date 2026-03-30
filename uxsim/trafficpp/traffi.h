@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <chrono>
 #include <queue>
+#include <set>
 
 #include "utils.h"
 
@@ -283,6 +284,7 @@ struct World {
     int print_mode;
     bool hard_deterministic_mode;
     bool route_choice_update_gradual;
+    bool no_cyclic_routing;
     int instantaneous_TT_timestep_interval = 5;
 
     double delta_t;
@@ -343,7 +345,8 @@ struct World {
         long long random_seed,
         bool vehicle_log_mode,
         bool hard_deterministic_mode = false,
-        bool route_choice_update_gradual = false);
+        bool route_choice_update_gradual = false,
+        bool no_cyclic_routing = false);
 
     ~World();
 

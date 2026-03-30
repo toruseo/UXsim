@@ -862,6 +862,29 @@ void Vehicle::route_next_link_choice(vector<Link*> linkset){
         }
     }
 
+    // Filter out links leading to already-traveled nodes (no_cyclic_routing)
+    if (w->no_cyclic_routing){
+        // Collect start_nodes of all previously traveled links
+        std::set<Node*> traveled_nodes;
+        int prev_link_id = -2;
+        for (auto lid : log_link){
+            if (lid >= 0 && lid != prev_link_id){
+                traveled_nodes.insert(w->links[lid]->start_node);
+                prev_link_id = lid;
+            }
+        }
+        // Filter outlinks: exclude those whose end_node is in traveled_nodes
+        vector<Link*> filtered;
+        for (auto ln : outlinks){
+            if (traveled_nodes.find(ln->end_node) == traveled_nodes.end()){
+                filtered.push_back(ln);
+            }
+        }
+        if (!filtered.empty()){
+            outlinks = filtered;
+        }
+    }
+
     if (outlinks.empty()){
         route_next_link = nullptr;
         route_choice_flag_on_link = 1;
@@ -1122,7 +1145,8 @@ World::World(
     long long random_seed,
     bool vehicle_log_mode,
     bool hard_deterministic_mode,
-    bool route_choice_update_gradual)
+    bool route_choice_update_gradual,
+    bool no_cyclic_routing)
     : timestamp(std::chrono::high_resolution_clock::now().time_since_epoch().count()),
       name(world_name),
       t_max(t_max),
@@ -1133,6 +1157,7 @@ World::World(
       print_mode(print_mode),
       hard_deterministic_mode(hard_deterministic_mode),
       route_choice_update_gradual(route_choice_update_gradual),
+      no_cyclic_routing(no_cyclic_routing),
       delta_t(tau * delta_n),
       total_timesteps((int)(t_max / (tau * delta_n))),
       timestep_for_route_update((int)(duo_update_time / (tau * delta_n))),
