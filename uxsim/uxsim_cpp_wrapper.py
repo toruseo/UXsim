@@ -872,7 +872,7 @@ class CppWorld:
             name = l.name if hasattr(l, 'name') else str(l)
             cpp_links_pref.append(name)
 
-        n_before = len(self._cpp_world.VEHICLES)
+        n_before = self._cpp_world.vehicle_count if hasattr(self._cpp_world, 'vehicle_count') else len(self._cpp_world.VEHICLES)
         _add_demand(self._cpp_world, orig_name, dest_name,
                    t, t + self.DELTAT, self.DELTAN / self.DELTAT, cpp_links_pref)
         self._max_demand_t = max(getattr(self, '_max_demand_t', 0), t + self.DELTAT)
@@ -887,9 +887,10 @@ class CppWorld:
                     cpp_avoid.append(link_obj._cpp_link)
                 except AttributeError:
                     pass
-            for i in range(n_before, len(self._cpp_world.VEHICLES)):
+            n_after = self._cpp_world.vehicle_count if hasattr(self._cpp_world, 'vehicle_count') else len(self._cpp_world.VEHICLES)
+            for i in range(n_before, n_after):
                 try:
-                    self._cpp_world.VEHICLES[i].links_avoid = cpp_avoid
+                    self._cpp_world.get_vehicle_by_index(i).links_avoid = cpp_avoid
                 except (AttributeError, TypeError):
                     pass
 
@@ -1051,7 +1052,7 @@ class CppWorld:
         start_idx = getattr(self, '_cpp_veh_registered_count', 0)
         for i in range(start_idx, len(cpp_vehs)):
             cpp_veh = cpp_vehs[i]
-            name = str(len(self.VEHICLES))
+            name = cpp_veh.name
             py_veh = CppVehicle.__new__(CppVehicle)
             py_veh.W = self
             py_veh.name = name
