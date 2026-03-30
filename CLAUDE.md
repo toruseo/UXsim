@@ -71,6 +71,13 @@ python3 -m pytest tests/ --cpp --reruns 5 -q --tb=short
 3. cppモード対象外の機能（pickle等）を使うテストは除外
 4. DRLなど30分以上かかるテストも対象外
 
+## Git運用
+
+- このリポジトリは `toruseo/UXsim` のクローンだが，pushは `toruseoagent/UXsim` フォークに行う
+  - リモート `origin`: `toruseo/UXsim`（upstream，読み取り専用）
+  - リモート `fork`: `toruseoagent/UXsim`（push先）
+  - push時は `git push fork <branch>`
+
 ## コミット規約
 
 - コミットメッセージSummary，コードコメント，プルリクエストタイトルは英語
