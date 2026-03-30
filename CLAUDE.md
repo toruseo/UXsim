@@ -73,16 +73,19 @@ python3 -m pytest tests/ --cpp --reruns 5 -q --tb=short
 
 ## Git運用
 
-- このリポジトリは `toruseo/UXsim` のクローンだが，pushは `toruseoagent/UXsim` フォークに行う
-  - リモート `origin`: `toruseo/UXsim`（upstream，読み取り専用）
-  - リモート `fork`: `toruseoagent/UXsim`（push先）
+- このリポジトリは `toruseo/UXsim`（本家）をフォークした `toruseoagent/UXsim` の作業リポジトリ
+  - リモート `origin`: `toruseo/UXsim`（本家，読み取り専用．新機能の取り込み元）
+  - リモート `fork`: `toruseoagent/UXsim`（フォーク，push先）
   - push時は `git push fork <branch>`
+  - 本家の最新を取り込むには `git pull origin main`
+  - PRは `toruseoagent/UXsim` → `toruseo/UXsim` へ `gh pr create` で送る
 
 ## コミット規約
 
 - コミットメッセージSummary，コードコメント，プルリクエストタイトルは英語
 - コミットメッセージDescription，プルリクエスト本文は日本語
 - プルリクエストには`CLAUDE.md`と`devlog`は**含めない**．それらはこのフォーク専用
+- コミット&pushを求められたら，未コミットの変更・未追跡ファイルを**全て**含めてコミットし，pushまで行う（特に指定がない限り）
 
 ## 開発ノウハウ
 
