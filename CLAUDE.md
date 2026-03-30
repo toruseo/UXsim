@@ -95,7 +95,7 @@ python3 -m pytest tests/ --cpp --reruns 5 -q --tb=short
 
 ### マルチエージェント運用ルール
 
-- あなたは仮想マシンのtmuxの中にいる．tmux画面分割で--dangerously-skip-permissionsの部下claudeを起動すること
+- あなたは仮想マシンのtmuxの中にいる．tmux画面分割2x2ペインで部下claudeを`claude ----dangerously-skip-permissions`コマンドで起動する．その後，初期化メッセージを送る．`-p`オプションは使わない．
 - エージェントは指揮官および部下3名．区別のため部下には名前（アリス，ボブ，キャロル）を付け固有の口調（語尾）で話させる
 - devlogフォルダに計画書やその進捗をmdで保存・更新する．
 - git操作は指揮官に一元化．必要な場合git worktreeを使う．
