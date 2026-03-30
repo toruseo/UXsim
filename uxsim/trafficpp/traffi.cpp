@@ -1260,29 +1260,32 @@ pair<vector<vector<double>>, vector<vector<int>>>
     vector<vector<int>> next_hop(nsize, vector<int>(nsize, -1));
     
     using pdi = pair<double, int>;
-    std::priority_queue<pdi, vector<pdi>, std::greater<pdi>> pq;
 
     // Dijkstra from each source node
+#ifdef UXSIM_USE_OPENMP
+    #pragma omp parallel for schedule(dynamic)
+#endif
     for (int start = 0; start < nsize; start++) {
+        std::priority_queue<pdi, vector<pdi>, std::greater<pdi>> pq;
         vector<bool> visited(nsize, false);
         dist[start][start] = 0.0;
         next_hop[start][start] = start;
         pq.push({0.0, start});
-        
+
         while (!pq.empty()) {
             auto [d, current] = pq.top();
             pq.pop();
-            
+
             if (visited[current]) continue;
             visited[current] = true;
-            
+
             // Explore neighbors via adjacency list
             for (const auto& [next, weight] : adj_list[current]) {
                 double new_dist = dist[start][current] + weight;
                 if (new_dist < dist[start][next]) {
                     dist[start][next] = new_dist;
                     // Update next hop
-                    next_hop[start][next] = (current == start) ? 
+                    next_hop[start][next] = (current == start) ?
                                           next : next_hop[start][current];
                     pq.push({new_dist, next});
                 }
@@ -1389,8 +1392,8 @@ World::enumerate_k_random_routes_cpp(int k, unsigned int seed){
  * @brief Update route choice using dynamic user optimum.
  */
 void World::route_choice_duo(){
-    for (auto dest : nodes){
-        int k = dest->id;
+    for (int di = 0; di < (int)nodes.size(); di++){
+        int k = nodes[di]->id;
 
         auto duo_update_weight_tmp = duo_update_weight;
         if (sum_map_values(route_preference[k]) == 0){
@@ -1414,8 +1417,8 @@ void World::route_choice_duo_gradual(){
     // Gradual DUO update: scaled weight applied every timestep
     double weight0 = duo_update_weight * (delta_t / duo_update_time);
 
-    for (auto dest : nodes){
-        int k = dest->id;
+    for (int di = 0; di < (int)nodes.size(); di++){
+        int k = nodes[di]->id;
 
         double w_tmp = weight0;
         if (sum_map_values(route_preference[k]) == 0){
@@ -1516,8 +1519,8 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         time = timestep*delta_t;
 
         // Link updates
-        for (auto ln : links){
-            ln->update();
+        for (int i = 0; i < (int)links.size(); i++){
+            links[i]->update();
         }
 
         // Node generate + update (matches Python: node.generate() then node.update())
@@ -1535,20 +1538,22 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         // car-following (iterate in id order via vehicles vector for deterministic behavior)
         int veh_count = 0;
         double ave_speed = 0;
-        for (auto veh : vehicles){
+        for (int i = 0; i < (int)vehicles.size(); i++){
+            auto veh = vehicles[i];
             if (veh->state == vsRUN){
                 veh->car_follow_newell();
                 veh_count++;
-                ave_speed = ave_speed*(veh_count-1)/veh_count + veh->v/(veh_count);
+                ave_speed += veh->v;
             }
         }
+        if (veh_count > 0) ave_speed /= veh_count;
 
         // vehicle update (iterate in id order via vehicles vector for deterministic behavior)
         for (auto veh : vehicles){
             if (veh->state == vsHOME || veh->state == vsWAIT || veh->state == vsRUN){
                 veh->update();
             }
-        }        
+        }
 
         // route choice update
         if (route_choice_update_gradual){
@@ -1578,7 +1583,7 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         if (print_mode == 1 && total_timesteps > 0 && timestep % (total_timesteps / 10 == 0 ? 1 : total_timesteps / 10) == 0){
             if (timestep == 0){
                 (*writer) <<  "Simulating..." << endl;
-                (*writer) <<  std::setw(10) << "time" 
+                (*writer) <<  std::setw(10) << "time"
                     << "|"<< std::setw(14) <<  "# of vehicles"
                     << "|"<< std::setw(11) << " ave speed" << endl;
             }
@@ -1586,7 +1591,7 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
                   << "|" << std::setw(10) << veh_count*delta_n << " veh"
                   << "|" << std::setw(7) << std::fixed << std::setprecision(2) << ave_speed << " m/s"
                   << endl;
-        }        
+        }
     }
 }
 

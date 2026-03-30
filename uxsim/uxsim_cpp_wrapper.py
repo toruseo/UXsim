@@ -9,6 +9,7 @@ This module only handles:
   - Analyzer-compatible attribute exposure
 """
 
+import os
 import random
 import time
 import string
@@ -752,7 +753,8 @@ class CppWorld:
                  reduce_memory_delete_vehicle_route_pref=False,
                  hard_deterministic_mode=False,
                  no_cyclic_routing=False,
-                 meta_data=None, user_attribute=None, user_function=None):
+                 meta_data=None, user_attribute=None, user_function=None,
+                 num_threads=None):
 
         self.W = self  # self-reference for W.W access pattern
         self.rng = np.random.default_rng(seed=random_seed)
@@ -798,12 +800,23 @@ class CppWorld:
         self.user_attribute = user_attribute
         self.user_function = user_function
 
+        if num_threads is not None:
+            os.environ['OMP_NUM_THREADS'] = str(num_threads)
+
         self._cpp_world = None
         self._cpp_world_created = False
         self._cpp_vehicle_log_mode = 1 if vehicle_logging_timestep_interval > 0 else 0
         if vehicle_logging_timestep_interval not in (0, 1, -1):
             warnings.warn("vehicle_logging_timestep_interval is not 0, 1, or -1. C++ mode only supports 0 (no logging) and 1 (full logging). The value will be treated as 1 (logging enabled).", stacklevel=2)
         self._simulation_done = False
+
+    @property
+    def num_threads(self):
+        return int(os.environ.get('OMP_NUM_THREADS', 0))
+
+    @num_threads.setter
+    def num_threads(self, value):
+        os.environ['OMP_NUM_THREADS'] = str(value)
 
     def _ensure_cpp_world(self):
         if self._cpp_world_created:

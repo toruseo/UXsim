@@ -13,6 +13,16 @@ pybind11_add_module(uxsim_cpp
     uxsim/trafficpp/bindings.cpp
 )
 
+# --- OpenMP (optional) ---
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(uxsim_cpp PRIVATE OpenMP::OpenMP_CXX)
+    target_compile_definitions(uxsim_cpp PRIVATE UXSIM_USE_OPENMP)
+    message(STATUS "OpenMP found - parallel execution enabled")
+else()
+    message(STATUS "OpenMP not found - building single-threaded")
+endif()
+
 # Install into the uxsim package directory
 install(TARGETS uxsim_cpp
         LIBRARY DESTINATION uxsim

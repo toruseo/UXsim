@@ -17,6 +17,10 @@
 #include <queue>
 #include <set>
 
+#ifdef UXSIM_USE_OPENMP
+#include <omp.h>
+#endif
+
 #include "utils.h"
 
 using std::string, std::vector, std::deque, std::pair, std::map, std::unordered_map, std::priority_queue, std::greater, std::cout, std::endl;
