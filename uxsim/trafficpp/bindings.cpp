@@ -408,6 +408,8 @@ PYBIND11_MODULE(uxsim_cpp, m) {
              "Get a Link by name string (alias for get_link)")
         .def_readonly("VEHICLES", &World::vehicles,
                       "Vector of pointers to all Vehicles in the world.")
+        .def_property_readonly("vehicle_count", [](const World &w) { return w.vehicles.size(); },
+                      "Number of vehicles (O(1), avoids list conversion)")
         .def_readonly("LINKS", &World::links,
                       "Vector of pointers to all Links in the world.")
         .def_readonly("NODES", &World::nodes,
