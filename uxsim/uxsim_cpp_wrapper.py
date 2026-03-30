@@ -853,6 +853,9 @@ class CppWorld:
 
     def addVehicle(self, *args, direct_call=True, **kwargs):
         """Add a single vehicle by forwarding to C++ as a one-platoon demand."""
+        mode = kwargs.get('mode', 'single_trip')
+        if mode == 'taxi':
+            raise NotImplementedError("taxi mode is not supported in C++ mode")
         self._ensure_cpp_world()
         orig = args[0] if len(args) > 0 else kwargs.get('orig')
         dest = args[1] if len(args) > 1 else kwargs.get('dest')
