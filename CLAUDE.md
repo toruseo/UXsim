@@ -80,10 +80,15 @@ python3 -m pytest tests/ --cpp --reruns 5 -q --tb=short
   - 本家の最新を取り込むには `git pull origin main`
   - PRは `toruseoagent/UXsim` → `toruseo/UXsim` へ `gh pr create` で送る
 
+## ブランチ運用
+
+- **開発はmainブランチで行う**．随時 `git push fork main` でフォークにpush
+- **本家へのPR時**：mainから `pr/<feature>` ブランチを作成し，フォーク専用ファイル（`CLAUDE.md`, `devlog/`, `user_testing.ipynb`）を除外してコミット → `git push fork pr/<feature>` → `gh pr create --repo toruseo/UXsim`
+- PRブランチはorigin/mainベースで作り，mainの変更をcherry-pickしてフォーク専用ファイルをreset/除外する
+
 ## コミット規約
 
 - コミットメッセージ，コードコメント，プルリクエストタイトル・本文はすべて英語
-- プルリクエストには`CLAUDE.md`と`devlog`は**含めない**．それらはこのフォーク専用
 - コミット&pushを求められたら，未コミットの変更・未追跡ファイルを**全て**含めてコミットし，pushまで行う（特に指定がない限り）
 
 ## 開発ノウハウ
