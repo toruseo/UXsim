@@ -115,7 +115,8 @@ std::unique_ptr<World> create_world(
         long long random_seed,
         bool vehicle_log_mode,
         bool hard_deterministic_mode = false,
-        bool route_choice_update_gradual = false){
+        bool route_choice_update_gradual = false,
+        bool no_cyclic_routing = false){
     auto world = std::make_unique<World>(
         world_name,
         t_max,
@@ -128,7 +129,8 @@ std::unique_ptr<World> create_world(
         random_seed,
         vehicle_log_mode,
         hard_deterministic_mode,
-        route_choice_update_gradual);
+        route_choice_update_gradual,
+        no_cyclic_routing);
     // World 内の出力先を Python の sys.stdout 経由に変更
     world->writer = get_pyout();
     return world;
@@ -198,6 +200,7 @@ PYBIND11_MODULE(uxsim_cpp, m) {
           py::arg("vehicle_log_mode"),
           py::arg("hard_deterministic_mode") = false,
           py::arg("route_choice_update_gradual") = false,
+          py::arg("no_cyclic_routing") = false,
           R"docstring(
           Create a World (simulation environment).
 
@@ -419,6 +422,7 @@ PYBIND11_MODULE(uxsim_cpp, m) {
         .def_readonly("deltan", &World::delta_n)
         .def_readwrite("hard_deterministic_mode", &World::hard_deterministic_mode)
         .def_readwrite("route_choice_update_gradual", &World::route_choice_update_gradual)
+        .def_readwrite("no_cyclic_routing", &World::no_cyclic_routing)
         .def_readwrite("instantaneous_TT_timestep_interval", &World::instantaneous_TT_timestep_interval)
         .def_readonly("route_dist", &World::route_dist)
         .def_readonly("route_dist_record", &World::route_dist_record)
