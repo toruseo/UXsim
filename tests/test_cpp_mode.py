@@ -7348,7 +7348,7 @@ def test_route_choice_no_cyclic_routing_cpp():
         tmax=7200,
         print_mode=1, save_mode=0, show_mode=1,
         random_seed=None,
-        no_cyclic_routing=True
+        no_cyclic_routing=False
     )
 
     # scenario
