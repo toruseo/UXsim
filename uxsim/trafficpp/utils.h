@@ -6,6 +6,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include <map>
 
 using std::vector, std::cout, std::endl;
 
@@ -119,5 +120,5 @@ inline double sum_map_values(const std::map<Obj*, double>& m) {
 // Check if a container contains a value (works with vector, list, deque, etc.)
 template <typename Container, typename T>
 bool contains(const Container& container, const T& value) {
-    return std::find(std::begin(container), std::end(container), value) != end(container);
+    return std::find(std::begin(container), std::end(container), value) != std::end(container);
 }

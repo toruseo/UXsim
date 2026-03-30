@@ -175,7 +175,7 @@ class CppLink:
         self.delta = cpp.delta
         self.delta_per_lane = cpp.delta_per_lane
         self.free_flow_speed = self.u
-        self.jam_density = jam_density
+        self.jam_density = self.kappa
         self.jam_density_per_lane = jam_density_per_lane
         self.merge_priority = cpp.merge_priority
         self.q_star = self.capacity
@@ -268,6 +268,7 @@ class CppLink:
     @capacity_in_remain.setter
     def capacity_in_remain(self, value):
         self._capacity_in_remain = value
+        self._cpp_link.capacity_in_remain = value
 
     @property
     def capacity_out_remain(self):
@@ -275,6 +276,7 @@ class CppLink:
     @capacity_out_remain.setter
     def capacity_out_remain(self, value):
         self._capacity_out_remain = value
+        self._cpp_link.capacity_out_remain = value
 
     # --- Data access methods for analyzer (read directly from C++) ---
 
@@ -750,7 +752,7 @@ class CppWorld:
                  reduce_memory_delete_vehicle_route_pref=False,
                  hard_deterministic_mode=False,
                  no_cyclic_routing=False,
-                 meta_data={}, user_attribute=None, user_function=None):
+                 meta_data=None, user_attribute=None, user_function=None):
 
         self.W = self  # self-reference for W.W access pattern
         self.rng = np.random.default_rng(seed=random_seed)
@@ -784,7 +786,7 @@ class CppWorld:
         self.name = name
         self.hard_deterministic_mode = hard_deterministic_mode
         self.no_cyclic_routing = no_cyclic_routing
-        self.meta_data = meta_data
+        self.meta_data = meta_data if meta_data is not None else {}
         self.network_info = ddict(list)
         self.demand_info = ddict(list)
         self.finalized = 0
@@ -799,22 +801,24 @@ class CppWorld:
         self._cpp_world = None
         self._cpp_world_created = False
         self._cpp_vehicle_log_mode = 1 if vehicle_logging_timestep_interval > 0 else 0
+        if vehicle_logging_timestep_interval not in (0, 1, -1):
+            warnings.warn("vehicle_logging_timestep_interval is not 0, 1, or -1. C++ mode only supports 0 (no logging) and 1 (full logging). The value will be treated as 1 (logging enabled).", stacklevel=2)
         self._simulation_done = False
 
     def _ensure_cpp_world(self):
         if self._cpp_world_created:
             return
         tmax = self.TMAX if self.TMAX is not None else 7200
-        seed = self.random_seed if self.random_seed is not None else random.randint(0, 2**8)
+        seed = self.random_seed if self.random_seed is not None else random.getrandbits(32)
         try:
             self._cpp_world = _create_world(self.name, tmax, self.DELTAN, self.REACTION_TIME,
-                self.DUO_UPDATE_TIME, self.DUO_UPDATE_WEIGHT, 0, int(self.print_mode), seed,
+                self.DUO_UPDATE_TIME, self.DUO_UPDATE_WEIGHT, self.DUO_NOISE, int(self.print_mode), seed,
                 self._cpp_vehicle_log_mode, int(self.hard_deterministic_mode),
                 route_choice_update_gradual=self.route_choice_update_gradual,
                 no_cyclic_routing=self.no_cyclic_routing)
         except TypeError:
             self._cpp_world = _create_world(self.name, tmax, self.DELTAN, self.REACTION_TIME,
-                self.DUO_UPDATE_TIME, self.DUO_UPDATE_WEIGHT, 0, int(self.print_mode), seed,
+                self.DUO_UPDATE_TIME, self.DUO_UPDATE_WEIGHT, self.DUO_NOISE, int(self.print_mode), seed,
                 self._cpp_vehicle_log_mode)
         self._cpp_world_created = True
         self._cpp_world.route_choice_update_gradual = self.route_choice_update_gradual
@@ -1002,8 +1006,8 @@ class CppWorld:
         self.ADJ_MAT_LINKS = dict()
         self.NODE_PAIR_LINKS = dict()
         for link in self.LINKS:
-            i = next(i for i, n in enumerate(self.NODES) if n == link.start_node)
-            j = next(j for j, n in enumerate(self.NODES) if n == link.end_node)
+            i = link.start_node.id
+            j = link.end_node.id
             self.ADJ_MAT[i, j] = 1
             self.ADJ_MAT_LINKS[i, j] = link
             self.NODE_PAIR_LINKS[link.start_node.name, link.end_node.name] = link
@@ -1276,10 +1280,7 @@ class CppWorld:
         else: plt.close("all")
 
     def copy(self):
-        import dill as pickle
-        return pickle.loads(pickle.dumps(self))
+        raise NotImplementedError("copy() is not supported in C++ mode")
 
     def save(self, fname):
-        import dill as pickle
-        with open(f"{fname}.pkl", "wb") as f:
-            pickle.dump(self, f)
+        raise NotImplementedError("save() is not supported in C++ mode")
