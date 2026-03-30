@@ -1293,7 +1293,6 @@ class Vehicle:
                             s.route_next_link = s.W.rng.choice(outlinks, p=preference/sum(preference))
                         else:
                             s.route_next_link = s.W.rng.choice(outlinks)
-
                     else:
                         s.route_next_link = max(zip(preference, outlinks), key=lambda x:x[0])[1]
 
@@ -1611,17 +1610,24 @@ class World:
     World (i.e., simulation environment). A World object is consistently referred to as `W` in this code.
     """
 
-    def __init__(W, name: str="", deltan: int=5, reaction_time: float=1, 
-                 duo_update_time: float=600, duo_update_weight: float=0.5, duo_noise: float=0.01, route_choice_principle: str="homogeneous_DUO", route_choice_update_gradual: bool=False, instantaneous_TT_timestep_interval: int=5, 
+    def __new__(cls, *args, cpp=False, **kwargs):
+        if cpp and cls is World:
+            from .uxsim_cpp_wrapper import CppWorld
+            return CppWorld(*args, **kwargs)
+        return super().__new__(cls)
+
+    def __init__(W, name: str="", deltan: int=5, reaction_time: float=1,
+                 duo_update_time: float=600, duo_update_weight: float=0.5, duo_noise: float=0.01, route_choice_principle: str="homogeneous_DUO", route_choice_update_gradual: bool=False, instantaneous_TT_timestep_interval: int=5,
                  no_cyclic_routing: bool = False,
-                 eular_dt: float=120, eular_dx: float=100, 
-                 random_seed: Any|None=None, 
-                 print_mode: bool=1, save_mode: bool=1, show_mode: bool=0, show_progress: bool=1, show_progress_deltat: float=600, 
-                 tmax: float|None=None, 
-                 vehicle_logging_timestep_interval: int=1, 
+                 eular_dt: float=120, eular_dx: float=100,
+                 random_seed: Any|None=None,
+                 print_mode: bool=1, save_mode: bool=1, show_mode: bool=0, show_progress: bool=1, show_progress_deltat: float=600,
+                 tmax: float|None=None,
+                 vehicle_logging_timestep_interval: int=1,
                  reduce_memory_delete_vehicle_route_pref: bool=False,
-                 hard_deterministic_mode: bool=False, 
-                 meta_data: dict={}, user_attribute=None, user_function=None):
+                 hard_deterministic_mode: bool=False,
+                 meta_data: dict={}, user_attribute=None, user_function=None,
+                 cpp: bool=False):
         """
         Create a World.
 
@@ -1664,9 +1670,9 @@ class World:
             Setting a large interval (2 or more) or turning off the logging makes the simulation significantly faster in large-scale scenarios without losing simulation internal accuracy, but outputted vehicle trajectory and other related data will become inaccurate.
         instantaneous_TT_timestep_interval : int, optional
             The interval for computing instantaneous travel time of each link. Default is 5.
-            If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.
+            If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.            
         no_cyclic_routing : bool, optional
-            If True, normal vehicles do not travel the same node twice. This will prevent cyclic paths, but may introduce some detours. Default is False.
+           If True, normal vehicles do not travel the same node twice. This will prevent cyclic paths, but may introduce some  detours. Default is False.
         hard_deterministic_mode : bool, optional
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
         reduce_memory_delete_vehicle_route_pref : bool, optional
@@ -1684,13 +1690,21 @@ class World:
             >>> ... #define your scenario
             >>> W.exec_simulation()
 
+        cpp : bool, optional
+            Use C++ super-fast simulation mode. 
+        
         Notes
         -----
         A World object must be defined first to initiate simulation.
         """
 
+        # When cpp=True, __new__ already created and initialized a CppWorld instance.
+        # Skip Python World initialization.
+        if cpp:
+            return
+
         ## parameter setting
-        
+
         W.rng = np.random.default_rng(seed=random_seed)
         W.random_seed = random_seed
 
@@ -2723,8 +2737,7 @@ class World:
         """
         import matplotlib.pyplot as plt
         
-        if W.save_mode:
-            os.makedirs(f"out{W.name}", exist_ok=True)
+        os.makedirs(f"out{W.name}", exist_ok=True)
 
         plt.rcParams["font.family"] = get_font_for_matplotlib()
 

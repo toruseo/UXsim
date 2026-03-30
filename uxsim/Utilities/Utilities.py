@@ -169,15 +169,23 @@ def enumerate_k_random_routes(W, k) -> DefaultDict[tuple[str], list[str]]:
     Parameters
     ----------
     W : World
-        The world object containing the network.   
+        The world object containing the network.
     k : int
         The number of random routes to enumerate.
-    
+
     Returns
     -------
     dict_routes : dict
         A dictionary of k random routes. The key is a tuple of the origin and destination nodes. The value is a list of link names.
     """
+    if hasattr(W, '_cpp_world') and W._cpp_world is not None:
+        seed = random.randint(0, 2**31 - 1)
+        cpp_result = W._cpp_world.enumerate_k_random_routes_cpp(k, seed)
+        dict_routes = defaultdict(list)
+        for key, routes in cpp_result.items():
+            dict_routes[key] = [list(r) for r in routes]
+        return dict_routes
+
     dict_routes = defaultdict(list)
     counter = 0
     iteration = 0
@@ -437,6 +445,11 @@ def estimate_congestion_externality_link(W, link, t):
     """
     try:
         link = W.get_link(link)
+
+        if hasattr(W, '_cpp_world') and W._cpp_world is not None:
+            ts = int(t/W.DELTAT)
+            return link._cpp_link.estimate_congestion_externality(ts)
+
         ts = int(t/W.DELTAT)
 
         #同じ待ち行列で自分より後ろで待っている車両台数の算出
@@ -447,12 +460,12 @@ def estimate_congestion_externality_link(W, link, t):
                 ts_end = i
             else:
                 break
-        
+
         veh_count = link.cum_arrival[ts_end]-link.cum_arrival[ts]
 
         #局所的容量の算出
         #TODO:微妙に系統的にずれる
-        #TODO:スピルオーバー時の除外 
+        #TODO:スピルオーバー時の除外
         #TODO:信号待ちの一台目のときに破綻してしまう．頑健で賢い方法あるか？信号，このリンクの容量制約，下流側リンク・ノード容量制約を全部考えられるもの
         ts_out = int(ts+int(link.traveltime_actual[ts]/W.DELTAT))+1
         ts_out_leader = ts_out
@@ -461,12 +474,12 @@ def estimate_congestion_externality_link(W, link, t):
                 ts_out_leader = i
                 break
 
-        headway_consumed = (ts_out-ts_out_leader)*W.DELTAT 
+        headway_consumed = (ts_out-ts_out_leader)*W.DELTAT
 
         ext = headway_consumed*veh_count
-        
+
         return ext
-    
+
     except Exception as e:
         #細かいインデックスエラーなどを一時的に回避 TODO: fix
 
@@ -490,11 +503,15 @@ def estimate_congestion_externality_route(W, route, t):
         The departure time of the hypothetical vehicle.
     """
 
+    if hasattr(W, '_cpp_world') and W._cpp_world is not None:
+        route_links = [l._cpp_link for l in route]
+        return W._cpp_world.estimate_congestion_externality_route(route_links, t)
+
     tts = route.actual_travel_time(t, return_details=True)[1]
     exts = 0
     for i,link in enumerate(route):
         exts += estimate_congestion_externality_link(W, link, t)
         t += tts[i]
-    
+
     return exts
 
