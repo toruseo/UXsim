@@ -31,8 +31,6 @@ option(COVERAGE "Enable gcov coverage instrumentation" OFF)
 if(COVERAGE AND NOT MSVC)
     target_compile_options(uxsim_cpp PRIVATE -O0 --coverage -fprofile-arcs -ftest-coverage)
     target_link_options(uxsim_cpp PRIVATE --coverage)
-    set(CMAKE_C_FLAGS_RELEASE "")
-    set(CMAKE_CXX_FLAGS_RELEASE "")
 endif()
 
 # Static linking for MinGW
