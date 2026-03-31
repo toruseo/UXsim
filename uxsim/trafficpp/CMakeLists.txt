@@ -4,13 +4,14 @@ project(uxsim_cpp LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find pybind11 for Python bindings
-find_package(pybind11 REQUIRED CONFIG)
+# Find Python and nanobind for bindings
+find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development.Module)
+find_package(nanobind CONFIG REQUIRED)
 
 # Python extension module
 # Note: bindings.cpp includes traffi.cpp directly via #include "traffi.cpp",
 # so we only compile bindings.cpp as the single translation unit.
-pybind11_add_module(uxsim_cpp
+nanobind_add_module(uxsim_cpp
     bindings.cpp
 )
 

@@ -12,7 +12,7 @@ Below is README for UXsim++
 > UXsim++ is a significantly faster variant of [**UXsim**](https://github.com/toruseo/UXsim), a pure Python-based traffic simulator.
 > Its functionalities and syntax are almost equivalent to UXsim.
 > Meanwhile, the internal simulation engine is thoroughly written in C++, making it 20 to 30 times faster than UXsim.
-> Thanks to pybind11, the C++ engine is fully accessible from Python codes without any dependencies.
+> Thanks to nanobind, the C++ engine is fully accessible from Python codes without any dependencies.
 > 
 > **This is alpha stage.**
 > **The codes and docs are work in progress.**

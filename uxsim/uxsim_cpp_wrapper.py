@@ -70,9 +70,9 @@ class CppNode:
         self.W.NODES_NAME_DICT[self.name] = self
 
         # Forward to C++
-        _add_node(self.W._cpp_world, name, x, y, list(signal), actual_signal_offset,
-                  flow_capacity if flow_capacity is not None else -1.0,
-                  number_of_lanes if number_of_lanes is not None else -1)
+        _add_node(self.W._cpp_world, name, float(x), float(y), list(signal), float(actual_signal_offset),
+                  float(flow_capacity) if flow_capacity is not None else -1.0,
+                  int(number_of_lanes) if number_of_lanes is not None else -1)
         self._cpp_node = self.W._cpp_world.get_node(self.name)
 
         # Read back from C++ (single source of truth)
@@ -157,11 +157,11 @@ class CppLink:
         cpp_signal_group = list(self.signal_group)
         try:
             _add_link(self.W._cpp_world, self.name, self.start_node.name, self.end_node.name,
-                      free_flow_speed, kappa, length, self.number_of_lanes,
-                      merge_priority, cpp_capacity_out, cpp_capacity_in, cpp_signal_group)
+                      float(free_flow_speed), float(kappa), float(length), int(self.number_of_lanes),
+                      float(merge_priority), float(cpp_capacity_out), float(cpp_capacity_in), cpp_signal_group)
         except TypeError:
             _add_link(self.W._cpp_world, self.name, self.start_node.name, self.end_node.name,
-                      free_flow_speed, kappa, length, merge_priority, cpp_capacity_out, cpp_signal_group)
+                      float(free_flow_speed), float(kappa), float(length), float(merge_priority), float(cpp_capacity_out), cpp_signal_group)
         self._cpp_link = self.W._cpp_world.get_link(self.name)
 
         # Read derived parameters from C++ (single source of truth)
@@ -268,7 +268,7 @@ class CppLink:
     @capacity_in_remain.setter
     def capacity_in_remain(self, value):
         self._capacity_in_remain = value
-        self._cpp_link.capacity_in_remain = value
+        self._cpp_link.capacity_in_remain = float(value)
 
     @property
     def capacity_out_remain(self):
@@ -276,18 +276,25 @@ class CppLink:
     @capacity_out_remain.setter
     def capacity_out_remain(self, value):
         self._capacity_out_remain = value
-        self._cpp_link.capacity_out_remain = value
+        self._cpp_link.capacity_out_remain = float(value)
 
     # --- Data access methods for analyzer (read directly from C++) ---
 
     @property
     def speed(self):
-        cpp_vehs = self._cpp_link.vehicles
-        return self.u if not cpp_vehs else sum(v.v for v in cpp_vehs) / len(cpp_vehs)
+        cpp_link = self._cpp_link
+        n = cpp_link.vehicle_count
+        if n == 0:
+            return self.u
+        try:
+            return cpp_link.average_speed
+        except AttributeError:
+            cpp_vehs = cpp_link.vehicles
+            return sum(v.v for v in cpp_vehs) / len(cpp_vehs)
 
     @property
     def density(self):
-        return len(self._cpp_link.vehicles) * self.W.DELTAN / self.length
+        return self._cpp_link.vehicle_count * self.W.DELTAN / self.length
 
     @property
     def flow(self):
@@ -295,7 +302,7 @@ class CppLink:
 
     @property
     def num_vehicles(self):
-        return len(self._cpp_link.vehicles) * self.W.DELTAN
+        return self._cpp_link.vehicle_count * self.W.DELTAN
 
     @property
     def num_vehicles_queue(self):
@@ -366,19 +373,19 @@ class CppLink:
     @route_choice_penalty.setter
     def route_choice_penalty(self, value):
         self._route_choice_penalty = value
-        self._cpp_link.route_choice_penalty = value
+        self._cpp_link.route_choice_penalty = float(value)
 
     def get_toll(self, t):
         return self.congestion_pricing(t) if self.congestion_pricing else self.route_choice_penalty
 
     def change_free_flow_speed(self, new_value):
         """Forward to C++ Link.change_free_flow_speed()."""
-        self._cpp_link.change_free_flow_speed(new_value)
+        self._cpp_link.change_free_flow_speed(float(new_value))
         self._read_from_cpp()
 
     def change_jam_density(self, new_value):
         """Forward to C++ Link.change_jam_density()."""
-        self._cpp_link.change_jam_density(new_value)
+        self._cpp_link.change_jam_density(float(new_value))
         self._read_from_cpp()
 
     def _read_from_cpp(self):
@@ -471,9 +478,10 @@ class CppVehicle:
     def link(self):
         cpp_link = self._cpp_vehicle.link
         if cpp_link is not None:
-            name = getattr(cpp_link, 'name', None)
-            if name is not None and name in self.W.LINKS_NAME_DICT:
-                return self.W.LINKS_NAME_DICT[name]
+            link_id = cpp_link.id
+            links = self.W.LINKS
+            if 0 <= link_id < len(links):
+                return links[link_id]
         return None
 
     @property
@@ -485,123 +493,94 @@ class CppVehicle:
     # State int→str for log arrays
     _LOG_STATE_MAP = ["home", "wait", "run", "end", "abort"]
 
-    @staticmethod
-    def _convert_raw_log(raw, links_list):
-        """Convert raw numpy log dict from C++ into analyzer-compatible cache dict."""
-        n_links = len(links_list)
-        state_map = CppVehicle._LOG_STATE_MAP
-
-        cache = {}
-        cache['log_t'] = raw['log_t'].tolist()
-        cache['log_x'] = raw['log_x'].tolist()
-        cache['log_s'] = raw['log_s'].tolist()
-        cache['log_v'] = raw['log_v'].tolist()
-        cache['log_lane'] = raw['log_lane'].tolist()
-
-        # Convert state ints → strings
-        cache['log_state'] = [state_map[s] if 0 <= s < len(state_map) else "end"
-                              for s in raw['log_state']]
-
-        # Convert link IDs → CppLink objects (-1 stays as -1)
-        cache['log_link'] = [links_list[idx] if 0 <= idx < n_links else -1
-                             for idx in raw['log_link']]
-
-        # Convert log_t_link: two arrays (times, link_ids) → [(time, link_or_label), ...]
-        t_arr = raw['log_t_link_t']
-        id_arr = raw['log_t_link_id']
-        log_t_link = []
-        for i in range(len(t_arr)):
-            lid = int(id_arr[i])
-            if lid == -1:
-                log_t_link.append([t_arr[i], "home"])
-            elif lid == -2:
-                log_t_link.append([t_arr[i], "end"])
-            elif 0 <= lid < n_links:
-                log_t_link.append([t_arr[i], links_list[lid]])
-            else:
-                log_t_link.append([t_arr[i], -1])
-        cache['log_t_link'] = log_t_link
-
-        return cache
-
-    def _build_log_cache(self):
-        """Build all log arrays from C++ build_full_log(). Cached until invalidated."""
+    def _ensure_log_raw(self):
+        """Ensure raw log data is loaded. Triggers batch fetch on first call."""
         if self._log_cache is not None:
-            return self._log_cache
-
-        cache = self._cpp_vehicle.build_full_log()
-
-        # Convert log_link int IDs → CppLink objects
-        links_list = self.W.LINKS
-        n_links = len(links_list)
-        cache['log_link'] = [links_list[idx] if 0 <= idx < n_links else -1
-                             for idx in cache['log_link']]
-
-        # Convert log_t_link link names → CppLink objects
-        links_name_dict = self.W.LINKS_NAME_DICT
-        for entry in cache['log_t_link']:
-            v = entry[1]
-            if v.__class__ is str and v not in ("home", "end"):
-                entry[1] = links_name_dict.get(v, v)
-
-        self._log_cache = cache
-        return self._log_cache
+            return
+        # Batch-fetch all vehicle raw logs at once
+        self.W._build_all_vehicle_log_caches()
+        # If batch didn't populate us (shouldn't happen), fallback to individual
+        if self._log_cache is None:
+            self._log_cache = self._cpp_vehicle.build_full_log()
 
     @property
     def log_t(self):
-        c = self._log_cache
-        if c is None:
-            c = self._build_log_cache()
-        return c['log_t']
-
-    @property
-    def log_state(self):
-        c = self._log_cache
-        if c is None:
-            c = self._build_log_cache()
-        return c['log_state']
-
-    @property
-    def log_link(self):
-        c = self._log_cache
-        if c is None:
-            c = self._build_log_cache()
-        return c['log_link']
+        if self._log_cache is None:
+            self._ensure_log_raw()
+        return self._log_cache['log_t']
 
     @property
     def log_x(self):
-        c = self._log_cache
-        if c is None:
-            c = self._build_log_cache()
-        return c['log_x']
+        if self._log_cache is None:
+            self._ensure_log_raw()
+        return self._log_cache['log_x']
 
     @property
     def log_s(self):
-        c = self._log_cache
-        if c is None:
-            c = self._build_log_cache()
-        return c['log_s']
+        if self._log_cache is None:
+            self._ensure_log_raw()
+        return self._log_cache['log_s']
 
     @property
     def log_v(self):
-        c = self._log_cache
-        if c is None:
-            c = self._build_log_cache()
-        return c['log_v']
+        if self._log_cache is None:
+            self._ensure_log_raw()
+        return self._log_cache['log_v']
 
     @property
     def log_lane(self):
-        c = self._log_cache
-        if c is None:
-            c = self._build_log_cache()
-        return c['log_lane']
+        if self._log_cache is None:
+            self._ensure_log_raw()
+        return self._log_cache['log_lane']
+
+    @property
+    def log_state(self):
+        if self._log_cache is None:
+            self._ensure_log_raw()
+        cache = self._log_cache
+        if '_log_state_converted' not in cache:
+            state_map = CppVehicle._LOG_STATE_MAP
+            n_states = len(state_map)
+            cache['_log_state_converted'] = [state_map[s] if 0 <= s < n_states else "end"
+                                             for s in cache['log_state']]
+        return cache['_log_state_converted']
+
+    @property
+    def log_link(self):
+        if self._log_cache is None:
+            self._ensure_log_raw()
+        cache = self._log_cache
+        if '_log_link_converted' not in cache:
+            links_list = self.W.LINKS
+            n_links = len(links_list)
+            cache['_log_link_converted'] = [links_list[idx] if 0 <= idx < n_links else -1
+                                            for idx in cache['log_link']]
+        return cache['_log_link_converted']
 
     @property
     def log_t_link(self):
-        c = self._log_cache
-        if c is None:
-            c = self._build_log_cache()
-        return c['log_t_link']
+        if self._log_cache is None:
+            self._ensure_log_raw()
+        cache = self._log_cache
+        if '_log_t_link_converted' not in cache:
+            links_list = self.W.LINKS
+            n_links = len(links_list)
+            t_arr = cache['log_t_link_t']
+            id_arr = cache['log_t_link_id']
+            n_t_link = len(t_arr)
+            log_t_link = []
+            for i in range(n_t_link):
+                lid = int(id_arr[i])
+                if lid == -1:
+                    log_t_link.append([t_arr[i], "home"])
+                elif lid == -2:
+                    log_t_link.append([t_arr[i], "end"])
+                elif 0 <= lid < n_links:
+                    log_t_link.append([t_arr[i], links_list[lid]])
+                else:
+                    log_t_link.append([t_arr[i], -1])
+            cache['_log_t_link_converted'] = log_t_link
+        return cache['_log_t_link_converted']
 
     def traveled_route(self, include_arrival_time=True, include_departure_time=False):
         """Returns (Route, times_list) matching uxsim.Vehicle.traveled_route."""
@@ -811,15 +790,15 @@ class CppWorld:
         tmax = self.TMAX if self.TMAX is not None else 7200
         seed = self.random_seed if self.random_seed is not None else random.getrandbits(32)
         try:
-            self._cpp_world = _create_world(self.name, tmax, self.DELTAN, self.REACTION_TIME,
-                self.DUO_UPDATE_TIME, self.DUO_UPDATE_WEIGHT, self.DUO_NOISE, int(self.print_mode), seed,
-                self._cpp_vehicle_log_mode, int(self.hard_deterministic_mode),
-                route_choice_update_gradual=self.route_choice_update_gradual,
-                no_cyclic_routing=self.no_cyclic_routing)
+            self._cpp_world = _create_world(self.name, float(tmax), float(self.DELTAN), float(self.REACTION_TIME),
+                float(self.DUO_UPDATE_TIME), float(self.DUO_UPDATE_WEIGHT), float(self.DUO_NOISE), int(self.print_mode), int(seed),
+                bool(self._cpp_vehicle_log_mode), bool(self.hard_deterministic_mode),
+                route_choice_update_gradual=bool(self.route_choice_update_gradual),
+                no_cyclic_routing=bool(self.no_cyclic_routing))
         except TypeError:
-            self._cpp_world = _create_world(self.name, tmax, self.DELTAN, self.REACTION_TIME,
-                self.DUO_UPDATE_TIME, self.DUO_UPDATE_WEIGHT, self.DUO_NOISE, int(self.print_mode), seed,
-                self._cpp_vehicle_log_mode)
+            self._cpp_world = _create_world(self.name, float(tmax), float(self.DELTAN), float(self.REACTION_TIME),
+                float(self.DUO_UPDATE_TIME), float(self.DUO_UPDATE_WEIGHT), float(self.DUO_NOISE), int(self.print_mode), int(seed),
+                bool(self._cpp_vehicle_log_mode))
         self._cpp_world_created = True
         self._cpp_world.route_choice_update_gradual = self.route_choice_update_gradual
         self._cpp_world.no_cyclic_routing = self.no_cyclic_routing
@@ -872,9 +851,9 @@ class CppWorld:
             name = l.name if hasattr(l, 'name') else str(l)
             cpp_links_pref.append(name)
 
-        n_before = self._cpp_world.vehicle_count if hasattr(self._cpp_world, 'vehicle_count') else len(self._cpp_world.VEHICLES)
+        n_before = self._cpp_world.vehicle_count
         _add_demand(self._cpp_world, orig_name, dest_name,
-                   t, t + self.DELTAT, self.DELTAN / self.DELTAT, cpp_links_pref)
+                   float(t), float(t + self.DELTAT), float(self.DELTAN / self.DELTAT), cpp_links_pref)
         self._max_demand_t = max(getattr(self, '_max_demand_t', 0), t + self.DELTAT)
 
         # Set links_avoid on newly created C++ vehicles
@@ -887,7 +866,7 @@ class CppWorld:
                     cpp_avoid.append(link_obj._cpp_link)
                 except AttributeError:
                     pass
-            n_after = self._cpp_world.vehicle_count if hasattr(self._cpp_world, 'vehicle_count') else len(self._cpp_world.VEHICLES)
+            n_after = self._cpp_world.vehicle_count
             for i in range(n_before, n_after):
                 try:
                     self._cpp_world.get_vehicle_by_index(i).links_avoid = cpp_avoid
@@ -908,7 +887,7 @@ class CppWorld:
         if volume > 0:
             flow = volume / (t_end - t_start)
         _add_demand(self._cpp_world, self._resolve_node_name(orig), self._resolve_node_name(dest),
-                   t_start, t_end, flow, [])
+                   float(t_start), float(t_end), float(flow), [])
         self._max_demand_t = max(getattr(self, '_max_demand_t', 0), t_end)
         self._register_new_cpp_vehicles()
 
@@ -987,7 +966,7 @@ class CppWorld:
         # Pre-compute congestion pricing tolls and pass to C++ as timeseries
         for link in self.LINKS:
             if link.congestion_pricing is not None:
-                tolls = [link.congestion_pricing(t * self.DELTAT) for t in range(self.TSIZE)]
+                tolls = [float(link.congestion_pricing(t * self.DELTAT)) for t in range(self.TSIZE)]
                 link._cpp_link.set_toll_timeseries(tolls)
 
         self.finalized = 1
@@ -1033,7 +1012,7 @@ class CppWorld:
         else:
             cpp_until = self.TMAX
 
-        self._cpp_world.main_loop(-1, cpp_until)
+        self._cpp_world.main_loop(float(-1), float(cpp_until))
         self._sync_from_cpp()
 
         # Update Python-side time tracking from C++ state
@@ -1048,10 +1027,13 @@ class CppWorld:
     def _register_new_cpp_vehicles(self):
         """Register any new C++ vehicles into Python VEHICLES dict.
         Creates lightweight proxy objects — most attributes are read from C++ on demand."""
-        cpp_vehs = self._cpp_world.VEHICLES
         start_idx = getattr(self, '_cpp_veh_registered_count', 0)
-        for i in range(start_idx, len(cpp_vehs)):
-            cpp_veh = cpp_vehs[i]
+        total = self._cpp_world.vehicle_count
+        if total <= start_idx:
+            return
+        nodes_name_dict = self.NODES_NAME_DICT
+        for i in range(start_idx, total):
+            cpp_veh = self._cpp_world.get_vehicle_by_index(i)
             name = cpp_veh.name
             py_veh = CppVehicle.__new__(CppVehicle)
             py_veh.W = self
@@ -1059,8 +1041,8 @@ class CppWorld:
             py_veh.id = len(self.VEHICLES)
             py_veh._cpp_vehicle = cpp_veh
             py_veh._log_cache = None
-            py_veh.orig = self.get_node(cpp_veh.orig.name) if cpp_veh.orig else None
-            py_veh.dest = self.get_node(cpp_veh.dest.name) if cpp_veh.dest else None
+            py_veh.orig = nodes_name_dict.get(cpp_veh.orig.name) if cpp_veh.orig else None
+            py_veh.dest = nodes_name_dict.get(cpp_veh.dest.name) if cpp_veh.dest else None
             py_veh.color = (self.rng.random(), self.rng.random(), self.rng.random())
             # Python-only attributes (not in C++)
             py_veh.attribute = None
@@ -1077,7 +1059,7 @@ class CppWorld:
             py_veh.link_old = None
             self.VEHICLES[name] = py_veh
             self.VEHICLES_LIVING[name] = py_veh
-        self._cpp_veh_registered_count = len(cpp_vehs)
+        self._cpp_veh_registered_count = total
 
     def _sync_from_cpp(self):
         """Update VEHICLES_LIVING / VEHICLES_RUNNING from C++ state.
@@ -1128,16 +1110,15 @@ class CppWorld:
         return True if not self.finalized else self.T <= self.TSIZE - 1
 
     def _build_all_vehicle_log_caches(self):
-        """Batch-build log caches for all vehicles from C++ build_all_vehicle_logs().
-        Skips vehicles whose cache is already built."""
+        """Batch-fetch raw log data from C++ for all vehicles.
+        Stores raw numpy dicts directly — conversion is deferred to property access."""
         all_logs = self._cpp_world.build_all_vehicle_logs()
-        links_list = self.LINKS
         vehicles = self.VEHICLES
         for i, raw in enumerate(all_logs):
             veh = vehicles.get(str(i))
             if veh is None or veh._log_cache is not None:
                 continue
-            veh._log_cache = CppVehicle._convert_raw_log(raw, links_list)
+            veh._log_cache = raw
 
     def simulation_terminated(self):
         self.print(" simulation finished")
