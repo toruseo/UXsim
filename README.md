@@ -1,4 +1,4 @@
-# UXsim: Network traffic flow simulator in pure Python
+# UXsim: Fast network traffic flow simulator for Python
 
 [![PyPi](https://img.shields.io/pypi/v/uxsim.svg)](https://pypi.python.org/pypi/uxsim)
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/uxsim.svg)](https://anaconda.org/conda-forge/uxsim)<!-- ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/uxsim)-->
