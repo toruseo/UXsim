@@ -401,7 +401,7 @@ NB_MODULE(uxsim_cpp, m) {
              [](World &w, nb::list py_route, double departure_time) -> double {
                  std::vector<Link*> route;
                  for (auto item : py_route){
-                     std::string name = nb::cast<std::string>(nb::str(item.attr("name")));
+                     std::string name = nb::cast<std::string>(item.attr("name"));
                      Link *ln = w.get_link(name);
                      if (ln) route.push_back(ln);
                  }
