@@ -28,8 +28,8 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_SKIP: "pp* *-musllinux*"
-          CIBW_BEFORE_BUILD: "pip install pybind11"
-          CIBW_ENVIRONMENT: CMAKE_ARGS="-DPYBIND11_FINDPYTHON=ON"
+          CIBW_BEFORE_BUILD: "pip install nanobind"
+          CIBW_ENVIRONMENT: CMAKE_ARGS=""
           CIBW_TEST_REQUIRES: "pytest pytest-rerunfailures"
           CIBW_TEST_COMMAND: "pytest {project}/tests/test_cpp_build.py -v"
           CIBW_ARCHS_MACOS: "universal2"

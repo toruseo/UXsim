@@ -1020,7 +1020,7 @@ def test_iterative_exec_rigorous():
             print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             assert False
-        print_columns(["log_t"]+W.VEHICLES["0"].log_t, ["log_x"]+W.VEHICLES["0"].log_x, ["log_v"]+W.VEHICLES["0"].log_v)
+        print_columns(["log_t"]+list(W.VEHICLES["0"].log_t), ["log_x"]+list(W.VEHICLES["0"].log_x), ["log_v"]+list(W.VEHICLES["0"].log_v))
         print("final_x", W.VEHICLES["0"].x)
         assert W.VEHICLES["0"].log_t[-1] == 90
         assert W.VEHICLES["0"].log_x[-1] == 1600
@@ -1085,7 +1085,7 @@ def test_iterative_exec_rigorous_random_size_old():
             print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             assert False
-        print_columns(["log_t"]+W.VEHICLES["0"].log_t, ["log_x"]+W.VEHICLES["0"].log_x, ["log_v"]+W.VEHICLES["0"].log_v)
+        print_columns(["log_t"]+list(W.VEHICLES["0"].log_t), ["log_x"]+list(W.VEHICLES["0"].log_x), ["log_v"]+list(W.VEHICLES["0"].log_v))
         print("final_x", W.VEHICLES["0"].x)
         assert W.VEHICLES["0"].log_t[-1] == (tmax//W.DELTAT-1)*W.DELTAT
         assert W.VEHICLES["0"].log_x[-1] == (tmax//W.DELTAT-2)*W.DELTAT*link_u
@@ -1144,7 +1144,7 @@ def test_iterative_exec_rigorous_random_size_duration_t2():
             print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("FAILED TO TERMINATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             assert False
-        print_columns(["log_t"]+W.VEHICLES["0"].log_t, ["log_x"]+W.VEHICLES["0"].log_x, ["log_v"]+W.VEHICLES["0"].log_v)
+        print_columns(["log_t"]+list(W.VEHICLES["0"].log_t), ["log_x"]+list(W.VEHICLES["0"].log_x), ["log_v"]+list(W.VEHICLES["0"].log_v))
         print("final_x", W.VEHICLES["0"].x)
         assert W.VEHICLES["0"].log_t[-1] == (tmax//W.DELTAT-1)*W.DELTAT
         assert W.VEHICLES["0"].log_x[-1] == (tmax//W.DELTAT-2)*W.DELTAT*link_u

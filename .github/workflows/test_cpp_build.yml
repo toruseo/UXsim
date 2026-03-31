@@ -21,7 +21,7 @@ jobs:
     - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install scikit-build-core pybind11 cmake ninja
+        pip install scikit-build-core nanobind cmake ninja
     - name: Install uxsim with C++ extension
       run: pip install -e .[dev]
     - name: Run C++ build tests
