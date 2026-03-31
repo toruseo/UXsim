@@ -1,3 +1,11 @@
 [run]
 omit =
     uxsim/ResultGUIViewer/*
+source =
+    uxsim
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__
+    raise NotImplementedError

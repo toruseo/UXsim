@@ -31,7 +31,8 @@ jobs:
         env:
           CIBW_SKIP: "pp* *-musllinux*"
           CIBW_BEFORE_BUILD: "pip install nanobind"
-          CIBW_ENVIRONMENT: "CMAKE_ARGS='' MACOSX_DEPLOYMENT_TARGET='10.14'"
+          CIBW_ENVIRONMENT: "CMAKE_ARGS=''"
+          CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET='11.0'"
           CIBW_TEST_REQUIRES: "pytest pytest-rerunfailures"
           CIBW_TEST_COMMAND: "pytest {project}/tests/test_cpp_build.py -v"
           CIBW_ARCHS_MACOS: "universal2"
