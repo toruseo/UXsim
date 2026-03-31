@@ -283,14 +283,9 @@ class CppLink:
     @property
     def speed(self):
         cpp_link = self._cpp_link
-        n = cpp_link.vehicle_count
-        if n == 0:
+        if cpp_link.vehicle_count == 0:
             return self.u
-        try:
-            return cpp_link.average_speed
-        except AttributeError:
-            cpp_vehs = cpp_link.vehicles
-            return sum(v.v for v in cpp_vehs) / len(cpp_vehs)
+        return cpp_link.avg_speed
 
     @property
     def density(self):
@@ -501,7 +496,7 @@ class CppVehicle:
         self.W._build_all_vehicle_log_caches()
         # If batch didn't populate us (shouldn't happen), fallback to individual
         if self._log_cache is None:
-            self._log_cache = self._cpp_vehicle.build_full_log()
+            self._log_cache = self._cpp_vehicle.build_full_log_np()
 
     @property
     def log_t(self):
