@@ -27,4 +27,4 @@ jobs:
     - name: Install test dependencies
       run: pip install pytest-xdist pytest-rerunfailures
     - name: Run C++ mode tests
-      run: python -m pytest tests/test_cpp_mode.py -n auto --durations=0 -v
+      run: python -m pytest tests/test_cpp_mode.py -n 4 --durations=0 -v
