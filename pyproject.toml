@@ -1,6 +1,9 @@
 [build-system]
-requires = ["setuptools>=63.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = [
+  "scikit-build-core>=0.9",
+  "pybind11",
+]
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "uxsim"
@@ -17,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: C++",
     "Topic :: Scientific/Engineering",
 ]
 requires-python = ">=3.10"
@@ -31,11 +35,11 @@ dependencies = [
     "dill>=0.3.9",
     "networkx>=3.2.1"
 ]
-dynamic = ["version"] # Version is read from uxsim/__init__.py
+dynamic = ["version"]
 
 [project.optional-dependencies]
 advanced = [
-    "neatnet>=0.1.1", # for python >=3.11 only,
+    "neatnet>=0.1.1",
     "osmnx>=2.0.0",
     "geopandas>=1.0.0",
     "shapely>=2.1.0"
@@ -55,8 +59,16 @@ Homepage = "https://github.com/toruseo/UXsim"
 Documentation = "https://toruseo.jp/UXsim/docs"
 Issues = "https://github.com/toruseo/UXsim/issues"
 
-[tool.setuptools]
-packages = {find = {include = ["uxsim", "uxsim.*"]}}
+[tool.scikit-build]
+wheel.packages = ["uxsim"]
+cmake.version = ">=3.15"
+build.targets = ["uxsim_cpp"]
+build.verbose = true
+install.strip = false
+install.components = ["python"]
+sdist.include = ["uxsim/trafficpp/*.cpp", "uxsim/trafficpp/*.h"]
+wheel.license-files = ["LICENSE"]
 
-[tool.setuptools.dynamic]
-version = {attr = "uxsim.__version__"}
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "uxsim/__init__.py"
