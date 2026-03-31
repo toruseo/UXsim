@@ -18,22 +18,39 @@ jobs:
       uses: actions/setup-python@v6
       with:
         python-version: "3.13"
+    - name: Install lcov
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lcov
     - name: Install uxsim and dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e .[dev,advanced]
+        pip install -e '.[dev,advanced]'
     - name: Install pytest other dependencies
       run: |
-        # Install optional packages required for these tests
-        pip install osmnx requests
-    - name: Run verifications with pytest
+        pip install osmnx requests pytest-rerunfailures
+    - name: Run Python tests with coverage
       run: pytest -n 4 tests/test_verification_straight_road.py tests/test_verification_route_choice.py tests/test_verification_node.py tests/test_verification_exceptional.py tests/test_verification_sioux_falls.py tests/test_verification_multilane.py tests/test_verification_taxi.py tests/test_verification_dta_solvers.py tests/test_other_functions.py tests/test_optional_functions_python313.py --durations=0 -v --cov=uxsim --cov-report=xml --cov-config=.github/.coveragerc
+    - name: Run C++ mode tests with coverage
+      run: pytest tests/test_cpp_mode.py tests/test_cpp_build.py --reruns 5 -v --cov=uxsim --cov-report=xml --cov-append --cov-config=.github/.coveragerc
+    - name: Build C++ with coverage instrumentation
+      run: |
+        cmake -B build_cov -DCOVERAGE=ON -Dnanobind_DIR=$(python3 -c 'import nanobind; print(nanobind.cmake_dir())')
+        cmake --build build_cov
+    - name: Run tests for C++ coverage
+      run: |
+        cp build_cov/uxsim_cpp*.so uxsim/ 2>/dev/null || cp build_cov/*.so uxsim/ 2>/dev/null || true
+        python3 -m pytest tests/test_cpp_build.py tests/test_cpp_mode.py --reruns 5 -q
+    - name: Collect C++ coverage
+      run: |
+        lcov --capture --directory build_cov --output-file cpp_coverage.info --ignore-errors source,gcov
+        lcov --remove cpp_coverage.info '/usr/*' '*/nanobind/*' '*/python*' --output-file cpp_coverage_filtered.info --ignore-errors unused
+        lcov --list cpp_coverage_filtered.info || true
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v5.5.2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./coverage.xml
+        files: ./coverage.xml,./cpp_coverage_filtered.info
         name: codecov-umbrella
         fail_ci_if_error: true
         verbose: true
-

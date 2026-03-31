@@ -26,6 +26,13 @@ else()
     target_compile_options(uxsim_cpp PRIVATE -O3)
 endif()
 
+# Coverage flags (enabled via -DCOVERAGE=ON)
+option(COVERAGE "Enable gcov coverage instrumentation" OFF)
+if(COVERAGE AND NOT MSVC)
+    target_compile_options(uxsim_cpp PRIVATE -O0 --coverage -fprofile-arcs -ftest-coverage)
+    target_link_options(uxsim_cpp PRIVATE --coverage)
+endif()
+
 # Static linking for MinGW
 if(MINGW)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -static -O3")
