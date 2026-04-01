@@ -51,7 +51,7 @@ jobs:
         lcov --remove cpp_coverage.info '/usr/*' '*/nanobind/*' '*/python*' --output-file cpp_coverage_filtered.info --ignore-errors unused,empty
         lcov --list cpp_coverage_filtered.info || true
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v5.5.2
+      uses: codecov/codecov-action@v6.0.0
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: ./coverage.xml,./cpp_coverage_filtered.info
