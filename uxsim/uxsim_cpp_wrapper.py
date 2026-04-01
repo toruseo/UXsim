@@ -778,6 +778,7 @@ class CppWorld:
         if vehicle_logging_timestep_interval not in (0, 1, -1):
             warnings.warn("vehicle_logging_timestep_interval is not 0, 1, or -1. C++ mode only supports 0 (no logging) and 1 (full logging). The value will be treated as 1 (logging enabled).", stacklevel=2)
         self._simulation_done = False
+        self._cpp_veh_registered_count = 0
 
     def _ensure_cpp_world(self):
         if self._cpp_world_created:
@@ -1022,23 +1023,34 @@ class CppWorld:
     def _register_new_cpp_vehicles(self):
         """Register any new C++ vehicles into Python VEHICLES dict.
         Creates lightweight proxy objects — most attributes are read from C++ on demand."""
-        start_idx = getattr(self, '_cpp_veh_registered_count', 0)
+        start_idx = self._cpp_veh_registered_count
         total = self._cpp_world.vehicle_count
-        if total <= start_idx:
+        n_new = total - start_idx
+        if n_new <= 0:
             return
         nodes_name_dict = self.NODES_NAME_DICT
-        for i in range(start_idx, total):
-            cpp_veh = self._cpp_world.get_vehicle_by_index(i)
+        vehicles = self.VEHICLES
+        vehicles_living = self.VEHICLES_LIVING
+        rcp = self.route_choice_principle
+        get_veh = self._cpp_world.get_vehicle_by_index
+        veh_id = len(vehicles)
+        # Batch-generate random colors
+        colors = self.rng.random(size=(n_new, 3))
+        for j in range(n_new):
+            i = start_idx + j
+            cpp_veh = get_veh(i)
             name = cpp_veh.name
             py_veh = CppVehicle.__new__(CppVehicle)
             py_veh.W = self
             py_veh.name = name
-            py_veh.id = len(self.VEHICLES)
+            py_veh.id = veh_id
+            veh_id += 1
             py_veh._cpp_vehicle = cpp_veh
             py_veh._log_cache = None
             py_veh.orig = nodes_name_dict.get(cpp_veh.orig.name) if cpp_veh.orig else None
             py_veh.dest = nodes_name_dict.get(cpp_veh.dest.name) if cpp_veh.dest else None
-            py_veh.color = (self.rng.random(), self.rng.random(), self.rng.random())
+            c = colors[j]
+            py_veh.color = (float(c[0]), float(c[1]), float(c[2]))
             # Python-only attributes (not in C++)
             py_veh.attribute = None
             py_veh.user_attribute = None
@@ -1050,10 +1062,10 @@ class CppWorld:
             py_veh.links_prefer = []
             py_veh.links_avoid = []
             py_veh.specified_route = None
-            py_veh.route_choice_principle = self.route_choice_principle
+            py_veh.route_choice_principle = rcp
             py_veh.link_old = None
-            self.VEHICLES[name] = py_veh
-            self.VEHICLES_LIVING[name] = py_veh
+            vehicles[name] = py_veh
+            vehicles_living[name] = py_veh
         self._cpp_veh_registered_count = total
 
     def _sync_from_cpp(self):
@@ -1106,29 +1118,78 @@ class CppWorld:
 
     def _build_all_vehicle_log_caches(self):
         """Batch-fetch raw log data from C++ for all vehicles.
-        Stores raw numpy dicts directly — conversion is deferred to property access."""
-        all_logs = self._cpp_world.build_all_vehicle_logs()
-        vehicles = self.VEHICLES
-        for i, raw in enumerate(all_logs):
-            veh = vehicles.get(str(i))
-            if veh is None or veh._log_cache is not None:
+        Uses flat SoA API: one contiguous array per field, sliced per vehicle."""
+        try:
+            flat = self._cpp_world.build_all_vehicle_logs_flat()
+        except AttributeError:
+            try:
+                logs = self._cpp_world.build_all_vehicle_logs()
+            except AttributeError:
+                return
+            vehicles = list(self.VEHICLES.values())
+            for veh, log in zip(vehicles, logs):
+                if veh._log_cache is None:
+                    veh._log_cache = log
+            return
+        offsets = flat['offsets']
+        ltl_offsets = flat['ltl_offsets']
+        # Extract flat arrays (numpy)
+        all_log_t = flat['log_t']
+        all_log_x = flat['log_x']
+        all_log_v = flat['log_v']
+        all_log_state = flat['log_state']
+        all_log_s = flat['log_s']
+        all_log_lane = flat['log_lane']
+        all_log_link = flat['log_link']
+        all_ltl_t = flat['ltl_t']
+        all_ltl_id = flat['ltl_id']
+        vehicles = list(self.VEHICLES.values())
+        for i, veh in enumerate(vehicles):
+            if veh._log_cache is not None:
                 continue
-            veh._log_cache = raw
+            s, e = int(offsets[i]), int(offsets[i + 1])
+            ls, le = int(ltl_offsets[i]), int(ltl_offsets[i + 1])
+            veh._log_cache = {
+                'log_t': all_log_t[s:e],
+                'log_x': all_log_x[s:e],
+                'log_v': all_log_v[s:e],
+                'log_state': all_log_state[s:e],
+                'log_s': all_log_s[s:e],
+                'log_lane': all_log_lane[s:e],
+                'log_link': all_log_link[s:e],
+                'log_t_link_t': all_ltl_t[ls:le],
+                'log_t_link_id': all_ltl_id[ls:le],
+            }
 
     def simulation_terminated(self):
         self.print(" simulation finished")
         self._simulation_done = True
         self._build_vehicles_enter_log()
+        self._build_all_vehicle_log_caches()
         self.analyzer.basic_analysis()
 
     def _build_vehicles_enter_log(self):
-        """Reconstruct each link's vehicles_enter_log from vehicle log data."""
+        """Reconstruct each link's vehicles_enter_log from C++ bulk data."""
         for link in self.LINKS:
             link.vehicles_enter_log = {}
-        for veh in self.VEHICLES.values():
-            for t, l in veh.log_t_link:
-                if isinstance(l, CppLink):
-                    l.vehicles_enter_log[t] = veh
+        try:
+            data = self._cpp_world.build_enter_log_data()
+            link_ids = data['link_id']
+            times = data['time']
+            veh_indices = data['vehicle_index']
+            links_list = self.LINKS
+            n_links = len(links_list)
+            vehicles_list = list(self.VEHICLES.values())
+            for i in range(len(link_ids)):
+                lid = int(link_ids[i])
+                if 0 <= lid < n_links:
+                    links_list[lid].vehicles_enter_log[float(times[i])] = vehicles_list[int(veh_indices[i])]
+        except AttributeError:
+            # Fallback for older C++ builds without build_enter_log_data
+            for veh in self.VEHICLES.values():
+                for t, l in veh.log_t_link:
+                    if isinstance(l, CppLink):
+                        l.vehicles_enter_log[t] = veh
 
     def get_node(self, node):
         if node is None:

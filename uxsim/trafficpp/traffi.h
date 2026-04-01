@@ -76,6 +76,11 @@ struct Node {
     double flow_capacity_remain;
     int number_of_lanes;
 
+    // Reusable buffers for transfer() to avoid per-call allocation
+    vector<Link *> _buf_outlinks_expanded;
+    vector<Vehicle *> _buf_merging_vehs;
+    vector<double> _buf_merge_priorities;
+
     Node(
         World *w,
         const string &node_name,
@@ -193,6 +198,7 @@ struct Vehicle {
     int flag_waiting_for_trip_end;
     int flag_trip_aborted;
     int trip_abort;
+    int active_index;  // index in World::active_vehicles (-1 if inactive)
 
     double arrival_time_link;
 
@@ -201,19 +207,29 @@ struct Vehicle {
     int route_choice_flag_on_link;
     double route_adaptive;
     double route_choice_uncertainty;
-    map<Link *, double> route_preference;
+    vector<double> route_preference;  // indexed by link->id
     int route_choice_principle;
     vector<Link *> links_preferred;
     vector<Link *> links_avoid;
     vector<Link *> specified_route;
 
-    // Logging
+    // Reusable buffers for route_next_link_choice() to avoid per-call allocation
+    vector<Link *> _buf_outlinks;
+    vector<Link *> _buf_filtered;
+    vector<double> _buf_outlink_pref;
+
+    // Incremental tracking for no_cyclic_routing (O(1) lookup instead of log_link scan)
+    vector<bool> _traveled_nodes;       // _traveled_nodes[node_id] = true if visited
+    int _traveled_link_count;           // number of distinct links traveled (for specified_route)
+
+    // Logging (pre-allocated, indexed by log_size)
     vector<double> log_t;
     vector<int> log_state;
     vector<int> log_link;
     vector<double> log_x;
     vector<double> log_v;
     vector<int> log_lane;
+    size_t log_size;  // current number of log entries (used instead of push_back)
 
     Vehicle(
         World *w,
@@ -225,7 +241,7 @@ struct Vehicle {
     void update();
     void end_trip();
     void car_follow_newell();
-    void route_next_link_choice(vector<Link*> linkset);
+    void route_next_link_choice(const vector<Link*>& linkset);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
     void log_data();
@@ -297,6 +313,7 @@ struct World {
 
     // Collections of objects
     vector<Vehicle *> vehicles;         //all state
+    vector<Vehicle *> active_vehicles;  //home, wait, run (compact, for fast iteration)
     vector<Link *> links;
     vector<Node *> nodes;
     unordered_map<int, Vehicle *> vehicles_living;  //home, wait, run // vehicles_living[id] = vehicle
@@ -310,7 +327,7 @@ struct World {
 
     double route_adaptive;
     double route_choice_uncertainty;
-    vector<map<Link *, double>> route_preference;   // route_preference[dest_id][link]: preference weight for link towards dest
+    vector<vector<double>> route_preference;   // route_preference[dest_id][link_id]: preference weight for link towards dest
 
     // Graph adjacency
     vector<vector<int>> adj_mat;
@@ -393,5 +410,32 @@ struct World {
     // indexed by vehicle order in World.vehicles vector.
     // Returns vector of int states: 0=home, 1=wait, 2=run, 3=end, 4=abort
     std::vector<int> get_vehicle_states_by_index() const;
+
+    // Build enter_log data: returns (link_id, time, vehicle_index) triples
+    // for all vehicle link-entry events. Used by _build_vehicles_enter_log.
+    struct EnterLogEntry {
+        int link_id;
+        double time;
+        int vehicle_index;
+    };
+    std::vector<EnterLogEntry> build_enter_log_data() const;
+
+    // Flat SoA log for all vehicles (used by build_all_vehicle_logs_flat)
+    struct FlatLogs {
+        std::vector<double> log_t;
+        std::vector<double> log_x;
+        std::vector<double> log_v;
+        std::vector<int>    log_state;
+        std::vector<double> log_s;
+        std::vector<int>    log_lane;
+        std::vector<int>    log_link;
+        // Per-vehicle offsets: vehicle i's data is [offsets[i], offsets[i+1])
+        std::vector<size_t> offsets;  // size = vehicles.size() + 1
+        // log_t_link: flat arrays + per-vehicle offsets
+        std::vector<double> ltl_t;
+        std::vector<int>    ltl_id;
+        std::vector<size_t> ltl_offsets;  // size = vehicles.size() + 1
+    };
+    FlatLogs build_all_vehicle_logs_flat() const;
 
 };
