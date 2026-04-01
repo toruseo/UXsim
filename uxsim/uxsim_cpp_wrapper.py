@@ -483,6 +483,13 @@ class CppVehicle:
     def link_arrival_time(self):
         return self._cpp_vehicle.arrival_time_link
 
+    @property
+    def distance_traveled(self):
+        return self._cpp_vehicle.distance_traveled
+    @distance_traveled.setter
+    def distance_traveled(self, value):
+        self._cpp_vehicle.distance_traveled = float(value)
+
     # --- Log properties (lazily computed and cached) ---
 
     # State int→str for log arrays
@@ -1118,22 +1125,25 @@ class CppWorld:
 
     def _build_all_vehicle_log_caches(self):
         """Batch-fetch raw log data from C++ for all vehicles.
-        Uses flat SoA API: one contiguous array per field, sliced per vehicle."""
+        Uses compact flat SoA API (no home prepend) for speed.
+        Falls back to legacy APIs for older C++ builds."""
         try:
-            flat = self._cpp_world.build_all_vehicle_logs_flat()
+            flat = self._cpp_world.build_all_vehicle_logs_flat_compact()
         except AttributeError:
             try:
-                logs = self._cpp_world.build_all_vehicle_logs()
+                flat = self._cpp_world.build_all_vehicle_logs_flat()
             except AttributeError:
+                try:
+                    logs = self._cpp_world.build_all_vehicle_logs()
+                except AttributeError:
+                    return
+                vehicles = list(self.VEHICLES.values())
+                for veh, log in zip(vehicles, logs):
+                    if veh._log_cache is None:
+                        veh._log_cache = log
                 return
-            vehicles = list(self.VEHICLES.values())
-            for veh, log in zip(vehicles, logs):
-                if veh._log_cache is None:
-                    veh._log_cache = log
-            return
         offsets = flat['offsets']
         ltl_offsets = flat['ltl_offsets']
-        # Extract flat arrays (numpy)
         all_log_t = flat['log_t']
         all_log_x = flat['log_x']
         all_log_v = flat['log_v']
@@ -1143,20 +1153,44 @@ class CppWorld:
         all_log_link = flat['log_link']
         all_ltl_t = flat['ltl_t']
         all_ltl_id = flat['ltl_id']
+        all_n_missing = flat.get('n_missing')
+        delta_t = self.DELTAT
         vehicles = list(self.VEHICLES.values())
         for i, veh in enumerate(vehicles):
             if veh._log_cache is not None:
                 continue
             s, e = int(offsets[i]), int(offsets[i + 1])
             ls, le = int(ltl_offsets[i]), int(ltl_offsets[i + 1])
+            log_t = all_log_t[s:e]
+            log_x = all_log_x[s:e]
+            log_v = all_log_v[s:e]
+            log_state = all_log_state[s:e]
+            log_s = all_log_s[s:e]
+            log_lane = all_log_lane[s:e]
+            log_link = all_log_link[s:e]
+            # Prepend home entries if compact format (n_missing available)
+            if all_n_missing is not None:
+                nm = int(all_n_missing[i])
+                if nm > 0:
+                    home_t = np.arange(nm, dtype=np.float64) * delta_t
+                    home_fill_f = np.full(nm, -1.0)
+                    home_fill_i = np.full(nm, -1, dtype=np.int32)
+                    home_state = np.zeros(nm, dtype=np.int32)  # 0 = home
+                    log_t = np.concatenate([home_t, log_t])
+                    log_x = np.concatenate([home_fill_f, log_x])
+                    log_v = np.concatenate([home_fill_f, log_v])
+                    log_state = np.concatenate([home_state, log_state])
+                    log_s = np.concatenate([home_fill_f, log_s])
+                    log_lane = np.concatenate([home_fill_i, log_lane])
+                    log_link = np.concatenate([home_fill_i, log_link])
             veh._log_cache = {
-                'log_t': all_log_t[s:e],
-                'log_x': all_log_x[s:e],
-                'log_v': all_log_v[s:e],
-                'log_state': all_log_state[s:e],
-                'log_s': all_log_s[s:e],
-                'log_lane': all_log_lane[s:e],
-                'log_link': all_log_link[s:e],
+                'log_t': log_t,
+                'log_x': log_x,
+                'log_v': log_v,
+                'log_state': log_state,
+                'log_s': log_s,
+                'log_lane': log_lane,
+                'log_link': log_link,
                 'log_t_link_t': all_ltl_t[ls:le],
                 'log_t_link_id': all_ltl_id[ls:le],
             }

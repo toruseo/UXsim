@@ -556,6 +556,37 @@ NB_MODULE(uxsim_cpp, m) {
                  return d;
              },
              "Build flat SoA logs for all vehicles. Returns dict with contiguous arrays + offset arrays.")
+        .def("build_all_vehicle_logs_flat_compact", [](const World &w) -> nb::dict {
+                 // Compact flat SoA: no home prepend. Only actual log entries.
+                 auto fl = w.build_all_vehicle_logs_flat_compact();
+                 nb::dict d;
+                 d["log_t"] = make_numpy_move(std::move(fl.log_t));
+                 d["log_x"] = make_numpy_move(std::move(fl.log_x));
+                 d["log_v"] = make_numpy_move(std::move(fl.log_v));
+                 d["log_state"] = make_numpy_move(std::move(fl.log_state));
+                 d["log_s"] = make_numpy_move(std::move(fl.log_s));
+                 d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
+                 d["log_link"] = make_numpy_move(std::move(fl.log_link));
+                 {
+                     size_t n = fl.offsets.size();
+                     auto *buf = new std::vector<int64_t>(n);
+                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.offsets[i]);
+                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
+                     d["offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
+                 }
+                 d["n_missing"] = make_numpy_move(std::move(fl.n_missing));
+                 d["ltl_t"] = make_numpy_move(std::move(fl.ltl_t));
+                 d["ltl_id"] = make_numpy_move(std::move(fl.ltl_id));
+                 {
+                     size_t n = fl.ltl_offsets.size();
+                     auto *buf = new std::vector<int64_t>(n);
+                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.ltl_offsets[i]);
+                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
+                     d["ltl_offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
+                 }
+                 return d;
+             },
+             "Build compact flat SoA logs (no home prepend). Includes n_missing array.")
         .def("build_enter_log_data", [](const World &w) -> nb::dict {
                  auto entries = w.build_enter_log_data();
                  size_t n = entries.size();
