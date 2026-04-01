@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -shared --coverage -Wl,--dependency-file=CMakeFiles/uxsim_cpp.dir/link.d  -o uxsim_cpp.cpython-312-x86_64-linux-gnu.so CMakeFiles/uxsim_cpp.dir/uxsim/trafficpp/bindings.cpp.o  libnanobind-static.a

@@ -42,12 +42,13 @@ jobs:
         cmake --build build_cov
     - name: Run tests for C++ coverage
       run: |
-        cp build_cov/uxsim_cpp*.so uxsim/ 2>/dev/null || cp build_cov/*.so uxsim/ 2>/dev/null || true
+        UXSIM_CPP_DIR=$(python3 -c "import importlib.util, os; spec=importlib.util.find_spec('uxsim.uxsim_cpp'); print(os.path.dirname(spec.origin) if spec and spec.origin else 'uxsim')")
+        cp build_cov/uxsim_cpp*.so "$UXSIM_CPP_DIR/" 2>/dev/null || cp build_cov/*.so "$UXSIM_CPP_DIR/" 2>/dev/null || true
         python3 -m pytest tests/test_cpp_build.py tests/test_cpp_mode.py --reruns 5 -q
     - name: Collect C++ coverage
       run: |
-        lcov --capture --directory build_cov --output-file cpp_coverage.info --ignore-errors source,gcov
-        lcov --remove cpp_coverage.info '/usr/*' '*/nanobind/*' '*/python*' --output-file cpp_coverage_filtered.info --ignore-errors unused
+        lcov --capture --directory build_cov --output-file cpp_coverage.info --ignore-errors source,gcov,empty
+        lcov --remove cpp_coverage.info '/usr/*' '*/nanobind/*' '*/python*' --output-file cpp_coverage_filtered.info --ignore-errors unused,empty
         lcov --list cpp_coverage_filtered.info || true
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v5.5.2
