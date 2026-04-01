@@ -753,12 +753,19 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("trip_abort", &Vehicle::trip_abort)
         .def_ro("flag_trip_aborted", &Vehicle::flag_trip_aborted)
         .def_ro("flag_waiting_for_trip_end", &Vehicle::flag_waiting_for_trip_end)
-        .def_ro("log_t", &Vehicle::log_t)
-        .def_ro("log_state", &Vehicle::log_state)
-        .def_ro("log_link", &Vehicle::log_link)
-        .def_ro("log_x", &Vehicle::log_x)
-        .def_ro("log_v", &Vehicle::log_v)
-        .def_ro("log_lane", &Vehicle::log_lane)
+        .def_prop_ro("log_t", [](const Vehicle &v) {
+                 return std::vector<double>(v.log_t.begin(), v.log_t.begin() + v.log_size); })
+        .def_prop_ro("log_state", [](const Vehicle &v) {
+                 return std::vector<int>(v.log_state.begin(), v.log_state.begin() + v.log_size); })
+        .def_prop_ro("log_link", [](const Vehicle &v) {
+                 return std::vector<int>(v.log_link.begin(), v.log_link.begin() + v.log_size); })
+        .def_prop_ro("log_x", [](const Vehicle &v) {
+                 return std::vector<double>(v.log_x.begin(), v.log_x.begin() + v.log_size); })
+        .def_prop_ro("log_v", [](const Vehicle &v) {
+                 return std::vector<double>(v.log_v.begin(), v.log_v.begin() + v.log_size); })
+        .def_prop_ro("log_lane", [](const Vehicle &v) {
+                 return std::vector<int>(v.log_lane.begin(), v.log_lane.begin() + v.log_size); })
+        .def_ro("log_size", &Vehicle::log_size)
         .def_ro("arrival_time", &Vehicle::arrival_time)
         .def_ro("travel_time", &Vehicle::travel_time)
         .def_rw("distance_traveled", &Vehicle::distance_traveled)

@@ -1142,6 +1142,7 @@ class CppWorld:
         self.print(" simulation finished")
         self._simulation_done = True
         self._build_vehicles_enter_log()
+        self._build_all_vehicle_log_caches()
         self.analyzer.basic_analysis()
 
     def _build_vehicles_enter_log(self):

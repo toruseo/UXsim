@@ -198,6 +198,7 @@ struct Vehicle {
     int flag_waiting_for_trip_end;
     int flag_trip_aborted;
     int trip_abort;
+    int active_index;  // index in World::active_vehicles (-1 if inactive)
 
     double arrival_time_link;
 
@@ -217,13 +218,18 @@ struct Vehicle {
     vector<Link *> _buf_filtered;
     vector<double> _buf_outlink_pref;
 
-    // Logging
+    // Incremental tracking for no_cyclic_routing (O(1) lookup instead of log_link scan)
+    vector<bool> _traveled_nodes;       // _traveled_nodes[node_id] = true if visited
+    int _traveled_link_count;           // number of distinct links traveled (for specified_route)
+
+    // Logging (pre-allocated, indexed by log_size)
     vector<double> log_t;
     vector<int> log_state;
     vector<int> log_link;
     vector<double> log_x;
     vector<double> log_v;
     vector<int> log_lane;
+    size_t log_size;  // current number of log entries (used instead of push_back)
 
     Vehicle(
         World *w,
@@ -235,7 +241,7 @@ struct Vehicle {
     void update();
     void end_trip();
     void car_follow_newell();
-    void route_next_link_choice(vector<Link*> linkset);
+    void route_next_link_choice(const vector<Link*>& linkset);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
     void log_data();
@@ -307,6 +313,7 @@ struct World {
 
     // Collections of objects
     vector<Vehicle *> vehicles;         //all state
+    vector<Vehicle *> active_vehicles;  //home, wait, run (compact, for fast iteration)
     vector<Link *> links;
     vector<Node *> nodes;
     unordered_map<int, Vehicle *> vehicles_living;  //home, wait, run // vehicles_living[id] = vehicle
