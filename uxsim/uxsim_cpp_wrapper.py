@@ -1106,14 +1106,37 @@ class CppWorld:
 
     def _build_all_vehicle_log_caches(self):
         """Batch-fetch raw log data from C++ for all vehicles.
-        Stores raw numpy dicts directly — conversion is deferred to property access."""
-        all_logs = self._cpp_world.build_all_vehicle_logs()
-        vehicles = self.VEHICLES
-        for i, raw in enumerate(all_logs):
-            veh = vehicles.get(str(i))
-            if veh is None or veh._log_cache is not None:
+        Uses flat SoA API: one contiguous array per field, sliced per vehicle."""
+        flat = self._cpp_world.build_all_vehicle_logs_flat()
+        offsets = flat['offsets']
+        ltl_offsets = flat['ltl_offsets']
+        # Extract flat arrays (numpy)
+        all_log_t = flat['log_t']
+        all_log_x = flat['log_x']
+        all_log_v = flat['log_v']
+        all_log_state = flat['log_state']
+        all_log_s = flat['log_s']
+        all_log_lane = flat['log_lane']
+        all_log_link = flat['log_link']
+        all_ltl_t = flat['ltl_t']
+        all_ltl_id = flat['ltl_id']
+        vehicles = list(self.VEHICLES.values())
+        for i, veh in enumerate(vehicles):
+            if veh._log_cache is not None:
                 continue
-            veh._log_cache = raw
+            s, e = int(offsets[i]), int(offsets[i + 1])
+            ls, le = int(ltl_offsets[i]), int(ltl_offsets[i + 1])
+            veh._log_cache = {
+                'log_t': all_log_t[s:e],
+                'log_x': all_log_x[s:e],
+                'log_v': all_log_v[s:e],
+                'log_state': all_log_state[s:e],
+                'log_s': all_log_s[s:e],
+                'log_lane': all_log_lane[s:e],
+                'log_link': all_log_link[s:e],
+                'log_t_link_t': all_ltl_t[ls:le],
+                'log_t_link_id': all_ltl_id[ls:le],
+            }
 
     def simulation_terminated(self):
         self.print(" simulation finished")
@@ -1122,13 +1145,27 @@ class CppWorld:
         self.analyzer.basic_analysis()
 
     def _build_vehicles_enter_log(self):
-        """Reconstruct each link's vehicles_enter_log from vehicle log data."""
+        """Reconstruct each link's vehicles_enter_log from C++ bulk data."""
         for link in self.LINKS:
             link.vehicles_enter_log = {}
-        for veh in self.VEHICLES.values():
-            for t, l in veh.log_t_link:
-                if isinstance(l, CppLink):
-                    l.vehicles_enter_log[t] = veh
+        try:
+            data = self._cpp_world.build_enter_log_data()
+            link_ids = data['link_id']
+            times = data['time']
+            veh_indices = data['vehicle_index']
+            links_list = self.LINKS
+            n_links = len(links_list)
+            vehicles_list = list(self.VEHICLES.values())
+            for i in range(len(link_ids)):
+                lid = int(link_ids[i])
+                if 0 <= lid < n_links:
+                    links_list[lid].vehicles_enter_log[float(times[i])] = vehicles_list[int(veh_indices[i])]
+        except AttributeError:
+            # Fallback for older C++ builds without build_enter_log_data
+            for veh in self.VEHICLES.values():
+                for t, l in veh.log_t_link:
+                    if isinstance(l, CppLink):
+                        l.vehicles_enter_log[t] = veh
 
     def get_node(self, node):
         if node is None:

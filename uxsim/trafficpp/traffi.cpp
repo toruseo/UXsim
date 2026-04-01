@@ -70,6 +70,9 @@ Node::Node(World *w, const string &node_name, double x, double y, vector<double>
         }
     }
 
+    // Reserve signal_log for expected timesteps to avoid reallocations
+    signal_log.reserve(w->total_timesteps + 1);
+
     // flow capacity initialization (matching Python Node.__init__)
     if (flow_capacity >= 0.0){
         this->flow_capacity_remain = flow_capacity * w->tau * w->delta_n;
@@ -195,7 +198,8 @@ void Node::flow_capacity_update(){
  */
 void Node::transfer(){
     // Build outlink list with repetition per lane (multi-lane gets more transfer attempts)
-    vector<Link *> outlinks_expanded;
+    _buf_outlinks_expanded.clear();
+    auto &outlinks_expanded = _buf_outlinks_expanded;
     for (auto veh : incoming_vehicles){
         if (veh->route_next_link != nullptr){
             // Add each unique outlink once per its number of lanes
@@ -245,8 +249,10 @@ void Node::transfer(){
         }
 
         // Collect merging vehicles: must be at front of their inlink AND heading to this outlink
-        vector<Vehicle *> merging_vehs;
-        vector<double> merge_priorities;
+        _buf_merging_vehs.clear();
+        _buf_merge_priorities.clear();
+        auto &merging_vehs = _buf_merging_vehs;
+        auto &merge_priorities = _buf_merge_priorities;
         for (auto veh : incoming_vehicles){
             if (veh->route_next_link == outlink &&
                     veh == veh->link->vehicles.front() &&
@@ -655,10 +661,8 @@ Vehicle::Vehicle(
     orig = w->nodes_map[orig_name];
     dest = w->nodes_map[dest_name];
 
-    // Initialize link preference
-    for (auto ln : w->links){
-        route_preference[ln] = 0.0;
-    }
+    // Initialize link preference (vector indexed by link_id)
+    route_preference.assign(w->links.size(), 0.0);
     route_choice_uncertainty = w->route_choice_uncertainty;
 
     log_t.reserve(w->vehicle_log_reserve_size);
@@ -836,29 +840,31 @@ void Vehicle::route_next_link_choice(vector<Link*> linkset){
     }
 
     // Filter by links_preferred (intersection with linkset)
-    vector<Link*> outlinks = linkset;
+    _buf_outlinks.clear();
+    _buf_outlinks.insert(_buf_outlinks.end(), linkset.begin(), linkset.end());
+    auto &outlinks = _buf_outlinks;
     if (!links_preferred.empty()){
-        vector<Link*> filtered;
+        _buf_filtered.clear();
         for (auto ln : outlinks){
             if (contains(links_preferred, ln)){
-                filtered.push_back(ln);
+                _buf_filtered.push_back(ln);
             }
         }
-        if (!filtered.empty()){
-            outlinks = filtered;
+        if (!_buf_filtered.empty()){
+            outlinks.swap(_buf_filtered);
         }
     }
 
     // Filter out links_avoid (subtraction from linkset)
     if (!links_avoid.empty()){
-        vector<Link*> filtered;
+        _buf_filtered.clear();
         for (auto ln : outlinks){
             if (!contains(links_avoid, ln)){
-                filtered.push_back(ln);
+                _buf_filtered.push_back(ln);
             }
         }
-        if (!filtered.empty()){
-            outlinks = filtered;
+        if (!_buf_filtered.empty()){
+            outlinks.swap(_buf_filtered);
         }
     }
 
@@ -874,14 +880,14 @@ void Vehicle::route_next_link_choice(vector<Link*> linkset){
             }
         }
         // Filter outlinks: exclude those whose end_node is in traveled_nodes
-        vector<Link*> filtered;
+        _buf_filtered.clear();
         for (auto ln : outlinks){
             if (traveled_nodes.find(ln->end_node) == traveled_nodes.end()){
-                filtered.push_back(ln);
+                _buf_filtered.push_back(ln);
             }
         }
-        if (!filtered.empty()){
-            outlinks = filtered;
+        if (!_buf_filtered.empty()){
+            outlinks.swap(_buf_filtered);
         }
     }
 
@@ -891,10 +897,11 @@ void Vehicle::route_next_link_choice(vector<Link*> linkset){
         return;
     }
 
-    // Build preference weights
-    vector<double> outlink_pref;
+    // Build preference weights (O(1) vector access by link id)
+    _buf_outlink_pref.clear();
+    auto &outlink_pref = _buf_outlink_pref;
     for (auto ln : outlinks){
-        outlink_pref.push_back(w->route_preference[dest->id][ln]);
+        outlink_pref.push_back(w->route_preference[dest->id][ln->id]);
     }
 
     if (w->hard_deterministic_mode){
@@ -1206,12 +1213,7 @@ void World::initialize_adj_matrix(){
             adj_mat_time[i][j] = ln->length / ln->vmax;
         }
 
-        route_preference.resize(nodes.size());
-        for (auto nd : nodes){
-            for (auto ln : links){
-                route_preference[nd->id][ln] = 0.0;
-            }
-        }
+        route_preference.assign(nodes.size(), vector<double>(links.size(), 0.0));
         flag_initialized = true;
     }
 }
@@ -1393,18 +1395,23 @@ void World::route_choice_duo(){
         int k = dest->id;
 
         auto duo_update_weight_tmp = duo_update_weight;
-        if (sum_map_values(route_preference[k]) == 0){
-             duo_update_weight_tmp = 1; //initialize with deterministic shortest path
+        {
+            double psum = 0.0;
+            for (double v : route_preference[k]) psum += v;
+            if (psum == 0.0){
+                duo_update_weight_tmp = 1; //initialize with deterministic shortest path
+            }
         }
 
         // For each link in the world, update preference
         for (auto ln : links){
             int i = ln->start_node->id;
             int j = ln->end_node->id;
+            int lid = ln->id;
             if (route_next[i][k] == j){
-                route_preference[k][ln] = (1.0 - duo_update_weight_tmp) * route_preference[k][ln] + duo_update_weight_tmp;
+                route_preference[k][lid] = (1.0 - duo_update_weight_tmp) * route_preference[k][lid] + duo_update_weight_tmp;
             }else{
-                route_preference[k][ln] = (1.0 - duo_update_weight_tmp) * route_preference[k][ln];
+                route_preference[k][lid] = (1.0 - duo_update_weight_tmp) * route_preference[k][lid];
             }
         }
     }
@@ -1418,17 +1425,22 @@ void World::route_choice_duo_gradual(){
         int k = dest->id;
 
         double w_tmp = weight0;
-        if (sum_map_values(route_preference[k]) == 0){
-            w_tmp = 1;
+        {
+            double psum = 0.0;
+            for (double v : route_preference[k]) psum += v;
+            if (psum == 0.0){
+                w_tmp = 1;
+            }
         }
 
         for (auto ln : links){
             int i = ln->start_node->id;
             int j = ln->end_node->id;
+            int lid = ln->id;
             if (route_next[i][k] == j){
-                route_preference[k][ln] = (1.0 - w_tmp) * route_preference[k][ln] + w_tmp;
+                route_preference[k][lid] = (1.0 - w_tmp) * route_preference[k][lid] + w_tmp;
             }else{
-                route_preference[k][ln] = (1.0 - w_tmp) * route_preference[k][ln];
+                route_preference[k][lid] = (1.0 - w_tmp) * route_preference[k][lid];
             }
         }
     }
@@ -1645,6 +1657,10 @@ Vehicle *World::get_vehicle_by_index(int index) const {
 }
 
 Link *World::get_link_by_id(const int link_id){
+    if (link_id >= 0 && link_id < (int)links.size() && links[link_id]->id == link_id){
+        return links[link_id];
+    }
+    // Fallback: linear search (should not happen if IDs are sequential)
     for (auto ln : links){
         if (ln->id == link_id){
             return ln;
@@ -1731,5 +1747,150 @@ std::vector<int> World::get_vehicle_states_by_index() const {
         result.push_back(effective_state);
     }
     return result;
+}
+
+/**
+ * @brief Build enter_log data for all vehicles in one pass.
+ * Returns (link_id, time, vehicle_index) for each link-entry event.
+ * Avoids per-vehicle Python property access and list creation.
+ */
+std::vector<World::EnterLogEntry> World::build_enter_log_data() const {
+    std::vector<EnterLogEntry> result;
+
+    for (size_t vi = 0; vi < vehicles.size(); vi++) {
+        const Vehicle *v = vehicles[vi];
+        // Scan log_link for link transitions (same logic as build_full_log's log_t_link)
+        int n_missing = 0;
+        if (!v->log_t.empty() && v->log_t[0] > 0) {
+            n_missing = static_cast<int>(v->log_t[0] / delta_t);
+        }
+        int prev_link_id = -999;
+        for (size_t i = 0; i < v->log_link.size(); i++) {
+            int lid = v->log_link[i];
+            if (lid >= 0 && lid != prev_link_id) {
+                double t = v->log_t[i];
+                result.push_back({lid, t, static_cast<int>(vi)});
+                prev_link_id = lid;
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ * @brief Build flat SoA logs for all vehicles in one pass.
+ * Avoids per-vehicle vector allocation and Python object creation overhead.
+ */
+World::FlatLogs World::build_all_vehicle_logs_flat() const {
+    FlatLogs fl;
+    size_t nv = vehicles.size();
+    fl.offsets.resize(nv + 1);
+    fl.ltl_offsets.resize(nv + 1);
+
+    // First pass: compute total sizes for pre-allocation
+    size_t total_log = 0;
+    size_t total_ltl = 0;
+    for (size_t vi = 0; vi < nv; vi++) {
+        const Vehicle *v = vehicles[vi];
+        int n_missing = 0;
+        if (!v->log_t.empty() && v->log_t[0] > 0) {
+            n_missing = static_cast<int>(v->log_t[0] / delta_t);
+        }
+        size_t vlen = n_missing + v->log_t.size();
+        fl.offsets[vi] = total_log;
+        total_log += vlen;
+
+        // log_t_link: 1 (home) + transitions + optional end
+        size_t ltl_count = 1;  // home entry
+        int prev_lid = -999;
+        for (size_t i = 0; i < v->log_link.size(); i++) {
+            int lid = v->log_link[i];
+            if (lid >= 0 && lid != prev_lid) {
+                ltl_count++;
+                prev_lid = lid;
+            }
+        }
+        if (v->state == vsEND) ltl_count++;
+        fl.ltl_offsets[vi] = total_ltl;
+        total_ltl += ltl_count;
+    }
+    fl.offsets[nv] = total_log;
+    fl.ltl_offsets[nv] = total_ltl;
+
+    // Allocate all arrays at once
+    fl.log_t.resize(total_log);
+    fl.log_x.resize(total_log);
+    fl.log_v.resize(total_log);
+    fl.log_state.resize(total_log);
+    fl.log_s.resize(total_log);
+    fl.log_lane.resize(total_log);
+    fl.log_link.resize(total_log);
+    fl.ltl_t.resize(total_ltl);
+    fl.ltl_id.resize(total_ltl);
+
+    // Second pass: fill arrays
+    for (size_t vi = 0; vi < nv; vi++) {
+        const Vehicle *v = vehicles[vi];
+        size_t base = fl.offsets[vi];
+        int n_missing = 0;
+        if (!v->log_t.empty() && v->log_t[0] > 0) {
+            n_missing = static_cast<int>(v->log_t[0] / delta_t);
+        }
+
+        // Prepend home entries
+        for (int i = 0; i < n_missing; i++) {
+            size_t idx = base + i;
+            fl.log_t[idx] = i * delta_t;
+            fl.log_x[idx] = -1;
+            fl.log_v[idx] = -1;
+            fl.log_state[idx] = vsHOME;
+            fl.log_s[idx] = -1;
+            fl.log_lane[idx] = -1;
+            fl.log_link[idx] = -1;
+        }
+
+        // Append actual log entries
+        size_t log_base = base + n_missing;
+        for (size_t i = 0; i < v->log_t.size(); i++) {
+            size_t idx = log_base + i;
+            fl.log_t[idx] = v->log_t[i];
+            int st = (i < v->log_state.size()) ? v->log_state[i] : 0;
+            fl.log_state[idx] = st;
+            bool is_run = (st == vsRUN);
+            fl.log_x[idx] = is_run ? ((i < v->log_x.size()) ? v->log_x[i] : -1) : -1;
+            fl.log_v[idx] = is_run ? ((i < v->log_v.size()) ? v->log_v[i] : -1) : -1;
+            fl.log_s[idx] = is_run ? 0 : -1;
+            fl.log_lane[idx] = (i < v->log_lane.size()) ? v->log_lane[i] : -1;
+            fl.log_link[idx] = (i < v->log_link.size()) ? v->log_link[i] : -1;
+        }
+
+        // log_t_link
+        size_t ltl_base = fl.ltl_offsets[vi];
+        size_t ltl_idx = 0;
+        fl.ltl_t[ltl_base] = v->departure_time;
+        fl.ltl_id[ltl_base] = Vehicle::LOG_T_LINK_HOME;
+        ltl_idx++;
+
+        // Scan full log_link (including prepended) for transitions
+        size_t vlen = fl.offsets[vi + 1] - base;
+        int prev_lid = -999;
+        for (size_t i = 0; i < vlen; i++) {
+            int lid = fl.log_link[base + i];
+            if (lid >= 0 && lid != prev_lid) {
+                fl.ltl_t[ltl_base + ltl_idx] = fl.log_t[base + i];
+                fl.ltl_id[ltl_base + ltl_idx] = lid;
+                ltl_idx++;
+                prev_lid = lid;
+            }
+        }
+        if (v->state == vsEND) {
+            fl.ltl_t[ltl_base + ltl_idx] = (v->arrival_time >= 0) ? v->arrival_time : -1.0;
+            fl.ltl_id[ltl_base + ltl_idx] = Vehicle::LOG_T_LINK_END;
+            ltl_idx++;
+        }
+    }
+
+    return fl;
 }
 

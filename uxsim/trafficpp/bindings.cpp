@@ -524,6 +524,56 @@ NB_MODULE(uxsim_cpp, m) {
                  return result;
              },
              "Build full logs for all vehicles in batch. Returns list of dicts with numpy arrays.")
+        .def("build_all_vehicle_logs_flat", [](const World &w) -> nb::dict {
+                 // Flat SoA: all vehicles' logs in contiguous arrays + offset arrays.
+                 // Returns dict with 7 data arrays + offsets + 2 ltl arrays + ltl_offsets.
+                 auto fl = w.build_all_vehicle_logs_flat();
+                 nb::dict d;
+                 d["log_t"] = make_numpy_move(std::move(fl.log_t));
+                 d["log_x"] = make_numpy_move(std::move(fl.log_x));
+                 d["log_v"] = make_numpy_move(std::move(fl.log_v));
+                 d["log_state"] = make_numpy_move(std::move(fl.log_state));
+                 d["log_s"] = make_numpy_move(std::move(fl.log_s));
+                 d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
+                 d["log_link"] = make_numpy_move(std::move(fl.log_link));
+                 // offsets as uint64 numpy array (size_t)
+                 {
+                     size_t n = fl.offsets.size();
+                     auto *buf = new std::vector<int64_t>(n);
+                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.offsets[i]);
+                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
+                     d["offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
+                 }
+                 d["ltl_t"] = make_numpy_move(std::move(fl.ltl_t));
+                 d["ltl_id"] = make_numpy_move(std::move(fl.ltl_id));
+                 {
+                     size_t n = fl.ltl_offsets.size();
+                     auto *buf = new std::vector<int64_t>(n);
+                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.ltl_offsets[i]);
+                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
+                     d["ltl_offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
+                 }
+                 return d;
+             },
+             "Build flat SoA logs for all vehicles. Returns dict with contiguous arrays + offset arrays.")
+        .def("build_enter_log_data", [](const World &w) -> nb::dict {
+                 auto entries = w.build_enter_log_data();
+                 size_t n = entries.size();
+                 std::vector<int> link_ids(n);
+                 std::vector<double> times(n);
+                 std::vector<int> veh_indices(n);
+                 for (size_t i = 0; i < n; i++) {
+                     link_ids[i] = entries[i].link_id;
+                     times[i] = entries[i].time;
+                     veh_indices[i] = entries[i].vehicle_index;
+                 }
+                 nb::dict d;
+                 d["link_id"] = make_numpy_move(std::move(link_ids));
+                 d["time"] = make_numpy_move(std::move(times));
+                 d["vehicle_index"] = make_numpy_move(std::move(veh_indices));
+                 return d;
+             },
+             "Build enter_log data for all vehicles. Returns dict with link_id/time/vehicle_index arrays.")
         ;
 
     //
