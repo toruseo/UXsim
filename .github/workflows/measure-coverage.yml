@@ -47,7 +47,7 @@ jobs:
         python3 -m pytest tests/test_cpp_build.py tests/test_cpp_mode.py --reruns 5 -q
     - name: Collect C++ coverage
       run: |
-        lcov --capture --directory build_cov --output-file cpp_coverage.info --ignore-errors source,gcov,empty
+        lcov --capture --directory build_cov --output-file cpp_coverage.info --ignore-errors source,gcov,empty,mismatch
         lcov --remove cpp_coverage.info '/usr/*' '*/nanobind/*' '*/python*' --output-file cpp_coverage_filtered.info --ignore-errors unused,empty
         lcov --list cpp_coverage_filtered.info || true
     - name: Upload coverage reports to Codecov
