@@ -12,13 +12,15 @@ def demand_info_record(func):
     A decorator to record arguments of `World.addVehicle`, `World.adddemand`, etc used in scenario definition in World object.
     """
 
+    sig = inspect.signature(func)
+
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         # 関数名を取得
         func_name = func.__name__
-        
+
         # 引数の情報を取得
-        bound_args = inspect.signature(func).bind(self, *args, **kwargs)
+        bound_args = sig.bind(self, *args, **kwargs)
         bound_args.apply_defaults()
         
         # self引数を除外
