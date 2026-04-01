@@ -405,6 +405,12 @@ class CppVehicle:
     C++ via __getattr__; only Python-only data lives on the Python object.
     Instances are created via __new__ in _register_new_cpp_vehicles — no __init__."""
 
+    __slots__ = ('W', 'name', 'id', '_cpp_vehicle', '_log_cache', 'orig', 'dest',
+                 'color', 'attribute', 'user_attribute', 'user_function', 'mode',
+                 'dest_list', 'node_event', 'route_pref', 'links_prefer', 'links_avoid',
+                 'specified_route', 'route_choice_principle', 'link_old',
+                 'distance_traveled')
+
     # State int→str mapping
     _STATE_MAP = {0: "home", 1: "wait", 2: "run", 3: "end", 4: "abort"}
     _STATE_TO_INT = {"home": 0, "wait": 1, "run": 2, "end": 3, "abort": 4}
@@ -417,8 +423,9 @@ class CppVehicle:
         if name.startswith('_'):
             raise AttributeError(name)
         try:
-            return getattr(self.__dict__['_cpp_vehicle'], name)
-        except (KeyError, AttributeError):
+            cpp_veh = object.__getattribute__(self, '_cpp_vehicle')
+            return getattr(cpp_veh, name)
+        except AttributeError:
             raise AttributeError(f"'CppVehicle' object has no attribute '{name}'")
 
     # --- Properties that need conversion between C++ and Python ---
@@ -741,7 +748,7 @@ class CppWorld:
         self.DELTAT = self.REACTION_TIME * self.DELTAN
         self.DELTAT_ROUTE = max(1, int(self.DUO_UPDATE_TIME / self.DELTAT))
 
-        self.VEHICLES = OrderedDict()
+        self._VEHICLES = OrderedDict()
         self.VEHICLES_LIVING = OrderedDict()
         self.VEHICLES_RUNNING = OrderedDict()
         self.NODES = []
@@ -778,6 +785,8 @@ class CppWorld:
         if vehicle_logging_timestep_interval not in (0, 1, -1):
             warnings.warn("vehicle_logging_timestep_interval is not 0, 1, or -1. C++ mode only supports 0 (no logging) and 1 (full logging). The value will be treated as 1 (logging enabled).", stacklevel=2)
         self._simulation_done = False
+        self._vehicles_list = []
+        self._vehicles_need_registration = False
 
     def _ensure_cpp_world(self):
         if self._cpp_world_created:
@@ -797,6 +806,17 @@ class CppWorld:
         self._cpp_world_created = True
         self._cpp_world.route_choice_update_gradual = self.route_choice_update_gradual
         self._cpp_world.no_cyclic_routing = self.no_cyclic_routing
+
+    @property
+    def VEHICLES(self):
+        if self._vehicles_need_registration:
+            self._register_new_cpp_vehicles()
+            self._vehicles_need_registration = False
+        return self._VEHICLES
+
+    @VEHICLES.setter
+    def VEHICLES(self, value):
+        self._VEHICLES = value
 
     # --- Scenario definition ---
 
@@ -868,7 +888,7 @@ class CppWorld:
                 except (AttributeError, TypeError):
                     pass
 
-        self._register_new_cpp_vehicles()
+        self._vehicles_need_registration = True
 
     def _resolve_node_name(self, node):
         """Get node name string from Node object or string."""
@@ -884,7 +904,7 @@ class CppWorld:
         _add_demand(self._cpp_world, self._resolve_node_name(orig), self._resolve_node_name(dest),
                    float(t_start), float(t_end), float(flow), [])
         self._max_demand_t = max(getattr(self, '_max_demand_t', 0), t_end)
-        self._register_new_cpp_vehicles()
+        self._vehicles_need_registration = True
 
     @demand_info_record
     def adddemand_point2point(self, x_orig, y_orig, x_dest, y_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
@@ -996,6 +1016,9 @@ class CppWorld:
         """Run C++ simulation and sync results to Python."""
         if not self.finalized:
             self.finalize_scenario()
+        if self._vehicles_need_registration:
+            self._register_new_cpp_vehicles()
+            self._vehicles_need_registration = False
 
         # Convert Python duration params to C++ until_t
         if until_t is not None:
@@ -1033,7 +1056,7 @@ class CppWorld:
             py_veh = CppVehicle.__new__(CppVehicle)
             py_veh.W = self
             py_veh.name = name
-            py_veh.id = len(self.VEHICLES)
+            py_veh.id = len(self._VEHICLES)
             py_veh._cpp_vehicle = cpp_veh
             py_veh._log_cache = None
             py_veh.orig = nodes_name_dict.get(cpp_veh.orig.name) if cpp_veh.orig else None
@@ -1052,30 +1075,28 @@ class CppWorld:
             py_veh.specified_route = None
             py_veh.route_choice_principle = self.route_choice_principle
             py_veh.link_old = None
-            self.VEHICLES[name] = py_veh
+            self._VEHICLES[name] = py_veh
             self.VEHICLES_LIVING[name] = py_veh
+            self._vehicles_list.append(py_veh)
         self._cpp_veh_registered_count = total
 
     def _sync_from_cpp(self):
-        """Update VEHICLES_LIVING / VEHICLES_RUNNING from C++ state.
-        Log caches are never explicitly invalidated — they start as None and are
-        built lazily on first access (e.g. when analyzer reads log_t)."""
-        # Batch-update VEHICLES_LIVING / VEHICLES_RUNNING using C++ bulk query
+        """Update VEHICLES_LIVING / VEHICLES_RUNNING from C++ state."""
+        vehicles_list = self._vehicles_list
+        living = self.VEHICLES_LIVING
+        running = self.VEHICLES_RUNNING
         try:
             states = self._cpp_world.get_all_vehicle_states()
         except AttributeError:
             states = None
 
         if states is not None:
-            vehicles = self.VEHICLES
-            living = self.VEHICLES_LIVING
-            running = self.VEHICLES_RUNNING
-            # states is list of (cpp_name, state_int); Python names are sequential "0","1",...
+            n_vehs = len(vehicles_list)
             for i, (_, st_int) in enumerate(states):
-                name = str(i)
-                veh = vehicles.get(name)
-                if veh is None:
-                    continue
+                if i >= n_vehs:
+                    break
+                veh = vehicles_list[i]
+                name = veh.name
                 if st_int >= 3:  # end(3) or abort(4)
                     living.pop(name, None)
                     running.pop(name, None)
@@ -1086,18 +1107,17 @@ class CppWorld:
                     living[name] = veh
                     running.pop(name, None)
         else:
-            # Fallback: read state per-vehicle via property
             for name, veh in list(self.VEHICLES.items()):
                 st = veh.state
                 if st in ("end", "abort"):
-                    self.VEHICLES_LIVING.pop(name, None)
-                    self.VEHICLES_RUNNING.pop(name, None)
+                    living.pop(name, None)
+                    running.pop(name, None)
                 elif st == "run":
-                    self.VEHICLES_LIVING[name] = veh
-                    self.VEHICLES_RUNNING[name] = veh
+                    living[name] = veh
+                    running[name] = veh
                 else:
-                    self.VEHICLES_LIVING[name] = veh
-                    self.VEHICLES_RUNNING.pop(name, None)
+                    living[name] = veh
+                    running.pop(name, None)
 
     # --- Query methods ---
 
@@ -1108,10 +1128,13 @@ class CppWorld:
         """Batch-fetch raw log data from C++ for all vehicles.
         Stores raw numpy dicts directly — conversion is deferred to property access."""
         all_logs = self._cpp_world.build_all_vehicle_logs()
-        vehicles = self.VEHICLES
+        vehicles_list = self._vehicles_list
+        n_vehs = len(vehicles_list)
         for i, raw in enumerate(all_logs):
-            veh = vehicles.get(str(i))
-            if veh is None or veh._log_cache is not None:
+            if i >= n_vehs:
+                break
+            veh = vehicles_list[i]
+            if veh._log_cache is not None:
                 continue
             veh._log_cache = raw
 
@@ -1122,13 +1145,25 @@ class CppWorld:
         self.analyzer.basic_analysis()
 
     def _build_vehicles_enter_log(self):
-        """Reconstruct each link's vehicles_enter_log from vehicle log data."""
-        for link in self.LINKS:
+        """Reconstruct each link's vehicles_enter_log from vehicle log data.
+        Uses raw numpy arrays directly to avoid triggering log_t_link conversion."""
+        links = self.LINKS
+        n_links = len(links)
+        for link in links:
             link.vehicles_enter_log = {}
-        for veh in self.VEHICLES.values():
-            for t, l in veh.log_t_link:
-                if isinstance(l, CppLink):
-                    l.vehicles_enter_log[t] = veh
+        for veh in self._vehicles_list:
+            if veh._log_cache is None:
+                veh._ensure_log_raw()
+            cache = veh._log_cache
+            t_arr = cache.get('log_t_link_t')
+            id_arr = cache.get('log_t_link_id')
+            if t_arr is None or id_arr is None:
+                continue
+            n_entries = len(t_arr)
+            for j in range(n_entries):
+                lid = int(id_arr[j])
+                if 0 <= lid < n_links:
+                    links[lid].vehicles_enter_log[t_arr[j]] = veh
 
     def get_node(self, node):
         if node is None:

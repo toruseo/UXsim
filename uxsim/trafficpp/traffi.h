@@ -12,6 +12,7 @@
 #include <random>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #include <algorithm>
 #include <chrono>
 #include <queue>
@@ -260,6 +261,9 @@ struct Vehicle {
         // log_t_link: (time, link_id) pairs for link transitions.
         // Special IDs: -1 = "home", -2 = "end"
         std::vector<std::pair<double, int>> log_t_link;
+        // SoA form of log_t_link (populated by build_full_log)
+        std::vector<double> log_t_link_t;
+        std::vector<int> log_t_link_id;
     };
     static constexpr int LOG_T_LINK_HOME = -1;
     static constexpr int LOG_T_LINK_END  = -2;
@@ -327,6 +331,16 @@ struct World {
     double trips_total;
     double trips_completed;
 
+    // Incremental stats accumulators (updated in main_loop/end_trip)
+    double ave_v_sum;
+    double ave_vratio_sum;
+    double stat_sample_count;
+    double trips_completed_count;
+    double trips_total_count;
+
+    // Active vehicle indices (HOME/WAIT/RUN; excludes END/ABORT)
+    vector<int> active_vehicle_indices;
+
     // Randomness
     long long random_seed;
     std::mt19937 rng;
@@ -393,5 +407,13 @@ struct World {
     // indexed by vehicle order in World.vehicles vector.
     // Returns vector of int states: 0=home, 1=wait, 2=run, 3=end, 4=abort
     std::vector<int> get_vehicle_states_by_index() const;
+
+    // Batch: return trip info for all vehicles (departure_time, orig_id, dest_id)
+    struct VehicleTripInfo {
+        std::vector<double> departure_times;
+        std::vector<int> orig_ids;
+        std::vector<int> dest_ids;
+    };
+    VehicleTripInfo get_vehicle_trip_info() const;
 
 };

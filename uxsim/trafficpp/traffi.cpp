@@ -196,17 +196,10 @@ void Node::flow_capacity_update(){
 void Node::transfer(){
     // Build outlink list with repetition per lane (multi-lane gets more transfer attempts)
     vector<Link *> outlinks_expanded;
+    std::unordered_set<Link *> seen_outlinks;
     for (auto veh : incoming_vehicles){
         if (veh->route_next_link != nullptr){
-            // Add each unique outlink once per its number of lanes
-            bool already_added = false;
-            for (auto ol : outlinks_expanded){
-                if (ol == veh->route_next_link){
-                    already_added = true;
-                    break;
-                }
-            }
-            if (!already_added){
+            if (seen_outlinks.insert(veh->route_next_link).second){
                 for (int i = 0; i < veh->route_next_link->number_of_lanes; i++){
                     outlinks_expanded.push_back(veh->route_next_link);
                 }
@@ -298,9 +291,7 @@ void Node::transfer(){
             double current_tt = (double)w->timestep * w->delta_t - chosen_veh->arrival_time_link;
             int start_idx = (int)(chosen_veh->arrival_time_link / w->delta_t);
             if (start_idx < 0) start_idx = 0;
-            for (size_t idx = start_idx; idx < inlink->traveltime_real.size(); idx++){
-                inlink->traveltime_real[idx] = current_tt;
-            }
+            std::fill(inlink->traveltime_real.begin() + start_idx, inlink->traveltime_real.end(), current_tt);
         }
 
         chosen_veh->arrival_time_link = (double)w->timestep * w->delta_t;
@@ -672,6 +663,7 @@ Vehicle::Vehicle(
     w->vehicles_living[id] = this;
     w->vehicle_id++;
     w->vehicles_map[vehicle_name] = this;
+    w->active_vehicle_indices.push_back(id);
 }
 
 /**
@@ -731,15 +723,14 @@ void Vehicle::update(){
 void Vehicle::end_trip(){
     state = vsEND;
     link->departure_curve[w->timestep] += w->delta_n;
+    w->trips_completed_count += w->delta_n;
 
     // Update traveltime_real array (slice update matching Python's traveltime_actual)
     {
         double current_tt = ((double)w->timestep + 1.0) * w->delta_t - arrival_time_link;
         int start_idx = (int)(arrival_time_link / w->delta_t);
         if (start_idx < 0) start_idx = 0;
-        for (size_t idx = start_idx; idx < link->traveltime_real.size(); idx++){
-            link->traveltime_real[idx] = current_tt;
-        }
+        std::fill(link->traveltime_real.begin() + start_idx, link->traveltime_real.end(), current_tt);
     }
 
     record_travel_time(link, (double)w->timestep * w->delta_t);
@@ -749,6 +740,16 @@ void Vehicle::end_trip(){
 
     w->vehicles_living.erase(id);
     w->vehicles_running.erase(id);
+
+    // Remove from active_vehicle_indices via swap-erase (O(1))
+    {
+        auto &avi = w->active_vehicle_indices;
+        auto it = std::find(avi.begin(), avi.end(), id);
+        if (it != avi.end()) {
+            *it = avi.back();
+            avi.pop_back();
+        }
+    }
 
     link->vehicles.pop_front();
 
@@ -1111,6 +1112,15 @@ Vehicle::FullLog Vehicle::build_full_log() const {
         fl.log_t_link.emplace_back((arrival_time >= 0) ? arrival_time : -1.0, LOG_T_LINK_END);
     }
 
+    // Build SoA arrays from log_t_link pairs
+    size_t m = fl.log_t_link.size();
+    fl.log_t_link_t.resize(m);
+    fl.log_t_link_id.resize(m);
+    for (size_t i = 0; i < m; i++) {
+        fl.log_t_link_t[i] = fl.log_t_link[i].first;
+        fl.log_t_link_id[i] = fl.log_t_link[i].second;
+    }
+
     return fl;
 }
 
@@ -1174,6 +1184,11 @@ World::World(
       ave_vratio(0.0),
       trips_total(0.0),
       trips_completed(0.0),
+      ave_v_sum(0.0),
+      ave_vratio_sum(0.0),
+      stat_sample_count(0.0),
+      trips_completed_count(0.0),
+      trips_total_count(0.0),
       rng((std::mt19937::result_type)random_seed),
       flag_initialized(false),
       writer(&std::cout){
@@ -1213,6 +1228,8 @@ void World::initialize_adj_matrix(){
             }
         }
         flag_initialized = true;
+        // Set reserve size for vehicle log vectors (reduces reallocation in log_data)
+        vehicle_log_reserve_size = total_timesteps + 1;
     }
 }
 
@@ -1449,29 +1466,12 @@ void World::print_scenario_stats(){
 }
 
 void World::print_simple_results(){
-    double n = 0.0;
-
-    for (auto veh : vehicles){
-        trips_total += delta_n;
-        for (int j = 0; j < veh->log_state.size(); j++){
-            if (veh->log_state[j] == vsRUN){
-                double v_cur = veh->log_v[j];
-                ave_v += (v_cur - ave_v) / (n + 1.0);
-
-                Link *ln_ptr = nullptr;
-                if (veh->log_link[j] != -1){
-                    ln_ptr = get_link_by_id(veh->log_link[j]);
-                }
-                double denom_vmax = (ln_ptr) ? ln_ptr->vmax : 1.0;
-                double vratio = v_cur / denom_vmax;
-
-                ave_vratio += (vratio - ave_vratio) / (n + 1.0);
-                n += 1.0;
-            }else if (veh->log_state[j] == vsEND){
-                trips_completed += delta_n;
-                break;
-            }
-        }
+    // Use pre-accumulated stats from main_loop (O(1) instead of O(N*T))
+    trips_total = (double)vehicles.size() * delta_n;
+    trips_completed = trips_completed_count;
+    if (stat_sample_count > 0) {
+        ave_v = ave_v_sum / stat_sample_count;
+        ave_vratio = ave_vratio_sum / stat_sample_count;
     }
 
     (*writer) << "Stats:\n";
@@ -1512,6 +1512,20 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         return;
     }
 
+    // Reserve log vectors for all existing vehicles (avoids reallocation in log_data)
+    if (vehicle_log_reserve_size > 0 && vehicle_log_mode) {
+        for (auto *veh : vehicles) {
+            if (veh->log_t.capacity() < (size_t)vehicle_log_reserve_size) {
+                veh->log_t.reserve(vehicle_log_reserve_size);
+                veh->log_state.reserve(vehicle_log_reserve_size);
+                veh->log_link.reserve(vehicle_log_reserve_size);
+                veh->log_x.reserve(vehicle_log_reserve_size);
+                veh->log_v.reserve(vehicle_log_reserve_size);
+                veh->log_lane.reserve(vehicle_log_reserve_size);
+            }
+        }
+    }
+
     for (timestep = start_ts; timestep < end_ts; timestep++){
         time = timestep*delta_t;
 
@@ -1532,18 +1546,25 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             nd->transfer();
         }
 
-        // car-following (iterate in id order via vehicles vector for deterministic behavior)
+        // car-following (active vehicles only, order-independent)
         int veh_count = 0;
         double ave_speed = 0;
-        for (auto veh : vehicles){
+        for (int vid : active_vehicle_indices){
+            auto *veh = vehicles[vid];
             if (veh->state == vsRUN){
                 veh->car_follow_newell();
                 veh_count++;
                 ave_speed = ave_speed*(veh_count-1)/veh_count + veh->v/(veh_count);
+                // Accumulate stats for print_simple_results
+                ave_v_sum += veh->v;
+                double vmax_denom = (veh->link) ? veh->link->vmax : 1.0;
+                ave_vratio_sum += veh->v / vmax_denom;
+                stat_sample_count += 1.0;
             }
         }
 
-        // vehicle update (iterate in id order via vehicles vector for deterministic behavior)
+        // vehicle update (full scan in id order; active_vehicle_indices can't be used
+        // because end_trip() modifies it via swap-erase during iteration)
         for (auto veh : vehicles){
             if (veh->state == vsHOME || veh->state == vsWAIT || veh->state == vsRUN){
                 veh->update();
@@ -1731,5 +1752,20 @@ std::vector<int> World::get_vehicle_states_by_index() const {
         result.push_back(effective_state);
     }
     return result;
+}
+
+World::VehicleTripInfo World::get_vehicle_trip_info() const {
+    VehicleTripInfo info;
+    size_t n = vehicles.size();
+    info.departure_times.resize(n);
+    info.orig_ids.resize(n);
+    info.dest_ids.resize(n);
+    for (size_t i = 0; i < n; i++) {
+        auto *v = vehicles[i];
+        info.departure_times[i] = v->departure_time;
+        info.orig_ids[i] = v->orig ? v->orig->id : -1;
+        info.dest_ids[i] = v->dest ? v->dest->id : -1;
+    }
+    return info;
 }
 
