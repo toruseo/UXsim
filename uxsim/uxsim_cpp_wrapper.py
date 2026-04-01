@@ -1119,7 +1119,18 @@ class CppWorld:
     def _build_all_vehicle_log_caches(self):
         """Batch-fetch raw log data from C++ for all vehicles.
         Uses flat SoA API: one contiguous array per field, sliced per vehicle."""
-        flat = self._cpp_world.build_all_vehicle_logs_flat()
+        try:
+            flat = self._cpp_world.build_all_vehicle_logs_flat()
+        except AttributeError:
+            try:
+                logs = self._cpp_world.build_all_vehicle_logs()
+            except AttributeError:
+                return
+            vehicles = list(self.VEHICLES.values())
+            for veh, log in zip(vehicles, logs):
+                if veh._log_cache is None:
+                    veh._log_cache = log
+            return
         offsets = flat['offsets']
         ltl_offsets = flat['ltl_offsets']
         # Extract flat arrays (numpy)

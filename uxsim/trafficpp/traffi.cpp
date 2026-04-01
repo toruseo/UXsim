@@ -141,6 +141,10 @@ void Node::generate(){
         veh->record_travel_time(nullptr, (double)w->timestep * w->delta_t);
 
         // Track visited nodes for no_cyclic_routing and link count for specified_route
+        const std::size_t required_traveled_nodes_size = w->nodes.size();
+        if (veh->_traveled_nodes.size() < required_traveled_nodes_size){
+            veh->_traveled_nodes.resize(required_traveled_nodes_size, false);
+        }
         veh->_traveled_nodes[outlink->start_node->id] = true;
         veh->_traveled_link_count++;
 
@@ -322,6 +326,10 @@ void Node::transfer(){
         chosen_veh->x = 0.0;
 
         // Track visited nodes for no_cyclic_routing and link count for specified_route
+        const std::size_t required_size = w->nodes.size();
+        if (chosen_veh->_traveled_nodes.size() < required_size){
+            chosen_veh->_traveled_nodes.resize(required_size, false);
+        }
         chosen_veh->_traveled_nodes[outlink->start_node->id] = true;
         chosen_veh->_traveled_link_count++;
 
@@ -896,7 +904,8 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
     if (w->no_cyclic_routing){
         _buf_filtered.clear();
         for (auto ln : outlinks){
-            if (!_traveled_nodes[ln->end_node->id]){
+            auto end_node_id = ln->end_node->id;
+            if (static_cast<size_t>(end_node_id) >= _traveled_nodes.size() || !_traveled_nodes[end_node_id]){
                 _buf_filtered.push_back(ln);
             }
         }
