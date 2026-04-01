@@ -207,18 +207,12 @@ void Node::flow_capacity_update(){
 void Node::transfer(){
     // Build outlink list with repetition per lane (multi-lane gets more transfer attempts)
     _buf_outlinks_expanded.clear();
+    _buf_seen_outlinks.clear();
     auto &outlinks_expanded = _buf_outlinks_expanded;
     for (auto veh : incoming_vehicles){
         if (veh->route_next_link != nullptr){
-            // Add each unique outlink once per its number of lanes
-            bool already_added = false;
-            for (auto ol : outlinks_expanded){
-                if (ol == veh->route_next_link){
-                    already_added = true;
-                    break;
-                }
-            }
-            if (!already_added){
+            if (_buf_seen_outlinks.count(veh->route_next_link) == 0){
+                _buf_seen_outlinks.insert(veh->route_next_link);
                 for (int i = 0; i < veh->route_next_link->number_of_lanes; i++){
                     outlinks_expanded.push_back(veh->route_next_link);
                 }
@@ -762,6 +756,7 @@ void Vehicle::update(){
  */
 void Vehicle::end_trip(){
     state = vsEND;
+    w->trips_completed_count += 1.0;
     link->departure_curve[w->timestep] += w->delta_n;
 
     // Update traveltime_real array (slice update matching Python's traveltime_actual)
@@ -972,6 +967,15 @@ void Vehicle::record_travel_time(Link *link, double t){
  * avoids any ambiguity if resize was used elsewhere).
  */
 void Vehicle::log_data(){
+    // Accumulate stats for print_simple_results (regardless of log mode)
+    if (state == vsRUN){
+        w->ave_v_sum += v;
+        if (link){
+            w->ave_vratio_sum += v / link->vmax;
+        }
+        w->stat_sample_count += 1.0;
+    }
+
     if (w->vehicle_log_mode){
         double t = (double)w->timestep * w->delta_t;
         log_t.push_back(t);
@@ -1211,6 +1215,10 @@ World::World(
       ave_vratio(0.0),
       trips_total(0.0),
       trips_completed(0.0),
+      ave_v_sum(0.0),
+      ave_vratio_sum(0.0),
+      stat_sample_count(0.0),
+      trips_completed_count(0.0),
       rng((std::mt19937::result_type)random_seed),
       flag_initialized(false),
       writer(&std::cout){
@@ -1491,29 +1499,12 @@ void World::print_scenario_stats(){
 }
 
 void World::print_simple_results(){
-    double n = 0.0;
-
-    for (auto veh : vehicles){
-        trips_total += delta_n;
-        for (size_t j = 0; j < veh->log_size; j++){
-            if (veh->log_state[j] == vsRUN){
-                double v_cur = veh->log_v[j];
-                ave_v += (v_cur - ave_v) / (n + 1.0);
-
-                Link *ln_ptr = nullptr;
-                if (veh->log_link[j] != -1){
-                    ln_ptr = get_link_by_id(veh->log_link[j]);
-                }
-                double denom_vmax = (ln_ptr) ? ln_ptr->vmax : 1.0;
-                double vratio = v_cur / denom_vmax;
-
-                ave_vratio += (vratio - ave_vratio) / (n + 1.0);
-                n += 1.0;
-            }else if (veh->log_state[j] == vsEND){
-                trips_completed += delta_n;
-                break;
-            }
-        }
+    // Compute from incrementally accumulated stats (no log scan needed)
+    trips_total = (double)vehicles.size() * delta_n;
+    trips_completed = trips_completed_count * delta_n;
+    if (stat_sample_count > 0){
+        ave_v = ave_v_sum / stat_sample_count;
+        ave_vratio = ave_vratio_sum / stat_sample_count;
     }
 
     (*writer) << "Stats:\n";

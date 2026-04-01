@@ -12,6 +12,7 @@
 #include <random>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #include <algorithm>
 #include <chrono>
 #include <queue>
@@ -78,6 +79,7 @@ struct Node {
 
     // Reusable buffers for transfer() to avoid per-call allocation
     vector<Link *> _buf_outlinks_expanded;
+    std::unordered_set<Link *> _buf_seen_outlinks;
     vector<Vehicle *> _buf_merging_vehs;
     vector<double> _buf_merge_priorities;
 
@@ -343,6 +345,12 @@ struct World {
     double ave_vratio;
     double trips_total;
     double trips_completed;
+
+    // incremental stats accumulators (updated during simulation)
+    double ave_v_sum;
+    double ave_vratio_sum;
+    double stat_sample_count;
+    double trips_completed_count;
 
     // Randomness
     long long random_seed;
