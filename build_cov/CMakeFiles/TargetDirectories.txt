@@ -1,0 +1,8 @@
+/home/runner/work/UXsim/UXsim/build_cov/CMakeFiles/uxsim_cpp.dir
+/home/runner/work/UXsim/UXsim/build_cov/CMakeFiles/nanobind-static.dir
+/home/runner/work/UXsim/UXsim/build_cov/CMakeFiles/edit_cache.dir
+/home/runner/work/UXsim/UXsim/build_cov/CMakeFiles/rebuild_cache.dir
+/home/runner/work/UXsim/UXsim/build_cov/CMakeFiles/list_install_components.dir
+/home/runner/work/UXsim/UXsim/build_cov/CMakeFiles/install.dir
+/home/runner/work/UXsim/UXsim/build_cov/CMakeFiles/install/local.dir
+/home/runner/work/UXsim/UXsim/build_cov/CMakeFiles/install/strip.dir
