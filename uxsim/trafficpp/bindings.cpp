@@ -501,7 +501,6 @@ NB_MODULE(uxsim_cpp, m) {
                  nb::list result;
                  for (auto *v : w.vehicles) {
                      auto fl = v->build_full_log();
-                     size_t m = fl.log_t_link.size();
                      nb::dict d;
                      d["log_t"] = make_numpy_move(std::move(fl.log_t));
                      d["log_x"] = make_numpy_move(std::move(fl.log_x));
@@ -510,15 +509,8 @@ NB_MODULE(uxsim_cpp, m) {
                      d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
                      d["log_link"] = make_numpy_move(std::move(fl.log_link));
                      d["log_state"] = make_numpy_move(std::move(fl.log_state));
-                     // log_t_link as two parallel numpy arrays
-                     std::vector<double> ltl_t(m);
-                     std::vector<int> ltl_id(m);
-                     for (size_t i = 0; i < m; i++) {
-                         ltl_t[i] = fl.log_t_link[i].first;
-                         ltl_id[i] = fl.log_t_link[i].second;
-                     }
-                     d["log_t_link_t"] = make_numpy_move(std::move(ltl_t));
-                     d["log_t_link_id"] = make_numpy_move(std::move(ltl_id));
+                     d["log_t_link_t"] = make_numpy_move(std::move(fl.log_t_link_t));
+                     d["log_t_link_id"] = make_numpy_move(std::move(fl.log_t_link_id));
                      result.append(d);
                  }
                  return result;
@@ -778,7 +770,6 @@ NB_MODULE(uxsim_cpp, m) {
                  // Per-vehicle numpy version: all data as numpy/int, no strings.
                  // Zero-copy via vector ownership transfer.
                  auto fl = v.build_full_log();
-                 size_t m = fl.log_t_link.size();
                  nb::dict d;
                  d["log_t"] = make_numpy_move(std::move(fl.log_t));
                  d["log_x"] = make_numpy_move(std::move(fl.log_x));
@@ -787,15 +778,8 @@ NB_MODULE(uxsim_cpp, m) {
                  d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
                  d["log_link"] = make_numpy_move(std::move(fl.log_link));
                  d["log_state"] = make_numpy_move(std::move(fl.log_state));
-                 // log_t_link as two parallel numpy arrays
-                 std::vector<double> ltl_t(m);
-                 std::vector<int> ltl_id(m);
-                 for (size_t i = 0; i < m; i++) {
-                     ltl_t[i] = fl.log_t_link[i].first;
-                     ltl_id[i] = fl.log_t_link[i].second;
-                 }
-                 d["log_t_link_t"] = make_numpy_move(std::move(ltl_t));
-                 d["log_t_link_id"] = make_numpy_move(std::move(ltl_id));
+                 d["log_t_link_t"] = make_numpy_move(std::move(fl.log_t_link_t));
+                 d["log_t_link_id"] = make_numpy_move(std::move(fl.log_t_link_id));
                  return d;
              },
              "Build full log arrays as numpy arrays, all int (no string conversion)")
@@ -815,16 +799,9 @@ NB_MODULE(uxsim_cpp, m) {
                  // Return log_t_link as (times_array, link_id_array) numpy tuple
                  // Special link_ids: -1=home, -2=end, >=0=link_id
                  auto fl = v.build_full_log();
-                 size_t m = fl.log_t_link.size();
-                 std::vector<double> times(m);
-                 std::vector<int> ids(m);
-                 for (size_t i = 0; i < m; i++) {
-                     times[i] = fl.log_t_link[i].first;
-                     ids[i] = fl.log_t_link[i].second;
-                 }
                  return nb::make_tuple(
-                     make_numpy_move(std::move(times)),
-                     make_numpy_move(std::move(ids))
+                     make_numpy_move(std::move(fl.log_t_link_t)),
+                     make_numpy_move(std::move(fl.log_t_link_id))
                  );
              },
              "Return log_t_link as tuple of (times, link_ids) numpy arrays. "
