@@ -446,4 +446,22 @@ struct World {
     };
     FlatLogs build_all_vehicle_logs_flat() const;
 
+    // Compact version: no home prepend. Only actual log entries.
+    // n_missing[i] = number of home timesteps before vehicle i's first log entry.
+    struct CompactFlatLogs {
+        std::vector<double> log_t;
+        std::vector<double> log_x;
+        std::vector<double> log_v;
+        std::vector<int>    log_state;
+        std::vector<double> log_s;
+        std::vector<int>    log_lane;
+        std::vector<int>    log_link;
+        std::vector<size_t> offsets;      // size = vehicles.size() + 1
+        std::vector<int>    n_missing;    // size = vehicles.size()
+        std::vector<double> ltl_t;
+        std::vector<int>    ltl_id;
+        std::vector<size_t> ltl_offsets;  // size = vehicles.size() + 1
+    };
+    CompactFlatLogs build_all_vehicle_logs_flat_compact() const;
+
 };

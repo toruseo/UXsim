@@ -316,6 +316,9 @@ void Node::transfer(){
         // Remove from old link
         inlink->vehicles.pop_front();
 
+        // Accumulate distance traveled (full link traversal)
+        chosen_veh->distance_traveled += inlink->length;
+
         chosen_veh->link = outlink;
         chosen_veh->x = 0.0;
 
@@ -757,6 +760,8 @@ void Vehicle::update(){
 void Vehicle::end_trip(){
     state = vsEND;
     w->trips_completed_count += 1.0;
+    // Accumulate distance traveled (final link)
+    distance_traveled += link->length;
     link->departure_curve[w->timestep] += w->delta_n;
 
     // Update traveltime_real array (slice update matching Python's traveltime_actual)
@@ -1929,6 +1934,104 @@ World::FlatLogs World::build_all_vehicle_logs_flat() const {
             int lid = fl.log_link[base + i];
             if (lid >= 0 && lid != prev_lid) {
                 fl.ltl_t[ltl_base + ltl_idx] = fl.log_t[base + i];
+                fl.ltl_id[ltl_base + ltl_idx] = lid;
+                ltl_idx++;
+                prev_lid = lid;
+            }
+        }
+        if (v->state == vsEND) {
+            fl.ltl_t[ltl_base + ltl_idx] = (v->arrival_time >= 0) ? v->arrival_time : -1.0;
+            fl.ltl_id[ltl_base + ltl_idx] = Vehicle::LOG_T_LINK_END;
+            ltl_idx++;
+        }
+    }
+
+    return fl;
+}
+
+/**
+ * @brief Compact version of build_all_vehicle_logs_flat.
+ * No home prepend — only actual log entries (log_size per vehicle).
+ * Returns n_missing array so Python can reconstruct home entries if needed.
+ */
+World::CompactFlatLogs World::build_all_vehicle_logs_flat_compact() const {
+    CompactFlatLogs fl;
+    size_t nv = vehicles.size();
+    fl.offsets.resize(nv + 1);
+    fl.ltl_offsets.resize(nv + 1);
+    fl.n_missing.resize(nv);
+
+    // First pass: compute total sizes
+    size_t total_log = 0;
+    size_t total_ltl = 0;
+    for (size_t vi = 0; vi < nv; vi++) {
+        const Vehicle *v = vehicles[vi];
+        int n_missing = 0;
+        if (v->log_size > 0 && v->log_t[0] > 0) {
+            n_missing = static_cast<int>(v->log_t[0] / delta_t);
+        }
+        fl.n_missing[vi] = n_missing;
+        fl.offsets[vi] = total_log;
+        total_log += v->log_size;
+
+        // log_t_link count
+        size_t ltl_count = 1;  // home entry
+        int prev_lid = -999;
+        for (size_t i = 0; i < v->log_size; i++) {
+            int lid = v->log_link[i];
+            if (lid >= 0 && lid != prev_lid) {
+                ltl_count++;
+                prev_lid = lid;
+            }
+        }
+        if (v->state == vsEND) ltl_count++;
+        fl.ltl_offsets[vi] = total_ltl;
+        total_ltl += ltl_count;
+    }
+    fl.offsets[nv] = total_log;
+    fl.ltl_offsets[nv] = total_ltl;
+
+    // Allocate
+    fl.log_t.resize(total_log);
+    fl.log_x.resize(total_log);
+    fl.log_v.resize(total_log);
+    fl.log_state.resize(total_log);
+    fl.log_s.resize(total_log);
+    fl.log_lane.resize(total_log);
+    fl.log_link.resize(total_log);
+    fl.ltl_t.resize(total_ltl);
+    fl.ltl_id.resize(total_ltl);
+
+    // Second pass: fill arrays (no home prepend)
+    for (size_t vi = 0; vi < nv; vi++) {
+        const Vehicle *v = vehicles[vi];
+        size_t base = fl.offsets[vi];
+
+        for (size_t i = 0; i < v->log_size; i++) {
+            size_t idx = base + i;
+            fl.log_t[idx] = v->log_t[i];
+            int st = v->log_state[i];
+            fl.log_state[idx] = st;
+            bool is_run = (st == vsRUN);
+            fl.log_x[idx] = is_run ? v->log_x[i] : -1;
+            fl.log_v[idx] = is_run ? v->log_v[i] : -1;
+            fl.log_s[idx] = is_run ? 0 : -1;
+            fl.log_lane[idx] = v->log_lane[i];
+            fl.log_link[idx] = v->log_link[i];
+        }
+
+        // log_t_link
+        size_t ltl_base = fl.ltl_offsets[vi];
+        size_t ltl_idx = 0;
+        fl.ltl_t[ltl_base] = v->departure_time;
+        fl.ltl_id[ltl_base] = Vehicle::LOG_T_LINK_HOME;
+        ltl_idx++;
+
+        int prev_lid = -999;
+        for (size_t i = 0; i < v->log_size; i++) {
+            int lid = v->log_link[i];
+            if (lid >= 0 && lid != prev_lid) {
+                fl.ltl_t[ltl_base + ltl_idx] = v->log_t[i];
                 fl.ltl_id[ltl_base + ltl_idx] = lid;
                 ltl_idx++;
                 prev_lid = lid;

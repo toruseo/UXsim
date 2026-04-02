@@ -158,18 +158,24 @@ class Analyzer:
         dist_time = floyd_warshall(adj_mat_time)
         dist_space = floyd_warshall(adj_mat_dist)
 
+        cpp_mode = hasattr(s.W, '_cpp_world')
         for veh in s.W.VEHICLES.values():
             o = veh.orig
             d = veh.dest
             if d != None:
                 s.od_trips[o,d] += dn
 
-                veh_links = [rec[1] for rec in veh.log_t_link if hasattr(rec[1], "length")]
-                veh_dist_traveled = sum([l.length for l in veh_links])
-                if veh.state == "run":
-                    veh_dist_traveled += veh.x
-                veh.distance_traveled = veh_dist_traveled
-                s.od_dist[o,d].append(veh.distance_traveled)
+                if cpp_mode:
+                    veh_dist_traveled = veh.distance_traveled
+                    if veh.state == "run":
+                        veh_dist_traveled += veh.x
+                else:
+                    veh_links = [rec[1] for rec in veh.log_t_link if hasattr(rec[1], "length")]
+                    veh_dist_traveled = sum([l.length for l in veh_links])
+                    if veh.state == "run":
+                        veh_dist_traveled += veh.x
+                    veh.distance_traveled = veh_dist_traveled
+                s.od_dist[o,d].append(veh_dist_traveled)
 
                 if veh.travel_time != -1:
                     s.od_trips_comp[o,d] += dn
@@ -198,8 +204,12 @@ class Analyzer:
             s.linkc_remain[l] = l.cum_arrival[-1]-l.cum_departure[-1]
             s.linkc_tt_free[l] = l.length/l.u
             if s.linkc_volume[l]:
-                s.linkc_tt_ave[l] = np.average([t for t in l.traveltime_actual if t>0])
-                s.linkc_tt_std[l] = np.std([t for t in l.traveltime_actual if t>0])
+                tt = np.asarray(l.traveltime_actual)
+                mask = tt > 0
+                if mask.any():
+                    tt_pos = tt[mask]
+                    s.linkc_tt_ave[l] = tt_pos.mean()
+                    s.linkc_tt_std[l] = tt_pos.std()
 
     def compute_accurate_traj(s):
         """
