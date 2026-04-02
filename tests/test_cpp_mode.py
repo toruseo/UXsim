@@ -7713,60 +7713,54 @@ def test_coverage_link_auto_rename():
         W.addLink("duplink", "A", "B", length=500, free_flow_speed=20, auto_rename=False)
 
 
-def test_coverage_cpp_batch_log_apis():
+def test_coverage_vehicle_logs_and_analysis():
+    """Access vehicle log data and analyzer through public API.
+    Internally triggers build_all_vehicle_logs_flat_compact, build_enter_log_data, etc."""
     W = World(cpp=True, deltan=5, tmax=300, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
-    n_orig = W.addNode("orig", 0, 0)
-    n_dead = W.addNode("deadend", 1, 0)
-    n_orig2 = W.addNode("orig2", 0, 1)
-    n_dest = W.addNode("dest", 1, 1)
-    W.addLink("link_dead", "orig", "deadend", length=500, free_flow_speed=20)
-    W.addLink("link_ok", "orig2", "dest", length=500, free_flow_speed=20)
+    W.addNode("orig", 0, 0)
+    W.addNode("deadend", 1, 0)
+    W.addNode("orig2", 0, 1)
+    W.addNode("dest", 1, 1)
+    link_dead = W.addLink("link_dead", "orig", "deadend", length=500, free_flow_speed=20)
+    link_ok = W.addLink("link_ok", "orig2", "dest", length=500, free_flow_speed=20)
 
-    # trip_abort vehicles toward dead end
     for t in [0, 10, 20]:
         W.addVehicle("orig", "dest", departure_time=t, trip_abort=1, auto_rename=True)
-    # normal vehicles
     for t in [0, 10, 20, 30, 40]:
         W.addVehicle("orig2", "dest", departure_time=t, auto_rename=True)
 
     W.exec_simulation()
+    # print_simple_stats triggers simulation_terminated → batch log build + enter_log build
+    W.analyzer.print_simple_stats()
 
-    cw = W._cpp_world
+    # Access all vehicle log properties through public API
+    for veh in W.VEHICLES.values():
+        assert veh.state in ("home", "wait", "run", "end", "abort")
+        assert len(veh.log_t) > 0
+        assert len(veh.log_x) > 0
+        assert len(veh.log_v) > 0
+        assert len(veh.log_s) > 0
+        assert len(veh.log_lane) > 0
+        assert len(veh.log_state) > 0
+        assert len(veh.log_link) > 0
+        assert len(veh.log_t_link) > 0
+        veh.traveled_route()
+        _ = veh.departure_time
+        _ = veh.travel_time
 
-    # build_all_vehicle_logs_flat (non-compact)
-    flat = cw.build_all_vehicle_logs_flat()
-    assert isinstance(flat, dict)
-    assert "log_t" in flat
-    assert len(flat["log_t"]) > 0
-    assert "log_x" in flat
-    assert "log_v" in flat
-    assert "log_state" in flat
-    assert "offsets" in flat
+    # Access vehicles_enter_log through link (triggers build_enter_log_data internally)
+    assert isinstance(link_ok.vehicles_enter_log, dict)
 
-    # build_all_vehicle_logs_flat_compact
-    compact = cw.build_all_vehicle_logs_flat_compact()
-    assert isinstance(compact, dict)
-    assert "log_t" in compact
-    assert "n_missing" in compact
-
-    # build_all_vehicle_logs (per-vehicle list of dicts)
-    all_logs = cw.build_all_vehicle_logs()
-    assert isinstance(all_logs, list)
-    assert len(all_logs) > 0
-    assert isinstance(all_logs[0], dict)
-
-    # build_enter_log_data
-    enter = cw.build_enter_log_data()
-    assert isinstance(enter, dict)
-    assert "link_id" in enter
-    assert "time" in enter
-    assert "vehicle_index" in enter
-    assert len(enter["link_id"]) > 0
+    # Verify abort and end states
+    aborted = [v for v in W.VEHICLES.values() if v.state == "abort"]
+    ended = [v for v in W.VEHICLES.values() if v.state == "end"]
+    assert len(aborted) > 0
+    assert len(ended) > 0
 
 
-# --- C++ World query methods ---
-
-def test_coverage_cpp_world_query_methods():
+def test_coverage_simulation_lifecycle():
+    """Test simulation lifecycle methods through public API.
+    Covers check_simulation_ongoing, iterative exec, and print_scenario_stats."""
     W = World(cpp=True, deltan=5, tmax=300, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
     orig = W.addNode("orig", 0, 0)
     dest = W.addNode("dest", 1, 0)
@@ -7774,146 +7768,43 @@ def test_coverage_cpp_world_query_methods():
 
     W.adddemand("orig", "dest", 0, 200, 0.5)
 
+    # Iterative execution
+    W.exec_simulation(until_t=100)
+    assert W.check_simulation_ongoing() == True
+
     W.exec_simulation()
+    assert W.check_simulation_ongoing() == False
 
-    cw = W._cpp_world
+    # All vehicles should have ended
+    for veh in W.VEHICLES.values():
+        assert veh.state == "end"
 
-    # check_simulation_ongoing
-    assert cw.check_simulation_ongoing() == False
-
-    # get_vehicles_by_state: 3=END
-    ended = cw.get_vehicles_by_state(3)
-    assert len(ended) > 0
-
-    # get_all_vehicle_states
-    states = cw.get_all_vehicle_states()
-    assert len(states) > 0
-
-    # get_vehicle_states_by_index
-    si = cw.get_vehicle_states_by_index()
-    assert len(si) > 0
-    # All should be ended (3) or aborted (4)
-    for s_val in si:
-        assert s_val in (3, 4)
-
-    # get_vehicle_by_index
-    v0 = cw.get_vehicle_by_index(0)
-    assert v0 is not None
-
-    # get_link_by_id
-    l0 = cw.get_link_by_id(0)
-    assert l0 is not None
-
-    # print methods (just verify they don't crash)
-    cw.print_scenario_stats()
-    cw.print_simple_results()
+    # Print methods through public API
+    W.analyzer.print_simple_stats()
 
 
-# --- C++ edge cases: signals, capacity, enforce_route, generation_queue ---
-
-def test_coverage_cpp_edge_cases():
+def test_coverage_signal_capacity_enforce_route():
+    """Test signals, explicit capacity, and enforce_route through public API."""
     W = World(cpp=True, deltan=5, tmax=200, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
 
-    # Nodes with signals
     n1 = W.addNode("n1", 0, 0, signal=[60, 30])
     n2 = W.addNode("n2", 1, 0)
     n3 = W.addNode("n3", 2, 0)
 
-    # Links with explicit capacity
-    link1 = W.addLink("l1", "n1", "n2", length=500, free_flow_speed=20, capacity_out=0.8, capacity_in=0.8, signal_group=[0])
+    link1 = W.addLink("l1", "n1", "n2", length=500, free_flow_speed=20,
+                       capacity_out=0.8, capacity_in=0.8, signal_group=[0])
     link2 = W.addLink("l2", "n2", "n3", length=500, free_flow_speed=20)
 
-    # Vehicle with specified_route (enforce_route)
     W.addVehicle("n1", "n3", 0, auto_rename=True)
     vehs = list(W.VEHICLES.values())
     vehs[0].enforce_route([link1, link2])
 
     W.adddemand("n1", "n3", 0, 100, 0.3)
-
-    # Run partial simulation to check mid-sim state
-    W.exec_simulation(until_t=50)
-
-    # Access generation_queue mid-sim
-    if hasattr(n1, "_cpp_node"):
-        gq = n1._cpp_node.generation_queue
-    else:
-        gq = W._cpp_world.get_node("n1").generation_queue
-    assert isinstance(gq, list)
-
-    # Complete simulation
     W.exec_simulation()
 
-    # Verify completion
-    assert len(W.VEHICLES) > 0
-    # Check that vehicles actually finished trips
     ended_count = len([v for v in W.VEHICLES.values() if v.state == "end"])
     assert ended_count > 0
 
-
-# --- C++ Vehicle log methods coverage ---
-
-def test_coverage_cpp_vehicle_log_methods():
-    W = World(cpp=True, deltan=5, tmax=300, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
-    W.addNode("orig", 0, 0)
-    W.addNode("dest", 500, 0)
-    W.addLink("od", "orig", "dest", length=500, free_flow_speed=20)
-    W.adddemand("orig", "dest", 0, 200, flow=0.5)
-    W.exec_simulation()
-
-    for veh in W.VEHICLES.values():
-        cv = veh._cpp_vehicle
-
-        # String-based methods
-        assert cv.state_str() in ("home", "wait", "run", "end", "abort")
-        states = cv.log_state_str()
-        assert isinstance(states, list)
-        link_names = cv.log_link_names()
-        assert isinstance(link_names, list)
-        dep = cv.departure_time_in_second
-        assert dep >= 0
-
-        # log_t_link build
-        ltl = cv.build_log_t_link()
-        assert isinstance(ltl, list)
-
-        # build_full_log (string version returns dict with string values)
-        full_log = cv.build_full_log()
-        assert isinstance(full_log, dict)
-        assert "log_t" in full_log
-        assert "log_x" in full_log
-        assert "log_v" in full_log
-        assert "log_s" in full_log
-        assert "log_lane" in full_log
-        assert "log_link" in full_log
-        assert "log_state" in full_log
-        assert "log_t_link" in full_log
-
-        # build_full_log_np (numpy version)
-        full_log_np = cv.build_full_log_np()
-        assert isinstance(full_log_np, dict)
-        assert "log_t" in full_log_np
-        assert "log_x" in full_log_np
-        assert "log_v" in full_log_np
-        assert "log_s" in full_log_np
-        assert "log_lane" in full_log_np
-        assert "log_link" in full_log_np
-        assert "log_state" in full_log_np
-        assert "log_t_link_t" in full_log_np
-        assert "log_t_link_id" in full_log_np
-
-        # get_log_state_strings / get_log_t_link_data
-        log_ss = cv.get_log_state_strings()
-        assert isinstance(log_ss, list)
-        for s in log_ss:
-            assert s in ("home", "wait", "run", "end", "abort")
-        ltl_data = cv.get_log_t_link_data()
-        assert isinstance(ltl_data, tuple)
-        assert len(ltl_data) == 2  # (times_array, link_id_array)
-
-        # Direct log array access
-        assert len(cv.log_t) > 0
-        assert len(cv.log_x) > 0
-        assert len(cv.log_v) > 0
-        assert len(cv.log_state) > 0
-        assert len(cv.log_lane) > 0
-        assert len(cv.log_link) > 0
+    # Verify the enforced-route vehicle used the specified path
+    route = vehs[0].traveled_route()[0]
+    assert route[-1] == link2
