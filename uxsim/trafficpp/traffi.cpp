@@ -1259,7 +1259,7 @@ void World::initialize_adj_matrix(){
 }
 
 void World::update_adj_time_matrix(){
-    double noise = 0.01;
+    double noise = route_choice_uncertainty;
     for (auto ln : links){
         int i = ln->start_node->id;
         int j = ln->end_node->id;
@@ -1600,16 +1600,9 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
                 }
             }
         } else {
-            // Non-deterministic: active vehicles only
-            // end_trip() removes via swap-and-pop, so iterate by index.
-            size_t ai = 0;
-            while (ai < active_vehicles.size()){
-                Vehicle *veh = active_vehicles[ai];
-                veh->update();
-                if (veh->active_index < 0) {
-                    // veh was removed — swapped-in vehicle now at ai, re-process
-                } else {
-                    ai++;
+            for (auto veh : vehicles){
+                if (veh->state == vsHOME || veh->state == vsWAIT || veh->state == vsRUN){
+                    veh->update();
                 }
             }
         }        
