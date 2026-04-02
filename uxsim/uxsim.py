@@ -1115,6 +1115,8 @@ class Vehicle:
             s.x_old = s.x
             s.x = s.x_next
 
+            s.distance_traveled += s.x-s.x_old
+
             #at the end of the link
             if s.x == s.link.length:
                 if s.link.end_node in s.node_event.keys():
