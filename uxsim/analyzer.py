@@ -158,20 +158,13 @@ class Analyzer:
         dist_time = floyd_warshall(adj_mat_time)
         dist_space = floyd_warshall(adj_mat_dist)
 
-        cpp_mode = hasattr(s.W, '_cpp_world')
         for veh in s.W.VEHICLES.values():
             o = veh.orig
             d = veh.dest
             if d != None:
                 s.od_trips[o,d] += dn
                 
-                if not cpp_mode:
-                    veh_dist_traveled = veh.distance_traveled
-                else:
-                    #temporal incompatibility TODO: fix C++
-                    veh_dist_traveled = veh.distance_traveled
-                    if veh.state == "run":
-                        veh_dist_traveled += veh.x
+                veh_dist_traveled = veh.distance_traveled
                 
                 s.od_dist[o,d].append(veh_dist_traveled)
 

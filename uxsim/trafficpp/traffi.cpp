@@ -316,9 +316,6 @@ void Node::transfer(){
         // Remove from old link
         inlink->vehicles.pop_front();
 
-        // Accumulate distance traveled (full link traversal)
-        chosen_veh->distance_traveled += inlink->length;
-
         chosen_veh->link = outlink;
         chosen_veh->x = 0.0;
 
@@ -726,6 +723,8 @@ void Vehicle::update(){
         x_old = x;
         x = x_next;
 
+        distance_traveled += x - x_old;
+
         if (std::fabs(x - link->length) < 1e-9){
             if (link->end_node == dest){
                 // Prepare for trip end (wait if not at front of link)
@@ -760,8 +759,6 @@ void Vehicle::update(){
 void Vehicle::end_trip(){
     state = vsEND;
     w->trips_completed_count += 1.0;
-    // Accumulate distance traveled (final link)
-    distance_traveled += link->length;
     link->departure_curve[w->timestep] += w->delta_n;
 
     // Update traveltime_real array (slice update matching Python's traveltime_actual)
