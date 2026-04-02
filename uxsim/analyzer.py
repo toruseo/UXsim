@@ -164,17 +164,15 @@ class Analyzer:
             d = veh.dest
             if d != None:
                 s.od_trips[o,d] += dn
-
-                if cpp_mode:
+                
+                if not cpp_mode:
+                    veh_dist_traveled = veh.distance_traveled
+                else:
+                    #temporal incompatibility TODO: fix C++
                     veh_dist_traveled = veh.distance_traveled
                     if veh.state == "run":
                         veh_dist_traveled += veh.x
-                else:
-                    veh_links = [rec[1] for rec in veh.log_t_link if hasattr(rec[1], "length")]
-                    veh_dist_traveled = sum([l.length for l in veh_links])
-                    if veh.state == "run":
-                        veh_dist_traveled += veh.x
-                    veh.distance_traveled = veh_dist_traveled
+                
                 s.od_dist[o,d].append(veh_dist_traveled)
 
                 if veh.travel_time != -1:
