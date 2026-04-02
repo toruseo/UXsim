@@ -371,7 +371,7 @@ NB_MODULE(uxsim_cpp, m) {
     nb::class_<World>(m, "World")
         .def("initialize_adj_matrix", &World::initialize_adj_matrix)
         .def("print_scenario_stats", &World::print_scenario_stats)
-        .def("main_loop", &World::main_loop)
+        .def("main_loop", &World::main_loop, nb::call_guard<nb::gil_scoped_release>())
         .def("check_simulation_ongoing", &World::check_simulation_ongoing)
         .def("print_simple_results", &World::print_simple_results)
         .def("update_adj_time_matrix", &World::update_adj_time_matrix)
@@ -556,6 +556,72 @@ NB_MODULE(uxsim_cpp, m) {
                  return d;
              },
              "Build flat SoA logs for all vehicles. Returns dict with contiguous arrays + offset arrays.")
+        .def("build_all_vehicle_logs_flat_compact", [](const World &w) -> nb::dict {
+                 // Compact flat SoA: no home prepend. Only actual log entries.
+                 auto fl = w.build_all_vehicle_logs_flat_compact();
+                 nb::dict d;
+                 d["log_t"] = make_numpy_move(std::move(fl.log_t));
+                 d["log_x"] = make_numpy_move(std::move(fl.log_x));
+                 d["log_v"] = make_numpy_move(std::move(fl.log_v));
+                 d["log_state"] = make_numpy_move(std::move(fl.log_state));
+                 d["log_s"] = make_numpy_move(std::move(fl.log_s));
+                 d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
+                 d["log_link"] = make_numpy_move(std::move(fl.log_link));
+                 {
+                     size_t n = fl.offsets.size();
+                     auto *buf = new std::vector<int64_t>(n);
+                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.offsets[i]);
+                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
+                     d["offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
+                 }
+                 d["n_missing"] = make_numpy_move(std::move(fl.n_missing));
+                 d["ltl_t"] = make_numpy_move(std::move(fl.ltl_t));
+                 d["ltl_id"] = make_numpy_move(std::move(fl.ltl_id));
+                 {
+                     size_t n = fl.ltl_offsets.size();
+                     auto *buf = new std::vector<int64_t>(n);
+                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.ltl_offsets[i]);
+                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
+                     d["ltl_offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
+                 }
+                 return d;
+             },
+             "Build compact flat SoA logs (no home prepend). Includes n_missing array.")
+        .def("build_all_vehicle_logs_flat_full", [](const World &w) -> nb::dict {
+                 // Full flat SoA: includes home entries prepended per vehicle.
+                 // Release GIL during expensive C++ computation
+                 World::FullFlatLogs fl;
+                 {
+                     nb::gil_scoped_release release;
+                     fl = w.build_all_vehicle_logs_flat_full();
+                 }
+                 nb::dict d;
+                 d["log_t"] = make_numpy_move(std::move(fl.log_t));
+                 d["log_x"] = make_numpy_move(std::move(fl.log_x));
+                 d["log_v"] = make_numpy_move(std::move(fl.log_v));
+                 d["log_state"] = make_numpy_move(std::move(fl.log_state));
+                 d["log_s"] = make_numpy_move(std::move(fl.log_s));
+                 d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
+                 d["log_link"] = make_numpy_move(std::move(fl.log_link));
+                 {
+                     size_t n = fl.offsets.size();
+                     auto *buf = new std::vector<int64_t>(n);
+                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.offsets[i]);
+                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
+                     d["offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
+                 }
+                 d["ltl_t"] = make_numpy_move(std::move(fl.ltl_t));
+                 d["ltl_id"] = make_numpy_move(std::move(fl.ltl_id));
+                 {
+                     size_t n = fl.ltl_offsets.size();
+                     auto *buf = new std::vector<int64_t>(n);
+                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.ltl_offsets[i]);
+                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
+                     d["ltl_offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
+                 }
+                 return d;
+             },
+             "Build full flat SoA logs with home entries prepended. No n_missing needed.")
         .def("build_enter_log_data", [](const World &w) -> nb::dict {
                  auto entries = w.build_enter_log_data();
                  size_t n = entries.size();
@@ -754,17 +820,29 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("flag_trip_aborted", &Vehicle::flag_trip_aborted)
         .def_ro("flag_waiting_for_trip_end", &Vehicle::flag_waiting_for_trip_end)
         .def_prop_ro("log_t", [](const Vehicle &v) {
-                 return std::vector<double>(v.log_t.begin(), v.log_t.begin() + v.log_size); })
+                 std::vector<double> r(v.log_size);
+                 for (size_t i = 0; i < v.log_size; i++) r[i] = v.log_entries[i].t;
+                 return r; })
         .def_prop_ro("log_state", [](const Vehicle &v) {
-                 return std::vector<int>(v.log_state.begin(), v.log_state.begin() + v.log_size); })
+                 std::vector<int> r(v.log_size);
+                 for (size_t i = 0; i < v.log_size; i++) r[i] = v.log_entries[i].state;
+                 return r; })
         .def_prop_ro("log_link", [](const Vehicle &v) {
-                 return std::vector<int>(v.log_link.begin(), v.log_link.begin() + v.log_size); })
+                 std::vector<int> r(v.log_size);
+                 for (size_t i = 0; i < v.log_size; i++) r[i] = v.log_entries[i].link;
+                 return r; })
         .def_prop_ro("log_x", [](const Vehicle &v) {
-                 return std::vector<double>(v.log_x.begin(), v.log_x.begin() + v.log_size); })
+                 std::vector<double> r(v.log_size);
+                 for (size_t i = 0; i < v.log_size; i++) r[i] = v.log_entries[i].x;
+                 return r; })
         .def_prop_ro("log_v", [](const Vehicle &v) {
-                 return std::vector<double>(v.log_v.begin(), v.log_v.begin() + v.log_size); })
+                 std::vector<double> r(v.log_size);
+                 for (size_t i = 0; i < v.log_size; i++) r[i] = v.log_entries[i].v;
+                 return r; })
         .def_prop_ro("log_lane", [](const Vehicle &v) {
-                 return std::vector<int>(v.log_lane.begin(), v.log_lane.begin() + v.log_size); })
+                 std::vector<int> r(v.log_size);
+                 for (size_t i = 0; i < v.log_size; i++) r[i] = v.log_entries[i].lane;
+                 return r; })
         .def_ro("log_size", &Vehicle::log_size)
         .def_ro("arrival_time", &Vehicle::arrival_time)
         .def_ro("travel_time", &Vehicle::travel_time)

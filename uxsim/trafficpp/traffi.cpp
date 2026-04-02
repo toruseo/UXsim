@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <chrono>
 #include <queue>
+#include <cstring>
 
 #include "traffi.h"
 
@@ -141,10 +142,6 @@ void Node::generate(){
         veh->record_travel_time(nullptr, (double)w->timestep * w->delta_t);
 
         // Track visited nodes for no_cyclic_routing and link count for specified_route
-        const std::size_t required_traveled_nodes_size = w->nodes.size();
-        if (veh->_traveled_nodes.size() < required_traveled_nodes_size){
-            veh->_traveled_nodes.resize(required_traveled_nodes_size, false);
-        }
         veh->_traveled_nodes[outlink->start_node->id] = true;
         veh->_traveled_link_count++;
 
@@ -316,14 +313,13 @@ void Node::transfer(){
         // Remove from old link
         inlink->vehicles.pop_front();
 
+        // Accumulate distance traveled (full link traversal)
+        chosen_veh->distance_traveled += inlink->length;
+
         chosen_veh->link = outlink;
         chosen_veh->x = 0.0;
 
         // Track visited nodes for no_cyclic_routing and link count for specified_route
-        const std::size_t required_size = w->nodes.size();
-        if (chosen_veh->_traveled_nodes.size() < required_size){
-            chosen_veh->_traveled_nodes.resize(required_size, false);
-        }
         chosen_veh->_traveled_nodes[outlink->start_node->id] = true;
         chosen_veh->_traveled_link_count++;
 
@@ -682,14 +678,9 @@ Vehicle::Vehicle(
 
     log_size = 0;
     if (w->vehicle_log_mode) {
-        // Reserve log arrays: total_timesteps + margin for extra log_data calls
+        // Reserve log array: total_timesteps + margin for extra log_data calls
         size_t log_cap = w->total_timesteps + 10;
-        log_t.reserve(log_cap);
-        log_state.reserve(log_cap);
-        log_link.reserve(log_cap);
-        log_x.reserve(log_cap);
-        log_v.reserve(log_cap);
-        log_lane.reserve(log_cap);
+        log_entries.reserve(log_cap);
     }
 
     active_index = (int)w->active_vehicles.size();
@@ -757,6 +748,8 @@ void Vehicle::update(){
 void Vehicle::end_trip(){
     state = vsEND;
     w->trips_completed_count += 1.0;
+    // Accumulate distance traveled (final link)
+    distance_traveled += link->length;
     link->departure_curve[w->timestep] += w->delta_n;
 
     // Update traveltime_real array (slice update matching Python's traveltime_actual)
@@ -899,8 +892,7 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
     if (w->no_cyclic_routing){
         _buf_filtered.clear();
         for (auto ln : outlinks){
-            auto end_node_id = ln->end_node->id;
-            if (static_cast<size_t>(end_node_id) >= _traveled_nodes.size() || !_traveled_nodes[end_node_id]){
+            if (!_traveled_nodes[ln->end_node->id]){
                 _buf_filtered.push_back(ln);
             }
         }
@@ -977,20 +969,21 @@ void Vehicle::log_data(){
     }
 
     if (w->vehicle_log_mode){
-        double t = (double)w->timestep * w->delta_t;
-        log_t.push_back(t);
-        log_state.push_back(state);
+        LogEntry entry;
+        entry.t = (double)w->timestep * w->delta_t;
+        entry.state = state;
         if (state == vsRUN){
-            log_link.push_back(link ? link->id : -1);
-            log_x.push_back(x);
-            log_v.push_back(v);
-            log_lane.push_back(lane);
+            entry.link = link ? link->id : -1;
+            entry.x = x;
+            entry.v = v;
+            entry.lane = lane;
         } else {
-            log_link.push_back(-1);
-            log_x.push_back(-1);
-            log_v.push_back(-1);
-            log_lane.push_back(-1);
+            entry.link = -1;
+            entry.x = -1;
+            entry.v = -1;
+            entry.lane = -1;
         }
+        log_entries.push_back(entry);
         log_size++;
     }
 }
@@ -1018,7 +1011,7 @@ std::vector<std::string> Vehicle::log_state_str() const {
     std::vector<std::string> result;
     result.reserve(log_size);
     for (size_t i = 0; i < log_size; i++) {
-        int s = log_state[i];
+        int s = log_entries[i].state;
         if (s >= 0 && s <= 4) {
             result.emplace_back(state_names[s]);
         } else {
@@ -1036,7 +1029,7 @@ std::vector<std::string> Vehicle::log_link_names() const {
     std::vector<std::string> result;
     result.reserve(log_size);
     for (size_t i = 0; i < log_size; i++) {
-        int lid = log_link[i];
+        int lid = log_entries[i].link;
         if (lid >= 0 && lid < static_cast<int>(w->links.size())) {
             result.emplace_back(w->links[lid]->name);
         } else {
@@ -1063,18 +1056,16 @@ std::vector<std::pair<double, std::string>> Vehicle::build_log_t_link() const {
     // departure_time is already in seconds in C++
     result.emplace_back(departure_time, "home");
 
-    // Scan log_link for transitions
+    // Scan log_entries for link transitions
     int prev_link_id = -999;
     int n_missing = 0;
-    if (log_size > 0 && log_t[0] > 0) {
-        n_missing = static_cast<int>(log_t[0] / w->delta_t);
+    if (log_size > 0 && log_entries[0].t > 0) {
+        n_missing = static_cast<int>(log_entries[0].t / w->delta_t);
     }
     for (size_t i = 0; i < log_size; i++) {
-        int lid = log_link[i];
+        int lid = log_entries[i].link;
         if (lid >= 0 && lid != prev_link_id) {
-            // The actual time index is i + n_missing in the full array,
-            // but log_t[i] already has the correct time
-            double t = log_t[i];
+            double t = log_entries[i].t;
             std::string lname = (lid >= 0 && lid < static_cast<int>(w->links.size()))
                                 ? w->links[lid]->name : "-1";
             result.emplace_back(t, lname);
@@ -1099,8 +1090,8 @@ Vehicle::FullLog Vehicle::build_full_log() const {
     FullLog fl;
 
     int n_missing = 0;
-    if (log_size > 0 && log_t[0] > 0) {
-        n_missing = static_cast<int>(log_t[0] / w->delta_t);
+    if (log_size > 0 && log_entries[0].t > 0) {
+        n_missing = static_cast<int>(log_entries[0].t / w->delta_t);
     }
 
     size_t total = n_missing + log_size;
@@ -1125,17 +1116,18 @@ Vehicle::FullLog Vehicle::build_full_log() const {
 
     // Append C++ log entries with state-based adjustments
     for (size_t i = 0; i < log_size; i++) {
-        fl.log_t.push_back(log_t[i]);
+        const LogEntry &e = log_entries[i];
+        fl.log_t.push_back(e.t);
 
-        int st = log_state[i];
+        int st = e.state;
         fl.log_state.push_back(st);
 
         bool is_run = (st == vsRUN);
-        fl.log_x.push_back(is_run ? log_x[i] : -1);
-        fl.log_v.push_back(is_run ? log_v[i] : -1);
+        fl.log_x.push_back(is_run ? e.x : -1);
+        fl.log_v.push_back(is_run ? e.v : -1);
         fl.log_s.push_back(is_run ? 0 : -1);
-        fl.log_lane.push_back(log_lane[i]);
-        fl.log_link.push_back(log_link[i]);
+        fl.log_lane.push_back(e.lane);
+        fl.log_link.push_back(e.link);
     }
 
     // Build log_t_link from the full (prepended) log arrays — all ints, no strings
@@ -1155,6 +1147,122 @@ Vehicle::FullLog Vehicle::build_full_log() const {
     return fl;
 }
 
+/**
+ * @brief Full version of build_all_vehicle_logs_flat.
+ * Includes home entries prepended per vehicle (log_t=arange*delta_t, log_x/v/s=-1, log_state=0, log_lane/link=-1).
+ * No n_missing in output — home entries are already included in the arrays.
+ */
+World::FullFlatLogs World::build_all_vehicle_logs_flat_full() const {
+    FullFlatLogs fl;
+    size_t nv = vehicles.size();
+    fl.offsets.resize(nv + 1);
+    fl.ltl_offsets.resize(nv + 1);
+
+    // First pass: compute total sizes
+    size_t total_log = 0;
+    size_t total_ltl = 0;
+    for (size_t vi = 0; vi < nv; vi++) {
+        const Vehicle *v = vehicles[vi];
+        int n_missing = 0;
+        if (v->log_size > 0 && v->log_entries[0].t > 0) {
+            n_missing = static_cast<int>(v->log_entries[0].t / delta_t);
+        }
+        size_t full_size = n_missing + v->log_size;
+        fl.offsets[vi] = total_log;
+        total_log += full_size;
+
+        // log_t_link count
+        size_t ltl_count = 1;  // home entry
+        int prev_lid = -999;
+        for (size_t i = 0; i < v->log_size; i++) {
+            int lid = v->log_entries[i].link;
+            if (lid >= 0 && lid != prev_lid) {
+                ltl_count++;
+                prev_lid = lid;
+            }
+        }
+        if (v->state == vsEND) ltl_count++;
+        fl.ltl_offsets[vi] = total_ltl;
+        total_ltl += ltl_count;
+    }
+    fl.offsets[nv] = total_log;
+    fl.ltl_offsets[nv] = total_ltl;
+
+    // Allocate
+    fl.log_t.resize(total_log);
+    fl.log_x.resize(total_log);
+    fl.log_v.resize(total_log);
+    fl.log_state.resize(total_log);
+    fl.log_s.resize(total_log);
+    fl.log_lane.resize(total_log);
+    fl.log_link.resize(total_log);
+    fl.ltl_t.resize(total_ltl);
+    fl.ltl_id.resize(total_ltl);
+
+    // Second pass: fill arrays with home entries + actual log entries
+    for (size_t vi = 0; vi < nv; vi++) {
+        const Vehicle *v = vehicles[vi];
+        size_t base = fl.offsets[vi];
+        int n_missing = 0;
+        if (v->log_size > 0 && v->log_entries[0].t > 0) {
+            n_missing = static_cast<int>(v->log_entries[0].t / delta_t);
+        }
+
+        // Home entries
+        for (int j = 0; j < n_missing; j++) {
+            size_t idx = base + j;
+            fl.log_t[idx] = j * delta_t;
+            fl.log_x[idx] = -1.0;
+            fl.log_v[idx] = -1.0;
+            fl.log_state[idx] = vsHOME;
+            fl.log_s[idx] = -1.0;
+            fl.log_lane[idx] = -1;
+            fl.log_link[idx] = -1;
+        }
+
+        // Actual log entries (AoS → SoA)
+        size_t actual_base = base + n_missing;
+        for (size_t i = 0; i < v->log_size; i++) {
+            size_t idx = actual_base + i;
+            const LogEntry &e = v->log_entries[i];
+            fl.log_t[idx] = e.t;
+            int st = e.state;
+            fl.log_state[idx] = st;
+            bool is_run = (st == vsRUN);
+            fl.log_x[idx] = is_run ? e.x : -1;
+            fl.log_v[idx] = is_run ? e.v : -1;
+            fl.log_s[idx] = is_run ? 0 : -1;
+            fl.log_lane[idx] = e.lane;
+            fl.log_link[idx] = e.link;
+        }
+
+        // log_t_link
+        size_t ltl_base = fl.ltl_offsets[vi];
+        size_t ltl_idx = 0;
+        fl.ltl_t[ltl_base] = v->departure_time;
+        fl.ltl_id[ltl_base] = Vehicle::LOG_T_LINK_HOME;
+        ltl_idx++;
+
+        int prev_lid = -999;
+        for (size_t i = 0; i < v->log_size; i++) {
+            const LogEntry &e = v->log_entries[i];
+            int lid = e.link;
+            if (lid >= 0 && lid != prev_lid) {
+                fl.ltl_t[ltl_base + ltl_idx] = e.t;
+                fl.ltl_id[ltl_base + ltl_idx] = lid;
+                ltl_idx++;
+                prev_lid = lid;
+            }
+        }
+        if (v->state == vsEND) {
+            fl.ltl_t[ltl_base + ltl_idx] = (v->arrival_time >= 0) ? v->arrival_time : -1.0;
+            fl.ltl_id[ltl_base + ltl_idx] = Vehicle::LOG_T_LINK_END;
+            ltl_idx++;
+        }
+    }
+
+    return fl;
+}
 
 // -----------------------------------------------------------------------
 // MARK: World
@@ -1809,17 +1917,13 @@ std::vector<World::EnterLogEntry> World::build_enter_log_data() const {
 
     for (size_t vi = 0; vi < vehicles.size(); vi++) {
         const Vehicle *v = vehicles[vi];
-        // Scan log_link for link transitions (same logic as build_full_log's log_t_link)
-        int n_missing = 0;
-        if (v->log_size > 0 && v->log_t[0] > 0) {
-            n_missing = static_cast<int>(v->log_t[0] / delta_t);
-        }
+        // Scan log_entries for link transitions (same logic as build_full_log's log_t_link)
         int prev_link_id = -999;
         for (size_t i = 0; i < v->log_size; i++) {
-            int lid = v->log_link[i];
+            const LogEntry &e = v->log_entries[i];
+            int lid = e.link;
             if (lid >= 0 && lid != prev_link_id) {
-                double t = v->log_t[i];
-                result.push_back({lid, t, static_cast<int>(vi)});
+                result.push_back({lid, e.t, static_cast<int>(vi)});
                 prev_link_id = lid;
             }
         }
@@ -1844,8 +1948,8 @@ World::FlatLogs World::build_all_vehicle_logs_flat() const {
     for (size_t vi = 0; vi < nv; vi++) {
         const Vehicle *v = vehicles[vi];
         int n_missing = 0;
-        if (v->log_size > 0 && v->log_t[0] > 0) {
-            n_missing = static_cast<int>(v->log_t[0] / delta_t);
+        if (v->log_size > 0 && v->log_entries[0].t > 0) {
+            n_missing = static_cast<int>(v->log_entries[0].t / delta_t);
         }
         size_t vlen = n_missing + v->log_size;
         fl.offsets[vi] = total_log;
@@ -1855,7 +1959,7 @@ World::FlatLogs World::build_all_vehicle_logs_flat() const {
         size_t ltl_count = 1;  // home entry
         int prev_lid = -999;
         for (size_t i = 0; i < v->log_size; i++) {
-            int lid = v->log_link[i];
+            int lid = v->log_entries[i].link;
             if (lid >= 0 && lid != prev_lid) {
                 ltl_count++;
                 prev_lid = lid;
@@ -1884,8 +1988,8 @@ World::FlatLogs World::build_all_vehicle_logs_flat() const {
         const Vehicle *v = vehicles[vi];
         size_t base = fl.offsets[vi];
         int n_missing = 0;
-        if (v->log_size > 0 && v->log_t[0] > 0) {
-            n_missing = static_cast<int>(v->log_t[0] / delta_t);
+        if (v->log_size > 0 && v->log_entries[0].t > 0) {
+            n_missing = static_cast<int>(v->log_entries[0].t / delta_t);
         }
 
         // Prepend home entries
@@ -1900,19 +2004,21 @@ World::FlatLogs World::build_all_vehicle_logs_flat() const {
             fl.log_link[idx] = -1;
         }
 
-        // Append actual log entries
+        // Append actual log entries (AoS → SoA)
         size_t log_base = base + n_missing;
-        for (size_t i = 0; i < v->log_size; i++) {
+        size_t ls = v->log_size;
+        for (size_t i = 0; i < ls; i++) {
             size_t idx = log_base + i;
-            fl.log_t[idx] = v->log_t[i];
-            int st = v->log_state[i];
+            const LogEntry &e = v->log_entries[i];
+            fl.log_t[idx] = e.t;
+            int st = e.state;
             fl.log_state[idx] = st;
             bool is_run = (st == vsRUN);
-            fl.log_x[idx] = is_run ? v->log_x[i] : -1;
-            fl.log_v[idx] = is_run ? v->log_v[i] : -1;
+            fl.log_x[idx] = is_run ? e.x : -1;
+            fl.log_v[idx] = is_run ? e.v : -1;
             fl.log_s[idx] = is_run ? 0 : -1;
-            fl.log_lane[idx] = v->log_lane[i];
-            fl.log_link[idx] = v->log_link[i];
+            fl.log_lane[idx] = e.lane;
+            fl.log_link[idx] = e.link;
         }
 
         // log_t_link
@@ -1922,13 +2028,113 @@ World::FlatLogs World::build_all_vehicle_logs_flat() const {
         fl.ltl_id[ltl_base] = Vehicle::LOG_T_LINK_HOME;
         ltl_idx++;
 
-        // Scan full log_link (including prepended) for transitions
-        size_t vlen = fl.offsets[vi + 1] - base;
         int prev_lid = -999;
-        for (size_t i = 0; i < vlen; i++) {
-            int lid = fl.log_link[base + i];
+        for (size_t i = 0; i < ls; i++) {
+            const LogEntry &e = v->log_entries[i];
+            int lid = e.link;
             if (lid >= 0 && lid != prev_lid) {
-                fl.ltl_t[ltl_base + ltl_idx] = fl.log_t[base + i];
+                fl.ltl_t[ltl_base + ltl_idx] = e.t;
+                fl.ltl_id[ltl_base + ltl_idx] = lid;
+                ltl_idx++;
+                prev_lid = lid;
+            }
+        }
+        if (v->state == vsEND) {
+            fl.ltl_t[ltl_base + ltl_idx] = (v->arrival_time >= 0) ? v->arrival_time : -1.0;
+            fl.ltl_id[ltl_base + ltl_idx] = Vehicle::LOG_T_LINK_END;
+            ltl_idx++;
+        }
+    }
+
+    return fl;
+}
+
+/**
+ * @brief Compact version of build_all_vehicle_logs_flat.
+ * No home prepend — only actual log entries (log_size per vehicle).
+ * Returns n_missing array so Python can reconstruct home entries if needed.
+ */
+World::CompactFlatLogs World::build_all_vehicle_logs_flat_compact() const {
+    CompactFlatLogs fl;
+    size_t nv = vehicles.size();
+    fl.offsets.resize(nv + 1);
+    fl.ltl_offsets.resize(nv + 1);
+    fl.n_missing.resize(nv);
+
+    // First pass: compute total sizes
+    size_t total_log = 0;
+    size_t total_ltl = 0;
+    for (size_t vi = 0; vi < nv; vi++) {
+        const Vehicle *v = vehicles[vi];
+        int n_missing = 0;
+        if (v->log_size > 0 && v->log_entries[0].t > 0) {
+            n_missing = static_cast<int>(v->log_entries[0].t / delta_t);
+        }
+        fl.n_missing[vi] = n_missing;
+        fl.offsets[vi] = total_log;
+        total_log += v->log_size;
+
+        // log_t_link count
+        size_t ltl_count = 1;  // home entry
+        int prev_lid = -999;
+        for (size_t i = 0; i < v->log_size; i++) {
+            int lid = v->log_entries[i].link;
+            if (lid >= 0 && lid != prev_lid) {
+                ltl_count++;
+                prev_lid = lid;
+            }
+        }
+        if (v->state == vsEND) ltl_count++;
+        fl.ltl_offsets[vi] = total_ltl;
+        total_ltl += ltl_count;
+    }
+    fl.offsets[nv] = total_log;
+    fl.ltl_offsets[nv] = total_ltl;
+
+    // Allocate
+    fl.log_t.resize(total_log);
+    fl.log_x.resize(total_log);
+    fl.log_v.resize(total_log);
+    fl.log_state.resize(total_log);
+    fl.log_s.resize(total_log);
+    fl.log_lane.resize(total_log);
+    fl.log_link.resize(total_log);
+    fl.ltl_t.resize(total_ltl);
+    fl.ltl_id.resize(total_ltl);
+
+    // Second pass: fill arrays (no home prepend, AoS → SoA)
+    for (size_t vi = 0; vi < nv; vi++) {
+        const Vehicle *v = vehicles[vi];
+        size_t base = fl.offsets[vi];
+        size_t ls = v->log_size;
+
+        for (size_t i = 0; i < ls; i++) {
+            size_t idx = base + i;
+            const LogEntry &e = v->log_entries[i];
+            fl.log_t[idx] = e.t;
+            int st = e.state;
+            fl.log_state[idx] = st;
+            bool is_run = (st == vsRUN);
+            fl.log_x[idx] = is_run ? e.x : -1;
+            fl.log_v[idx] = is_run ? e.v : -1;
+            fl.log_s[idx] = is_run ? 0 : -1;
+            fl.log_lane[idx] = e.lane;
+            fl.log_link[idx] = e.link;
+        }
+
+        // log_t_link
+        size_t ltl_base = fl.ltl_offsets[vi];
+        size_t ltl_idx = 0;
+        fl.ltl_t[ltl_base] = v->departure_time;
+        fl.ltl_id[ltl_base] = Vehicle::LOG_T_LINK_HOME;
+        ltl_idx++;
+
+        int prev_lid = -999;
+        for (size_t i = 0; i < ls; i++) {
+            const LogEntry &e = v->log_entries[i];
+            int lid = e.link;
+            if (lid >= 0 && lid != prev_lid) {
+                fl.ltl_t[ltl_base + ltl_idx] = e.t;
                 fl.ltl_id[ltl_base + ltl_idx] = lid;
                 ltl_idx++;
                 prev_lid = lid;

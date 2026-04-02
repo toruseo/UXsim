@@ -69,11 +69,18 @@ class Analyzer:
         s.flag_pandas_convert = 0
         s.flag_od_analysis = 0
 
-        # visualization data
-        s.font_data = load_font_data(font_pillow)
-        s.font_file_like = io.BytesIO(s.font_data)
-        
-        plt.rcParams["font.family"] = get_font_for_matplotlib(font_matplotlib)
+        # visualization data (lazy-loaded on first use)
+        s._font_pillow_path = font_pillow
+        s._font_matplotlib_name = font_matplotlib
+        s._font_loaded = False
+
+    def _ensure_font_loaded(s):
+        """Lazy-load font data on first use."""
+        if not s._font_loaded:
+            s.font_data = load_font_data(s._font_pillow_path)
+            s.font_file_like = io.BytesIO(s.font_data)
+            plt.rcParams["font.family"] = get_font_for_matplotlib(s._font_matplotlib_name)
+            s._font_loaded = True
 
     def outdir_set(s, fname:str):
         """
@@ -158,18 +165,24 @@ class Analyzer:
         dist_time = floyd_warshall(adj_mat_time)
         dist_space = floyd_warshall(adj_mat_dist)
 
+        cpp_mode = hasattr(s.W, '_cpp_world')
         for veh in s.W.VEHICLES.values():
             o = veh.orig
             d = veh.dest
             if d != None:
                 s.od_trips[o,d] += dn
 
-                veh_links = [rec[1] for rec in veh.log_t_link if hasattr(rec[1], "length")]
-                veh_dist_traveled = sum([l.length for l in veh_links])
-                if veh.state == "run":
-                    veh_dist_traveled += veh.x
-                veh.distance_traveled = veh_dist_traveled
-                s.od_dist[o,d].append(veh.distance_traveled)
+                if cpp_mode:
+                    veh_dist_traveled = veh.distance_traveled
+                    if veh.state == "run":
+                        veh_dist_traveled += veh.x
+                else:
+                    veh_links = [rec[1] for rec in veh.log_t_link if hasattr(rec[1], "length")]
+                    veh_dist_traveled = sum([l.length for l in veh_links])
+                    if veh.state == "run":
+                        veh_dist_traveled += veh.x
+                    veh.distance_traveled = veh_dist_traveled
+                s.od_dist[o,d].append(veh_dist_traveled)
 
                 if veh.travel_time != -1:
                     s.od_trips_comp[o,d] += dn
@@ -1359,10 +1372,11 @@ class Analyzer:
         miny -= buffer
 
         pics = []
+        s._ensure_font_loaded()
         for t in tqdm(range(int(s.W.TMAX*0), int(s.W.TMAX*1), s.W.DELTAT*speed_coef)):
             img = Image.new("RGBA", (int(maxx-minx), int(maxy-miny)), (255, 255, 255, 255))
             draw = ImageDraw.Draw(img)
-                
+
             if network_font_size > 0:
                 font = ImageFont.truetype(s.font_file_like, int(network_font_size))
 

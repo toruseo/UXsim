@@ -169,6 +169,19 @@ struct Link {
 };
 
 // -----------------------------------------------------------------------
+// MARK: LogEntry
+// -----------------------------------------------------------------------
+
+struct LogEntry {
+    double t;
+    double x;
+    double v;
+    int state;
+    int link;
+    int lane;
+};
+
+// -----------------------------------------------------------------------
 // MARK: class Vehicle
 // -----------------------------------------------------------------------
 
@@ -224,14 +237,9 @@ struct Vehicle {
     vector<bool> _traveled_nodes;       // _traveled_nodes[node_id] = true if visited
     int _traveled_link_count;           // number of distinct links traveled (for specified_route)
 
-    // Logging (pre-allocated, indexed by log_size)
-    vector<double> log_t;
-    vector<int> log_state;
-    vector<int> log_link;
-    vector<double> log_x;
-    vector<double> log_v;
-    vector<int> log_lane;
-    size_t log_size;  // current number of log entries (used instead of push_back)
+    // Logging (AoS: single interleaved vector for cache-friendly access)
+    vector<LogEntry> log_entries;
+    size_t log_size;  // current number of log entries
 
     Vehicle(
         World *w,
@@ -445,5 +453,40 @@ struct World {
         std::vector<size_t> ltl_offsets;  // size = vehicles.size() + 1
     };
     FlatLogs build_all_vehicle_logs_flat() const;
+
+    // Compact version: no home prepend. Only actual log entries.
+    // n_missing[i] = number of home timesteps before vehicle i's first log entry.
+    struct CompactFlatLogs {
+        std::vector<double> log_t;
+        std::vector<double> log_x;
+        std::vector<double> log_v;
+        std::vector<int>    log_state;
+        std::vector<double> log_s;
+        std::vector<int>    log_lane;
+        std::vector<int>    log_link;
+        std::vector<size_t> offsets;      // size = vehicles.size() + 1
+        std::vector<int>    n_missing;    // size = vehicles.size()
+        std::vector<double> ltl_t;
+        std::vector<int>    ltl_id;
+        std::vector<size_t> ltl_offsets;  // size = vehicles.size() + 1
+    };
+    CompactFlatLogs build_all_vehicle_logs_flat_compact() const;
+
+    // Full version: includes home entries prepended per vehicle.
+    // No n_missing needed — home entries are already in the arrays.
+    struct FullFlatLogs {
+        std::vector<double> log_t;
+        std::vector<double> log_x;
+        std::vector<double> log_v;
+        std::vector<int>    log_state;
+        std::vector<double> log_s;
+        std::vector<int>    log_lane;
+        std::vector<int>    log_link;
+        std::vector<size_t> offsets;      // size = vehicles.size() + 1
+        std::vector<double> ltl_t;
+        std::vector<int>    ltl_id;
+        std::vector<size_t> ltl_offsets;  // size = vehicles.size() + 1
+    };
+    FullFlatLogs build_all_vehicle_logs_flat_full() const;
 
 };
