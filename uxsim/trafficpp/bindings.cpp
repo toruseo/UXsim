@@ -431,13 +431,6 @@ NB_MODULE(uxsim_cpp, m) {
                       "Vector of pointers to all Vehicles in the world.")
         .def_prop_ro("vehicle_count", [](const World &w) { return w.vehicles.size(); },
                       "Number of vehicles (O(1), avoids list conversion)")
-        .def("link_vehicle_count", [](const World &w, int link_id) -> size_t {
-                 if (link_id >= 0 && link_id < (int)w.links.size())
-                     return w.links[link_id]->vehicles.size();
-                 return 0;
-             },
-             nb::arg("link_id"),
-             "Get vehicle count on a link by ID (O(1), no list conversion)")
         .def_ro("LINKS", &World::links,
                       "Vector of pointers to all Links in the world.")
         .def_ro("NODES", &World::nodes,
@@ -481,67 +474,6 @@ NB_MODULE(uxsim_cpp, m) {
         .def("get_all_vehicle_states", &World::get_all_vehicle_states,
              "Get (name, state_int) pairs for all vehicles. "
              "Abort is detected and returned as state 4.")
-        .def("build_all_vehicle_logs", [](const World &w) -> nb::list {
-                 // Batch: build full logs for ALL vehicles in one C++ call.
-                 // All data as numpy arrays — zero-copy via vector ownership transfer.
-                 nb::list result;
-                 for (auto *v : w.vehicles) {
-                     auto fl = v->build_full_log();
-                     size_t m = fl.log_t_link.size();
-                     nb::dict d;
-                     d["log_t"] = make_numpy_move(std::move(fl.log_t));
-                     d["log_x"] = make_numpy_move(std::move(fl.log_x));
-                     d["log_v"] = make_numpy_move(std::move(fl.log_v));
-                     d["log_s"] = make_numpy_move(std::move(fl.log_s));
-                     d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
-                     d["log_link"] = make_numpy_move(std::move(fl.log_link));
-                     d["log_state"] = make_numpy_move(std::move(fl.log_state));
-                     // log_t_link as two parallel numpy arrays
-                     std::vector<double> ltl_t(m);
-                     std::vector<int> ltl_id(m);
-                     for (size_t i = 0; i < m; i++) {
-                         ltl_t[i] = fl.log_t_link[i].first;
-                         ltl_id[i] = fl.log_t_link[i].second;
-                     }
-                     d["log_t_link_t"] = make_numpy_move(std::move(ltl_t));
-                     d["log_t_link_id"] = make_numpy_move(std::move(ltl_id));
-                     result.append(d);
-                 }
-                 return result;
-             },
-             "Build full logs for all vehicles in batch. Returns list of dicts with numpy arrays.")
-        .def("build_all_vehicle_logs_flat", [](const World &w) -> nb::dict {
-                 // Flat SoA: all vehicles' logs in contiguous arrays + offset arrays.
-                 // Returns dict with 7 data arrays + offsets + 2 ltl arrays + ltl_offsets.
-                 auto fl = w.build_all_vehicle_logs_flat();
-                 nb::dict d;
-                 d["log_t"] = make_numpy_move(std::move(fl.log_t));
-                 d["log_x"] = make_numpy_move(std::move(fl.log_x));
-                 d["log_v"] = make_numpy_move(std::move(fl.log_v));
-                 d["log_state"] = make_numpy_move(std::move(fl.log_state));
-                 d["log_s"] = make_numpy_move(std::move(fl.log_s));
-                 d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
-                 d["log_link"] = make_numpy_move(std::move(fl.log_link));
-                 // offsets as uint64 numpy array (size_t)
-                 {
-                     size_t n = fl.offsets.size();
-                     auto *buf = new std::vector<int64_t>(n);
-                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.offsets[i]);
-                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
-                     d["offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
-                 }
-                 d["ltl_t"] = make_numpy_move(std::move(fl.ltl_t));
-                 d["ltl_id"] = make_numpy_move(std::move(fl.ltl_id));
-                 {
-                     size_t n = fl.ltl_offsets.size();
-                     auto *buf = new std::vector<int64_t>(n);
-                     for (size_t i = 0; i < n; i++) (*buf)[i] = static_cast<int64_t>(fl.ltl_offsets[i]);
-                     nb::capsule owner(buf, [](void* p) noexcept { delete static_cast<std::vector<int64_t>*>(p); });
-                     d["ltl_offsets"] = nb::ndarray<nb::numpy, int64_t, nb::ndim<1>>(buf->data(), {n}, owner);
-                 }
-                 return d;
-             },
-             "Build flat SoA logs for all vehicles. Returns dict with contiguous arrays + offset arrays.")
         .def("build_all_vehicle_logs_flat_compact", [](const World &w) -> nb::dict {
                  // Compact flat SoA: no home prepend. Only actual log entries.
                  auto fl = w.build_all_vehicle_logs_flat_compact();
@@ -665,14 +597,6 @@ NB_MODULE(uxsim_cpp, m) {
         .def("estimate_congestion_externality", &Link::estimate_congestion_externality,
              nb::arg("timestep"),
              "Estimate congestion externality for this link at given timestep")
-        .def("get_toll_timeseries_size", [](Link &self) -> int {
-            return (int)self.toll_timeseries.size();
-        })
-        .def("get_toll_at_timestep", [](Link &self, int ts) -> double {
-            if (ts >= 0 && ts < (int)self.toll_timeseries.size())
-                return self.toll_timeseries[ts];
-            return -1.0;
-        })
         // Aliases matching Python uxsim naming
         .def_rw("free_flow_speed", &Link::vmax)
         .def_rw("backward_wave_speed", &Link::backward_wave_speed)
@@ -776,11 +700,6 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("arrival_time", &Vehicle::arrival_time)
         .def_ro("travel_time", &Vehicle::travel_time)
         .def_rw("distance_traveled", &Vehicle::distance_traveled)
-        .def("state_str", &Vehicle::state_str,
-             "Return state as string: home/wait/run/end/abort")
-        .def_prop_ro("state_str_p",
-             [](const Vehicle &v) { return v.state_str(); },
-             "State as string property: home/wait/run/end/abort")
         .def_prop_ro("departure_time_in_second", &Vehicle::departure_time_in_second,
              "Departure time in seconds")
         .def_rw("route_choice_principle", &Vehicle::route_choice_principle)

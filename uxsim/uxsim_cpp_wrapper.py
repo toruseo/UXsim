@@ -1125,23 +1125,8 @@ class CppWorld:
 
     def _build_all_vehicle_log_caches(self):
         """Batch-fetch raw log data from C++ for all vehicles.
-        Uses compact flat SoA API (no home prepend) for speed.
-        Falls back to legacy APIs for older C++ builds."""
-        try:
-            flat = self._cpp_world.build_all_vehicle_logs_flat_compact()
-        except AttributeError:
-            try:
-                flat = self._cpp_world.build_all_vehicle_logs_flat()
-            except AttributeError:
-                try:
-                    logs = self._cpp_world.build_all_vehicle_logs()
-                except AttributeError:
-                    return
-                vehicles = list(self.VEHICLES.values())
-                for veh, log in zip(vehicles, logs):
-                    if veh._log_cache is None:
-                        veh._log_cache = log
-                return
+        Uses compact flat SoA API (no home prepend) for speed."""
+        flat = self._cpp_world.build_all_vehicle_logs_flat_compact()
         offsets = flat['offsets']
         ltl_offsets = flat['ltl_offsets']
         all_log_t = flat['log_t']

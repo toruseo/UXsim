@@ -7808,3 +7808,127 @@ def test_coverage_signal_capacity_enforce_route():
     # Verify the enforced-route vehicle used the specified path
     route = vehs[0].traveled_route()[0]
     assert route[-1] == link2
+
+
+def test_coverage_per_vehicle_log_mid_simulation():
+    """Access vehicle log properties mid-simulation.
+    Verifies that log data is accessible during iterative execution
+    and that post-simulation analysis still works correctly afterward."""
+    W = World(cpp=True, deltan=5, tmax=300, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
+    W.addNode("A", 0, 0)
+    W.addNode("B", 1000, 0)
+    W.addLink("AB", "A", "B", length=1000, free_flow_speed=20)
+    W.adddemand("A", "B", 0, 200, 0.5)
+
+    # Partial execution
+    W.exec_simulation(until_t=150)
+
+    # Access vehicle logs mid-simulation for run/end vehicles
+    accessed = 0
+    for veh in W.VEHICLES.values():
+        if veh.state in ("run", "end"):
+            assert len(veh.log_t) > 0
+            assert len(veh.log_x) > 0
+            assert len(veh.log_v) > 0
+            assert len(veh.log_s) > 0
+            assert len(veh.log_lane) > 0
+            assert len(veh.log_state) > 0
+            assert len(veh.log_link) > 0
+            assert len(veh.log_t_link) > 0
+            accessed += 1
+            if accessed >= 3:
+                break
+    assert accessed >= 3
+
+    # Complete simulation — log caches are rebuilt at simulation_terminated
+    W.exec_simulation()
+
+    # Verify post-simulation analysis works correctly with fresh logs
+    W.analyzer.print_simple_stats()
+    ended = [v for v in W.VEHICLES.values() if v.state == "end"]
+    assert len(ended) > 0
+    for veh in ended[:3]:
+        assert len(veh.log_t) > 0
+        assert veh.travel_time > 0
+
+
+def test_coverage_main_loop_parameter_branches():
+    """Test different exec_simulation parameter combinations to cover main_loop branches."""
+    W = World(cpp=True, deltan=5, tmax=300, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
+    W.addNode("A", 0, 0)
+    W.addNode("B", 1000, 0)
+    W.addLink("AB", "A", "B", length=1000, free_flow_speed=20)
+    W.adddemand("A", "B", 0, 200, 0.5)
+
+    # Branch 1: until_t
+    W.exec_simulation(until_t=50)
+    assert W.check_simulation_ongoing() == True
+
+    # Branch 2: duration_t2 (runs for exactly duration_t2 seconds)
+    W.exec_simulation(duration_t2=50)
+    assert W.check_simulation_ongoing() == True
+
+    # Complete
+    W.exec_simulation()
+    assert W.check_simulation_ongoing() == False
+
+
+def test_coverage_route_choice_edge_cases():
+    """Test route_next_link_choice with unreachable destination.
+    A vehicle heading to an isolated node cannot find a route at the origin,
+    triggering the route_next_link == nullptr branch in Node::generate."""
+    W = World(cpp=True, deltan=5, tmax=200, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
+    W.addNode("orig", 0, 0)
+    W.addNode("mid", 1, 0)
+    W.addNode("dest", 2, 0)
+    W.addNode("island", 5, 5)  # isolated node, no links to/from
+    W.addLink("l1", "orig", "mid", length=500, free_flow_speed=20)
+    W.addLink("l2", "mid", "dest", length=500, free_flow_speed=20)
+
+    # Vehicle heading to unreachable "island" node — should never depart
+    W.addVehicle("orig", "island", 0, auto_rename=True)
+    # Normal vehicles
+    W.adddemand("orig", "dest", 0, 100, 0.3)
+
+    W.exec_simulation()
+
+    # Normal vehicles should complete
+    ended = [v for v in W.VEHICLES.values() if v.state == "end"]
+    assert len(ended) > 0
+
+    # Unreachable vehicle should NOT have ended (still waiting or never departed)
+    island_vehs = [v for v in W.VEHICLES.values() if v.dest == W.get_node("island")]
+    assert len(island_vehs) == 1
+    assert island_vehs[0].state != "end"
+
+
+def test_coverage_no_cyclic_all_filtered():
+    """Test no_cyclic_routing where all outlinks lead to visited nodes."""
+    W = World(cpp=True, deltan=5, tmax=500, print_mode=0, save_mode=0, show_mode=0,
+              random_seed=42, no_cyclic_routing=True)
+    # Triangle: A -> B -> C -> A (cycle)
+    W.addNode("A", 0, 0)
+    W.addNode("B", 1, 0)
+    W.addNode("C", 0.5, 1)
+    W.addNode("D", 2, 0)  # final destination
+    W.addLink("AB", "A", "B", length=500, free_flow_speed=20)
+    W.addLink("BC", "B", "C", length=500, free_flow_speed=20)
+    W.addLink("CA", "C", "A", length=500, free_flow_speed=20)
+    W.addLink("BD", "B", "D", length=500, free_flow_speed=20)
+
+    W.adddemand("A", "D", 0, 200, 0.3)
+    W.exec_simulation()
+
+    ended = [v for v in W.VEHICLES.values() if v.state == "end"]
+    assert len(ended) > 0
+
+
+def test_coverage_print_mode_enabled():
+    """Run simulation with print_mode=1 to cover C++ print branches in main_loop."""
+    W = World(cpp=True, deltan=5, tmax=200, print_mode=1, save_mode=0, show_mode=0, random_seed=42)
+    W.addNode("A", 0, 0)
+    W.addNode("B", 1, 0)
+    W.addLink("AB", "A", "B", length=500, free_flow_speed=20)
+    W.adddemand("A", "B", 0, 100, 0.3)
+    W.exec_simulation()
+    assert len(W.VEHICLES) > 0
