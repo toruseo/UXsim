@@ -17,23 +17,17 @@ from . import ALNS
 import warnings
 
 
-def _make_cpp_func_world(func_World):
-    """Wrap func_World to inject cpp=True into World() calls.
+def _ensure_cpp_world(W, solver_name="CppSolver"):
+    """Verify that W is a CppWorld instance (has _cpp_world attribute).
 
-    Temporarily monkey-patches World.__new__ so that any World(...)
-    created inside func_World automatically gets cpp=True.
+    Raises ValueError if func_World did not return a World(cpp=True).
     """
-    def wrapper():
-        from ..uxsim import World
-        _orig_new = World.__new__
-        def _cpp_new(cls, *args, cpp=False, **kwargs):
-            return _orig_new(cls, *args, cpp=True, **kwargs)
-        World.__new__ = _cpp_new
-        try:
-            return func_World()
-        finally:
-            World.__new__ = _orig_new
-    return wrapper
+    if not hasattr(W, '_cpp_world'):
+        raise ValueError(
+            f"{solver_name} requires func_World to return World(cpp=True, ...). "
+            f"Got {type(W).__name__} without C++ engine. "
+            f"Add cpp=True to your World() constructor inside func_World."
+        )
 
 
 def _lightweight_finalize(W, cached_analyzer=None):
@@ -1865,9 +1859,8 @@ class CppSolverDUE(SolverDUE):
     def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, route_sets=None, print_progress=True):
         s.start_time = time.time()
 
-        func_World = _make_cpp_func_world(s.func_World)
-
-        W_orig = func_World()
+        W_orig = s.func_World()
+        _ensure_cpp_world(W_orig, "CppSolverDUE")
         if print_progress:
             W_orig.print_scenario_stats()
 
@@ -1903,10 +1896,8 @@ class CppSolverDUE(SolverDUE):
 
         print("solving DUE...")
         for i in range(max_iter):
-            W = func_World()
+            W = s.func_World()
             is_last_iter = (i == max_iter - 1)
-            if not is_last_iter:
-                W.vehicle_logging_timestep_interval = -1
 
             if od_route_sets_ids is None:
                 link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
@@ -1914,6 +1905,9 @@ class CppSolverDUE(SolverDUE):
 
             cached_analyzer = _lightweight_finalize(W, cached_analyzer)
 
+            # Skip expensive log cache building on intermediate iterations;
+            # CppWorld log mode is set at __init__ time, so vehicle_logging_timestep_interval
+            # cannot be changed after construction — _skip_log_on_terminate handles this instead.
             if not is_last_iter:
                 W._skip_log_on_terminate = True
 
@@ -1981,9 +1975,8 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
     def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, route_sets=None, print_progress=True):
         s.start_time = time.time()
 
-        func_World = _make_cpp_func_world(s.func_World)
-
-        W_orig = func_World()
+        W_orig = s.func_World()
+        _ensure_cpp_world(W_orig, "CppSolverDSO_D2D")
         if print_progress:
             W_orig.print_scenario_stats()
 
@@ -2019,10 +2012,8 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
 
         print("solving DSO...")
         for i in range(max_iter):
-            W = func_World()
+            W = s.func_World()
             is_last_iter = (i == max_iter - 1)
-            if not is_last_iter:
-                W.vehicle_logging_timestep_interval = -1
 
             if od_route_sets_ids is None:
                 link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
@@ -2030,6 +2021,7 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
 
             cached_analyzer = _lightweight_finalize(W, cached_analyzer)
 
+            # CppWorld log mode is fixed at __init__; use _skip_log_on_terminate instead
             if not is_last_iter:
                 W._skip_log_on_terminate = True
 
