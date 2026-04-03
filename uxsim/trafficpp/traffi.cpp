@@ -1011,42 +1011,6 @@ std::string Vehicle::state_str() const {
     }
 }
 
-/**
- * @brief Return log_state as a vector of human-readable strings.
- * Converts each int state entry to its string representation.
- */
-std::vector<std::string> Vehicle::log_state_str() const {
-    static const char* state_names[] = {"home", "wait", "run", "end", "abort"};
-    std::vector<std::string> result;
-    result.reserve(log_size);
-    for (size_t i = 0; i < log_size; i++) {
-        int s = log_state[i];
-        if (s >= 0 && s <= 4) {
-            result.emplace_back(state_names[s]);
-        } else {
-            result.emplace_back("unknown");
-        }
-    }
-    return result;
-}
-
-/**
- * @brief Return log_link as a vector of link name strings.
- * Converts each int link ID to its name. Invalid IDs become "-1".
- */
-std::vector<std::string> Vehicle::log_link_names() const {
-    std::vector<std::string> result;
-    result.reserve(log_size);
-    for (size_t i = 0; i < log_size; i++) {
-        int lid = log_link[i];
-        if (lid >= 0 && lid < static_cast<int>(w->links.size())) {
-            result.emplace_back(w->links[lid]->name);
-        } else {
-            result.emplace_back("-1");
-        }
-    }
-    return result;
-}
 
 /**
  * @brief Return departure_time in seconds.
@@ -1056,41 +1020,6 @@ double Vehicle::departure_time_in_second() const {
     return departure_time;
 }
 
-/**
- * @brief Build log_t_link: a list of (time, label) pairs representing link transitions.
- * label is "home" for departure, link name for link entries, "end" for trip end.
- */
-std::vector<std::pair<double, std::string>> Vehicle::build_log_t_link() const {
-    std::vector<std::pair<double, std::string>> result;
-    // departure_time is already in seconds in C++
-    result.emplace_back(departure_time, "home");
-
-    // Scan log_link for transitions
-    int prev_link_id = -999;
-    int n_missing = 0;
-    if (log_size > 0 && log_t[0] > 0) {
-        n_missing = static_cast<int>(log_t[0] / w->delta_t);
-    }
-    for (size_t i = 0; i < log_size; i++) {
-        int lid = log_link[i];
-        if (lid >= 0 && lid != prev_link_id) {
-            // The actual time index is i + n_missing in the full array,
-            // but log_t[i] already has the correct time
-            double t = log_t[i];
-            std::string lname = (lid >= 0 && lid < static_cast<int>(w->links.size()))
-                                ? w->links[lid]->name : "-1";
-            result.emplace_back(t, lname);
-            prev_link_id = lid;
-        }
-    }
-
-    // Add "end" entry if trip completed
-    if (state == vsEND) {
-        double at = (arrival_time >= 0) ? arrival_time : -1.0;
-        result.emplace_back(at, "end");
-    }
-    return result;
-}
 
 /**
  * @brief Build full log arrays with home-timestep prepend.
@@ -1683,37 +1612,11 @@ Link *World::get_link(const string &link_name){
 }
 
 
-Vehicle *World::get_vehicle(const string &vehicle_name){
-    for (auto vh : vehicles){
-        if (vh->name == vehicle_name){
-            return vh;
-        }
-    }
-    (*writer) << "Error at function get_vehicle(): `"
-              << vehicle_name << "` not found\n";
-    throw std::runtime_error("get_vehicle() error");
-}
-
 Vehicle *World::get_vehicle_by_index(int index) const {
     if (index >= 0 && index < static_cast<int>(vehicles.size())) {
         return vehicles[index];
     }
     throw std::out_of_range("get_vehicle_by_index: index out of range");
-}
-
-Link *World::get_link_by_id(const int link_id){
-    if (link_id >= 0 && link_id < (int)links.size() && links[link_id]->id == link_id){
-        return links[link_id];
-    }
-    // Fallback: linear search (should not happen if IDs are sequential)
-    for (auto ln : links){
-        if (ln->id == link_id){
-            return ln;
-        }
-    }
-    (*writer) << "Error at function get_link_id(): `"
-              << link_id << "` not found\n";
-    throw std::runtime_error("get_link_id() error");
 }
 
 // for some reason, this was defined outside of World
@@ -1747,19 +1650,6 @@ inline void add_demand(
 }
 
 /**
- * @brief Return vehicles filtered by state.
- */
-std::vector<Vehicle *> World::get_vehicles_by_state(int state) const {
-    std::vector<Vehicle *> result;
-    for (auto *v : vehicles) {
-        if (v->state == state) {
-            result.push_back(v);
-        }
-    }
-    return result;
-}
-
-/**
  * @brief Return all vehicle states as (name, state_int) pairs.
  * Efficient bulk query so Python can update VEHICLES_LIVING/RUNNING
  * without calling state on each vehicle individually.
@@ -1773,23 +1663,6 @@ std::vector<std::pair<std::string, int>> World::get_all_vehicle_states() const {
             effective_state = vsABORT;
         }
         result.emplace_back(v->name, effective_state);
-    }
-    return result;
-}
-
-/**
- * @brief Return effective state for each vehicle, indexed by order in vehicles vector.
- * Abort detection is applied. Safe for index-based matching with Python VEHICLES.values().
- */
-std::vector<int> World::get_vehicle_states_by_index() const {
-    std::vector<int> result;
-    result.reserve(vehicles.size());
-    for (auto *v : vehicles) {
-        int effective_state = v->state;
-        if (effective_state == vsEND && (v->flag_trip_aborted || (v->arrival_time < 0 && v->travel_time <= 0))) {
-            effective_state = vsABORT;
-        }
-        result.push_back(effective_state);
     }
     return result;
 }

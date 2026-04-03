@@ -415,12 +415,6 @@ NB_MODULE(uxsim_cpp, m) {
         .def("get_link", &World::get_link,
              nb::rv_policy::reference,
              "Get a Link by name (reference)")
-        .def("get_vehicle", &World::get_vehicle,
-             nb::rv_policy::reference,
-             "Get a Vehicle by name (reference)")
-        .def("get_link_by_id", &World::get_link_by_id,
-             nb::rv_policy::reference,
-             "Get a Link by integer ID (reference)")
         .def("get_vehicle_by_index", &World::get_vehicle_by_index,
              nb::rv_policy::reference,
              "Get a Vehicle by index in vehicles vector (O(1), no list conversion)")
@@ -484,17 +478,9 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("vehicles_map", &World::vehicles_map)
         .def_ro("nodes_map", &World::nodes_map)
         .def_ro("links_map", &World::links_map)
-        .def("get_vehicles_by_state", &World::get_vehicles_by_state,
-             nb::arg("state"),
-             nb::rv_policy::reference,
-             "Get vehicles filtered by state (0=home,1=wait,2=run,3=end,4=abort)")
         .def("get_all_vehicle_states", &World::get_all_vehicle_states,
              "Get (name, state_int) pairs for all vehicles. "
              "Abort is detected and returned as state 4.")
-        .def("get_vehicle_states_by_index", &World::get_vehicle_states_by_index,
-             "Get effective state ints indexed by vehicle order. "
-             "0=home, 1=wait, 2=run, 3=end, 4=abort. "
-             "Index matches World.VEHICLES vector order.")
         .def("build_all_vehicle_logs", [](const World &w) -> nb::list {
                  // Batch: build full logs for ALL vehicles in one C++ call.
                  // All data as numpy arrays — zero-copy via vector ownership transfer.
@@ -632,11 +618,6 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("in_links", &Node::in_links)
         .def_ro("out_links", &Node::out_links)
         .def_ro("incoming_vehicles", &Node::incoming_vehicles)
-        .def_prop_ro("generation_queue", [](const Node &n) {
-                 nb::list result;
-                 for (auto *v : n.generation_queue) result.append(v);
-                 return result;
-             })
         .def("generate", &Node::generate)
         .def("transfer", &Node::transfer)
         .def("signal_update", &Node::signal_update)
@@ -699,11 +680,6 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("capacity_in_remain", &Link::capacity_in_remain)
         .def_ro("start_node", &Link::start_node)
         .def_ro("end_node", &Link::end_node)
-        .def_prop_ro("vehicles", [](const Link &l) {
-                 nb::list result;
-                 for (auto *v : l.vehicles) result.append(v);
-                 return result;
-             })
         .def_ro("arrival_curve", &Link::arrival_curve)
         .def_ro("cum_arrival", &Link::arrival_curve)
         .def_ro("departure_curve", &Link::departure_curve)
@@ -805,63 +781,10 @@ NB_MODULE(uxsim_cpp, m) {
         .def_prop_ro("state_str_p",
              [](const Vehicle &v) { return v.state_str(); },
              "State as string property: home/wait/run/end/abort")
-        .def("log_state_str", &Vehicle::log_state_str,
-             "Return log_state as vector of strings")
-        .def("log_link_names", &Vehicle::log_link_names,
-             "Return log_link as vector of link name strings")
         .def_prop_ro("departure_time_in_second", &Vehicle::departure_time_in_second,
              "Departure time in seconds")
         .def_rw("route_choice_principle", &Vehicle::route_choice_principle)
         .def_rw("route_choice_uncertainty", &Vehicle::route_choice_uncertainty)
-        .def("build_log_t_link", &Vehicle::build_log_t_link,
-             "Build log_t_link: list of (time, label) pairs for link transitions")
-        .def("build_full_log", [](const Vehicle &v) -> nb::dict {
-                 // Per-vehicle version: returns Python lists with string conversions
-                 // for backward compatibility with existing wrapper code.
-                 // Optimization: use heap-allocated interned strings (g_intern) to
-                 // reuse same PyObject, use make_numpy_copy for numeric arrays.
-                 auto *si = g_intern;
-                 auto fl = v.build_full_log();
-                 size_t n = fl.log_t.size();
-                 nb::dict d;
-                 // Keep numeric data as Python lists (nb::cast) for backward
-                 // compatibility — wrapper fallback path expects list, not ndarray.
-                 d["log_t"] = nb::cast(fl.log_t);
-                 d["log_x"] = nb::cast(fl.log_x);
-                 d["log_v"] = nb::cast(fl.log_v);
-                 d["log_s"] = nb::cast(fl.log_s);
-                 d["log_lane"] = nb::cast(fl.log_lane);
-                 d["log_link"] = nb::cast(fl.log_link);
-                 // State int→string using interned Python strings (no new allocation)
-                 nb::list state_strs;
-                 for (size_t i = 0; i < n; i++) {
-                     int s = fl.log_state[i];
-                     state_strs.append((s >= 0 && s <= 4) ? si->states[s] : si->unknown);
-                 }
-                 d["log_state"] = state_strs;
-                 // Build log_t_link with interned label strings
-                 size_t m = fl.log_t_link.size();
-                 nb::list ltl;
-                 for (size_t i = 0; i < m; i++) {
-                     double t = fl.log_t_link[i].first;
-                     int lid = fl.log_t_link[i].second;
-                     nb::list entry;
-                     entry.append(nb::float_(t));
-                     if (lid == Vehicle::LOG_T_LINK_HOME) {
-                         entry.append(si->states[0]);  // "home"
-                     } else if (lid == Vehicle::LOG_T_LINK_END) {
-                         entry.append(si->states[3]);  // "end"
-                     } else if (lid >= 0 && lid < static_cast<int>(v.w->links.size())) {
-                         entry.append(nb::str(v.w->links[lid]->name.c_str()));
-                     } else {
-                         entry.append(si->minus1);
-                     }
-                     ltl.append(entry);
-                 }
-                 d["log_t_link"] = ltl;
-                 return d;
-             },
-             "Build full log arrays with string conversions (backward compatible)")
         .def("build_full_log_np", [](const Vehicle &v) -> nb::dict {
                  // Per-vehicle numpy version: all data as numpy/int, no strings.
                  // Zero-copy via vector ownership transfer.
@@ -887,36 +810,6 @@ NB_MODULE(uxsim_cpp, m) {
                  return d;
              },
              "Build full log arrays as numpy arrays, all int (no string conversion)")
-        .def("get_log_state_strings", [](const Vehicle &v) -> nb::list {
-                 // Build full log and convert state ints to strings using interned objects
-                 auto *si = g_intern;
-                 auto fl = v.build_full_log();
-                 nb::list result;
-                 for (size_t i = 0; i < fl.log_state.size(); i++) {
-                     int s = fl.log_state[i];
-                     result.append((s >= 0 && s <= 4) ? si->states[s] : si->unknown);
-                 }
-                 return result;
-             },
-             "Return full log_state as list of strings (home/wait/run/end/abort)")
-        .def("get_log_t_link_data", [](const Vehicle &v) -> nb::tuple {
-                 // Return log_t_link as (times_array, link_id_array) numpy tuple
-                 // Special link_ids: -1=home, -2=end, >=0=link_id
-                 auto fl = v.build_full_log();
-                 size_t m = fl.log_t_link.size();
-                 std::vector<double> times(m);
-                 std::vector<int> ids(m);
-                 for (size_t i = 0; i < m; i++) {
-                     times[i] = fl.log_t_link[i].first;
-                     ids[i] = fl.log_t_link[i].second;
-                 }
-                 return nb::make_tuple(
-                     make_numpy_move(std::move(times)),
-                     make_numpy_move(std::move(ids))
-                 );
-             },
-             "Return log_t_link as tuple of (times, link_ids) numpy arrays. "
-             "Special link_ids: -1=home, -2=end, >=0=link_id")
         ;
 
     m.def("get_compile_datetime", &get_compile_datetime, "Return the compile date and time");

@@ -251,18 +251,8 @@ struct Vehicle {
     // Helper: return state as string ("home", "wait", "run", "end", "abort")
     std::string state_str() const;
 
-    // Helper: return log_state as vector of strings
-    std::vector<std::string> log_state_str() const;
-
-    // Helper: return log_link as vector of link name strings (-1 → "-1")
-    std::vector<std::string> log_link_names() const;
-
     // Helper: return departure_time in seconds (already in seconds in C++)
     double departure_time_in_second() const;
-
-    // Helper: build log_t_link as vector of (time, label) pairs.
-    // label is link name for link entries, "home" or "end" for special entries.
-    std::vector<std::pair<double, std::string>> build_log_t_link() const;
 
     // Helper: build full log arrays with home-timestep prepend.
     // All data is int/double — no string allocation for maximum speed.
@@ -400,24 +390,14 @@ struct World {
 
     Node *get_node(const string &node_name);
     Link *get_link(const string &link_name);
-    Link *get_link_by_id(const int link_id);
-    Vehicle *get_vehicle(const string &vehicle_name);
     Vehicle *get_vehicle_by_index(int index) const;
 
     size_t vehicle_log_reserve_size;
     bool vehicle_log_mode;
 
-    // Helper: return vehicles filtered by state
-    std::vector<Vehicle *> get_vehicles_by_state(int state) const;
-
     // Helper: return vehicle states as a vector of (name, state_int) pairs
     // Useful for Python to update VEHICLES_LIVING/RUNNING without per-vehicle calls
     std::vector<std::pair<std::string, int>> get_all_vehicle_states() const;
-
-    // Helper: return effective state (with abort detection) for each vehicle,
-    // indexed by vehicle order in World.vehicles vector.
-    // Returns vector of int states: 0=home, 1=wait, 2=run, 3=end, 4=abort
-    std::vector<int> get_vehicle_states_by_index() const;
 
     // Build enter_log data: returns (link_id, time, vehicle_index) triples
     // for all vehicle link-entry events. Used by _build_vehicles_enter_log.
