@@ -782,6 +782,8 @@ class CppWorld:
         if vehicle_logging_timestep_interval not in (0, 1, -1):
             warnings.warn("vehicle_logging_timestep_interval is not 0, 1, or -1. C++ mode only supports 0 (no logging) and 1 (full logging). The value will be treated as 1 (logging enabled).", stacklevel=2)
         self._simulation_done = False
+        self._skip_log_on_terminate = False
+        self._skip_analyzer_setup = False
         self._cpp_veh_registered_count = 0
 
     def _ensure_cpp_world(self):
@@ -981,6 +983,25 @@ class CppWorld:
         self.T = 0
         self.TIME = 0
         self.TSIZE = int(self.TMAX / self.DELTAT)
+
+        if self._skip_analyzer_setup:
+            # Lightweight path for DTA intermediate iterations:
+            # Skip edie matrices (init_after_tmax_fix) and area containers
+            # that are only needed for visualization/compute_edie_state.
+            # ADJ_MAT and Analyzer are still needed for basic_analysis/link_to_pandas.
+            self.ADJ_MAT = np.zeros([len(self.NODES), len(self.NODES)])
+            self.ADJ_MAT_LINKS = dict()
+            self.NODE_PAIR_LINKS = dict()
+            for link in self.LINKS:
+                i = link.start_node.id
+                j = link.end_node.id
+                self.ADJ_MAT[i, j] = 1
+                self.ADJ_MAT_LINKS[i, j] = link
+                self.NODE_PAIR_LINKS[link.start_node.name, link.end_node.name] = link
+            self.ROUTECHOICE = CppRouteChoice(self)
+            self.analyzer = Analyzer(self)
+            return
+
         self.Q_AREA = ddict(lambda: np.zeros(int(self.TMAX / self.EULAR_DT)))
         self.K_AREA = ddict(lambda: np.zeros(int(self.TMAX / self.EULAR_DT)))
         for l in self.LINKS:
@@ -1180,8 +1201,9 @@ class CppWorld:
     def simulation_terminated(self):
         self.print(" simulation finished")
         self._simulation_done = True
-        self._build_vehicles_enter_log()
-        self._build_all_vehicle_log_caches()
+        if not self._skip_log_on_terminate:
+            self._build_vehicles_enter_log()
+            self._build_all_vehicle_log_caches()
         self.analyzer.basic_analysis()
 
     def _build_vehicles_enter_log(self):

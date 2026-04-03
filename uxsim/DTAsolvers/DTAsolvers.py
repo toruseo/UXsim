@@ -36,6 +36,79 @@ def _make_cpp_func_world(func_World):
     return wrapper
 
 
+def _lightweight_finalize(W, cached_analyzer=None):
+    """Lightweight finalize_scenario for DTA intermediate iterations.
+
+    Performs essential initialization (TMAX, adj_matrix, TSIZE) but reuses
+    a cached Analyzer object to skip expensive font loading.
+
+    Parameters
+    ----------
+    W : CppWorld
+    cached_analyzer : Analyzer or None
+        Analyzer from a previous iteration to reuse. If None, does full init.
+
+    Returns
+    -------
+    Analyzer : the (possibly reused) Analyzer object now attached to W.
+    """
+    if W.TMAX is None:
+        W.TMAX = (getattr(W, '_max_demand_t', 0) // 1800 + 2) * 1800
+    W._ensure_cpp_world()
+    W._cpp_world.initialize_adj_matrix()
+
+    # Minimal _setup_analyzer equivalent
+    W.T = 0
+    W.TIME = 0
+    W.TSIZE = int(W.TMAX / W.DELTAT)
+    W.Q_AREA = defaultdict(lambda: np.zeros(int(W.TMAX / W.EULAR_DT)))
+    W.K_AREA = defaultdict(lambda: np.zeros(int(W.TMAX / W.EULAR_DT)))
+    for l in W.LINKS:
+        l.init_after_tmax_fix()
+    W.ADJ_MAT = np.zeros([len(W.NODES), len(W.NODES)])
+    W.ADJ_MAT_LINKS = dict()
+    W.NODE_PAIR_LINKS = dict()
+    for link in W.LINKS:
+        ii = link.start_node.id
+        jj = link.end_node.id
+        W.ADJ_MAT[ii, jj] = 1
+        W.ADJ_MAT_LINKS[ii, jj] = link
+        W.NODE_PAIR_LINKS[link.start_node.name, link.end_node.name] = link
+
+    from ..uxsim_cpp_wrapper import CppRouteChoice
+    W.ROUTECHOICE = CppRouteChoice(W)
+
+    if cached_analyzer is not None:
+        # Reuse existing Analyzer, just rebind to new World and reset stats
+        analyzer = cached_analyzer
+        analyzer.W = W
+        analyzer.average_speed = 0
+        analyzer.average_speed_count = 0
+        analyzer.trip_completed = 0
+        analyzer.trip_all = 0
+        analyzer.total_travel_time = 0
+        analyzer.average_travel_time = 0
+        analyzer.flag_edie_state_computed = 0
+        analyzer.flag_trajectory_computed = 0
+        analyzer.flag_pandas_convert = 0
+        analyzer.flag_od_analysis = 0
+        W.analyzer = analyzer
+    else:
+        from ..analyzer import Analyzer
+        W.analyzer = Analyzer(W)
+
+    # Pre-compute congestion pricing tolls
+    for link in W.LINKS:
+        if link.congestion_pricing is not None:
+            tolls = [float(link.congestion_pricing(t * W.DELTAT)) for t in range(W.TSIZE)]
+            link._cpp_link.set_toll_timeseries(tolls)
+
+    W.finalized = 1
+    W.sim_start_time = time.time()
+
+    return W.analyzer
+
+
 def _build_name_id_maps(W):
     """Build name<->ID mapping dicts for a CppWorld. Called once per iteration."""
     link_name_to_id = {link.name: link.id for link in W.LINKS}
@@ -471,6 +544,12 @@ class SolverDUE:
         swap_prob = swap_prob
         max_iter = max_iter
 
+        # Pre-compute name<->ID mappings and route set IDs (invariant across iterations)
+        od_route_sets_ids = None
+        link_name_to_id = None
+        link_id_to_name = None
+        cached_analyzer = None  # Reuse Analyzer across iterations to skip font loading
+
         print("solving DUE...")
         for i in range(max_iter):
             W = func_World()
@@ -481,16 +560,26 @@ class SolverDUE:
 
             if is_cpp:
                 # --- C++ batch path ---
-                # Build name<->ID mappings for this World (each iter creates a new World)
-                link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
-                od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+                is_last_iter = (i == max_iter - 1)
+
+                # Build mappings once (IDs are deterministic: same func_World -> same add order)
+                if od_route_sets_ids is None:
+                    link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
+                    od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+
+                # Lightweight finalize: reuse Analyzer from previous iter (skip font loading)
+                cached_analyzer = _lightweight_finalize(W, cached_analyzer)
+
+                # Skip expensive log cache building on intermediate iterations
+                if not is_last_iter:
+                    W._skip_log_on_terminate = True
 
                 # Batch enforce routes from previous iteration via C++
                 if i != 0:
                     enforce_input = _build_enforce_routes_input(W, routes_specified_data, link_name_to_id)
                     W._cpp_world.batch_enforce_routes(enforce_input)
 
-                # Simulation (runs in C++)
+                # Simulation (runs in C++); finalize already done so exec_simulation skips it
                 W.exec_simulation()
 
                 # Results
@@ -503,7 +592,9 @@ class SolverDUE:
 
                 W.dict_od_to_routes = dict_od_to_routes
                 s.W_intermid_solution = W
-                s.dfs_link.append(W.analyzer.link_to_pandas())
+                # Only record link stats on last iter (saves link_to_pandas overhead)
+                if is_last_iter:
+                    s.dfs_link.append(W.analyzer.link_to_pandas())
 
                 # C++ batch route swap for DUE
                 rng_seed = random.randint(0, 2**31 - 1)
@@ -865,6 +956,12 @@ class SolverDSO_D2D:
         swap_prob = swap_prob
         max_iter = max_iter
 
+        # Pre-compute name<->ID mappings and route set IDs (invariant across iterations)
+        od_route_sets_ids = None
+        link_name_to_id = None
+        link_id_to_name = None
+        cached_analyzer = None  # Reuse Analyzer across iterations to skip font loading
+
         print("solving DSO...")
         for i in range(max_iter):
             W = func_World()
@@ -875,16 +972,26 @@ class SolverDSO_D2D:
 
             if is_cpp:
                 # --- C++ batch path ---
-                # Build name<->ID mappings for this World (each iter creates a new World)
-                link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
-                od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+                is_last_iter = (i == max_iter - 1)
+
+                # Build mappings once (IDs are deterministic: same func_World -> same add order)
+                if od_route_sets_ids is None:
+                    link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
+                    od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+
+                # Lightweight finalize: reuse Analyzer from previous iter (skip font loading)
+                cached_analyzer = _lightweight_finalize(W, cached_analyzer)
+
+                # Skip expensive log cache building on intermediate iterations
+                if not is_last_iter:
+                    W._skip_log_on_terminate = True
 
                 # Batch enforce routes from previous iteration via C++
                 if i != 0:
                     enforce_input = _build_enforce_routes_input(W, routes_specified_data, link_name_to_id)
                     W._cpp_world.batch_enforce_routes(enforce_input)
 
-                # Simulation (runs in C++)
+                # Simulation (runs in C++); finalize already done so exec_simulation skips it
                 W.exec_simulation()
 
                 # Results
@@ -903,7 +1010,9 @@ class SolverDSO_D2D:
                     elif W.analyzer.average_travel_time < s.W_intermid_solution.analyzer.average_travel_time:
                         s.W_intermid_solution = W
 
-                s.dfs_link.append(W.analyzer.link_to_pandas())
+                # Only record link stats on last iter (saves link_to_pandas overhead)
+                if is_last_iter:
+                    s.dfs_link.append(W.analyzer.link_to_pandas())
 
                 # C++ batch route swap for DSO (marginal cost = private + externality)
                 rng_seed = random.randint(0, 2**31 - 1)
