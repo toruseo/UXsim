@@ -16,6 +16,7 @@
 #include <cstring>
 
 #include "traffi.cpp"
+#include "dta_solver.cpp"
 
 namespace nb = nanobind;
 
@@ -523,6 +524,112 @@ NB_MODULE(uxsim_cpp, m) {
                  return d;
              },
              "Build enter_log data for all vehicles. Returns dict with link_id/time/vehicle_index arrays.")
+        // ----- DTA Solver batch operations (from dta_solver.h) -----
+        .def("batch_enforce_routes", [](World &w, nb::list py_routes) {
+                 size_t nv = nb::len(py_routes);
+                 std::vector<std::vector<int>> routes(nv);
+                 for (size_t i = 0; i < nv; i++) {
+                     nb::list r = nb::cast<nb::list>(py_routes[i]);
+                     size_t nr = nb::len(r);
+                     routes[i].reserve(nr);
+                     for (size_t j = 0; j < nr; j++) {
+                         routes[i].push_back(nb::cast<int>(r[j]));
+                     }
+                 }
+                 dta_batch_enforce_routes(&w, routes);
+             },
+             nb::arg("routes_per_vehicle"),
+             "Batch enforce routes for all vehicles. routes_per_vehicle[i] = list of link IDs (empty = skip)")
+        .def("route_swap_due", [](World &w, nb::dict py_od_routes, double swap_prob,
+                                   bool has_external_route_sets, unsigned int rng_seed) -> nb::dict {
+                 std::map<std::pair<int,int>, std::vector<std::vector<int>>> od_route_sets;
+                 for (auto [key, val] : py_od_routes) {
+                     nb::tuple k = nb::cast<nb::tuple>(key);
+                     int o = nb::cast<int>(k[0]);
+                     int d = nb::cast<int>(k[1]);
+                     nb::list routes_list = nb::cast<nb::list>(val);
+                     std::vector<std::vector<int>> routes;
+                     for (size_t ri = 0; ri < nb::len(routes_list); ri++) {
+                         nb::list route = nb::cast<nb::list>(routes_list[ri]);
+                         std::vector<int> r;
+                         for (size_t li = 0; li < nb::len(route); li++) {
+                             r.push_back(nb::cast<int>(route[li]));
+                         }
+                         routes.push_back(std::move(r));
+                     }
+                     od_route_sets[{o, d}] = std::move(routes);
+                 }
+                 auto result = dta_route_swap_due(&w, od_route_sets, swap_prob, has_external_route_sets, rng_seed);
+                 nb::dict out;
+                 nb::list rs_list;
+                 for (auto &r : result.routes_specified) {
+                     nb::list rl;
+                     for (int lid : r) rl.append(lid);
+                     rs_list.append(rl);
+                 }
+                 out["routes_specified"] = rs_list;
+                 nb::list ra_list;
+                 for (auto &r : result.route_actual) {
+                     nb::list rl;
+                     for (int lid : r) rl.append(lid);
+                     ra_list.append(rl);
+                 }
+                 out["route_actual"] = ra_list;
+                 out["cost_actual"] = make_numpy_move(std::move(result.cost_actual));
+                 out["n_swap"] = result.n_swap;
+                 out["potential_n_swap"] = result.potential_n_swap;
+                 out["total_t_gap"] = result.total_t_gap;
+                 return out;
+             },
+             nb::arg("od_route_sets"), nb::arg("swap_prob"),
+             nb::arg("has_external_route_sets"), nb::arg("rng_seed"),
+             "DUE route swap: compute next-iteration routes for all vehicles in batch")
+        .def("route_swap_dso", [](World &w, nb::dict py_od_routes, double swap_prob,
+                                   int swap_num, bool has_external_route_sets,
+                                   unsigned int rng_seed) -> nb::dict {
+                 std::map<std::pair<int,int>, std::vector<std::vector<int>>> od_route_sets;
+                 for (auto [key, val] : py_od_routes) {
+                     nb::tuple k = nb::cast<nb::tuple>(key);
+                     int o = nb::cast<int>(k[0]);
+                     int d = nb::cast<int>(k[1]);
+                     nb::list routes_list = nb::cast<nb::list>(val);
+                     std::vector<std::vector<int>> routes;
+                     for (size_t ri = 0; ri < nb::len(routes_list); ri++) {
+                         nb::list route = nb::cast<nb::list>(routes_list[ri]);
+                         std::vector<int> r;
+                         for (size_t li = 0; li < nb::len(route); li++) {
+                             r.push_back(nb::cast<int>(route[li]));
+                         }
+                         routes.push_back(std::move(r));
+                     }
+                     od_route_sets[{o, d}] = std::move(routes);
+                 }
+                 auto result = dta_route_swap_dso(&w, od_route_sets, swap_prob, swap_num,
+                                                  has_external_route_sets, rng_seed);
+                 nb::dict out;
+                 nb::list rs_list;
+                 for (auto &r : result.routes_specified) {
+                     nb::list rl;
+                     for (int lid : r) rl.append(lid);
+                     rs_list.append(rl);
+                 }
+                 out["routes_specified"] = rs_list;
+                 nb::list ra_list;
+                 for (auto &r : result.route_actual) {
+                     nb::list rl;
+                     for (int lid : r) rl.append(lid);
+                     ra_list.append(rl);
+                 }
+                 out["route_actual"] = ra_list;
+                 out["cost_actual"] = make_numpy_move(std::move(result.cost_actual));
+                 out["n_swap"] = result.n_swap;
+                 out["potential_n_swap"] = result.potential_n_swap;
+                 out["total_t_gap"] = result.total_t_gap;
+                 return out;
+             },
+             nb::arg("od_route_sets"), nb::arg("swap_prob"), nb::arg("swap_num"),
+             nb::arg("has_external_route_sets"), nb::arg("rng_seed"),
+             "DSO route swap: compute next-iteration routes using marginal cost (private + externality)")
         ;
 
     //
