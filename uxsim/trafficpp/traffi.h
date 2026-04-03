@@ -248,9 +248,6 @@ struct Vehicle {
     void record_travel_time(Link *link, double t);
     void log_data();
 
-    // Helper: return state as string ("home", "wait", "run", "end", "abort")
-    std::string state_str() const;
-
     // Helper: return departure_time in seconds (already in seconds in C++)
     double departure_time_in_second() const;
 
@@ -408,25 +405,7 @@ struct World {
     };
     std::vector<EnterLogEntry> build_enter_log_data() const;
 
-    // Flat SoA log for all vehicles (used by build_all_vehicle_logs_flat)
-    struct FlatLogs {
-        std::vector<double> log_t;
-        std::vector<double> log_x;
-        std::vector<double> log_v;
-        std::vector<int>    log_state;
-        std::vector<double> log_s;
-        std::vector<int>    log_lane;
-        std::vector<int>    log_link;
-        // Per-vehicle offsets: vehicle i's data is [offsets[i], offsets[i+1])
-        std::vector<size_t> offsets;  // size = vehicles.size() + 1
-        // log_t_link: flat arrays + per-vehicle offsets
-        std::vector<double> ltl_t;
-        std::vector<int>    ltl_id;
-        std::vector<size_t> ltl_offsets;  // size = vehicles.size() + 1
-    };
-    FlatLogs build_all_vehicle_logs_flat() const;
-
-    // Compact version: no home prepend. Only actual log entries.
+    // Compact flat SoA log for all vehicles. No home prepend — only actual log entries.
     // n_missing[i] = number of home timesteps before vehicle i's first log entry.
     struct CompactFlatLogs {
         std::vector<double> log_t;
