@@ -501,9 +501,6 @@ class CppVehicle:
             return
         # Batch-fetch all vehicle raw logs at once
         self.W._build_all_vehicle_log_caches()
-        # If batch didn't populate us (shouldn't happen), fallback to individual
-        if self._log_cache is None:
-            self._log_cache = self._cpp_vehicle.build_full_log_np()
 
     @property
     def log_t(self):
