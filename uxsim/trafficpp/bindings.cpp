@@ -704,31 +704,6 @@ NB_MODULE(uxsim_cpp, m) {
              "Departure time in seconds")
         .def_rw("route_choice_principle", &Vehicle::route_choice_principle)
         .def_rw("route_choice_uncertainty", &Vehicle::route_choice_uncertainty)
-        .def("build_full_log_np", [](const Vehicle &v) -> nb::dict {
-                 // Per-vehicle numpy version: all data as numpy/int, no strings.
-                 // Zero-copy via vector ownership transfer.
-                 auto fl = v.build_full_log();
-                 size_t m = fl.log_t_link.size();
-                 nb::dict d;
-                 d["log_t"] = make_numpy_move(std::move(fl.log_t));
-                 d["log_x"] = make_numpy_move(std::move(fl.log_x));
-                 d["log_v"] = make_numpy_move(std::move(fl.log_v));
-                 d["log_s"] = make_numpy_move(std::move(fl.log_s));
-                 d["log_lane"] = make_numpy_move(std::move(fl.log_lane));
-                 d["log_link"] = make_numpy_move(std::move(fl.log_link));
-                 d["log_state"] = make_numpy_move(std::move(fl.log_state));
-                 // log_t_link as two parallel numpy arrays
-                 std::vector<double> ltl_t(m);
-                 std::vector<int> ltl_id(m);
-                 for (size_t i = 0; i < m; i++) {
-                     ltl_t[i] = fl.log_t_link[i].first;
-                     ltl_id[i] = fl.log_t_link[i].second;
-                 }
-                 d["log_t_link_t"] = make_numpy_move(std::move(ltl_t));
-                 d["log_t_link_id"] = make_numpy_move(std::move(ltl_id));
-                 return d;
-             },
-             "Build full log arrays as numpy arrays, all int (no string conversion)")
         ;
 
     m.def("get_compile_datetime", &get_compile_datetime, "Return the compile date and time");

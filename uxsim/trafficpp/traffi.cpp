@@ -1006,70 +1006,7 @@ double Vehicle::departure_time_in_second() const {
 }
 
 
-/**
- * @brief Build full log arrays with home-timestep prepend.
- * Prepends missing "home" timesteps so indices match Python convention
- * (Python records from T=0 every timestep; C++ starts at departure_time).
- */
-Vehicle::FullLog Vehicle::build_full_log() const {
-    FullLog fl;
 
-    int n_missing = 0;
-    if (log_size > 0 && log_t[0] > 0) {
-        n_missing = static_cast<int>(log_t[0] / w->delta_t);
-    }
-
-    size_t total = n_missing + log_size;
-    fl.log_t.reserve(total);
-    fl.log_x.reserve(total);
-    fl.log_v.reserve(total);
-    fl.log_state.reserve(total);
-    fl.log_s.reserve(total);
-    fl.log_lane.reserve(total);
-    fl.log_link.reserve(total);
-
-    // Prepend home entries
-    for (int i = 0; i < n_missing; i++) {
-        fl.log_t.push_back(i * w->delta_t);
-        fl.log_x.push_back(-1);
-        fl.log_v.push_back(-1);
-        fl.log_state.push_back(vsHOME);
-        fl.log_s.push_back(-1);
-        fl.log_lane.push_back(-1);
-        fl.log_link.push_back(-1);
-    }
-
-    // Append C++ log entries with state-based adjustments
-    for (size_t i = 0; i < log_size; i++) {
-        fl.log_t.push_back(log_t[i]);
-
-        int st = log_state[i];
-        fl.log_state.push_back(st);
-
-        bool is_run = (st == vsRUN);
-        fl.log_x.push_back(is_run ? log_x[i] : -1);
-        fl.log_v.push_back(is_run ? log_v[i] : -1);
-        fl.log_s.push_back(is_run ? 0 : -1);
-        fl.log_lane.push_back(log_lane[i]);
-        fl.log_link.push_back(log_link[i]);
-    }
-
-    // Build log_t_link from the full (prepended) log arrays — all ints, no strings
-    fl.log_t_link.emplace_back(departure_time, LOG_T_LINK_HOME);
-    int prev_link_id = -999;
-    for (size_t i = 0; i < fl.log_link.size(); i++) {
-        int lid = fl.log_link[i];
-        if (lid >= 0 && lid != prev_link_id) {
-            fl.log_t_link.emplace_back(fl.log_t[i], lid);
-            prev_link_id = lid;
-        }
-    }
-    if (state == vsEND) {
-        fl.log_t_link.emplace_back((arrival_time >= 0) ? arrival_time : -1.0, LOG_T_LINK_END);
-    }
-
-    return fl;
-}
 
 
 // -----------------------------------------------------------------------

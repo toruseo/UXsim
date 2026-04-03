@@ -251,24 +251,9 @@ struct Vehicle {
     // Helper: return departure_time in seconds (already in seconds in C++)
     double departure_time_in_second() const;
 
-    // Helper: build full log arrays with home-timestep prepend.
-    // All data is int/double — no string allocation for maximum speed.
-    // String conversion is done at the binding layer only when needed.
-    struct FullLog {
-        std::vector<double> log_t;
-        std::vector<double> log_x;
-        std::vector<double> log_v;
-        std::vector<int> log_state;     // int: 0=home,1=wait,2=run,3=end,4=abort
-        std::vector<double> log_s;
-        std::vector<int> log_lane;
-        std::vector<int> log_link;      // link ID, -1 for home/none
-        // log_t_link: (time, link_id) pairs for link transitions.
-        // Special IDs: -1 = "home", -2 = "end"
-        std::vector<std::pair<double, int>> log_t_link;
-    };
+    // Special link IDs for log_t_link entries
     static constexpr int LOG_T_LINK_HOME = -1;
     static constexpr int LOG_T_LINK_END  = -2;
-    FullLog build_full_log() const;
 
 };
 
