@@ -411,7 +411,13 @@ def _route_swap_dso_python(W, dict_od_to_routes, dict_od_to_vehid, swap_prob, sw
 
 
 class SolverDUE:
-    def __init__(s, func_World):
+
+    def __new__(cls, func_World, cpp=False):
+        if cpp and cls is SolverDUE:
+            return CppSolverDUE(func_World)
+        return super().__new__(cls)
+
+    def __init__(s, func_World, cpp=False):
         """
         Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.
 
@@ -419,7 +425,9 @@ class SolverDUE:
         ----------
         func_World : function
             function that returns a World object with nodes, links, and demand specifications
-            
+        cpp : bool
+            if True, return a CppSolverDUE instance that uses C++ batch operations
+
         Notes
         -----
             This function computes a near dynamic user equilibrium state as a steady state of day-to-day dynamical routing game.
@@ -438,6 +446,8 @@ class SolverDUE:
             - Iryo, T., Urata, J., & Kawase, R. (2024). Traffic Flow Simulator and Travel Demand Simulators for Assessing Congestion on Roads After a Major Earthquake. In APPLICATION OF HIGH-PERFORMANCE COMPUTING TO EARTHQUAKE-RELATED PROBLEMS (pp. 413-447). https://doi.org/10.1142/9781800614635_0007
             - Iryo, T., Watling, D., & Hazelton, M. (2024). Estimating Markov Chain Mixing Times: Convergence Rate Towards Equilibrium of a Stochastic Process Traffic Assignment Model. Transportation Science. https://doi.org/10.1287/trsc.2024.0523
         """
+        if isinstance(s, CppSolverDUE):
+            return  # CppSolverDUE.__init__ handles its own init
         s.func_World = func_World
         s.W_sol = None  #final solution
         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm
@@ -445,7 +455,7 @@ class SolverDUE:
 
         #warnings.warn("DTA solver is experimental and may not work as expected. It is functional but unstable.")
     
-    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, route_sets=None, print_progress=True, cpp=False):
+    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, route_sets=None, print_progress=True):
         """
         Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.
 
@@ -478,10 +488,6 @@ class SolverDUE:
 
         print_progress : bool
             whether to print the information
-        cpp : bool
-            if True, use C++ batch operations for route enforcement and route swap
-            to accelerate the iterative process. func_World will be wrapped to inject
-            cpp=True into World() calls automatically.
 
         Returns
         -------
@@ -495,12 +501,7 @@ class SolverDUE:
         """
         s.start_time = time.time()
 
-        # Wrap func_World to inject cpp=True if needed
-        func_World = s.func_World
-        if cpp:
-            func_World = _make_cpp_func_world(func_World)
-
-        W_orig = func_World()
+        W_orig = s.func_World()
         if print_progress:
             W_orig.print_scenario_stats()
 
@@ -544,152 +545,92 @@ class SolverDUE:
         swap_prob = swap_prob
         max_iter = max_iter
 
-        # Pre-compute name<->ID mappings and route set IDs (invariant across iterations)
-        od_route_sets_ids = None
-        link_name_to_id = None
-        link_id_to_name = None
-        cached_analyzer = None  # Reuse Analyzer across iterations to skip font loading
-
         print("solving DUE...")
         for i in range(max_iter):
-            W = func_World()
+            W = s.func_World()
             if i != max_iter-1:
                 W.vehicle_logging_timestep_interval = -1
 
-            is_cpp = cpp and hasattr(W, '_cpp_world')
+            if i != 0:
+                for key in W.VEHICLES:
+                    if key in routes_specified:
+                        W.VEHICLES[key].enforce_route(routes_specified[key])
 
-            if is_cpp:
-                # --- C++ batch path ---
-                is_last_iter = (i == max_iter - 1)
+            route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
+            for o,d in dict_od_to_vehid.keys():
+                for r in dict_od_to_routes[o,d]:
+                    route_set[o,d].append(W.defRoute(r))
 
-                # Build mappings once (IDs are deterministic: same func_World -> same add order)
-                if od_route_sets_ids is None:
-                    link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
-                    od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+            # simulation
+            W.exec_simulation()
 
-                # Lightweight finalize: reuse Analyzer from previous iter (skip font loading)
-                cached_analyzer = _lightweight_finalize(W, cached_analyzer)
+            # results
+            W.analyzer.print_simple_stats()
+            #W.analyzer.network_average()
 
-                # Skip expensive log cache building on intermediate iterations
-                if not is_last_iter:
-                    W._skip_log_on_terminate = True
+            # trip completion check
+            unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
+            if unfinished_trips > 0:
+                warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DUE solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
 
-                # Batch enforce routes from previous iteration via C++
-                if i != 0:
-                    enforce_input = _build_enforce_routes_input(W, routes_specified_data, link_name_to_id)
-                    W._cpp_world.batch_enforce_routes(enforce_input)
+            # attach route choice set to W object for later re-use at different solvers like DSO-GA
+            W.dict_od_to_routes = dict_od_to_routes
 
-                # Simulation (runs in C++); finalize already done so exec_simulation skips it
-                W.exec_simulation()
+            s.W_intermid_solution = W
 
-                # Results
-                W.analyzer.print_simple_stats()
+            s.dfs_link.append(W.analyzer.link_to_pandas())
 
-                # Trip completion check
-                unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
-                if unfinished_trips > 0:
-                    warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DUE solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
+            # route swap
+            routes_specified = {}
+            route_actual = {}
+            cost_actual = {}
+            n_swap = 0
+            total_t_gap = 0
+            potential_n_swap = 0
+            for key,veh in W.VEHICLES.items():
+                flag_swap = random.random() < swap_prob
+                o = veh.orig.name
+                d = veh.dest.name
+                r, ts = veh.traveled_route()
+                travel_time = ts[-1]-ts[0]
 
-                W.dict_od_to_routes = dict_od_to_routes
-                s.W_intermid_solution = W
-                # Only record link stats on last iter (saves link_to_pandas overhead)
-                if is_last_iter:
-                    s.dfs_link.append(W.analyzer.link_to_pandas())
+                route_actual[key] = [rr.name for rr in r]
+                cost_actual[key] = travel_time
 
-                # C++ batch route swap for DUE
-                rng_seed = random.randint(0, 2**31 - 1)
-                cpp_result = W._cpp_world.route_swap_due(
-                    od_route_sets_ids, swap_prob, route_sets is not None, rng_seed
-                )
-                result = _convert_cpp_result_to_names(cpp_result, W, link_id_to_name)
-                routes_specified_data = result['routes_specified']
-                route_actual = result['route_actual']
-                cost_actual = result['cost_actual']
-                n_swap = result['n_swap']
-                potential_n_swap = result['potential_n_swap']
-                total_t_gap = result['total_t_gap']
-            else:
-                # --- Python path (original logic) ---
-                if i != 0:
-                    for key in W.VEHICLES:
-                        if key in routes_specified:
-                            W.VEHICLES[key].enforce_route(routes_specified[key])
+                if veh.state != "end":
+                    continue
 
-                route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
-                for o,d in dict_od_to_vehid.keys():
-                    for r in dict_od_to_routes[o,d]:
-                        route_set[o,d].append(W.defRoute(r))
+                #route_setsが所与で，route_setの経路を何らかの理由で走っていない場合（初期解で経路指定が整合的でない場合がメイン），強制的に設定する
+                if route_sets != None and r not in route_set[o,d]:
+                    routes_specified[key] = route_set[o,d][0]
+                    continue
 
-                # simulation
-                W.exec_simulation()
+                flag_route_changed = False
+                route_changed = None
+                t_gap = 0
 
-                # results
-                W.analyzer.print_simple_stats()
-                #W.analyzer.network_average()
+                cost_current = r.actual_travel_time(ts[0]) + sum([l.get_toll(ts[i]) for i,l in enumerate(r)])
 
-                # trip completion check
-                unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
-                if unfinished_trips > 0:
-                    warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DUE solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
+                potential_n_swap_updated = potential_n_swap
+                for alt_route in route_set[o,d]:
+                    alt_route_tts = alt_route.actual_travel_time(ts[0], return_details=True)[1]
+                    cost_alt = alt_route.actual_travel_time(ts[0]) + sum([l.get_toll(ts[0]+sum(alt_route_tts[:i])) for i,l in enumerate(alt_route)])
+                    if cost_alt < cost_current:
+                        if flag_route_changed == False or (cost_alt < cost_current):
+                            t_gap = cost_current - cost_alt
+                            potential_n_swap_updated = potential_n_swap + W.DELTAN
+                            if flag_swap:
+                                flag_route_changed = True
+                                route_changed = alt_route
+                                cost_current = cost_alt
 
-                # attach route choice set to W object for later re-use at different solvers like DSO-GA
-                W.dict_od_to_routes = dict_od_to_routes
+                potential_n_swap = potential_n_swap_updated
 
-                s.W_intermid_solution = W
-
-                s.dfs_link.append(W.analyzer.link_to_pandas())
-
-                # route swap
-                routes_specified = {}
-                route_actual = {}
-                cost_actual = {}
-                n_swap = 0
-                total_t_gap = 0
-                potential_n_swap = 0
-                for key,veh in W.VEHICLES.items():
-                    flag_swap = random.random() < swap_prob
-                    o = veh.orig.name
-                    d = veh.dest.name
-                    r, ts = veh.traveled_route()
-                    travel_time = ts[-1]-ts[0]
-
-                    route_actual[key] = [rr.name for rr in r]
-                    cost_actual[key] = travel_time
-
-                    if veh.state != "end":
-                        continue
-
-                    #route_setsが所与で，route_setの経路を何らかの理由で走っていない場合（初期解で経路指定が整合的でない場合がメイン），強制的に設定する
-                    if route_sets != None and r not in route_set[o,d]:
-                        routes_specified[key] = route_set[o,d][0]
-                        continue
-
-                    flag_route_changed = False
-                    route_changed = None
-                    t_gap = 0
-
-                    cost_current = r.actual_travel_time(ts[0]) + sum([l.get_toll(ts[i]) for i,l in enumerate(r)])
-
-                    potential_n_swap_updated = potential_n_swap
-                    for alt_route in route_set[o,d]:
-                        alt_route_tts = alt_route.actual_travel_time(ts[0], return_details=True)[1]
-                        cost_alt = alt_route.actual_travel_time(ts[0]) + sum([l.get_toll(ts[0]+sum(alt_route_tts[:i])) for i,l in enumerate(alt_route)])
-                        if cost_alt < cost_current:
-                            if flag_route_changed == False or (cost_alt < cost_current):
-                                t_gap = cost_current - cost_alt
-                                potential_n_swap_updated = potential_n_swap + W.DELTAN
-                                if flag_swap:
-                                    flag_route_changed = True
-                                    route_changed = alt_route
-                                    cost_current = cost_alt
-
-                    potential_n_swap = potential_n_swap_updated
-
-                    total_t_gap += t_gap
-                    routes_specified[key] = r
-                    if flag_route_changed:
-                        n_swap += W.DELTAN
-                        routes_specified[key] = route_changed
+                total_t_gap += t_gap
+                routes_specified[key] = r
+                if flag_route_changed:
+                    n_swap += W.DELTAN
+                    routes_specified[key] = route_changed
 
             t_gap_per_vehicle = total_t_gap/len(W.VEHICLES)
             if print_progress:
@@ -826,36 +767,45 @@ class SolverDUE:
 
 
 class SolverDSO_D2D:
-    def __init__(s, func_World):
+
+    def __new__(cls, func_World, cpp=False):
+        if cpp and cls is SolverDSO_D2D:
+            return CppSolverDSO_D2D(func_World)
+        return super().__new__(cls)
+
+    def __init__(s, func_World, cpp=False):
         """
-        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics. 
+        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics.
 
         Parameters
         ----------
         func_World : function
             function that returns a World object with nodes, links, and demand specifications
-            
+        cpp : bool
+            if True, return a CppSolverDSO_D2D instance that uses C++ batch operations
+
         Notes
         -----
             This function computes a near DSO state as a steady state of day-to-day dynamical routing game.
-            
+
             This is a modification of Iryo's DUE algorithm, in which each traveler minimize marginal travel time (i.e., private cost + externality) instead of private cost as in DUE.
             Since the externality (i.e., the total system cost without the ego vehicle) is costly to compute directly, it is estimated based on the queueing principle of the traffic flow model.
             Apart from these point, this algorithm is almost the same to `SolverDUE` and thus expected to have the desirable properties discussed in the papers cited above.
-            
+
             This algorithm is a loose generalization of "DSO game" of the following paper.
 
             - Satsukawa, K., Wada, K., & Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209.
 
             In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take a long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weakens the convergence guarantee.
         """
-
+        if isinstance(s, CppSolverDSO_D2D):
+            return
         s.func_World = func_World
         s.W_sol = None  #final solution
         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm
         s.dfs_link = []
-    
-    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, route_sets=None, print_progress=True, cpp=False):
+
+    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, route_sets=None, print_progress=True):
         """
         Solve quasi DSO problem using day-to-day dynamics.
 
@@ -890,10 +840,6 @@ class SolverDSO_D2D:
 
         print_progress : bool
             whether to print the information
-        cpp : bool
-            if True, use C++ batch operations for route enforcement and route swap
-            to accelerate the iterative process. func_World will be wrapped to inject
-            cpp=True into World() calls automatically.
 
         Returns
         -------
@@ -907,12 +853,7 @@ class SolverDSO_D2D:
         """
         s.start_time = time.time()
 
-        # Wrap func_World to inject cpp=True if needed
-        func_World = s.func_World
-        if cpp:
-            func_World = _make_cpp_func_world(func_World)
-
-        W_orig = func_World()
+        W_orig = s.func_World()
         if print_progress:
             W_orig.print_scenario_stats()
 
@@ -956,173 +897,106 @@ class SolverDSO_D2D:
         swap_prob = swap_prob
         max_iter = max_iter
 
-        # Pre-compute name<->ID mappings and route set IDs (invariant across iterations)
-        od_route_sets_ids = None
-        link_name_to_id = None
-        link_id_to_name = None
-        cached_analyzer = None  # Reuse Analyzer across iterations to skip font loading
-
         print("solving DSO...")
         for i in range(max_iter):
-            W = func_World()
+            W = s.func_World()
             if i != max_iter-1:
                 W.vehicle_logging_timestep_interval = -1
 
-            is_cpp = cpp and hasattr(W, '_cpp_world')
+            if i != 0:
+                for key in W.VEHICLES:
+                    if key in routes_specified:
+                        W.VEHICLES[key].enforce_route(routes_specified[key])
 
-            if is_cpp:
-                # --- C++ batch path ---
-                is_last_iter = (i == max_iter - 1)
+            route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
+            for o,d in dict_od_to_vehid.keys():
+                for r in dict_od_to_routes[o,d]:
+                    route_set[o,d].append(W.defRoute(r))
 
-                # Build mappings once (IDs are deterministic: same func_World -> same add order)
-                if od_route_sets_ids is None:
-                    link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
-                    od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+            # simulation
+            W.exec_simulation()
 
-                # Lightweight finalize: reuse Analyzer from previous iter (skip font loading)
-                cached_analyzer = _lightweight_finalize(W, cached_analyzer)
+            # results
+            W.analyzer.print_simple_stats()
+            #W.analyzer.network_average()
 
-                # Skip expensive log cache building on intermediate iterations
-                if not is_last_iter:
-                    W._skip_log_on_terminate = True
+            # trip completion check
+            unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
+            if unfinished_trips > 0:
+                warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DSO solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
 
-                # Batch enforce routes from previous iteration via C++
-                if i != 0:
-                    enforce_input = _build_enforce_routes_input(W, routes_specified_data, link_name_to_id)
-                    W._cpp_world.batch_enforce_routes(enforce_input)
+            # attach route choice set to W object for later re-use at different solvers like DSO-GA
+            W.dict_od_to_routes = dict_od_to_routes
 
-                # Simulation (runs in C++); finalize already done so exec_simulation skips it
-                W.exec_simulation()
+            if unfinished_trips == 0:
+                if s.W_intermid_solution == None:
+                    s.W_intermid_solution = W
+                elif W.analyzer.average_travel_time < s.W_intermid_solution.analyzer.average_travel_time:
+                    s.W_intermid_solution = W
 
-                # Results
-                W.analyzer.print_simple_stats()
+            s.dfs_link.append(W.analyzer.link_to_pandas())
 
-                # Trip completion check
-                unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
-                if unfinished_trips > 0:
-                    warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DSO solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
+            # route swap
+            routes_specified = {}
+            route_actual = {}
+            cost_actual = {}
+            n_swap = 0
+            total_t_gap = 0
+            potential_n_swap = 0
 
-                W.dict_od_to_routes = dict_od_to_routes
+            keys_swap = [key for key in W.VEHICLES.keys() if random.random() < swap_prob]
+            if swap_num != None:
+                keys_swap = random.sample(list(W.VEHICLES.keys()), swap_num)
 
-                if unfinished_trips == 0:
-                    if s.W_intermid_solution is None:
-                        s.W_intermid_solution = W
-                    elif W.analyzer.average_travel_time < s.W_intermid_solution.analyzer.average_travel_time:
-                        s.W_intermid_solution = W
+            for key,veh in W.VEHICLES.items():
+                flag_swap = key in keys_swap
+                o = veh.orig.name
+                d = veh.dest.name
+                r, ts = veh.traveled_route()
+                travel_time = ts[-1]-ts[0]
 
-                # Only record link stats on last iter (saves link_to_pandas overhead)
-                if is_last_iter:
-                    s.dfs_link.append(W.analyzer.link_to_pandas())
+                route_actual[key] = [rr.name for rr in r]
+                cost_actual[key] = travel_time
 
-                # C++ batch route swap for DSO (marginal cost = private + externality)
-                rng_seed = random.randint(0, 2**31 - 1)
-                cpp_swap_num = swap_num if swap_num is not None else -1
-                cpp_result = W._cpp_world.route_swap_dso(
-                    od_route_sets_ids, swap_prob, cpp_swap_num, route_sets is not None, rng_seed
-                )
-                result = _convert_cpp_result_to_names(cpp_result, W, link_id_to_name)
-                routes_specified_data = result['routes_specified']
-                route_actual = result['route_actual']
-                cost_actual = result['cost_actual']
-                n_swap = result['n_swap']
-                potential_n_swap = result['potential_n_swap']
-                total_t_gap = result['total_t_gap']
-            else:
-                # --- Python path (original logic) ---
-                if i != 0:
-                    for key in W.VEHICLES:
-                        if key in routes_specified:
-                            W.VEHICLES[key].enforce_route(routes_specified[key])
+                if veh.state != "end":
+                    continue
 
-                route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
-                for o,d in dict_od_to_vehid.keys():
-                    for r in dict_od_to_routes[o,d]:
-                        route_set[o,d].append(W.defRoute(r))
+                #route_setsが所与で，route_setの経路を何らかの理由で走っていない場合（初期解で経路指定が整合的でない場合がメイン），強制的に設定する
+                if route_sets != None and r not in route_set[o,d]:
+                    routes_specified[key] = route_set[o,d][0]
+                    continue
 
-                # simulation
-                W.exec_simulation()
+                flag_route_changed = False
+                route_changed = None
+                t_gap = 0
 
-                # results
-                W.analyzer.print_simple_stats()
-                #W.analyzer.network_average()
+                ext = estimate_congestion_externality_route(W, r, ts[0])
+                private_cost = r.actual_travel_time(ts[0])
+                cost_current = private_cost+ext
 
-                # trip completion check
-                unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
-                if unfinished_trips > 0:
-                    warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DSO solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
+                potential_n_swap_updated = potential_n_swap
 
-                # attach route choice set to W object for later re-use at different solvers like DSO-GA
-                W.dict_od_to_routes = dict_od_to_routes
+                for alt_route in route_set[o,d]:
+                    ext = estimate_congestion_externality_route(W, alt_route, ts[0])
+                    private_cost = alt_route.actual_travel_time(ts[0])
+                    cost_alt = private_cost+ext
 
-                if unfinished_trips == 0:
-                    if s.W_intermid_solution == None:
-                        s.W_intermid_solution = W
-                    elif W.analyzer.average_travel_time < s.W_intermid_solution.analyzer.average_travel_time:
-                        s.W_intermid_solution = W
+                    if cost_alt < cost_current:
+                        if flag_route_changed == False or (cost_alt < cost_current):
+                            t_gap = cost_current - cost_alt
+                            potential_n_swap_updated = potential_n_swap + W.DELTAN
+                            if flag_swap:
+                                flag_route_changed = True
+                                route_changed = alt_route
+                                cost_current = cost_alt
 
-                s.dfs_link.append(W.analyzer.link_to_pandas())
+                potential_n_swap = potential_n_swap_updated
 
-                # route swap
-                routes_specified = {}
-                route_actual = {}
-                cost_actual = {}
-                n_swap = 0
-                total_t_gap = 0
-                potential_n_swap = 0
-
-                keys_swap = [key for key in W.VEHICLES.keys() if random.random() < swap_prob]
-                if swap_num != None:
-                    keys_swap = random.sample(list(W.VEHICLES.keys()), swap_num)
-
-                for key,veh in W.VEHICLES.items():
-                    flag_swap = key in keys_swap
-                    o = veh.orig.name
-                    d = veh.dest.name
-                    r, ts = veh.traveled_route()
-                    travel_time = ts[-1]-ts[0]
-
-                    route_actual[key] = [rr.name for rr in r]
-                    cost_actual[key] = travel_time
-
-                    if veh.state != "end":
-                        continue
-
-                    #route_setsが所与で，route_setの経路を何らかの理由で走っていない場合（初期解で経路指定が整合的でない場合がメイン），強制的に設定する
-                    if route_sets != None and r not in route_set[o,d]:
-                        routes_specified[key] = route_set[o,d][0]
-                        continue
-
-                    flag_route_changed = False
-                    route_changed = None
-                    t_gap = 0
-
-                    ext = estimate_congestion_externality_route(W, r, ts[0])
-                    private_cost = r.actual_travel_time(ts[0])
-                    cost_current = private_cost+ext
-
-                    potential_n_swap_updated = potential_n_swap
-
-                    for alt_route in route_set[o,d]:
-                        ext = estimate_congestion_externality_route(W, alt_route, ts[0])
-                        private_cost = alt_route.actual_travel_time(ts[0])
-                        cost_alt = private_cost+ext
-
-                        if cost_alt < cost_current:
-                            if flag_route_changed == False or (cost_alt < cost_current):
-                                t_gap = cost_current - cost_alt
-                                potential_n_swap_updated = potential_n_swap + W.DELTAN
-                                if flag_swap:
-                                    flag_route_changed = True
-                                    route_changed = alt_route
-                                    cost_current = cost_alt
-
-                    potential_n_swap = potential_n_swap_updated
-
-                    total_t_gap += t_gap
-                    routes_specified[key] = r
-                    if flag_route_changed:
-                        n_swap += W.DELTAN
-                        routes_specified[key] = route_changed
+                total_t_gap += t_gap
+                routes_specified[key] = r
+                if flag_route_changed:
+                    n_swap += W.DELTAN
+                    routes_specified[key] = route_changed
 
             t_gap_per_vehicle = total_t_gap/len(W.VEHICLES)
             if print_progress:
@@ -1973,3 +1847,246 @@ class SolverDSO_ALNS:
         plt.ylabel("travel time")
         plt.legend()
         plt.show()
+
+
+# =============================================================================
+# C++ accelerated solvers (dispatched via __new__ in SolverDUE / SolverDSO_D2D)
+# =============================================================================
+
+class CppSolverDUE(SolverDUE):
+    """C++ accelerated DUE solver. Created via ``SolverDUE(func_World, cpp=True)``."""
+
+    def __init__(s, func_World, **kwargs):
+        s.func_World = func_World
+        s.W_sol = None
+        s.W_intermid_solution = None
+        s.dfs_link = []
+
+    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, route_sets=None, print_progress=True):
+        s.start_time = time.time()
+
+        func_World = _make_cpp_func_world(s.func_World)
+
+        W_orig = func_World()
+        if print_progress:
+            W_orig.print_scenario_stats()
+
+        dict_od_to_vehid = defaultdict(lambda: [])
+        for key, veh in W_orig.VEHICLES.items():
+            dict_od_to_vehid[veh.orig.name, veh.dest.name].append(key)
+
+        if W_orig.finalized == False:
+            W_orig.finalize_scenario()
+        dict_od_to_routes = enumerate_k_random_routes(W_orig, k=n_routes_per_od)
+
+        if route_sets is not None:
+            dict_od_to_routes = {}
+            for key, routes in route_sets.items():
+                o = W_orig.get_node(key[0]).name
+                d = W_orig.get_node(key[1]).name
+                dict_od_to_routes[o, d] = [[W_orig.get_link(l).name for l in route] for route in routes]
+
+        if print_progress:
+            print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
+
+        s.ttts = []
+        s.n_swaps = []
+        s.potential_swaps = []
+        s.t_gaps = []
+        s.route_log = []
+        s.cost_log = []
+
+        od_route_sets_ids = None
+        link_name_to_id = None
+        link_id_to_name = None
+        cached_analyzer = None
+
+        print("solving DUE...")
+        for i in range(max_iter):
+            W = func_World()
+            is_last_iter = (i == max_iter - 1)
+            if not is_last_iter:
+                W.vehicle_logging_timestep_interval = -1
+
+            if od_route_sets_ids is None:
+                link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
+                od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+
+            cached_analyzer = _lightweight_finalize(W, cached_analyzer)
+
+            if not is_last_iter:
+                W._skip_log_on_terminate = True
+
+            if i != 0:
+                enforce_input = _build_enforce_routes_input(W, routes_specified_data, link_name_to_id)
+                W._cpp_world.batch_enforce_routes(enforce_input)
+
+            W.exec_simulation()
+            W.analyzer.print_simple_stats()
+
+            unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
+            if unfinished_trips > 0:
+                warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DUE solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
+
+            W.dict_od_to_routes = dict_od_to_routes
+            s.W_intermid_solution = W
+            if is_last_iter:
+                s.dfs_link.append(W.analyzer.link_to_pandas())
+
+            rng_seed = random.randint(0, 2**31 - 1)
+            cpp_result = W._cpp_world.route_swap_due(
+                od_route_sets_ids, swap_prob, route_sets is not None, rng_seed
+            )
+            result = _convert_cpp_result_to_names(cpp_result, W, link_id_to_name)
+            routes_specified_data = result['routes_specified']
+            route_actual = result['route_actual']
+            cost_actual = result['cost_actual']
+            n_swap = result['n_swap']
+            potential_n_swap = result['potential_n_swap']
+            total_t_gap = result['total_t_gap']
+
+            t_gap_per_vehicle = total_t_gap / len(W.VEHICLES)
+            if print_progress:
+                print(f' iter {i}: time gap: {t_gap_per_vehicle:.1f}, potential route change: {potential_n_swap}, route change: {n_swap}, total travel time: {W.analyzer.total_travel_time: .1f}, delay ratio: {W.analyzer.average_delay/W.analyzer.average_travel_time: .3f}')
+
+            s.route_log.append(route_actual)
+            s.cost_log.append(cost_actual)
+            s.ttts.append(int(W.analyzer.total_travel_time))
+            s.n_swaps.append(n_swap)
+            s.potential_swaps.append(potential_n_swap)
+            s.t_gaps.append(t_gap_per_vehicle)
+
+        s.end_time = time.time()
+
+        print("DUE summary:")
+        last_iters = int(max_iter / 4)
+        print(f" total travel time: initial {s.ttts[0]:.1f} -> average of last {last_iters} iters {np.average(s.ttts[-last_iters:]):.1f}")
+        print(f" number of potential route changes: initial {s.potential_swaps[0]:.1f} -> average of last {last_iters} iters {np.average(s.potential_swaps[-last_iters:]):.1f}")
+        print(f" route travel cost gap: initial {s.t_gaps[0]:.1f} -> average of last {last_iters} iters {np.average(s.t_gaps[-last_iters:]):.1f}")
+        print(f" computation time: {s.end_time - s.start_time:.1f} seconds")
+
+        s.W_sol = W
+        return s.W_sol
+
+
+class CppSolverDSO_D2D(SolverDSO_D2D):
+    """C++ accelerated DSO solver. Created via ``SolverDSO_D2D(func_World, cpp=True)``."""
+
+    def __init__(s, func_World, **kwargs):
+        s.func_World = func_World
+        s.W_sol = None
+        s.W_intermid_solution = None
+        s.dfs_link = []
+
+    def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, route_sets=None, print_progress=True):
+        s.start_time = time.time()
+
+        func_World = _make_cpp_func_world(s.func_World)
+
+        W_orig = func_World()
+        if print_progress:
+            W_orig.print_scenario_stats()
+
+        dict_od_to_vehid = defaultdict(lambda: [])
+        for key, veh in W_orig.VEHICLES.items():
+            dict_od_to_vehid[veh.orig.name, veh.dest.name].append(key)
+
+        if W_orig.finalized == False:
+            W_orig.finalize_scenario()
+        dict_od_to_routes = enumerate_k_random_routes(W_orig, k=n_routes_per_od)
+
+        if route_sets is not None:
+            dict_od_to_routes = {}
+            for key, routes in route_sets.items():
+                o = W_orig.get_node(key[0]).name
+                d = W_orig.get_node(key[1]).name
+                dict_od_to_routes[o, d] = [[W_orig.get_link(l).name for l in route] for route in routes]
+
+        if print_progress:
+            print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
+
+        s.ttts = []
+        s.n_swaps = []
+        s.potential_swaps = []
+        s.t_gaps = []
+        s.route_log = []
+        s.cost_log = []
+
+        od_route_sets_ids = None
+        link_name_to_id = None
+        link_id_to_name = None
+        cached_analyzer = None
+
+        print("solving DSO...")
+        for i in range(max_iter):
+            W = func_World()
+            is_last_iter = (i == max_iter - 1)
+            if not is_last_iter:
+                W.vehicle_logging_timestep_interval = -1
+
+            if od_route_sets_ids is None:
+                link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
+                od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+
+            cached_analyzer = _lightweight_finalize(W, cached_analyzer)
+
+            if not is_last_iter:
+                W._skip_log_on_terminate = True
+
+            if i != 0:
+                enforce_input = _build_enforce_routes_input(W, routes_specified_data, link_name_to_id)
+                W._cpp_world.batch_enforce_routes(enforce_input)
+
+            W.exec_simulation()
+            W.analyzer.print_simple_stats()
+
+            unfinished_trips = W.analyzer.trip_all - W.analyzer.trip_completed
+            if unfinished_trips > 0:
+                warnings.warn(f"Warning: {unfinished_trips} / {W.analyzer.trip_all} vehicles have not finished their trips. The DSO solver assumes that all vehicles finish their trips during the simulation duration. Consider increasing the simulation time limit or checking the network configuration.", UserWarning)
+
+            W.dict_od_to_routes = dict_od_to_routes
+
+            if unfinished_trips == 0:
+                if s.W_intermid_solution is None:
+                    s.W_intermid_solution = W
+                elif W.analyzer.average_travel_time < s.W_intermid_solution.analyzer.average_travel_time:
+                    s.W_intermid_solution = W
+
+            if is_last_iter:
+                s.dfs_link.append(W.analyzer.link_to_pandas())
+
+            rng_seed = random.randint(0, 2**31 - 1)
+            cpp_swap_num = swap_num if swap_num is not None else -1
+            cpp_result = W._cpp_world.route_swap_dso(
+                od_route_sets_ids, swap_prob, cpp_swap_num, route_sets is not None, rng_seed
+            )
+            result = _convert_cpp_result_to_names(cpp_result, W, link_id_to_name)
+            routes_specified_data = result['routes_specified']
+            route_actual = result['route_actual']
+            cost_actual = result['cost_actual']
+            n_swap = result['n_swap']
+            potential_n_swap = result['potential_n_swap']
+            total_t_gap = result['total_t_gap']
+
+            t_gap_per_vehicle = total_t_gap / len(W.VEHICLES)
+            if print_progress:
+                print(f' iter {i}: marginal time gap: {t_gap_per_vehicle:.1f}, potential route change: {potential_n_swap}, route change: {n_swap}, total travel time: {W.analyzer.total_travel_time: .1f}, delay ratio: {W.analyzer.average_delay/W.analyzer.average_travel_time: .3f}')
+
+            s.route_log.append(route_actual)
+            s.cost_log.append(cost_actual)
+            s.ttts.append(int(W.analyzer.total_travel_time))
+            s.n_swaps.append(n_swap)
+            s.potential_swaps.append(potential_n_swap)
+            s.t_gaps.append(t_gap_per_vehicle)
+
+        s.end_time = time.time()
+
+        print("DSO summary:")
+        last_iters = int(max_iter / 4)
+        print(f" total travel time: initial {s.ttts[0]:.1f} -> minimum {np.min(s.ttts):.1f}")
+        print(f" number of potential route changes: initial {s.potential_swaps[0]:.1f} -> minimum {np.min(s.potential_swaps):.1f}")
+        print(f" route marginal travel time gap: initial {s.t_gaps[0]:.1f} -> minimum {np.min(s.t_gaps):.1f}")
+        print(f" computation time: {s.end_time - s.start_time:.1f} seconds")
+
+        s.W_sol = s.W_intermid_solution
+        return s.W_sol
