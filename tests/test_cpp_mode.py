@@ -7811,19 +7811,19 @@ def test_coverage_signal_capacity_enforce_route():
 
 
 def test_coverage_per_vehicle_log_mid_simulation():
-    """Access per-vehicle log properties mid-simulation, before batch sync.
-    This forces the per-vehicle build_full_log_np path in bindings."""
+    """Access vehicle log properties mid-simulation.
+    Verifies that log data is accessible during iterative execution
+    and that post-simulation analysis still works correctly afterward."""
     W = World(cpp=True, deltan=5, tmax=300, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
     W.addNode("A", 0, 0)
     W.addNode("B", 1000, 0)
     W.addLink("AB", "A", "B", length=1000, free_flow_speed=20)
     W.adddemand("A", "B", 0, 200, 0.5)
 
-    # Partial execution - batch log cache NOT built yet
+    # Partial execution
     W.exec_simulation(until_t=150)
 
-    # Access individual vehicle logs for run/end vehicles
-    # (triggers per-vehicle build_full_log_np before batch sync)
+    # Access vehicle logs mid-simulation for run/end vehicles
     accessed = 0
     for veh in W.VEHICLES.values():
         if veh.state in ("run", "end"):
@@ -7840,8 +7840,16 @@ def test_coverage_per_vehicle_log_mid_simulation():
                 break
     assert accessed >= 3
 
-    # Complete simulation
+    # Complete simulation — log caches are rebuilt at simulation_terminated
     W.exec_simulation()
+
+    # Verify post-simulation analysis works correctly with fresh logs
+    W.analyzer.print_simple_stats()
+    ended = [v for v in W.VEHICLES.values() if v.state == "end"]
+    assert len(ended) > 0
+    for veh in ended[:3]:
+        assert len(veh.log_t) > 0
+        assert veh.travel_time > 0
 
 
 def test_coverage_main_loop_parameter_branches():
@@ -7866,8 +7874,9 @@ def test_coverage_main_loop_parameter_branches():
 
 
 def test_coverage_route_choice_edge_cases():
-    """Test route_next_link_choice edge cases: unreachable dest, specified_route."""
-    # Scenario 1: Vehicle at origin with unreachable destination (route_next_link = nullptr)
+    """Test route_next_link_choice with unreachable destination.
+    A vehicle heading to an isolated node cannot find a route at the origin,
+    triggering the route_next_link == nullptr branch in Node::generate."""
     W = World(cpp=True, deltan=5, tmax=200, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
     W.addNode("orig", 0, 0)
     W.addNode("mid", 1, 0)
@@ -7876,9 +7885,9 @@ def test_coverage_route_choice_edge_cases():
     W.addLink("l1", "orig", "mid", length=500, free_flow_speed=20)
     W.addLink("l2", "mid", "dest", length=500, free_flow_speed=20)
 
-    # Vehicle heading to unreachable "island" node
+    # Vehicle heading to unreachable "island" node — should never depart
     W.addVehicle("orig", "island", 0, auto_rename=True)
-    # Normal vehicle
+    # Normal vehicles
     W.adddemand("orig", "dest", 0, 100, 0.3)
 
     W.exec_simulation()
@@ -7886,6 +7895,11 @@ def test_coverage_route_choice_edge_cases():
     # Normal vehicles should complete
     ended = [v for v in W.VEHICLES.values() if v.state == "end"]
     assert len(ended) > 0
+
+    # Unreachable vehicle should NOT have ended (still waiting or never departed)
+    island_vehs = [v for v in W.VEHICLES.values() if v.dest == W.get_node("island")]
+    assert len(island_vehs) == 1
+    assert island_vehs[0].state != "end"
 
 
 def test_coverage_no_cyclic_all_filtered():
