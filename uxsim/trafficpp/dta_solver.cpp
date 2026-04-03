@@ -138,9 +138,8 @@ RouteSwapResult dta_route_swap_due(
             result.cost_actual[vi] = -1;
         }
 
-        // Skip vehicles that didn't finish their trip
+        // Skip vehicles that didn't finish their trip (leave empty = no enforce_route)
         if (veh->state != vsEND){
-            result.routes_specified[vi] = traveled.link_ids;
             continue;
         }
 
@@ -278,9 +277,8 @@ RouteSwapResult dta_route_swap_dso(
             result.cost_actual[vi] = -1;
         }
 
-        // Skip vehicles that didn't finish their trip
+        // Skip vehicles that didn't finish their trip (leave empty = no enforce_route)
         if (veh->state != vsEND){
-            result.routes_specified[vi] = traveled.link_ids;
             continue;
         }
 
