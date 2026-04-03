@@ -5485,7 +5485,7 @@ def test_DTA_total_travel_time_comparison():
 
     #################################
     # DUE
-    solver_DUE = DTAsolvers.SolverDUE(create_World)
+    solver_DUE = DTAsolvers.SolverDUE(create_World, cpp=True)
     solver_DUE.solve(max_iter=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
     W_DUE = solver_DUE.W_sol
     W_DUE.analyzer.print_simple_stats(force_print=True)
@@ -5509,7 +5509,7 @@ def test_DTA_total_travel_time_comparison():
 
     #################################
     # DSO by day-to-day: this is recommended
-    solver_DSO_D2D= DTAsolvers.SolverDSO_D2D(create_World)
+    solver_DSO_D2D= DTAsolvers.SolverDSO_D2D(create_World, cpp=True)
     solver_DSO_D2D.solve(max_iter=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
     W_DSO_D2D = solver_DSO_D2D.W_sol
     W_DSO_D2D.analyzer.print_simple_stats(force_print=True)
@@ -5598,7 +5598,7 @@ def test_DTA_total_travel_time_comparison_with_initial_solutions_for_DSO():
 
     #################################
     # DUE
-    solver_DUE = SolverDUE(create_World)
+    solver_DUE = SolverDUE(create_World, cpp=True)
     solver_DUE.solve(max_iter=20)   # max_iter should be larger (e.g., 100). this is just for demonstration
     W_DUE = solver_DUE.W_sol
     W_DUE.analyzer.print_simple_stats(force_print=True)
@@ -5706,7 +5706,7 @@ def test_DTA_with_given_route_sets():
         ]
     }
 
-    solver_DUE = DTAsolvers.SolverDUE(create_World)
+    solver_DUE = DTAsolvers.SolverDUE(create_World, cpp=True)
     solver_DUE.solve(max_iter=20, route_sets=route_sets)
     W_DUE = solver_DUE.W_sol
     W_DUE.analyzer.print_simple_stats(force_print=True)
@@ -5717,7 +5717,7 @@ def test_DTA_with_given_route_sets():
     assert df_DUE_link["traffic_volume"][df_DUE_link["link"]=="offramp"].item() == 0
 
 
-    solver_DSO_D2D= DTAsolvers.SolverDSO_D2D(create_World)
+    solver_DSO_D2D= DTAsolvers.SolverDSO_D2D(create_World, cpp=True)
     solver_DSO_D2D.solve(max_iter=20, route_sets=route_sets)
     W_DSO_D2D = solver_DSO_D2D.W_sol
     W_DSO_D2D.analyzer.print_simple_stats(force_print=True)
@@ -5775,7 +5775,7 @@ def test_DTA_dynamic_congestion_pricing_on_highway_bottleneck():
         return W
 
     # DUE
-    solver_DUE = SolverDUE(create_World)
+    solver_DUE = SolverDUE(create_World, cpp=True)
     solver_DUE.solve(max_iter=40, print_progress=False)
     W_DUE = solver_DUE.W_sol
     W_DUE.analyzer.print_simple_stats(force_print=False)
@@ -7038,7 +7038,7 @@ def test_dta_solver_due_cpp():
         W.adddemand("A", "D", 0, 2000, 0.4)
         return W
 
-    solver = SolverDUE(create_World)
+    solver = SolverDUE(create_World, cpp=True)
     solver.solve(max_iter=3, print_progress=False)
     W_sol = solver.W_sol
     W_sol.analyzer.print_simple_stats(force_print=False)
@@ -7102,7 +7102,7 @@ def test_dta_solver_due_with_congestion_pricing_cpp():
         W.adddemand("1", "3", 0, 3000, 0.3)
         return W
 
-    solver = SolverDUE(create_World)
+    solver = SolverDUE(create_World, cpp=True)
     solver.solve(max_iter=3, print_progress=False)
     W_sol = solver.W_sol
     assert W_sol.analyzer.total_travel_time > 0
@@ -8004,7 +8004,7 @@ def test_dta_solver_due_grid_cpp():
     def create_World():
         return _create_dta_grid_world(seed=42, cpp=True)
 
-    solver = SolverDUE(create_World)
+    solver = SolverDUE(create_World, cpp=True)
     solver.solve(max_iter=1, print_progress=False)
     W_sol = solver.W_sol
     W_sol.analyzer.print_simple_stats(force_print=False)
@@ -8019,7 +8019,7 @@ def test_dta_solver_dso_d2d_grid_cpp():
     def create_World():
         return _create_dta_grid_world(seed=42, cpp=True)
 
-    solver = SolverDSO_D2D(create_World)
+    solver = SolverDSO_D2D(create_World, cpp=True)
     solver.solve(max_iter=1, print_progress=False)
     W_sol = solver.W_sol
     W_sol.analyzer.print_simple_stats(force_print=False)
@@ -8032,7 +8032,7 @@ def test_dta_solver_due_grid_cpp_vs_python():
     """SolverDUE on 9x9 grid: C++ and Python produce similar TTT."""
     from uxsim.DTAsolvers import SolverDUE
 
-    solver_cpp = SolverDUE(lambda: _create_dta_grid_world(seed=42, cpp=True))
+    solver_cpp = SolverDUE(lambda: _create_dta_grid_world(seed=42, cpp=True), cpp=True)
     solver_cpp.solve(max_iter=1, print_progress=False)
     ttt_cpp = solver_cpp.W_sol.analyzer.total_travel_time
     trips_cpp = solver_cpp.W_sol.analyzer.trip_completed
@@ -8051,7 +8051,7 @@ def test_dta_solver_dso_d2d_grid_cpp_vs_python():
     """SolverDSO_D2D on 9x9 grid: C++ and Python produce similar TTT."""
     from uxsim.DTAsolvers import SolverDSO_D2D
 
-    solver_cpp = SolverDSO_D2D(lambda: _create_dta_grid_world(seed=42, cpp=True))
+    solver_cpp = SolverDSO_D2D(lambda: _create_dta_grid_world(seed=42, cpp=True), cpp=True)
     solver_cpp.solve(max_iter=1, print_progress=False)
     ttt_cpp = solver_cpp.W_sol.analyzer.total_travel_time
     trips_cpp = solver_cpp.W_sol.analyzer.trip_completed
@@ -8070,7 +8070,7 @@ def test_dta_solver_due_grid_convergence_metrics_cpp():
     from uxsim.DTAsolvers import SolverDUE
 
     n_iter = 3
-    solver = SolverDUE(lambda: _create_dta_grid_world(seed=42, cpp=True))
+    solver = SolverDUE(lambda: _create_dta_grid_world(seed=42, cpp=True), cpp=True)
     solver.solve(max_iter=n_iter, print_progress=False)
 
     assert len(solver.ttts) == n_iter
@@ -8084,7 +8084,7 @@ def test_dta_solver_dso_d2d_grid_convergence_metrics_cpp():
     from uxsim.DTAsolvers import SolverDSO_D2D
 
     n_iter = 3
-    solver = SolverDSO_D2D(lambda: _create_dta_grid_world(seed=42, cpp=True))
+    solver = SolverDSO_D2D(lambda: _create_dta_grid_world(seed=42, cpp=True), cpp=True)
     solver.solve(max_iter=n_iter, print_progress=False)
 
     assert len(solver.ttts) == n_iter
@@ -8115,7 +8115,7 @@ def test_dta_solver_due_grid_benchmark_cpp():
     from uxsim.DTAsolvers import SolverDUE
 
     t0 = time.perf_counter()
-    solver = SolverDUE(lambda: _create_dta_grid_world(seed=42, cpp=True))
+    solver = SolverDUE(lambda: _create_dta_grid_world(seed=42, cpp=True), cpp=True)
     solver.solve(max_iter=1, print_progress=False)
     elapsed_cpp = time.perf_counter() - t0
 
@@ -8139,7 +8139,7 @@ def test_dta_solver_dso_d2d_grid_benchmark_cpp():
     from uxsim.DTAsolvers import SolverDSO_D2D
 
     t0 = time.perf_counter()
-    solver = SolverDSO_D2D(lambda: _create_dta_grid_world(seed=42, cpp=True))
+    solver = SolverDSO_D2D(lambda: _create_dta_grid_world(seed=42, cpp=True), cpp=True)
     solver.solve(max_iter=1, print_progress=False)
     elapsed_cpp = time.perf_counter() - t0
 
