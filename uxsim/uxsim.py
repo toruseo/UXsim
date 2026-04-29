@@ -916,7 +916,7 @@ class Link:
 
     def change_jam_density(s, new_value):
         if new_value >= 0:
-            s.free_jam_density = new_value
+            s.jam_density = new_value
             s.kappa = new_value
             s.w = 1/s.tau/s.kappa
             s.capacity = s.u*s.w*s.kappa/(s.u+s.w)
