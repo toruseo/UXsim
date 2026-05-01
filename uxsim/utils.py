@@ -89,10 +89,12 @@ def printtry(*args, **kwargs):
         print("EXCEPTION:", e)
     
 
+_cached_matplotlib_font = None
+
 def get_font_for_matplotlib(fname=None):
     """
     Get a multi-language (currently Japanese only) font for matplotlib.
-    TODO: check if it works on different OS. It is only checked on Japanese Windows. 
+    TODO: check if it works on different OS. It is only checked on Japanese Windows.
     TODO: explore if it can be extended for other languages.
 
     Returns
@@ -100,6 +102,10 @@ def get_font_for_matplotlib(fname=None):
     str
         The name of a Japanese font that is available on the system. If no Japanese font is found, "monospace" is returned.
     """
+    global _cached_matplotlib_font
+    if fname is None and _cached_matplotlib_font is not None:
+        return _cached_matplotlib_font
+
     from matplotlib import font_manager
 
     font_list = font_manager.findSystemFonts()
@@ -112,7 +118,9 @@ def get_font_for_matplotlib(fname=None):
         font = "MS Gothic"
     else:
         font = "monospace"
-        
+
+    if fname is None:
+        _cached_matplotlib_font = font
     return font
 
 def print_columns(*lists):
