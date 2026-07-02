@@ -301,14 +301,13 @@ void Node::transfer(){
         inlink->departure_curve[w->timestep] += w->delta_n;
         outlink->arrival_curve[w->timestep] += w->delta_n;
 
-        // Update traveltime_real array (slice update matching Python's traveltime_actual)
+        // Record traveltime_real event (lazily materialized on read,
+        // matching Python's traveltime_actual slice update)
         {
             double current_tt = (double)w->timestep * w->delta_t - chosen_veh->arrival_time_link;
             int start_idx = (int)(chosen_veh->arrival_time_link / w->delta_t);
             if (start_idx < 0) start_idx = 0;
-            for (size_t idx = start_idx; idx < inlink->traveltime_real.size(); idx++){
-                inlink->traveltime_real[idx] = current_tt;
-            }
+            inlink->traveltime_real_events.emplace_back(start_idx, current_tt);
         }
 
         chosen_veh->arrival_time_link = (double)w->timestep * w->delta_t;
@@ -467,6 +466,8 @@ Link::Link(
     departure_curve.resize(w->total_timesteps, 0.0);
 
     traveltime_real.resize(w->total_timesteps, this->length / this->vmax);
+    traveltime_real_events.clear();
+    traveltime_real_events_applied = 0;
     traveltime_instant.resize(w->total_timesteps, 0.0);
 
     // Insert self into global vectors
@@ -563,7 +564,37 @@ void Link::set_travel_time(){
     }
 }
 
+/**
+ * @brief Materialize pending traveltime_real events into the array.
+ *
+ * Link-exit events are buffered as (start_idx, tt) pairs during the main
+ * loop (write-only phase) and replayed here on first read. Replay rule:
+ * event k fills [s_k, min(s_{k+1}, n)) and the last pending event fills
+ * [s_k, n). This is equivalent to the eager behavior where each event
+ * overwrites [s_k, n) in order: position i ends up with the value of the
+ * last event whose s_k <= i, regardless of start_idx monotonicity.
+ */
+void Link::ensure_traveltime_real() const {
+    size_t n_events = traveltime_real_events.size();
+    if (traveltime_real_events_applied >= n_events) return;
+    size_t n = traveltime_real.size();
+    for (size_t k = traveltime_real_events_applied; k < n_events; k++){
+        size_t s = (size_t)traveltime_real_events[k].first; // clamped >= 0 at record time
+        double tt = traveltime_real_events[k].second;
+        size_t e = n;
+        if (k + 1 < n_events){
+            size_t s_next = (size_t)traveltime_real_events[k + 1].first;
+            if (s_next < n) e = s_next;
+        }
+        for (size_t idx = s; idx < e; idx++){
+            traveltime_real[idx] = tt;
+        }
+    }
+    traveltime_real_events_applied = n_events;
+}
+
 double Link::estimate_congestion_externality(int ts){
+    ensure_traveltime_real();
     int n = (int)traveltime_real.size();
     double dt = w->delta_t;
     double free_flow_tt = length / vmax * 1.01;
@@ -607,6 +638,7 @@ double World::estimate_congestion_externality_route(const vector<Link*> &route, 
     double t = departure_time;
     double exts = 0;
     for (auto ln : route){
+        ln->ensure_traveltime_real();
         int ts = (int)(t / delta_t);
         exts += ln->estimate_congestion_externality(ts);
         // Advance t by the actual travel time on this link
@@ -761,14 +793,13 @@ void Vehicle::end_trip(){
     w->trips_completed_count += 1.0;
     link->departure_curve[w->timestep] += w->delta_n;
 
-    // Update traveltime_real array (slice update matching Python's traveltime_actual)
+    // Record traveltime_real event (lazily materialized on read,
+    // matching Python's traveltime_actual slice update)
     {
         double current_tt = ((double)w->timestep + 1.0) * w->delta_t - arrival_time_link;
         int start_idx = (int)(arrival_time_link / w->delta_t);
         if (start_idx < 0) start_idx = 0;
-        for (size_t idx = start_idx; idx < link->traveltime_real.size(); idx++){
-            link->traveltime_real[idx] = current_tt;
-        }
+        link->traveltime_real_events.emplace_back(start_idx, current_tt);
     }
 
     record_travel_time(link, (double)w->timestep * w->delta_t);

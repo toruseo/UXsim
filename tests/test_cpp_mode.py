@@ -8155,3 +8155,72 @@ def test_dta_solver_dso_d2d_grid_benchmark_cpp():
     print(f"  Speedup: {speedup:.2f}x")
 
     assert solver.W_sol.analyzer.total_travel_time > 0
+
+
+# ======================================================================
+# traveltime_actual lazy materialization: intervention reads at chunk
+# boundaries must not change results (Round 5, Phase 2)
+# ======================================================================
+
+def _create_merge_world_for_tt_read_test():
+    W = World(cpp=True, name="", deltan=5, tmax=1200,
+              print_mode=0, save_mode=0, show_mode=0, random_seed=42)
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("merge", 1, 1)
+    W.addNode("dest", 2, 1)
+    W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20)
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, capacity_out=0.4)
+    W.adddemand("orig1", "dest", 0, 600, 0.5)
+    W.adddemand("orig2", "dest", 100, 500, 0.5)
+    return W
+
+
+def test_traveltime_actual_intervention_read_chunked():
+    """Reading traveltime_actual mid-simulation (at exec_simulation chunk
+    boundaries) must return valid values and must not alter the final
+    results compared to (a) a one-shot run and (b) a chunked run without
+    intervention reads."""
+    # (a) one-shot reference
+    W_ref = _create_merge_world_for_tt_read_test()
+    W_ref.exec_simulation()
+    tt_ref = {l.name: l._cpp_link.get_traveltime_actual_np() for l in W_ref.LINKS}
+    ttt_ref = W_ref.analyzer.total_travel_time
+
+    # (b) chunked without reads
+    W_noread = _create_merge_world_for_tt_read_test()
+    while W_noread.check_simulation_ongoing():
+        W_noread.exec_simulation(duration_t=200)
+
+    # (c) chunked with intervention reads at every boundary
+    W_read = _create_merge_world_for_tt_read_test()
+    boundary_tts = []
+    while W_read.check_simulation_ongoing():
+        W_read.exec_simulation(duration_t=200)
+        snapshot = {}
+        for l in W_read.LINKS:
+            arr = np.asarray(l.traveltime_actual, dtype=float)
+            # mid-simulation reads must be valid, finite, non-negative
+            assert len(arr) == W_read.TSIZE
+            assert np.all(np.isfinite(arr))
+            assert np.all(arr >= 0)
+            snapshot[l.name] = arr
+        boundary_tts.append(snapshot)
+
+    # mid-simulation snapshots must be consistent with the final state:
+    # once recorded, past values only change due to later link exits, so at
+    # minimum the free-flow default must have been overwritten identically
+    # wherever congestion was observed in both runs
+    for l in W_read.LINKS:
+        final_arr = np.asarray(l._cpp_link.get_traveltime_actual_np())
+        ref_arr = tt_ref[l.name]
+        assert np.array_equal(final_arr, ref_arr), f"{l.name}: chunked+read differs from one-shot"
+        noread_arr = np.asarray(W_noread.get_link(l.name)._cpp_link.get_traveltime_actual_np())
+        assert np.array_equal(final_arr, noread_arr), f"{l.name}: reads changed the result"
+
+    assert W_read.analyzer.total_travel_time == ttt_ref
+    assert W_noread.analyzer.total_travel_time == ttt_ref
+
+    # congestion must actually appear in this scenario (test is meaningful)
+    assert any(np.max(s["link3"]) > 1000 / 20 * 1.5 for s in boundary_tts)

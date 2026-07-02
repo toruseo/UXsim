@@ -55,6 +55,7 @@ inline double dta_get_toll(const Link *ln, double t) {
 
 // Get actual travel time at time t from traveltime_real
 inline double dta_get_actual_travel_time(const Link *ln, double t) {
+    ln->ensure_traveltime_real();
     int n = (int)ln->traveltime_real.size();
     if (n == 0) return ln->length / ln->vmax;
     int idx = (int)(t / ln->w->delta_t);

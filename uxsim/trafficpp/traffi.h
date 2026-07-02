@@ -127,7 +127,13 @@ struct Link {
 
     vector<double> arrival_curve;
     vector<double> departure_curve;
-    vector<double> traveltime_real;
+    // traveltime_real is lazily materialized: link-exit events are buffered
+    // as (start_idx, travel_time) pairs and replayed into the array on first
+    // read via ensure_traveltime_real(). Members are mutable so that const
+    // read paths can trigger materialization.
+    mutable vector<double> traveltime_real;
+    mutable vector<pair<int, double>> traveltime_real_events;
+    mutable size_t traveltime_real_events_applied;
     vector<double> traveltime_instant;
 
     double merge_priority;
@@ -161,6 +167,7 @@ struct Link {
 
     void update();
     void set_travel_time();
+    void ensure_traveltime_real() const;
     double estimate_congestion_externality(int timestep);
     void change_free_flow_speed(double new_value);
     void change_jam_density(double new_value);

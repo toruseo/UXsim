@@ -782,8 +782,14 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("cum_arrival", &Link::arrival_curve)
         .def_ro("departure_curve", &Link::departure_curve)
         .def_ro("cum_departure", &Link::departure_curve)
-        .def_ro("traveltime_real", &Link::traveltime_real)
-        .def_ro("traveltime_actual", &Link::traveltime_real)
+        .def_prop_ro("traveltime_real", [](const Link &l) {
+                 l.ensure_traveltime_real();
+                 return l.traveltime_real;
+             })
+        .def_prop_ro("traveltime_actual", [](const Link &l) {
+                 l.ensure_traveltime_real();
+                 return l.traveltime_real;
+             })
         .def_ro("traveltime_instant", &Link::traveltime_instant)
         .def("update", &Link::update)
         .def("set_travel_time", &Link::set_travel_time)
@@ -811,6 +817,7 @@ NB_MODULE(uxsim_cpp, m) {
              },
              "Return cum_departure as a numpy array (memcpy, no list conversion)")
         .def("get_traveltime_actual_np", [](const Link &l) {
+                 l.ensure_traveltime_real();
                  return make_numpy_copy(l.traveltime_real.data(), l.traveltime_real.size());
              },
              "Return traveltime_actual (traveltime_real) as a numpy array")
