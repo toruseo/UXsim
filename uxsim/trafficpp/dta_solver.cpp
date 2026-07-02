@@ -31,6 +31,12 @@ TraveledRouteInfo dta_get_traveled_route(const Vehicle *veh) {
     TraveledRouteInfo info;
     info.arrival_time = -1.0;
 
+    // Reserve to the number of distinct links traveled (avoids push_back reallocs).
+    if (veh->_traveled_link_count > 0){
+        info.link_ids.reserve(veh->_traveled_link_count);
+        info.entry_times.reserve(veh->_traveled_link_count);
+    }
+
     int prev_lid = -999;
     for (size_t i = 0; i < veh->log_size; i++){
         int lid = veh->log_link[i];

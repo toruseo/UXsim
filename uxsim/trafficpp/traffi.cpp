@@ -1136,6 +1136,7 @@ void World::initialize_adj_matrix(){
         }
 
         route_preference.assign(nodes.size(), vector<double>(links.size(), 0.0));
+        route_pref_active.assign(nodes.size(), 0);
         flag_initialized = true;
     }
 }
@@ -1163,58 +1164,68 @@ void World::update_adj_time_matrix(){
     }
 }
 
-pair<vector<vector<double>>, vector<vector<int>>> 
-  World::route_search_all(const vector<vector<double>> &adj, double infty) {
+void World::route_search_all(const vector<vector<double>> &adj, double infty) {
     int nsize = (int)adj.size();
     if (std::fabs(infty) < 1e-9) {
         infty = std::numeric_limits<double>::infinity();
     }
 
-    // Build adjacency list: pair<neighbor, weight>
-    vector<vector<pair<int, double>>> adj_list(nsize);
+    // Build adjacency list into reused scratch buffer. The `adj[i][j] > 0.0`
+    // edge filter is re-evaluated every call so the neighbour set/order is
+    // identical to the previous allocate-fresh implementation (bit-identical).
+    rsa_adj_list.resize(nsize);
     for (int i = 0; i < nsize; i++) {
+        auto &row = rsa_adj_list[i];
+        row.clear();
+        const auto &adji = adj[i];
         for (int j = 0; j < nsize; j++) {
-            if (adj[i][j] > 0.0) {
-                adj_list[i].push_back({j, adj[i][j]});
+            if (adji[j] > 0.0) {
+                row.push_back({j, adji[j]});
             }
         }
     }
 
-    vector<vector<double>> dist(nsize, vector<double>(nsize, infty));
-    vector<vector<int>> next_hop(nsize, vector<int>(nsize, -1));
-    
+    // Reuse dist / next-hop scratch buffers (reset to infty / -1 each call).
+    rsa_dist.resize(nsize);
+    rsa_next.resize(nsize);
+    for (int i = 0; i < nsize; i++) {
+        rsa_dist[i].assign(nsize, infty);
+        rsa_next[i].assign(nsize, -1);
+    }
+    rsa_visited.resize(nsize);
+
     using pdi = pair<double, int>;
     std::priority_queue<pdi, vector<pdi>, std::greater<pdi>> pq;
 
     // Dijkstra from each source node
     for (int start = 0; start < nsize; start++) {
-        vector<bool> visited(nsize, false);
-        dist[start][start] = 0.0;
-        next_hop[start][start] = start;
+        std::fill(rsa_visited.begin(), rsa_visited.end(), (char)0);
+        auto &dstart = rsa_dist[start];
+        auto &nhstart = rsa_next[start];
+        dstart[start] = 0.0;
+        nhstart[start] = start;
         pq.push({0.0, start});
-        
+
         while (!pq.empty()) {
             auto [d, current] = pq.top();
             pq.pop();
-            
-            if (visited[current]) continue;
-            visited[current] = true;
-            
+
+            if (rsa_visited[current]) continue;
+            rsa_visited[current] = 1;
+
             // Explore neighbors via adjacency list
-            for (const auto& [next, weight] : adj_list[current]) {
-                double new_dist = dist[start][current] + weight;
-                if (new_dist < dist[start][next]) {
-                    dist[start][next] = new_dist;
+            double dcur = dstart[current];
+            for (const auto& [next, weight] : rsa_adj_list[current]) {
+                double new_dist = dcur + weight;
+                if (new_dist < dstart[next]) {
+                    dstart[next] = new_dist;
                     // Update next hop
-                    next_hop[start][next] = (current == start) ? 
-                                          next : next_hop[start][current];
+                    nhstart[next] = (current == start) ? next : nhstart[current];
                     pq.push({new_dist, next});
                 }
             }
         }
     }
-    
-    return {dist, next_hop};
 }
 
 map<pair<int,int>, vector<vector<int>>>
@@ -1235,9 +1246,13 @@ World::enumerate_k_random_routes_cpp(int k, unsigned int seed){
     int iteration = 0;
     double average_n_routes_old = 0;
 
+    // Weighted adjacency matrix, allocated once and reused. Every iteration
+    // overwrites exactly the same (i,j) link cells; non-link cells stay 0.0,
+    // so reuse is bit-identical to reallocating a zero-filled matrix each time.
+    vector<vector<double>> adj(nsize, vector<double>(nsize, 0.0));
+
     while (true){
         // Build weighted adj matrix (free-flow on iter 0, random on subsequent)
-        vector<vector<double>> adj(nsize, vector<double>(nsize, 0.0));
         for (auto ln : links){
             int i = ln->start_node->id;
             int j = ln->end_node->id;
@@ -1249,8 +1264,9 @@ World::enumerate_k_random_routes_cpp(int k, unsigned int seed){
             }
         }
 
-        // All-pairs Dijkstra
-        auto [dists, next_hop] = route_search_all(adj, 0.0);
+        // All-pairs Dijkstra (results in rsa_next scratch buffer)
+        route_search_all(adj, 0.0);
+        const auto &next_hop = rsa_next;
 
         // Reconstruct paths and collect unique routes
         int total_routes = 0;
@@ -1316,26 +1332,28 @@ void World::route_choice_duo(){
     for (auto dest : nodes){
         int k = dest->id;
 
+        // psum==0.0 iff route_preference[k] has never been reinforced. Tracked
+        // incrementally via route_pref_active[k] to avoid an O(links) sum here.
         auto duo_update_weight_tmp = duo_update_weight;
-        {
-            double psum = 0.0;
-            for (double v : route_preference[k]) psum += v;
-            if (psum == 0.0){
-                duo_update_weight_tmp = 1; //initialize with deterministic shortest path
-            }
+        if (!route_pref_active[k]){
+            duo_update_weight_tmp = 1; //initialize with deterministic shortest path
         }
 
         // For each link in the world, update preference
+        bool reinforced = false;
         for (auto ln : links){
             int i = ln->start_node->id;
             int j = ln->end_node->id;
             int lid = ln->id;
             if (route_next[i][k] == j){
                 route_preference[k][lid] = (1.0 - duo_update_weight_tmp) * route_preference[k][lid] + duo_update_weight_tmp;
+                reinforced = true;
             }else{
                 route_preference[k][lid] = (1.0 - duo_update_weight_tmp) * route_preference[k][lid];
             }
         }
+        // A reinforced on-path link makes route_preference[k] strictly positive.
+        if (reinforced) route_pref_active[k] = 1;
     }
 }
 
@@ -1346,25 +1364,26 @@ void World::route_choice_duo_gradual(){
     for (auto dest : nodes){
         int k = dest->id;
 
+        // psum==0.0 iff route_preference[k] has never been reinforced (see
+        // route_choice_duo). Tracked via route_pref_active[k].
         double w_tmp = weight0;
-        {
-            double psum = 0.0;
-            for (double v : route_preference[k]) psum += v;
-            if (psum == 0.0){
-                w_tmp = 1;
-            }
+        if (!route_pref_active[k]){
+            w_tmp = 1;
         }
 
+        bool reinforced = false;
         for (auto ln : links){
             int i = ln->start_node->id;
             int j = ln->end_node->id;
             int lid = ln->id;
             if (route_next[i][k] == j){
                 route_preference[k][lid] = (1.0 - w_tmp) * route_preference[k][lid] + w_tmp;
+                reinforced = true;
             }else{
                 route_preference[k][lid] = (1.0 - w_tmp) * route_preference[k][lid];
             }
         }
+        if (reinforced) route_pref_active[k] = 1;
     }
 }
 
@@ -1494,9 +1513,9 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             // Gradual mode: route_search at DELTAT_ROUTE intervals, DUO_update every step
             if (timestep_for_route_update > 0 && timestep % timestep_for_route_update == 0){
                 update_adj_time_matrix();
-                auto res = route_search_all(adj_mat_time, 0.0);
-                route_dist = res.first;
-                route_next = res.second;
+                route_search_all(adj_mat_time, 0.0);
+                route_dist = rsa_dist;
+                route_next = rsa_next;
                 route_dist_record[timestep] = route_dist;
             }
             // DUO update every step with scaled weight
@@ -1505,9 +1524,9 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             // Normal mode: both route_search and DUO_update at DELTAT_ROUTE intervals
             if (timestep_for_route_update > 0 && timestep % timestep_for_route_update == 0){
                 update_adj_time_matrix();
-                auto res = route_search_all(adj_mat_time, 0.0);
-                route_dist = res.first;
-                route_next = res.second;
+                route_search_all(adj_mat_time, 0.0);
+                route_dist = rsa_dist;
+                route_next = rsa_next;
                 route_dist_record[timestep] = route_dist;
                 route_choice_duo();
             }
@@ -1543,10 +1562,9 @@ bool World::check_simulation_ongoing(){
 // -----------------------------------------------------------------------
 
 Node *World::get_node(const string &node_name){
-    for (auto nd : nodes){
-        if (nd->name == node_name){
-            return nd;
-        }
+    auto it = nodes_map.find(node_name);
+    if (it != nodes_map.end()){
+        return it->second;
     }
     (*writer) << "Error at function get_node(): `"
               << node_name << "` not found\n";
@@ -1554,10 +1572,9 @@ Node *World::get_node(const string &node_name){
 }
 
 Link *World::get_link(const string &link_name){
-    for (auto ln : links){
-        if (ln->name == link_name){
-            return ln;
-        }
+    auto it = links_map.find(link_name);
+    if (it != links_map.end()){
+        return it->second;
     }
     (*writer) << "Error at function get_link(): `"
               << link_name << "` not found\n";
