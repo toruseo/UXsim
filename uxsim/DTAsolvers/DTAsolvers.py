@@ -111,6 +111,129 @@ def _build_name_id_maps(W):
     return link_name_to_id, link_id_to_name, node_name_to_id
 
 
+def _build_id_lookup_arrays(W):
+    """Build id->name lookup arrays/dicts (indexed by C++ id) for a CppWorld.
+
+    Returns (link_name_to_id, link_id_to_name, node_name_to_id, node_id_to_name)
+    where the *_id_to_name are dicts keyed by C++ id.
+    """
+    link_name_to_id = {link.name: link.id for link in W.LINKS}
+    link_id_to_name = {link.id: link.name for link in W.LINKS}
+    node_name_to_id = {node.name: node.id for node in W.NODES}
+    node_id_to_name = {node.id: node.name for node in W.NODES}
+    return link_name_to_id, link_id_to_name, node_name_to_id, node_id_to_name
+
+
+class _LazyODRoutes(dict):
+    """Lazy {(o_name, d_name): [[link_name, ...], ...]} built on first access.
+
+    The C++ solvers consume OD route sets purely as link IDs, so the name-form
+    dict is only needed if the solution World is later reused (e.g. as an
+    initial_solution_World for a Python solver, or by ALNS). Deferring its
+    construction avoids the per-solve name-building cost in the common case.
+    Subclasses dict so ``isinstance(x, dict)`` and normal dict access hold.
+    """
+    __slots__ = ("_csr", "_nid2n", "_lid2n", "_built")
+
+    def __init__(self, csr, node_id_to_name, link_id_to_name):
+        super().__init__()
+        self._csr = csr
+        self._nid2n = node_id_to_name
+        self._lid2n = link_id_to_name
+        self._built = False
+
+    def _build(self):
+        if self._built:
+            return
+        self._built = True  # set first to avoid recursion via dict methods
+        super().update(_build_od_name_dict_from_csr(self._csr, self._nid2n, self._lid2n))
+
+    def __getitem__(self, k):
+        self._build()
+        return super().__getitem__(k)
+
+    def __contains__(self, k):
+        self._build()
+        return super().__contains__(k)
+
+    def __iter__(self):
+        self._build()
+        return super().__iter__()
+
+    def __len__(self):
+        self._build()
+        return super().__len__()
+
+    def get(self, k, default=None):
+        self._build()
+        return super().get(k, default)
+
+    def keys(self):
+        self._build()
+        return super().keys()
+
+    def values(self):
+        self._build()
+        return super().values()
+
+    def items(self):
+        self._build()
+        return super().items()
+
+
+def _build_od_name_dict_from_csr(csr, node_id_to_name, link_id_to_name):
+    """Build {(o_name, d_name): [[link_name, ...], ...]} from nested-CSR arrays.
+
+    This reuses interned name string objects from the id->name dicts (no new
+    string allocation per element), so it is far cheaper than the per-element
+    nb::str construction of the name-based public API. Built once per solve.
+    """
+    od_o = csr['od_o']
+    od_d = csr['od_d']
+    route_offsets = csr['route_offsets']
+    link_offsets = csr['link_offsets']
+    link_ids = csr['link_ids']
+    dict_od_to_routes = defaultdict(list)
+    for p in range(len(od_o)):
+        o = node_id_to_name[int(od_o[p])]
+        d = node_id_to_name[int(od_d[p])]
+        r0 = int(route_offsets[p])
+        r1 = int(route_offsets[p + 1])
+        routes = []
+        for r in range(r0, r1):
+            s = int(link_offsets[r])
+            e = int(link_offsets[r + 1])
+            routes.append([link_id_to_name[int(lid)] for lid in link_ids[s:e]])
+        dict_od_to_routes[o, d] = routes
+    return dict_od_to_routes
+
+
+def _convert_flat_result_to_names(result, veh_names, link_id_to_name):
+    """Convert flat-CSR C++ route_swap result to name-keyed route_actual/cost_actual.
+
+    routes_specified is intentionally NOT converted to names here: it is kept in
+    flat ID-CSR form (rs_link_ids/rs_offsets) and fed directly back to
+    batch_enforce_routes_csr, avoiding a name<->id round-trip.
+
+    Returns (route_actual_dict, cost_actual_dict, n_swap, potential_n_swap, total_t_gap).
+    """
+    ra_ids = result['ra_link_ids']
+    ra_off = result['ra_offsets']
+    ca = result['cost_actual']
+
+    route_actual = {}
+    for idx, veh_name in enumerate(veh_names):
+        s = int(ra_off[idx])
+        e = int(ra_off[idx + 1])
+        route_actual[veh_name] = [link_id_to_name[int(lid)] for lid in ra_ids[s:e]]
+
+    cost_actual = {veh_name: float(ca[idx]) for idx, veh_name in enumerate(veh_names)}
+
+    return (route_actual, cost_actual,
+            float(result['n_swap']), float(result['potential_n_swap']),
+            float(result['total_t_gap']))
+
+
 def _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id):
     """Convert dict_od_to_routes from str names to int IDs for C++.
 
@@ -1870,7 +1993,15 @@ class CppSolverDUE(SolverDUE):
 
         if W_orig.finalized == False:
             W_orig.finalize_scenario()
-        dict_od_to_routes = enumerate_k_random_routes(W_orig, k=n_routes_per_od)
+
+        # Build id<->name lookups once (node/link ids are stable across
+        # func_World() reconstructions, so W_orig's mapping is valid for all iters).
+        (link_name_to_id, link_id_to_name, node_name_to_id,
+         node_id_to_name) = _build_id_lookup_arrays(W_orig)
+
+        # Draw the enumeration seed exactly as enumerate_k_random_routes() would,
+        # to preserve global-RNG consumption order (and thus bit-identical results).
+        enum_seed = random.randint(0, 2**31 - 1)
 
         if route_sets is not None:
             dict_od_to_routes = {}
@@ -1878,9 +2009,17 @@ class CppSolverDUE(SolverDUE):
                 o = W_orig.get_node(key[0]).name
                 d = W_orig.get_node(key[1]).name
                 dict_od_to_routes[o, d] = [[W_orig.get_link(l).name for l in route] for route in routes]
+            od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+            od_route_store = W_orig._cpp_world.make_od_route_set_store(od_route_sets_ids)
+        else:
+            # Enumerate + register routes entirely in C++ (link IDs, no name round-trip).
+            od_route_store = W_orig._cpp_world.enumerate_od_route_sets_ids_cpp(n_routes_per_od, enum_seed)
+            # Build the name-form dict lazily (only if the solution is reused).
+            dict_od_to_routes = _LazyODRoutes(
+                od_route_store.to_csr(), node_id_to_name, link_id_to_name)
 
         if print_progress:
-            print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
+            print(f"number of OD pairs: {od_route_store.n_od_pairs}, number of routes: {od_route_store.n_routes}")
 
         s.ttts = []
         s.n_swaps = []
@@ -1889,19 +2028,14 @@ class CppSolverDUE(SolverDUE):
         s.route_log = []
         s.cost_log = []
 
-        od_route_sets_ids = None
-        link_name_to_id = None
-        link_id_to_name = None
         cached_analyzer = None
+        prev_rs_link_ids = None
+        prev_rs_offsets = None
 
         print("solving DUE...")
         for i in range(max_iter):
             W = s.func_World()
             is_last_iter = (i == max_iter - 1)
-
-            if od_route_sets_ids is None:
-                link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
-                od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
 
             cached_analyzer = _lightweight_finalize(W, cached_analyzer)
 
@@ -1912,8 +2046,7 @@ class CppSolverDUE(SolverDUE):
                 W._skip_log_on_terminate = True
 
             if i != 0:
-                enforce_input = _build_enforce_routes_input(W, routes_specified_data, link_name_to_id)
-                W._cpp_world.batch_enforce_routes(enforce_input)
+                W._cpp_world.batch_enforce_routes_csr(prev_rs_link_ids, prev_rs_offsets)
 
             W.exec_simulation()
             W.analyzer.print_simple_stats()
@@ -1929,15 +2062,14 @@ class CppSolverDUE(SolverDUE):
 
             rng_seed = random.randint(0, 2**31 - 1)
             cpp_result = W._cpp_world.route_swap_due(
-                od_route_sets_ids, swap_prob, route_sets is not None, rng_seed
+                od_route_store, swap_prob, route_sets is not None, rng_seed
             )
-            result = _convert_cpp_result_to_names(cpp_result, W, link_id_to_name)
-            routes_specified_data = result['routes_specified']
-            route_actual = result['route_actual']
-            cost_actual = result['cost_actual']
-            n_swap = result['n_swap']
-            potential_n_swap = result['potential_n_swap']
-            total_t_gap = result['total_t_gap']
+            veh_names = list(W.VEHICLES.keys())
+            route_actual, cost_actual, n_swap, potential_n_swap, total_t_gap = \
+                _convert_flat_result_to_names(cpp_result, veh_names, link_id_to_name)
+            # Keep next-iteration routes in flat ID-CSR form for direct enforcement.
+            prev_rs_link_ids = cpp_result['rs_link_ids']
+            prev_rs_offsets = cpp_result['rs_offsets']
 
             t_gap_per_vehicle = total_t_gap / len(W.VEHICLES)
             if print_progress:
@@ -1986,7 +2118,14 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
 
         if W_orig.finalized == False:
             W_orig.finalize_scenario()
-        dict_od_to_routes = enumerate_k_random_routes(W_orig, k=n_routes_per_od)
+
+        # Build id<->name lookups once (ids stable across func_World() reconstructions).
+        (link_name_to_id, link_id_to_name, node_name_to_id,
+         node_id_to_name) = _build_id_lookup_arrays(W_orig)
+
+        # Draw the enumeration seed exactly as enumerate_k_random_routes() would,
+        # to preserve global-RNG consumption order (and thus bit-identical results).
+        enum_seed = random.randint(0, 2**31 - 1)
 
         if route_sets is not None:
             dict_od_to_routes = {}
@@ -1994,9 +2133,17 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
                 o = W_orig.get_node(key[0]).name
                 d = W_orig.get_node(key[1]).name
                 dict_od_to_routes[o, d] = [[W_orig.get_link(l).name for l in route] for route in routes]
+            od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
+            od_route_store = W_orig._cpp_world.make_od_route_set_store(od_route_sets_ids)
+        else:
+            # Enumerate + register routes entirely in C++ (link IDs, no name round-trip).
+            od_route_store = W_orig._cpp_world.enumerate_od_route_sets_ids_cpp(n_routes_per_od, enum_seed)
+            # Build the name-form dict lazily (only if the solution is reused).
+            dict_od_to_routes = _LazyODRoutes(
+                od_route_store.to_csr(), node_id_to_name, link_id_to_name)
 
         if print_progress:
-            print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
+            print(f"number of OD pairs: {od_route_store.n_od_pairs}, number of routes: {od_route_store.n_routes}")
 
         s.ttts = []
         s.n_swaps = []
@@ -2005,19 +2152,14 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
         s.route_log = []
         s.cost_log = []
 
-        od_route_sets_ids = None
-        link_name_to_id = None
-        link_id_to_name = None
         cached_analyzer = None
+        prev_rs_link_ids = None
+        prev_rs_offsets = None
 
         print("solving DSO...")
         for i in range(max_iter):
             W = s.func_World()
             is_last_iter = (i == max_iter - 1)
-
-            if od_route_sets_ids is None:
-                link_name_to_id, link_id_to_name, node_name_to_id = _build_name_id_maps(W)
-                od_route_sets_ids = _convert_od_routes_to_ids(dict_od_to_routes, node_name_to_id, link_name_to_id)
 
             cached_analyzer = _lightweight_finalize(W, cached_analyzer)
 
@@ -2026,8 +2168,7 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
                 W._skip_log_on_terminate = True
 
             if i != 0:
-                enforce_input = _build_enforce_routes_input(W, routes_specified_data, link_name_to_id)
-                W._cpp_world.batch_enforce_routes(enforce_input)
+                W._cpp_world.batch_enforce_routes_csr(prev_rs_link_ids, prev_rs_offsets)
 
             W.exec_simulation()
             W.analyzer.print_simple_stats()
@@ -2050,15 +2191,14 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
             rng_seed = random.randint(0, 2**31 - 1)
             cpp_swap_num = swap_num if swap_num is not None else -1
             cpp_result = W._cpp_world.route_swap_dso(
-                od_route_sets_ids, swap_prob, cpp_swap_num, route_sets is not None, rng_seed
+                od_route_store, swap_prob, cpp_swap_num, route_sets is not None, rng_seed
             )
-            result = _convert_cpp_result_to_names(cpp_result, W, link_id_to_name)
-            routes_specified_data = result['routes_specified']
-            route_actual = result['route_actual']
-            cost_actual = result['cost_actual']
-            n_swap = result['n_swap']
-            potential_n_swap = result['potential_n_swap']
-            total_t_gap = result['total_t_gap']
+            veh_names = list(W.VEHICLES.keys())
+            route_actual, cost_actual, n_swap, potential_n_swap, total_t_gap = \
+                _convert_flat_result_to_names(cpp_result, veh_names, link_id_to_name)
+            # Keep next-iteration routes in flat ID-CSR form for direct enforcement.
+            prev_rs_link_ids = cpp_result['rs_link_ids']
+            prev_rs_offsets = cpp_result['rs_offsets']
 
             t_gap_per_vehicle = total_t_gap / len(W.VEHICLES)
             if print_progress:

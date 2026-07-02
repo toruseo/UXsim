@@ -8,9 +8,35 @@
 #include "traffi.h"
 
 #include <map>
+#include <unordered_map>
+#include <cstdint>
 #include <vector>
 #include <random>
 #include <algorithm>
+
+// -----------------------------------------------------------------------
+// OD route set store (C++-resident, built once per solve)
+// -----------------------------------------------------------------------
+
+// Hash for (orig_node_id, dest_node_id) keys. Both IDs are small non-negative
+// ints, so packing into 64 bits gives a collision-free hash.
+struct ODPairHash {
+    size_t operator()(const std::pair<int,int>& p) const noexcept {
+        return (static_cast<size_t>(static_cast<uint32_t>(p.first)) << 32)
+             ^ static_cast<size_t>(static_cast<uint32_t>(p.second));
+    }
+};
+
+// (orig_node_id, dest_node_id) -> list of routes (each = vector of link_ids).
+// Uses unordered_map: route swap only performs point lookups (never iterates in
+// an order-dependent way), so hashing is result-equivalent to the ordered map.
+struct ODRouteSetStore {
+    std::unordered_map<std::pair<int,int>, std::vector<std::vector<int>>, ODPairHash> sets;
+};
+
+// Build a store by enumerating k random routes (same RNG/logic as the
+// name-based public API; only the return representation differs).
+ODRouteSetStore dta_enumerate_od_route_sets_ids(World *w, int k, unsigned int seed);
 
 // -----------------------------------------------------------------------
 // Helper functions (link-level)
@@ -97,7 +123,7 @@ struct RouteSwapResult {
 // has_external_route_sets: if true, vehicles whose traveled route is not in set get forced to first route
 RouteSwapResult dta_route_swap_due(
     World *w,
-    const std::map<std::pair<int,int>, std::vector<std::vector<int>>> &od_route_sets,
+    const ODRouteSetStore &od_route_sets,
     double swap_prob,
     bool has_external_route_sets,
     unsigned int rng_seed);
@@ -106,7 +132,7 @@ RouteSwapResult dta_route_swap_due(
 // swap_num: if >= 0, exactly this many vehicles are swap candidates (overrides swap_prob)
 RouteSwapResult dta_route_swap_dso(
     World *w,
-    const std::map<std::pair<int,int>, std::vector<std::vector<int>>> &od_route_sets,
+    const ODRouteSetStore &od_route_sets,
     double swap_prob,
     int swap_num,
     bool has_external_route_sets,

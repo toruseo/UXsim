@@ -6,6 +6,24 @@
 #include "dta_solver.h"
 
 // -----------------------------------------------------------------------
+// OD route set store construction
+// -----------------------------------------------------------------------
+
+// Enumerate k random routes and store them in ID form (link IDs) directly,
+// avoiding the name/string round-trip through Python. Reuses the exact same
+// enumeration logic (and RNG seed) as the name-based public API, so the route
+// sets are identical.
+ODRouteSetStore dta_enumerate_od_route_sets_ids(World *w, int k, unsigned int seed) {
+    ODRouteSetStore store;
+    auto routes_by_od = w->enumerate_k_random_routes_cpp(k, seed);
+    store.sets.reserve(routes_by_od.size());
+    for (auto &kv : routes_by_od) {
+        store.sets.emplace(kv.first, std::move(kv.second));
+    }
+    return store;
+}
+
+// -----------------------------------------------------------------------
 // Traveled route extraction
 // -----------------------------------------------------------------------
 
@@ -105,11 +123,12 @@ void dta_batch_enforce_routes(World *w, const std::vector<std::vector<int>> &rou
 
 RouteSwapResult dta_route_swap_due(
     World *w,
-    const std::map<std::pair<int,int>, std::vector<std::vector<int>>> &od_route_sets,
+    const ODRouteSetStore &od_route_sets_store,
     double swap_prob,
     bool has_external_route_sets,
     unsigned int rng_seed)
 {
+    const auto &od_route_sets = od_route_sets_store.sets;
     size_t nv = w->vehicles.size();
     RouteSwapResult result;
     result.routes_specified.resize(nv);
@@ -225,12 +244,13 @@ RouteSwapResult dta_route_swap_due(
 
 RouteSwapResult dta_route_swap_dso(
     World *w,
-    const std::map<std::pair<int,int>, std::vector<std::vector<int>>> &od_route_sets,
+    const ODRouteSetStore &od_route_sets_store,
     double swap_prob,
     int swap_num,
     bool has_external_route_sets,
     unsigned int rng_seed)
 {
+    const auto &od_route_sets = od_route_sets_store.sets;
     size_t nv = w->vehicles.size();
     RouteSwapResult result;
     result.routes_specified.resize(nv);
