@@ -8224,3 +8224,233 @@ def test_traveltime_actual_intervention_read_chunked():
 
     # congestion must actually appear in this scenario (test is meaningful)
     assert any(np.max(s["link3"]) > 1000 / 20 * 1.5 for s in boundary_tts)
+
+
+# ======================================================================
+# Chunked exec_simulation with mid-simulation analyst reads and
+# interventions: reads must not perturb results, and mid-simulation logs
+# must satisfy structural invariants
+# ======================================================================
+
+def test_chunked_exec_with_midsim_reads_and_interventions():
+    """Chunked execution (exec_simulation(duration_t2=...)) with an analyst
+    intervening at every chunk boundary (reading vehicle logs, reading link
+    travel times, adding demand, changing free-flow speed) must:
+      1. produce results with no side effects from the reads: a run that
+         reads at every boundary and a run that does not must yield exactly
+         identical final results (total travel time, per-vehicle travel/
+         arrival times, per-vehicle logs, per-link actual travel times);
+      2. return mid-simulation logs that satisfy structural invariants
+         (equal-length log arrays, uniform DELTAT time stepping, monotone
+         non-decreasing vehicle state).
+    This is a regression test for the C++ engine's lazy log reconstruction
+    and vehicle-list management.
+    """
+    IMAX = JMAX = 9
+
+    def build_world():
+        W = World(cpp=True, name="", deltan=3, tmax=4800, no_cyclic_routing=True,
+                  print_mode=0, save_mode=0, show_mode=0, random_seed=42)
+        for i in range(IMAX):
+            for j in range(JMAX):
+                W.addNode(f"n{i}.{j}", i, j)
+        for i in range(IMAX):
+            for j in range(JMAX):
+                if i + 1 < IMAX:
+                    W.addLink(f"l{i}.{j}.{i+1}.{j}", f"n{i}.{j}", f"n{i+1}.{j}",
+                              length=1000, free_flow_speed=20, jam_density=0.2)
+                    W.addLink(f"l{i+1}.{j}.{i}.{j}", f"n{i+1}.{j}", f"n{i}.{j}",
+                              length=1000, free_flow_speed=20, jam_density=0.2)
+                if j + 1 < JMAX:
+                    W.addLink(f"l{i}.{j}.{i}.{j+1}", f"n{i}.{j}", f"n{i}.{j+1}",
+                              length=1000, free_flow_speed=20, jam_density=0.2)
+                    W.addLink(f"l{i}.{j+1}.{i}.{j}", f"n{i}.{j+1}", f"n{i}.{j}",
+                              length=1000, free_flow_speed=20, jam_density=0.2)
+        # boundary-to-boundary OD: left column <-> right column and
+        # bottom row <-> top row, all pairs, both directions
+        for j1 in range(JMAX):
+            for j2 in range(JMAX):
+                W.adddemand(f"n0.{j1}", f"n{IMAX-1}.{j2}", 0, 2400, 0.035)
+                W.adddemand(f"n{IMAX-1}.{j2}", f"n0.{j1}", 0, 2400, 0.035)
+        for i1 in range(IMAX):
+            for i2 in range(IMAX):
+                W.adddemand(f"n{i1}.0", f"n{i2}.{JMAX-1}", 0, 2400, 0.035)
+                W.adddemand(f"n{i2}.{JMAX-1}", f"n{i1}.0", 0, 2400, 0.035)
+        return W
+
+    state_map = {"home": 0, "wait": 1, "run": 2, "end": 3, "abort": 4}
+
+    def sample_indices(n):
+        return [0, n // 4, n // 2, 3 * n // 4, n - 1]
+
+    def run(do_reads):
+        W = build_world()
+        k = 0
+        while W.check_simulation_ongoing():
+            W.exec_simulation(duration_t2=600)
+            # interventions applied identically in both runs
+            if k == 2:
+                W.adddemand("n0.4", "n8.4", W.TIME, W.TIME + 900, 0.2)
+            if k == 3:
+                W.get_link("l4.4.4.5").change_free_flow_speed(10)
+            if do_reads:
+                # The current C++ wrapper does not invalidate a once-built log
+                # cache (known limitation), so reset every vehicle's cache each
+                # time to force the lazy reconstruction path to run again.
+                for veh in W.VEHICLES.values():
+                    veh._log_cache = None
+                vehs = list(W.VEHICLES.values())
+                for idx in sample_indices(len(vehs)):
+                    veh = vehs[idx]
+                    log_t = veh.log_t
+                    log_x = veh.log_x
+                    log_v = veh.log_v
+                    log_state = veh.log_state
+                    log_lane = veh.log_lane
+                    assert len(log_t) == len(log_x) == len(log_v) \
+                        == len(log_state) == len(log_lane)
+                    log_t = np.asarray(log_t, dtype=float)
+                    if len(log_t) > 1:
+                        diffs = np.diff(log_t)
+                        # every step is DELTAT, except that trip end records
+                        # repeated entries at the same final timestep, which
+                        # appear only as a trailing run of zero diffs
+                        assert set(np.unique(diffs)).issubset({0.0, float(W.DELTAT)})
+                        if np.any(diffs == 0):
+                            first_zero = int(np.argmax(diffs == 0))
+                            assert np.all(diffs[first_zero:] == 0)
+                    state_ints = np.array([state_map[s] for s in log_state])
+                    if len(state_ints) > 1:
+                        assert np.all(np.diff(state_ints) >= 0)
+                    if len(log_t) > 0:
+                        assert log_t[-1] <= W.TIME
+                for lname in ["l0.0.1.0", "l4.4.4.5"]:
+                    link = W.get_link(lname)
+                    assert len(link.traveltime_actual) == W.TSIZE
+                    assert len(link.traveltime_instant) == W.TSIZE
+            k += 1
+        return W
+
+    W_read = run(do_reads=True)
+    W_noread = run(do_reads=False)
+
+    # Reset caches before the final comparison: Run A (W_read) may retain
+    # caches built during interventions before termination, so force a fresh
+    # reconstruction on both runs before reading.
+    for W in (W_read, W_noread):
+        for veh in W.VEHICLES.values():
+            veh._log_cache = None
+
+    assert W_read.analyzer.total_travel_time == W_noread.analyzer.total_travel_time
+
+    vehs_read = list(W_read.VEHICLES.values())
+    vehs_noread = list(W_noread.VEHICLES.values())
+    assert [v.travel_time for v in vehs_read] == [v.travel_time for v in vehs_noread]
+    assert [v.arrival_time for v in vehs_read] == [v.arrival_time for v in vehs_noread]
+
+    for idx in sample_indices(len(vehs_read)):
+        va, vb = vehs_read[idx], vehs_noread[idx]
+        assert np.array_equal(va.log_t, vb.log_t)
+        assert np.array_equal(va.log_x, vb.log_x)
+        assert np.array_equal(va.log_v, vb.log_v)
+        assert va.log_state == vb.log_state
+        assert np.array_equal(va.log_lane, vb.log_lane)
+
+    for la in W_read.LINKS:
+        lb = W_noread.get_link(la.name)
+        assert np.array_equal(la.traveltime_actual, lb.traveltime_actual)
+
+
+def test_vehicle_log_python_cpp_equivalence():
+    """Vehicle logs (log_t/log_state/log_x/log_v/log_lane/log_t_link) must match
+    between Python mode and C++ mode on a deterministic scenario (every node has
+    out-degree <= 1, so routing does not depend on the RNG).
+
+    This is a regression test for the log-entry structure at trip termination:
+    the final timestep records exactly two entries (a RUN entry followed by an
+    END entry), and the END state is recorded exactly once via end_trip.
+    """
+
+    def build_world(cpp, scenario):
+        W = World(
+            name="",
+            deltan=5,
+            tmax=2000,
+            print_mode=0, save_mode=0, show_mode=0,
+            random_seed=0,
+            cpp=cpp,
+        )
+        W.addNode("A", 0, 0)
+        W.addNode("B", 1, 0)
+        W.addNode("C", 2, 0)
+        W.addLink("AB", "A", "B", length=1000, free_flow_speed=20, jam_density=0.2)
+        W.addLink("BC", "B", "C", length=1000, free_flow_speed=20, jam_density=0.2)
+        if scenario == 1:
+            # normal termination through a congested corridor A->B->C:
+            # congestion exercises both the update()-path and the transfer()-path
+            # to trip termination
+            W.adddemand("A", "C", 0, 1500, 0.5)
+        else:
+            # abort path: D is an isolated node (no links), so vehicles bound for
+            # D reach the dead end at C and abort
+            W.addNode("D", 3, 0)
+            W.adddemand("A", "D", 0, 1500, 0.5)
+        W.exec_simulation()
+        return W
+
+    def linkify(entry):
+        """entry = [t, link_obj_or_str] -> (t, name_str)."""
+        t, l = entry[0], entry[1]
+        name = l if isinstance(l, str) else l.name
+        return (t, name)
+
+    for scenario in (1, 2):
+        Wpy = build_world(False, scenario)
+        Wcpp = build_world(True, scenario)
+
+        assert set(Wpy.VEHICLES.keys()) == set(Wcpp.VEHICLES.keys())
+
+        for name in sorted(Wpy.VEHICLES.keys()):
+            vpy = Wpy.VEHICLES[name]
+            vcpp = Wcpp.VEHICLES[name]
+
+            # all log arrays must have equal length across all keys and both modes
+            lengths = set()
+            for k in ("log_t", "log_x", "log_v", "log_state", "log_lane"):
+                lengths.add(len(getattr(vpy, k)))
+                lengths.add(len(getattr(vcpp, k)))
+            assert len(lengths) == 1, f"[{name}] log length mismatch: {lengths}"
+
+            # log_t: exact match
+            assert np.array_equal(
+                np.asarray(vpy.log_t, dtype=float),
+                np.asarray(vcpp.log_t, dtype=float),
+            ), f"[{name}] log_t mismatch"
+
+            # log_state: exact match
+            assert list(vpy.log_state) == list(vcpp.log_state), \
+                f"[{name}] log_state mismatch"
+
+            # log_lane: exact match
+            assert np.array_equal(
+                np.asarray(vpy.log_lane),
+                np.asarray(vcpp.log_lane),
+            ), f"[{name}] log_lane mismatch"
+
+            # log_x / log_v: allclose with atol=1e-9 as insurance against
+            # floating-point differences on heterogeneous CI platforms; these
+            # match exactly locally
+            for k in ("log_x", "log_v"):
+                apy = np.asarray(getattr(vpy, k), dtype=float)
+                acpp = np.asarray(getattr(vcpp, k), dtype=float)
+                assert np.allclose(apy, acpp, rtol=0, atol=1e-9), \
+                    f"[{name}] {k} mismatch"
+
+            # log_t_link: normalize to [(t, linkname or "end")] then exact match
+            ttl_py = [linkify(e) for e in vpy.log_t_link]
+            ttl_cpp = [linkify(e) for e in vcpp.log_t_link]
+            assert ttl_py == ttl_cpp, f"[{name}] log_t_link mismatch"
+
+            # travel_time
+            assert vpy.travel_time == vcpp.travel_time, \
+                f"[{name}] travel_time mismatch"

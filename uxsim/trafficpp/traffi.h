@@ -207,7 +207,6 @@ struct Vehicle {
     int flag_waiting_for_trip_end;
     int flag_trip_aborted;
     int trip_abort;
-    int active_index;  // index in World::active_vehicles (-1 if inactive)
 
     double arrival_time_link;
 
@@ -232,13 +231,22 @@ struct Vehicle {
     int _traveled_link_count;           // number of distinct links traveled (for specified_route)
 
     // Logging (pre-allocated, indexed by log_size)
-    vector<double> log_t;
-    vector<int> log_state;
     vector<int> log_link;
     vector<double> log_x;
     vector<double> log_v;
     vector<int> log_lane;
     size_t log_size;  // current number of log entries (used instead of push_back)
+
+    // log_t / log_state are fully reconstructible from these scalars. The log
+    // structure is always HOME x1, WAIT x log_wait_count, RUN x r, [END|ABORT] x
+    // log_end_count, with one entry per timestep after departure; the only
+    // exception is trip end (the update() path records the END entry in the same
+    // timestep as the immediately preceding RUN entry, so log_last_ts may
+    // duplicate the previous timestep).
+    int log_first_ts;
+    int log_last_ts;
+    int log_wait_count;
+    int log_end_count;   // single END/ABORT entry at tail, recorded by end_trip()
 
     Vehicle(
         World *w,
@@ -254,6 +262,10 @@ struct Vehicle {
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
     void log_data();
+
+    // Reconstruct log_t / log_state entry i from the scalar counters above.
+    double log_t_at(size_t i) const;
+    int log_state_at(size_t i) const;
 
     // Helper: return departure_time in seconds (already in seconds in C++)
     double departure_time_in_second() const;
@@ -294,7 +306,8 @@ struct World {
 
     // Collections of objects
     vector<Vehicle *> vehicles;         //all state
-    vector<Vehicle *> active_vehicles;  //home, wait, run (compact, for fast iteration)
+    // HOME/WAIT/RUN vehicles in id order; rebuilt per main_loop call, compacted in place each step
+    vector<Vehicle *> update_order;
     vector<Link *> links;
     vector<Node *> nodes;
     unordered_map<int, Vehicle *> vehicles_living;  //home, wait, run // vehicles_living[id] = vehicle

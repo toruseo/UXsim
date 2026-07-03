@@ -866,9 +866,15 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("flag_trip_aborted", &Vehicle::flag_trip_aborted)
         .def_ro("flag_waiting_for_trip_end", &Vehicle::flag_waiting_for_trip_end)
         .def_prop_ro("log_t", [](const Vehicle &v) {
-                 return std::vector<double>(v.log_t.begin(), v.log_t.begin() + v.log_size); })
+                 std::vector<double> out;
+                 out.reserve(v.log_size);
+                 for (size_t i = 0; i < v.log_size; i++) out.push_back(v.log_t_at(i));
+                 return out; })
         .def_prop_ro("log_state", [](const Vehicle &v) {
-                 return std::vector<int>(v.log_state.begin(), v.log_state.begin() + v.log_size); })
+                 std::vector<int> out;
+                 out.reserve(v.log_size);
+                 for (size_t i = 0; i < v.log_size; i++) out.push_back(v.log_state_at(i));
+                 return out; })
         .def_prop_ro("log_link", [](const Vehicle &v) {
                  return std::vector<int>(v.log_link.begin(), v.log_link.begin() + v.log_size); })
         .def_prop_ro("log_x", [](const Vehicle &v) {

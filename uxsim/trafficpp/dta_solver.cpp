@@ -42,7 +42,7 @@ TraveledRouteInfo dta_get_traveled_route(const Vehicle *veh) {
         int lid = veh->log_link[i];
         if (lid >= 0 && lid != prev_lid){
             info.link_ids.push_back(lid);
-            info.entry_times.push_back(veh->log_t[i]);
+            info.entry_times.push_back(veh->log_t_at(i));
             prev_lid = lid;
         }
     }
