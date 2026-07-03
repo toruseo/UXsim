@@ -16,6 +16,7 @@
 #include <cstring>
 
 #include "traffi.cpp"
+#include "dta_solver.cpp"
 
 namespace nb = nanobind;
 
@@ -38,6 +39,25 @@ nb::ndarray<nb::numpy, T, nb::ndim<1>> make_numpy_move(std::vector<T>&& vec) {
     auto* v = new std::vector<T>(std::move(vec));
     nb::capsule owner(v, [](void* p) noexcept { delete static_cast<std::vector<T>*>(p); });
     return nb::ndarray<nb::numpy, T, nb::ndim<1>>(v->data(), {v->size()}, owner);
+}
+
+// ----------------------------------------------------------------------
+// Helper: flatten vector<vector<int>> into CSR numpy arrays (values + offsets)
+// ----------------------------------------------------------------------
+static void routes_to_csr(std::vector<std::vector<int>> &&routes,
+                          std::vector<int> &values,
+                          std::vector<int64_t> &offsets) {
+    offsets.clear();
+    offsets.reserve(routes.size() + 1);
+    offsets.push_back(0);
+    size_t total = 0;
+    for (const auto &r : routes) total += r.size();
+    values.clear();
+    values.reserve(total);
+    for (const auto &r : routes) {
+        for (int lid : r) values.push_back(lid);
+        offsets.push_back((int64_t)values.size());
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -210,6 +230,49 @@ std::string get_compile_datetime() {
 // ----------------------------------------------------------------------
 NB_MODULE(uxsim_cpp, m) {
     m.doc() = "uxsim_cpp: nanobind bindings for C++ mesoscopic traffic simulation (UXsim integrated)";
+
+    //
+    // MARK: ODRouteSetStore (C++-resident OD route sets in ID form)
+    //
+    nb::class_<ODRouteSetStore>(m, "ODRouteSetStore")
+        .def_prop_ro("n_od_pairs", [](const ODRouteSetStore &s) { return s.sets.size(); },
+                     "Number of OD pairs in the store")
+        .def_prop_ro("n_routes", [](const ODRouteSetStore &s) {
+                 size_t n = 0;
+                 for (auto &kv : s.sets) n += kv.second.size();
+                 return n;
+             }, "Total number of routes across all OD pairs")
+        .def("to_csr", [](const ODRouteSetStore &s) -> nb::dict {
+                 // Flat CSR representation for cheap name-dict construction in Python.
+                 // Nested CSR: OD pair -> routes -> link ids.
+                 std::vector<int> od_o, od_d;
+                 std::vector<int64_t> route_offsets;   // size n_od+1
+                 std::vector<int64_t> link_offsets;    // size n_routes+1
+                 std::vector<int> link_ids;            // flat link ids
+                 size_t n_od = s.sets.size();
+                 od_o.reserve(n_od); od_d.reserve(n_od);
+                 route_offsets.reserve(n_od + 1);
+                 route_offsets.push_back(0);
+                 link_offsets.push_back(0);
+                 for (auto &kv : s.sets) {
+                     od_o.push_back(kv.first.first);
+                     od_d.push_back(kv.first.second);
+                     const auto &routes = kv.second;
+                     route_offsets.push_back(route_offsets.back() + (int64_t)routes.size());
+                     for (const auto &r : routes) {
+                         for (int lid : r) link_ids.push_back(lid);
+                         link_offsets.push_back((int64_t)link_ids.size());
+                     }
+                 }
+                 nb::dict d;
+                 d["od_o"] = make_numpy_move(std::move(od_o));
+                 d["od_d"] = make_numpy_move(std::move(od_d));
+                 d["route_offsets"] = make_numpy_move(std::move(route_offsets));
+                 d["link_offsets"] = make_numpy_move(std::move(link_offsets));
+                 d["link_ids"] = make_numpy_move(std::move(link_ids));
+                 return d;
+             }, "Return nested-CSR numpy arrays (od_o, od_d, route_offsets, link_offsets, link_ids)")
+        ;
 
     //
     // MARK: Scenario
@@ -397,6 +460,38 @@ NB_MODULE(uxsim_cpp, m) {
              },
              nb::arg("k"), nb::arg("seed"),
              "Enumerate k random routes between all node pairs (C++ accelerated)")
+        .def("enumerate_od_route_sets_ids_cpp",
+             [](World &w, int k, unsigned int seed) -> ODRouteSetStore {
+                 return dta_enumerate_od_route_sets_ids(&w, k, seed);
+             },
+             nb::arg("k"), nb::arg("seed"),
+             "Enumerate k random routes and return them as a C++-resident "
+             "ODRouteSetStore (link IDs, no name/string round-trip)")
+        .def("make_od_route_set_store",
+             [](World &, nb::dict py_od_routes) -> ODRouteSetStore {
+                 ODRouteSetStore store;
+                 for (auto [key, val] : py_od_routes) {
+                     nb::tuple k = nb::cast<nb::tuple>(key);
+                     int o = nb::cast<int>(k[0]);
+                     int d = nb::cast<int>(k[1]);
+                     nb::list routes_list = nb::cast<nb::list>(val);
+                     std::vector<std::vector<int>> routes;
+                     routes.reserve(nb::len(routes_list));
+                     for (size_t ri = 0; ri < nb::len(routes_list); ri++) {
+                         nb::list route = nb::cast<nb::list>(routes_list[ri]);
+                         std::vector<int> r;
+                         r.reserve(nb::len(route));
+                         for (size_t li = 0; li < nb::len(route); li++) {
+                             r.push_back(nb::cast<int>(route[li]));
+                         }
+                         routes.push_back(std::move(r));
+                     }
+                     store.sets.emplace(std::make_pair(o, d), std::move(routes));
+                 }
+                 return store;
+             },
+             nb::arg("od_route_sets_ids"),
+             "Build an ODRouteSetStore from {(o_id,d_id): [[link_id,...],...]}")
         .def("estimate_congestion_externality_route",
              [](World &w, nb::list py_route, double departure_time) -> double {
                  std::vector<Link*> route;
@@ -523,6 +618,85 @@ NB_MODULE(uxsim_cpp, m) {
                  return d;
              },
              "Build enter_log data for all vehicles. Returns dict with link_id/time/vehicle_index arrays.")
+        // ----- DTA Solver batch operations (from dta_solver.h) -----
+        .def("batch_enforce_routes", [](World &w, nb::list py_routes) {
+                 size_t nv = nb::len(py_routes);
+                 std::vector<std::vector<int>> routes(nv);
+                 for (size_t i = 0; i < nv; i++) {
+                     nb::list r = nb::cast<nb::list>(py_routes[i]);
+                     size_t nr = nb::len(r);
+                     routes[i].reserve(nr);
+                     for (size_t j = 0; j < nr; j++) {
+                         routes[i].push_back(nb::cast<int>(r[j]));
+                     }
+                 }
+                 dta_batch_enforce_routes(&w, routes);
+             },
+             nb::arg("routes_per_vehicle"),
+             "Batch enforce routes for all vehicles. routes_per_vehicle[i] = list of link IDs (empty = skip)")
+        .def("batch_enforce_routes_csr",
+             [](World &w,
+                nb::ndarray<const int, nb::ndim<1>, nb::c_contig> link_ids,
+                nb::ndarray<const int64_t, nb::ndim<1>, nb::c_contig> offsets) {
+                 size_t no = offsets.shape(0);
+                 size_t nv = no > 0 ? no - 1 : 0;
+                 const int *ids = link_ids.data();
+                 const int64_t *off = offsets.data();
+                 std::vector<std::vector<int>> routes(nv);
+                 for (size_t i = 0; i < nv; i++) {
+                     int64_t s = off[i], e = off[i + 1];
+                     if (e > s) routes[i].assign(ids + s, ids + e);
+                 }
+                 dta_batch_enforce_routes(&w, routes);
+             },
+             nb::arg("link_ids"), nb::arg("offsets"),
+             "Batch enforce routes from flat CSR arrays (link_ids values + per-vehicle offsets)")
+        .def("route_swap_due", [](World &w, const ODRouteSetStore &store, double swap_prob,
+                                   bool has_external_route_sets, unsigned int rng_seed) -> nb::dict {
+                 auto result = dta_route_swap_due(&w, store, swap_prob, has_external_route_sets, rng_seed);
+                 nb::dict out;
+                 std::vector<int> rs_vals, ra_vals;
+                 std::vector<int64_t> rs_off, ra_off;
+                 routes_to_csr(std::move(result.routes_specified), rs_vals, rs_off);
+                 routes_to_csr(std::move(result.route_actual), ra_vals, ra_off);
+                 out["rs_link_ids"] = make_numpy_move(std::move(rs_vals));
+                 out["rs_offsets"] = make_numpy_move(std::move(rs_off));
+                 out["ra_link_ids"] = make_numpy_move(std::move(ra_vals));
+                 out["ra_offsets"] = make_numpy_move(std::move(ra_off));
+                 out["cost_actual"] = make_numpy_move(std::move(result.cost_actual));
+                 out["n_swap"] = result.n_swap;
+                 out["potential_n_swap"] = result.potential_n_swap;
+                 out["total_t_gap"] = result.total_t_gap;
+                 return out;
+             },
+             nb::arg("od_route_sets"), nb::arg("swap_prob"),
+             nb::arg("has_external_route_sets"), nb::arg("rng_seed"),
+             "DUE route swap: compute next-iteration routes for all vehicles in batch. "
+             "od_route_sets is an ODRouteSetStore. Returns flat CSR arrays.")
+        .def("route_swap_dso", [](World &w, const ODRouteSetStore &store, double swap_prob,
+                                   int swap_num, bool has_external_route_sets,
+                                   unsigned int rng_seed) -> nb::dict {
+                 auto result = dta_route_swap_dso(&w, store, swap_prob, swap_num,
+                                                  has_external_route_sets, rng_seed);
+                 nb::dict out;
+                 std::vector<int> rs_vals, ra_vals;
+                 std::vector<int64_t> rs_off, ra_off;
+                 routes_to_csr(std::move(result.routes_specified), rs_vals, rs_off);
+                 routes_to_csr(std::move(result.route_actual), ra_vals, ra_off);
+                 out["rs_link_ids"] = make_numpy_move(std::move(rs_vals));
+                 out["rs_offsets"] = make_numpy_move(std::move(rs_off));
+                 out["ra_link_ids"] = make_numpy_move(std::move(ra_vals));
+                 out["ra_offsets"] = make_numpy_move(std::move(ra_off));
+                 out["cost_actual"] = make_numpy_move(std::move(result.cost_actual));
+                 out["n_swap"] = result.n_swap;
+                 out["potential_n_swap"] = result.potential_n_swap;
+                 out["total_t_gap"] = result.total_t_gap;
+                 return out;
+             },
+             nb::arg("od_route_sets"), nb::arg("swap_prob"), nb::arg("swap_num"),
+             nb::arg("has_external_route_sets"), nb::arg("rng_seed"),
+             "DSO route swap: compute next-iteration routes using marginal cost (private + externality). "
+             "od_route_sets is an ODRouteSetStore. Returns flat CSR arrays.")
         ;
 
     //
@@ -608,8 +782,14 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("cum_arrival", &Link::arrival_curve)
         .def_ro("departure_curve", &Link::departure_curve)
         .def_ro("cum_departure", &Link::departure_curve)
-        .def_ro("traveltime_real", &Link::traveltime_real)
-        .def_ro("traveltime_actual", &Link::traveltime_real)
+        .def_prop_ro("traveltime_real", [](const Link &l) {
+                 l.ensure_traveltime_real();
+                 return l.traveltime_real;
+             })
+        .def_prop_ro("traveltime_actual", [](const Link &l) {
+                 l.ensure_traveltime_real();
+                 return l.traveltime_real;
+             })
         .def_ro("traveltime_instant", &Link::traveltime_instant)
         .def("update", &Link::update)
         .def("set_travel_time", &Link::set_travel_time)
@@ -637,6 +817,7 @@ NB_MODULE(uxsim_cpp, m) {
              },
              "Return cum_departure as a numpy array (memcpy, no list conversion)")
         .def("get_traveltime_actual_np", [](const Link &l) {
+                 l.ensure_traveltime_real();
                  return make_numpy_copy(l.traveltime_real.data(), l.traveltime_real.size());
              },
              "Return traveltime_actual (traveltime_real) as a numpy array")

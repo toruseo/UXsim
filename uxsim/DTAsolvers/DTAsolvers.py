@@ -16,8 +16,16 @@ from . import ALNS
 
 import warnings
 
+
 class SolverDUE:
-    def __init__(s, func_World):
+
+    def __new__(cls, func_World, cpp=False):
+        if cpp and cls is SolverDUE:
+            from .DTAsolvers_cpp_adapter import CppSolverDUE
+            return CppSolverDUE(func_World)
+        return super().__new__(cls)
+
+    def __init__(s, func_World, cpp=False):
         """
         Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.
 
@@ -25,7 +33,9 @@ class SolverDUE:
         ----------
         func_World : function
             function that returns a World object with nodes, links, and demand specifications
-            
+        cpp : bool
+            if True, return a CppSolverDUE instance that uses C++ batch operations
+
         Notes
         -----
             This function computes a near dynamic user equilibrium state as a steady state of day-to-day dynamical routing game.
@@ -44,6 +54,8 @@ class SolverDUE:
             - Iryo, T., Urata, J., & Kawase, R. (2024). Traffic Flow Simulator and Travel Demand Simulators for Assessing Congestion on Roads After a Major Earthquake. In APPLICATION OF HIGH-PERFORMANCE COMPUTING TO EARTHQUAKE-RELATED PROBLEMS (pp. 413-447). https://doi.org/10.1142/9781800614635_0007
             - Iryo, T., Watling, D., & Hazelton, M. (2024). Estimating Markov Chain Mixing Times: Convergence Rate Towards Equilibrium of a Stochastic Process Traffic Assignment Model. Transportation Science. https://doi.org/10.1287/trsc.2024.0523
         """
+        if getattr(s, "_is_cpp_solver", False):
+            return  # CppSolverDUE.__init__ handles its own init
         s.func_World = func_World
         s.W_sol = None  #final solution
         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm
@@ -89,10 +101,10 @@ class SolverDUE:
         -------
         W : World
             World object with quasi DUE solution (if properly converged)
-        
+
         Notes
         -----
-        `self.W_sol` is the final solution. 
+        `self.W_sol` is the final solution.
         `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.
         """
         s.start_time = time.time()
@@ -151,11 +163,11 @@ class SolverDUE:
                 for key in W.VEHICLES:
                     if key in routes_specified:
                         W.VEHICLES[key].enforce_route(routes_specified[key])
-            
+
             route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
             for o,d in dict_od_to_vehid.keys():
                 for r in dict_od_to_routes[o,d]:
-                    route_set[o,d].append(W.defRoute(r)) 
+                    route_set[o,d].append(W.defRoute(r))
 
             # simulation
             W.exec_simulation()
@@ -171,7 +183,7 @@ class SolverDUE:
 
             # attach route choice set to W object for later re-use at different solvers like DSO-GA
             W.dict_od_to_routes = dict_od_to_routes
-            
+
             s.W_intermid_solution = W
 
             s.dfs_link.append(W.analyzer.link_to_pandas())
@@ -189,7 +201,7 @@ class SolverDUE:
                 d = veh.dest.name
                 r, ts = veh.traveled_route()
                 travel_time = ts[-1]-ts[0]
-                
+
                 route_actual[key] = [rr.name for rr in r]
                 cost_actual[key] = travel_time
 
@@ -206,7 +218,7 @@ class SolverDUE:
                 t_gap = 0
 
                 cost_current = r.actual_travel_time(ts[0]) + sum([l.get_toll(ts[i]) for i,l in enumerate(r)])
-                
+
                 potential_n_swap_updated = potential_n_swap
                 for alt_route in route_set[o,d]:
                     alt_route_tts = alt_route.actual_travel_time(ts[0], return_details=True)[1]
@@ -219,9 +231,9 @@ class SolverDUE:
                                 flag_route_changed = True
                                 route_changed = alt_route
                                 cost_current = cost_alt
-                                
+
                 potential_n_swap = potential_n_swap_updated
-                
+
                 total_t_gap += t_gap
                 routes_specified[key] = r
                 if flag_route_changed:
@@ -239,7 +251,7 @@ class SolverDUE:
             s.n_swaps.append(n_swap)
             s.potential_swaps.append(potential_n_swap)
             s.t_gaps.append(t_gap_per_vehicle)
-        
+
         s.end_time = time.time()
 
         print("DUE summary:")
@@ -363,35 +375,45 @@ class SolverDUE:
 
 
 class SolverDSO_D2D:
-    def __init__(s, func_World):
+
+    def __new__(cls, func_World, cpp=False):
+        if cpp and cls is SolverDSO_D2D:
+            from .DTAsolvers_cpp_adapter import CppSolverDSO_D2D
+            return CppSolverDSO_D2D(func_World)
+        return super().__new__(cls)
+
+    def __init__(s, func_World, cpp=False):
         """
-        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics. 
+        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics.
 
         Parameters
         ----------
         func_World : function
             function that returns a World object with nodes, links, and demand specifications
-            
+        cpp : bool
+            if True, return a CppSolverDSO_D2D instance that uses C++ batch operations
+
         Notes
         -----
             This function computes a near DSO state as a steady state of day-to-day dynamical routing game.
-            
+
             This is a modification of Iryo's DUE algorithm, in which each traveler minimize marginal travel time (i.e., private cost + externality) instead of private cost as in DUE.
             Since the externality (i.e., the total system cost without the ego vehicle) is costly to compute directly, it is estimated based on the queueing principle of the traffic flow model.
             Apart from these point, this algorithm is almost the same to `SolverDUE` and thus expected to have the desirable properties discussed in the papers cited above.
-            
+
             This algorithm is a loose generalization of "DSO game" of the following paper.
 
             - Satsukawa, K., Wada, K., & Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209.
 
             In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take a long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weakens the convergence guarantee.
         """
-
+        if getattr(s, "_is_cpp_solver", False):
+            return
         s.func_World = func_World
         s.W_sol = None  #final solution
         s.W_intermid_solution = None    #latest solution in the iterative process. Can be used when a user terminates the solution algorithm
         s.dfs_link = []
-    
+
     def solve(s, max_iter, n_routes_per_od=10, swap_prob=0.05, swap_num=None, route_sets=None, print_progress=True):
         """
         Solve quasi DSO problem using day-to-day dynamics.
@@ -432,10 +454,10 @@ class SolverDSO_D2D:
         -------
         W : World
             World object with quasi DUE solution (if properly converged)
-        
+
         Notes
         -----
-        `self.W_sol` is the final solution. 
+        `self.W_sol` is the final solution.
         `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.
         """
         s.start_time = time.time()
@@ -470,7 +492,7 @@ class SolverDSO_D2D:
                 dict_od_to_routes[o,d] = []
                 for route in routes:
                     dict_od_to_routes[o,d].append([W_orig.get_link(l).name for l in route])
-        
+
         if print_progress:
             print(f"number of OD pairs: {len(dict_od_to_routes.keys())}, number of routes: {sum([len(val) for val in dict_od_to_routes.values()])}")
 
@@ -494,7 +516,7 @@ class SolverDSO_D2D:
                 for key in W.VEHICLES:
                     if key in routes_specified:
                         W.VEHICLES[key].enforce_route(routes_specified[key])
-            
+
             route_set = defaultdict(lambda: []) #routes[o,d] = [Route, Route, ...]
             for o,d in dict_od_to_vehid.keys():
                 for r in dict_od_to_routes[o,d]:
@@ -514,7 +536,7 @@ class SolverDSO_D2D:
 
             # attach route choice set to W object for later re-use at different solvers like DSO-GA
             W.dict_od_to_routes = dict_od_to_routes
-            
+
             if unfinished_trips == 0:
                 if s.W_intermid_solution == None:
                     s.W_intermid_solution = W
@@ -541,7 +563,7 @@ class SolverDSO_D2D:
                 d = veh.dest.name
                 r, ts = veh.traveled_route()
                 travel_time = ts[-1]-ts[0]
-                
+
                 route_actual[key] = [rr.name for rr in r]
                 cost_actual[key] = travel_time
 
@@ -562,7 +584,7 @@ class SolverDSO_D2D:
                 cost_current = private_cost+ext
 
                 potential_n_swap_updated = potential_n_swap
-                
+
                 for alt_route in route_set[o,d]:
                     ext = estimate_congestion_externality_route(W, alt_route, ts[0])
                     private_cost = alt_route.actual_travel_time(ts[0])
@@ -575,8 +597,8 @@ class SolverDSO_D2D:
                             if flag_swap:
                                 flag_route_changed = True
                                 route_changed = alt_route
-                                cost_current = cost_alt 
-                
+                                cost_current = cost_alt
+
                 potential_n_swap = potential_n_swap_updated
 
                 total_t_gap += t_gap
@@ -596,7 +618,7 @@ class SolverDSO_D2D:
             s.n_swaps.append(n_swap)
             s.potential_swaps.append(potential_n_swap)
             s.t_gaps.append(t_gap_per_vehicle)
-        
+
         s.end_time = time.time()
 
         print("DSO summary:")

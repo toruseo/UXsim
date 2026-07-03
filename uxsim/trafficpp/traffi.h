@@ -127,7 +127,13 @@ struct Link {
 
     vector<double> arrival_curve;
     vector<double> departure_curve;
-    vector<double> traveltime_real;
+    // traveltime_real is lazily materialized: link-exit events are buffered
+    // as (start_idx, travel_time) pairs and replayed into the array on first
+    // read via ensure_traveltime_real(). Members are mutable so that const
+    // read paths can trigger materialization.
+    mutable vector<double> traveltime_real;
+    mutable vector<pair<int, double>> traveltime_real_events;
+    mutable size_t traveltime_real_events_applied;
     vector<double> traveltime_instant;
 
     double merge_priority;
@@ -161,6 +167,7 @@ struct Link {
 
     void update();
     void set_travel_time();
+    void ensure_traveltime_real() const;
     double estimate_congestion_externality(int timestep);
     void change_free_flow_speed(double new_value);
     void change_jam_density(double new_value);
@@ -302,6 +309,7 @@ struct World {
     double route_adaptive;
     double route_choice_uncertainty;
     vector<vector<double>> route_preference;   // route_preference[dest_id][link_id]: preference weight for link towards dest
+    vector<char> route_pref_active;            // route_pref_active[dest_id]: true once sum(route_preference[dest]) != 0
 
     // Graph adjacency
     vector<vector<int>> adj_mat;
@@ -309,6 +317,13 @@ struct World {
     vector<vector<int>> route_next;
     vector<vector<double>> route_dist;
     map<int, vector<vector<double>>> route_dist_record;
+
+    // Scratch buffers reused across route_search_all() calls (avoid per-call
+    // V*V allocation). Filled by route_search_all; callers read from these.
+    vector<vector<pair<int, double>>> rsa_adj_list;  // adjacency list (rebuilt each call)
+    vector<vector<double>> rsa_dist;                 // all-pairs distances
+    vector<vector<int>> rsa_next;                    // all-pairs next-hop
+    vector<char> rsa_visited;                        // per-source visited flags
 
     bool flag_initialized;
 
@@ -353,9 +368,9 @@ struct World {
     void route_choice_duo();
     void route_choice_duo_gradual();
 
-    // All-pairs shortest path (Dijkstra from each source)
-    pair<vector<vector<double>>, vector<vector<int>>>
-        route_search_all(const vector<vector<double>> &adj, double infty);
+    // All-pairs shortest path (Dijkstra from each source).
+    // Results are written into rsa_dist / rsa_next (reused scratch buffers).
+    void route_search_all(const vector<vector<double>> &adj, double infty);
 
     // Enumerate k random routes between all reachable node pairs
     map<pair<int,int>, vector<vector<int>>>
