@@ -27,14 +27,14 @@ class SolverDUE:
 
     def __init__(s, func_World, cpp=False):
         """
-        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.
+        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. Optional C++ eccelerator is available.
 
         Parameters
         ----------
         func_World : function
             function that returns a World object with nodes, links, and demand specifications
         cpp : bool
-            if True, return a CppSolverDUE instance that uses C++ batch operations
+            if True, use C++ accelerated simulation engine for DUE.
 
         Notes
         -----
@@ -384,14 +384,14 @@ class SolverDSO_D2D:
 
     def __init__(s, func_World, cpp=False):
         """
-        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics.
+        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics. Optional C++ eccelerator is available.
 
         Parameters
         ----------
         func_World : function
             function that returns a World object with nodes, links, and demand specifications
         cpp : bool
-            if True, return a CppSolverDSO_D2D instance that uses C++ batch operations
+            if True, use C++ accelerated simulation engine for DSO.
 
         Notes
         -----
