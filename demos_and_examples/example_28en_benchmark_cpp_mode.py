@@ -3,8 +3,6 @@ UXsim benchmark: cpp=False vs cpp=True across multiple random seeds.
 
 3 scenarios (Small-scale, Large-scale, DUE/DSO) x 2 modes (Python, C++) x 20 seeds.
 Collects wall-clock time and key simulation metrics, then prints summary statistics.
-
-THIS CODE WILL TAKE ABOUT 1 HOUR TO RUN!!!!!
 """
 
 import time
@@ -17,7 +15,7 @@ import uxsim
 from uxsim import World
 from uxsim.DTAsolvers import SolverDUE, SolverDSO_D2D
 
-N_SEEDS = 20
+N_SEEDS = 2 #for accurate results, set 20 or more.
 SEEDS = list(range(N_SEEDS))
 
 
