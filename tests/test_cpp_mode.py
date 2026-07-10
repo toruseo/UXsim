@@ -8046,6 +8046,22 @@ def test_dta_solver_due_grid_cpp_vs_python():
     assert ttt_cpp == pytest.approx(ttt_py, rel=0.2)
 
 
+def test_dta_solver_dfs_link_per_iteration_cpp():
+    """C++ solvers record dfs_link every iteration (like Python solvers)."""
+    from uxsim.DTAsolvers import SolverDUE, SolverDSO_D2D
+
+    max_iter = 3
+    for solver_class in [SolverDUE, SolverDSO_D2D]:
+        solver = solver_class(lambda: _create_dta_grid_world(seed=42, cpp=True), cpp=True)
+        solver.solve(max_iter=max_iter, print_progress=False)
+        assert len(solver.dfs_link) == max_iter
+        for df in solver.dfs_link:
+            assert len(df) == len(solver.W_sol.LINKS)
+            assert df["traffic_volume"].sum() > 0
+            # links with traffic must have valid travel time stats
+            assert (df["delay_ratio"][df["traffic_volume"] > 0] > 0).all()
+
+
 @pytest.mark.flaky(reruns=5)
 def test_dta_solver_dso_d2d_grid_cpp_vs_python():
     """SolverDSO_D2D on 9x9 grid: C++ and Python produce similar TTT."""

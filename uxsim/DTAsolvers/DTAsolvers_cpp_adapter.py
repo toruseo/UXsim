@@ -344,8 +344,8 @@ class CppSolverDUE(SolverDUE):
 
             W.dict_od_to_routes = dict_od_to_routes
             s.W_intermid_solution = W
-            if is_last_iter:
-                s.dfs_link.append(W.analyzer.link_to_pandas())
+
+            s.dfs_link.append(W.analyzer.link_to_pandas())
 
             rng_seed = random.randint(0, 2**31 - 1)
             cpp_result = W._cpp_world.route_swap_due(
@@ -474,8 +474,7 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
                 elif W.analyzer.average_travel_time < s.W_intermid_solution.analyzer.average_travel_time:
                     s.W_intermid_solution = W
 
-            if is_last_iter:
-                s.dfs_link.append(W.analyzer.link_to_pandas())
+            s.dfs_link.append(W.analyzer.link_to_pandas())
 
             rng_seed = random.randint(0, 2**31 - 1)
             cpp_swap_num = swap_num if swap_num is not None else -1
