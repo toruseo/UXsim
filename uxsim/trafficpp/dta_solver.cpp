@@ -156,11 +156,12 @@ RouteSwapResult dta_route_swap_due(
         auto traveled = dta_get_traveled_route(veh);
         result.route_actual[vi] = traveled.link_ids;
 
-        // Compute travel time (arrival - first entry)
-        if (!traveled.entry_times.empty() && traveled.arrival_time >= 0){
+        // Compute travel time as Python's ts[-1] - ts[0]: arrival_time is -1
+        // for unfinished vehicles, and both terms coincide if no link was entered.
+        if (!traveled.entry_times.empty()){
             result.cost_actual[vi] = traveled.arrival_time - traveled.entry_times[0];
         } else {
-            result.cost_actual[vi] = -1;
+            result.cost_actual[vi] = 0;
         }
 
         // Skip vehicles that didn't finish their trip (leave empty = no enforce_route)
@@ -296,11 +297,11 @@ RouteSwapResult dta_route_swap_dso(
         auto traveled = dta_get_traveled_route(veh);
         result.route_actual[vi] = traveled.link_ids;
 
-        // Compute travel time
-        if (!traveled.entry_times.empty() && traveled.arrival_time >= 0){
+        // Compute travel time as Python's ts[-1] - ts[0] (see DUE above)
+        if (!traveled.entry_times.empty()){
             result.cost_actual[vi] = traveled.arrival_time - traveled.entry_times[0];
         } else {
-            result.cost_actual[vi] = -1;
+            result.cost_actual[vi] = 0;
         }
 
         // Skip vehicles that didn't finish their trip (leave empty = no enforce_route)

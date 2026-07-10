@@ -8046,6 +8046,50 @@ def test_dta_solver_due_grid_cpp_vs_python():
     assert ttt_cpp == pytest.approx(ttt_py, rel=0.2)
 
 
+def test_dta_solver_dso_intermid_solution_is_best_cpp():
+    """CppSolverDSO_D2D keeps the best-TTT iteration's World as W_sol (like Python)."""
+    from uxsim.DTAsolvers import SolverDSO_D2D
+
+    # High swap_prob makes TTT oscillate so the best iteration is not the last one
+    solver = SolverDSO_D2D(lambda: _create_dta_grid_world(seed=0, cpp=True), cpp=True)
+    solver.solve(max_iter=5, swap_prob=0.9, print_progress=False)
+    best_idx = int(np.argmin(solver.ttts))
+    assert solver.W_sol.analyzer.total_travel_time == pytest.approx(solver.ttts[best_idx], abs=1)
+
+
+def test_dta_solver_cost_log_unfinished_vehicles_cpp():
+    """cost_log entries match Python's ts[-1] - ts[0] definition, incl. unfinished vehicles."""
+    from uxsim.DTAsolvers import SolverDUE
+
+    def create_World():
+        W = uxsim.World(name="", deltan=5, tmax=1500, duo_update_time=300,
+                        print_mode=0, save_mode=0, show_mode=0, random_seed=0, cpp=True)
+        W.addNode("orig1", 0, 0)
+        W.addNode("orig2", 0, 2)
+        W.addNode("merge", 1, 1)
+        W.addNode("dest", 2, 1)
+        W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20)
+        W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20)
+        W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20)
+        W.adddemand("orig1", "dest", 0, 1400, 0.5)
+        W.adddemand("orig2", "dest", 0, 1400, 0.6)
+        return W
+
+    with pytest.warns(UserWarning):
+        solver = SolverDUE(create_World, cpp=True)
+        solver.solve(max_iter=2, print_progress=False)
+
+    W = solver.W_sol
+    n_unfinished = 0
+    for key, veh in W.VEHICLES.items():
+        r, ts = veh.traveled_route()
+        expected = ts[-1] - ts[0] if len(ts) else 0
+        assert solver.cost_log[-1][key] == pytest.approx(expected)
+        if veh.state != "end":
+            n_unfinished += 1
+    assert n_unfinished > 0  # scenario must actually contain unfinished trips
+
+
 def test_dta_solver_dfs_link_per_iteration_cpp():
     """C++ solvers record dfs_link every iteration (like Python solvers)."""
     from uxsim.DTAsolvers import SolverDUE, SolverDSO_D2D
