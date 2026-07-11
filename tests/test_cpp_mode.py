@@ -7666,7 +7666,9 @@ def test_coverage_addVehicle_taxi_and_links_avoid():
         W.addVehicle("orig", "dest", 0, mode="taxi")
 
     W.addVehicle("orig", "dest", 0, links_avoid=[link1])
-    W.exec_simulation()
+    # links_avoid excludes the only outgoing link of the origin node, so vehicle generation raises ValueError (same as Python mode).
+    with pytest.raises(ValueError):
+        W.exec_simulation()
     assert len(W.VEHICLES) >= 1
 
 
@@ -7812,8 +7814,7 @@ def test_coverage_signal_capacity_enforce_route():
 
 def test_coverage_per_vehicle_log_mid_simulation():
     """Access vehicle log properties mid-simulation.
-    Verifies that log data is accessible during iterative execution
-    and that post-simulation analysis still works correctly afterward."""
+    Verifies that log data is accessible during iterative execution and that post-simulation analysis still works correctly afterward."""
     W = World(cpp=True, deltan=5, tmax=300, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
     W.addNode("A", 0, 0)
     W.addNode("B", 1000, 0)
@@ -7875,8 +7876,7 @@ def test_coverage_main_loop_parameter_branches():
 
 def test_coverage_route_choice_edge_cases():
     """Test route_next_link_choice with unreachable destination.
-    A vehicle heading to an isolated node cannot find a route at the origin,
-    triggering the route_next_link == nullptr branch in Node::generate."""
+    A vehicle heading to an isolated node cannot find a route at the origin, triggering the route_next_link == nullptr branch in Node::generate."""
     W = World(cpp=True, deltan=5, tmax=200, print_mode=0, save_mode=0, show_mode=0, random_seed=42)
     W.addNode("orig", 0, 0)
     W.addNode("mid", 1, 0)
@@ -8146,8 +8146,8 @@ def test_route_choice_parallel_links_averaged_cpp():
         # direct pair O->D: fast (50 s) + slow (300 s), average 175 s
         W.addLink("direct_fast", "O", "D", length=1000, free_flow_speed=20)
         W.addLink("direct_slow", "O", "D", length=1500, free_flow_speed=5)
-        # bypass via M: 250 s total. Averaging (175 s) prefers the direct pair;
-        # last-link-wins (300 s) would wrongly prefer the bypass.
+        # bypass via M: 250 s total.
+        # Averaging (175 s) prefers the direct pair; last-link-wins (300 s) would wrongly prefer the bypass.
         W.addLink("OM", "O", "M", length=2500, free_flow_speed=20)
         W.addLink("MD", "M", "D", length=2500, free_flow_speed=20)
         W.adddemand("O", "D", 0, 500, 0.2)
@@ -8274,8 +8274,7 @@ def test_dta_solver_dso_d2d_grid_benchmark_cpp():
 
 
 # ======================================================================
-# traveltime_actual lazy materialization: intervention reads at chunk
-# boundaries must not change results (Round 5, Phase 2)
+# traveltime_actual lazy materialization: intervention reads at chunk boundaries must not change results (Round 5, Phase 2)
 # ======================================================================
 
 def _create_merge_world_for_tt_read_test():
@@ -8294,10 +8293,7 @@ def _create_merge_world_for_tt_read_test():
 
 
 def test_traveltime_actual_intervention_read_chunked():
-    """Reading traveltime_actual mid-simulation (at exec_simulation chunk
-    boundaries) must return valid values and must not alter the final
-    results compared to (a) a one-shot run and (b) a chunked run without
-    intervention reads."""
+    """Reading traveltime_actual mid-simulation (at exec_simulation chunk boundaries) must return valid values and must not alter the final results compared to (a) a one-shot run and (b) a chunked run without intervention reads."""
     # (a) one-shot reference
     W_ref = _create_merge_world_for_tt_read_test()
     W_ref.exec_simulation()
@@ -8324,10 +8320,7 @@ def test_traveltime_actual_intervention_read_chunked():
             snapshot[l.name] = arr
         boundary_tts.append(snapshot)
 
-    # mid-simulation snapshots must be consistent with the final state:
-    # once recorded, past values only change due to later link exits, so at
-    # minimum the free-flow default must have been overwritten identically
-    # wherever congestion was observed in both runs
+    # mid-simulation snapshots must be consistent with the final state: once recorded, past values only change due to later link exits, so at minimum the free-flow default must have been overwritten identically wherever congestion was observed in both runs
     for l in W_read.LINKS:
         final_arr = np.asarray(l._cpp_link.get_traveltime_actual_np())
         ref_arr = tt_ref[l.name]
@@ -8343,24 +8336,14 @@ def test_traveltime_actual_intervention_read_chunked():
 
 
 # ======================================================================
-# Chunked exec_simulation with mid-simulation analyst reads and
-# interventions: reads must not perturb results, and mid-simulation logs
-# must satisfy structural invariants
+# Chunked exec_simulation with mid-simulation analyst reads and interventions: reads must not perturb results, and mid-simulation logs must satisfy structural invariants
 # ======================================================================
 
 def test_chunked_exec_with_midsim_reads_and_interventions():
-    """Chunked execution (exec_simulation(duration_t2=...)) with an analyst
-    intervening at every chunk boundary (reading vehicle logs, reading link
-    travel times, adding demand, changing free-flow speed) must:
-      1. produce results with no side effects from the reads: a run that
-         reads at every boundary and a run that does not must yield exactly
-         identical final results (total travel time, per-vehicle travel/
-         arrival times, per-vehicle logs, per-link actual travel times);
-      2. return mid-simulation logs that satisfy structural invariants
-         (equal-length log arrays, uniform DELTAT time stepping, monotone
-         non-decreasing vehicle state).
-    This is a regression test for the C++ engine's lazy log reconstruction
-    and vehicle-list management.
+    """Chunked execution (exec_simulation(duration_t2=...)) with an analyst intervening at every chunk boundary (reading vehicle logs, reading link travel times, adding demand, changing free-flow speed) must:
+      1. produce results with no side effects from the reads: a run that reads at every boundary and a run that does not must yield exactly identical final results (total travel time, per-vehicle travel/arrival times, per-vehicle logs, per-link actual travel times);
+      2. return mid-simulation logs that satisfy structural invariants (equal-length log arrays, uniform DELTAT time stepping, monotone non-decreasing vehicle state).
+    This is a regression test for the C++ engine's lazy log reconstruction and vehicle-list management.
     """
     IMAX = JMAX = 9
 
@@ -8382,8 +8365,7 @@ def test_chunked_exec_with_midsim_reads_and_interventions():
                               length=1000, free_flow_speed=20, jam_density=0.2)
                     W.addLink(f"l{i}.{j+1}.{i}.{j}", f"n{i}.{j+1}", f"n{i}.{j}",
                               length=1000, free_flow_speed=20, jam_density=0.2)
-        # boundary-to-boundary OD: left column <-> right column and
-        # bottom row <-> top row, all pairs, both directions
+        # boundary-to-boundary OD: left column <-> right column and bottom row <-> top row, all pairs, both directions
         for j1 in range(JMAX):
             for j2 in range(JMAX):
                 W.adddemand(f"n0.{j1}", f"n{IMAX-1}.{j2}", 0, 2400, 0.035)
@@ -8410,9 +8392,7 @@ def test_chunked_exec_with_midsim_reads_and_interventions():
             if k == 3:
                 W.get_link("l4.4.4.5").change_free_flow_speed(10)
             if do_reads:
-                # The current C++ wrapper does not invalidate a once-built log
-                # cache (known limitation), so reset every vehicle's cache each
-                # time to force the lazy reconstruction path to run again.
+                # The current C++ wrapper does not invalidate a once-built log cache (known limitation), so reset every vehicle's cache each time to force the lazy reconstruction path to run again.
                 for veh in W.VEHICLES.values():
                     veh._log_cache = None
                 vehs = list(W.VEHICLES.values())
@@ -8428,9 +8408,7 @@ def test_chunked_exec_with_midsim_reads_and_interventions():
                     log_t = np.asarray(log_t, dtype=float)
                     if len(log_t) > 1:
                         diffs = np.diff(log_t)
-                        # every step is DELTAT, except that trip end records
-                        # repeated entries at the same final timestep, which
-                        # appear only as a trailing run of zero diffs
+                        # every step is DELTAT, except that trip end records repeated entries at the same final timestep, which appear only as a trailing run of zero diffs
                         assert set(np.unique(diffs)).issubset({0.0, float(W.DELTAT)})
                         if np.any(diffs == 0):
                             first_zero = int(np.argmax(diffs == 0))
@@ -8450,9 +8428,7 @@ def test_chunked_exec_with_midsim_reads_and_interventions():
     W_read = run(do_reads=True)
     W_noread = run(do_reads=False)
 
-    # Reset caches before the final comparison: Run A (W_read) may retain
-    # caches built during interventions before termination, so force a fresh
-    # reconstruction on both runs before reading.
+    # Reset caches before the final comparison: Run A (W_read) may retain caches built during interventions before termination, so force a fresh reconstruction on both runs before reading.
     for W in (W_read, W_noread):
         for veh in W.VEHICLES.values():
             veh._log_cache = None
@@ -8478,13 +8454,9 @@ def test_chunked_exec_with_midsim_reads_and_interventions():
 
 
 def test_vehicle_log_python_cpp_equivalence():
-    """Vehicle logs (log_t/log_state/log_x/log_v/log_lane/log_t_link) must match
-    between Python mode and C++ mode on a deterministic scenario (every node has
-    out-degree <= 1, so routing does not depend on the RNG).
+    """Vehicle logs (log_t/log_state/log_x/log_v/log_lane/log_t_link) must match between Python mode and C++ mode on a deterministic scenario (every node has out-degree <= 1, so routing does not depend on the RNG).
 
-    This is a regression test for the log-entry structure at trip termination:
-    the final timestep records exactly two entries (a RUN entry followed by an
-    END entry), and the END state is recorded exactly once via end_trip.
+    This is a regression test for the log-entry structure at trip termination: the final timestep records exactly two entries (a RUN entry followed by an END entry), and the END state is recorded exactly once via end_trip.
     """
 
     def build_world(cpp, scenario):
@@ -8502,13 +8474,10 @@ def test_vehicle_log_python_cpp_equivalence():
         W.addLink("AB", "A", "B", length=1000, free_flow_speed=20, jam_density=0.2)
         W.addLink("BC", "B", "C", length=1000, free_flow_speed=20, jam_density=0.2)
         if scenario == 1:
-            # normal termination through a congested corridor A->B->C:
-            # congestion exercises both the update()-path and the transfer()-path
-            # to trip termination
+            # normal termination through a congested corridor A->B->C: congestion exercises both the update()-path and the transfer()-path to trip termination
             W.adddemand("A", "C", 0, 1500, 0.5)
         else:
-            # abort path: D is an isolated node (no links), so vehicles bound for
-            # D reach the dead end at C and abort
+            # abort path: D is an isolated node (no links), so vehicles bound for D reach the dead end at C and abort
             W.addNode("D", 3, 0)
             W.adddemand("A", "D", 0, 1500, 0.5)
         W.exec_simulation()
@@ -8553,9 +8522,7 @@ def test_vehicle_log_python_cpp_equivalence():
                 np.asarray(vcpp.log_lane),
             ), f"[{name}] log_lane mismatch"
 
-            # log_x / log_v: allclose with atol=1e-9 as insurance against
-            # floating-point differences on heterogeneous CI platforms; these
-            # match exactly locally
+            # log_x / log_v: allclose with atol=1e-9 as insurance against floating-point differences on heterogeneous CI platforms; these match exactly locally
             for k in ("log_x", "log_v"):
                 apy = np.asarray(getattr(vpy, k), dtype=float)
                 acpp = np.asarray(getattr(vcpp, k), dtype=float)
@@ -8570,3 +8537,106 @@ def test_vehicle_log_python_cpp_equivalence():
             # travel_time
             assert vpy.travel_time == vcpp.travel_time, \
                 f"[{name}] travel_time mismatch"
+
+
+# ======================================================================
+# Python/C++ equivalence tests for auto-TMAX and partial execution
+# ======================================================================
+
+def test_auto_tmax_python_cpp_equivalence():
+    """Auto-determined TMAX (tmax=None) must match between Python mode and C++ mode.
+
+    TMAX must be derived from the latest vehicle departure time, as Python's finalize_scenario does.
+    Deriving it from the demand end time instead gives a different value when t_end is an exact multiple of 1800 s (e.g., 5400 instead of 3600 for t_end=1800), because the last vehicle departs slightly before t_end.
+    """
+    def build_and_run(cpp):
+        W = World(name="", deltan=5, reaction_time=1, print_mode=0, save_mode=0, show_mode=0,
+                  random_seed=0, cpp=cpp)
+        W.addNode("A", 0, 0)
+        W.addNode("B", 1, 0)
+        W.addLink("L", "A", "B", length=1000, free_flow_speed=20, jam_density=0.2)
+        W.adddemand("A", "B", 0, 1800, 0.3)
+        ret = W.exec_simulation()
+        return W, ret
+
+    Wpy, ret_py = build_and_run(False)
+    Wcpp, ret_cpp = build_and_run(True)
+
+    assert ret_py == ret_cpp == 1
+    assert Wpy.TMAX == Wcpp.TMAX
+    assert Wpy.TSIZE == Wcpp.TSIZE
+    assert Wpy.T == Wcpp.T
+    assert len(Wpy.VEHICLES) == len(Wcpp.VEHICLES)
+    comp_py = len([v for v in Wpy.VEHICLES.values() if v.arrival_time != -1])
+    comp_cpp = len([v for v in Wcpp.VEHICLES.values() if v.arrival_time != -1])
+    assert comp_py == comp_cpp
+
+
+def test_auto_tmax_beyond_default_horizon_python_cpp_equivalence():
+    """With tmax=None and demand beyond 7200 s, C++ mode must simulate the full auto-determined horizon and terminate.
+
+    The C++ world is created with a placeholder horizon of 7200 s before TMAX is known, and finalize_scenario must resize it to the final TMAX.
+    If the resize is skipped, the simulation stops at 7200 s, exec_simulation() keeps returning 0, and check_simulation_ongoing() stays True forever, so a `while W.check_simulation_ongoing()` loop never ends.
+    """
+    def build_and_run(cpp):
+        W = World(name="", deltan=5, reaction_time=1, print_mode=0, save_mode=0, show_mode=0,
+                  random_seed=0, cpp=cpp)
+        W.addNode("A", 0, 0)
+        W.addNode("B", 1, 0)
+        W.addLink("L", "A", "B", length=1000, free_flow_speed=20, jam_density=0.2)
+        W.adddemand("A", "B", 7000, 8000, 0.3)
+        ret = W.exec_simulation()
+        return W, ret
+
+    Wpy, ret_py = build_and_run(False)
+    Wcpp, ret_cpp = build_and_run(True)
+
+    assert ret_py == ret_cpp == 1
+    assert Wpy.TMAX == Wcpp.TMAX
+    assert Wpy.T == Wcpp.T == Wpy.TSIZE
+    assert Wcpp.check_simulation_ongoing() == Wpy.check_simulation_ongoing() == False
+    comp_py = len([v for v in Wpy.VEHICLES.values() if v.arrival_time != -1])
+    comp_cpp = len([v for v in Wcpp.VEHICLES.values() if v.arrival_time != -1])
+    assert comp_py == comp_cpp
+    assert comp_py == len(Wpy.VEHICLES)  # all vehicles complete their trips
+
+
+def test_exec_simulation_partial_run_python_cpp_equivalence():
+    """W.T and W.TIME after partial executions (until_t / duration_t / duration_t2) must match between Python mode and C++ mode at every chunk boundary, and the final results must match.
+
+    This guards the conversion of the duration parameters into the C++ engine's until_t: an off-by-one conversion executes one extra timestep per chunk.
+    It also guards the TIME convention: TIME must equal T*DELTAT (the next timestep to execute), not the last executed timestep times DELTAT.
+    """
+    def build(cpp):
+        W = World(name="", deltan=5, reaction_time=1, tmax=1500, print_mode=0, save_mode=0,
+                  show_mode=0, random_seed=0, cpp=cpp)
+        W.addNode("A", 0, 0)
+        W.addNode("B", 1, 0)
+        W.addNode("C", 2, 0)
+        W.addLink("AB", "A", "B", length=1000, free_flow_speed=20, jam_density=0.2)
+        W.addLink("BC", "B", "C", length=1000, free_flow_speed=20, jam_density=0.2, capacity_out=0.4)
+        W.adddemand("A", "C", 0, 1000, 0.6)
+        return W
+
+    for kwargs_list in (
+        [dict(until_t=100), dict(until_t=400), dict(until_t=453)],
+        [dict(duration_t=100)] * 3,
+        [dict(duration_t2=100)] * 3,
+        [dict(duration_t2=98), dict(duration_t=98), dict(until_t=777)],
+    ):
+        Wpy = build(False)
+        Wcpp = build(True)
+        for kwargs in kwargs_list:
+            ret_py = Wpy.exec_simulation(**kwargs)
+            ret_cpp = Wcpp.exec_simulation(**kwargs)
+            assert ret_py == ret_cpp, f"{kwargs_list}: return value mismatch at {kwargs}"
+            assert Wpy.T == Wcpp.T, f"{kwargs_list}: T mismatch at {kwargs}: {Wpy.T} vs {Wcpp.T}"
+            assert Wpy.TIME == Wcpp.TIME, f"{kwargs_list}: TIME mismatch at {kwargs}: {Wpy.TIME} vs {Wcpp.TIME}"
+        # run to completion and compare final results
+        assert Wpy.exec_simulation() == Wcpp.exec_simulation() == 1
+        assert Wpy.T == Wcpp.T
+        assert Wpy.TIME == Wcpp.TIME
+        Wpy.analyzer.basic_analysis()
+        Wcpp.analyzer.basic_analysis()
+        assert eq_tol(Wpy.analyzer.total_travel_time, Wcpp.analyzer.total_travel_time, rel_tol=0.02)
+        assert Wpy.analyzer.trip_completed == Wcpp.analyzer.trip_completed

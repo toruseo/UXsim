@@ -301,8 +301,7 @@ void Node::transfer(){
         inlink->departure_curve[w->timestep] += w->delta_n;
         outlink->arrival_curve[w->timestep] += w->delta_n;
 
-        // Record traveltime_real event (lazily materialized on read,
-        // matching Python's traveltime_actual slice update)
+        // Record traveltime_real event (lazily materialized on read, matching Python's traveltime_actual slice update)
         {
             double current_tt = (double)w->timestep * w->delta_t - chosen_veh->arrival_time_link;
             int start_idx = (int)(chosen_veh->arrival_time_link / w->delta_t);
@@ -567,12 +566,9 @@ void Link::set_travel_time(){
 /**
  * @brief Materialize pending traveltime_real events into the array.
  *
- * Link-exit events are buffered as (start_idx, tt) pairs during the main
- * loop (write-only phase) and replayed here on first read. Replay rule:
- * event k fills [s_k, min(s_{k+1}, n)) and the last pending event fills
- * [s_k, n). This is equivalent to the eager behavior where each event
- * overwrites [s_k, n) in order: position i ends up with the value of the
- * last event whose s_k <= i, regardless of start_idx monotonicity.
+ * Link-exit events are buffered as (start_idx, tt) pairs during the main loop (write-only phase) and replayed here on first read.
+ * Replay rule: event k fills [s_k, min(s_{k+1}, n)) and the last pending event fills [s_k, n).
+ * This is equivalent to the eager behavior where each event overwrites [s_k, n) in order: position i ends up with the value of the last event whose s_k <= i, regardless of start_idx monotonicity.
  */
 void Link::ensure_traveltime_real() const {
     size_t n_events = traveltime_real_events.size();
@@ -723,6 +719,7 @@ Vehicle::Vehicle(
         log_x.reserve(log_cap);
         log_v.reserve(log_cap);
         log_lane.reserve(log_cap);
+        log_s.reserve(log_cap);
     }
 
     w->vehicles.push_back(this);
@@ -790,8 +787,7 @@ void Vehicle::end_trip(){
     w->trips_completed_count += 1.0;
     link->departure_curve[w->timestep] += w->delta_n;
 
-    // Record traveltime_real event (lazily materialized on read,
-    // matching Python's traveltime_actual slice update)
+    // Record traveltime_real event (lazily materialized on read, matching Python's traveltime_actual slice update)
     {
         double current_tt = ((double)w->timestep + 1.0) * w->delta_t - arrival_time_link;
         int start_idx = (int)(arrival_time_link / w->delta_t);
@@ -868,18 +864,18 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
         return;
     }
 
-    // specified_route: force next link from the route plan
+    // specified_route: force next link from the route plan.
+    // Inconsistencies raise the same exceptions as Python: IndexError (out_of_range) when the route is exhausted, ValueError (invalid_argument) when the forced link is not an outgoing link.
     if (!specified_route.empty()){
         int traveled = _traveled_link_count;
-        if (traveled < (int)specified_route.size()){
-            Link *forced = specified_route[traveled];
-            if (contains(linkset, forced)){
-                route_next_link = forced;
-                route_choice_flag_on_link = 1;
-                return;
-            }
+        if (traveled >= (int)specified_route.size()){
+            throw std::out_of_range("Vehicle " + name + ": specified route has no more links (index " + std::to_string(traveled) + " out of range for route of length " + std::to_string(specified_route.size()) + ")");
         }
-        route_next_link = nullptr;
+        Link *forced = specified_route[traveled];
+        if (!contains(linkset, forced)){
+            throw std::invalid_argument("Vehicle " + name + ": specified route is inconsistent; link " + forced->name + " is not an outgoing link of the current node");
+        }
+        route_next_link = forced;
         route_choice_flag_on_link = 1;
         return;
     }
@@ -900,7 +896,8 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
         }
     }
 
-    // Filter out links_avoid (subtraction from linkset)
+    // Filter out links_avoid (subtraction from linkset).
+    // As in Python, the subtraction applies whenever any outlink is avoided, even if the result becomes empty; an empty result raises ValueError.
     if (!links_avoid.empty()){
         _buf_filtered.clear();
         for (auto ln : outlinks){
@@ -908,8 +905,11 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
                 _buf_filtered.push_back(ln);
             }
         }
-        if (!_buf_filtered.empty()){
+        if (_buf_filtered.size() != outlinks.size()){
             outlinks.swap(_buf_filtered);
+        }
+        if (outlinks.empty()){
+            throw std::invalid_argument("Vehicle " + name + ": links_avoid excludes all outgoing links of the current node");
         }
     }
 
@@ -981,16 +981,18 @@ void Vehicle::record_travel_time(Link *link, double t){
 /**
  * @brief Log vehicle data for analysis.
  * Uses reserve'd arrays — push_back is O(1) with no reallocation.
- * log_size tracks actual count (vector::size() is equivalent but log_size
- * avoids any ambiguity if resize was used elsewhere).
+ * log_size tracks actual count (vector::size() is equivalent but log_size avoids any ambiguity if resize was used elsewhere).
  */
 void Vehicle::log_data(){
-    // Accumulate stats for print_simple_results (regardless of log mode)
+    // Accumulate stats for print_simple_results (regardless of log mode).
+    // A waiting vehicle counts as a zero-speed sample for the average speed statistic, as in Python's record_log.
     if (state == vsRUN){
         w->ave_v_sum += v;
         if (link){
             w->ave_vratio_sum += v / link->vmax;
         }
+        w->stat_sample_count += 1.0;
+    } else if (state == vsWAIT){
         w->stat_sample_count += 1.0;
     }
 
@@ -1004,22 +1006,22 @@ void Vehicle::log_data(){
             log_x.push_back(x);
             log_v.push_back(v);
             log_lane.push_back(lane);
+            log_s.push_back((leader != nullptr && leader->link == link) ? leader->x - x : -1.0);
         } else {
             log_link.push_back(-1);
             log_x.push_back(-1);
             log_v.push_back(-1);
             log_lane.push_back(-1);
+            log_s.push_back(-1.0);
         }
         log_size++;
     }
 }
 
 /**
- * @brief Reconstruct log_t entry i. Bit-identical to the eager version:
- * entries run one-per-timestep from log_first_ts, except the final END/ABORT
- * tail (recorded by end_trip()) which, on the update() path, duplicates the
- * timestep of the immediately preceding RUN entry (log_last_ts). Uses the same
- * (double)ts * delta_t expression as the eager push.
+ * @brief Reconstruct log_t entry i.
+ * Bit-identical to the eager version: entries run one-per-timestep from log_first_ts, except the final END/ABORT tail (recorded by end_trip()) which, on the update() path, duplicates the timestep of the immediately preceding RUN entry (log_last_ts).
+ * Uses the same (double)ts * delta_t expression as the eager push.
  */
 double Vehicle::log_t_at(size_t i) const {
     size_t tail = log_size - (size_t)log_end_count;
@@ -1029,8 +1031,8 @@ double Vehicle::log_t_at(size_t i) const {
 }
 
 /**
- * @brief Reconstruct log_state entry i. Log structure is always:
- * HOME x1, WAIT x log_wait_count, RUN x r, [END|ABORT] x log_end_count.
+ * @brief Reconstruct log_state entry i.
+ * Log structure is always: HOME x1, WAIT x log_wait_count, RUN x r, [END|ABORT] x log_end_count.
  */
 int Vehicle::log_state_at(size_t i) const {
     if (log_end_count > 0 && i >= log_size - (size_t)log_end_count) return state;
@@ -1117,6 +1119,11 @@ World::World(
       rng((std::mt19937::result_type)random_seed),
       flag_initialized(false),
       writer(&std::cout){
+    // The route update interval has a minimum of 1 timestep, like Python's DELTAT_ROUTE.
+    // Without the clamp, duo_update_time < delta_t would yield 0 and disable route updates entirely.
+    if (timestep_for_route_update == 0){
+        timestep_for_route_update = 1;
+    }
 }
 
 World::~World(){
@@ -1133,6 +1140,17 @@ World::~World(){
     nodes_map.clear();
     links_map.clear();
     vehicles_map.clear();
+}
+
+void World::set_t_max(double new_t_max){
+    t_max = new_t_max;
+    total_timesteps = (size_t)(t_max / delta_t);
+    for (auto ln : links){
+        ln->arrival_curve.resize(total_timesteps, 0.0);
+        ln->departure_curve.resize(total_timesteps, 0.0);
+        ln->traveltime_real.resize(total_timesteps, ln->length / ln->vmax);
+        ln->traveltime_instant.resize(total_timesteps, 0.0);
+    }
 }
 
 void World::initialize_adj_matrix(){
@@ -1154,8 +1172,8 @@ void World::initialize_adj_matrix(){
 
 void World::update_adj_time_matrix(){
     double noise = route_choice_uncertainty;
-    // Reset the cells written by links (running-average state). Matches Python's
-    // route_search_all, which rebuilds adj_mat_time from a zero matrix each call.
+    // Reset the cells written by links (running-average state).
+    // Matches Python's route_search_all, which rebuilds adj_mat_time from a zero matrix each call.
     if (adj_mat_link_count.size() != nodes.size()){
         adj_mat_link_count.assign(nodes.size(), vector<int>(nodes.size(), 0));
     }
@@ -1199,9 +1217,8 @@ void World::route_search_all(const vector<vector<double>> &adj, double infty) {
         infty = std::numeric_limits<double>::infinity();
     }
 
-    // Build adjacency list into reused scratch buffer. The `adj[i][j] > 0.0`
-    // edge filter is re-evaluated every call so the neighbour set/order is
-    // identical to the previous allocate-fresh implementation (bit-identical).
+    // Build adjacency list into reused scratch buffer.
+    // The `adj[i][j] > 0.0` edge filter is re-evaluated every call so the neighbour set/order is identical to the previous allocate-fresh implementation (bit-identical).
     rsa_adj_list.resize(nsize);
     for (int i = 0; i < nsize; i++) {
         auto &row = rsa_adj_list[i];
@@ -1275,9 +1292,8 @@ World::enumerate_k_random_routes_cpp(int k, unsigned int seed){
     int iteration = 0;
     double average_n_routes_old = 0;
 
-    // Weighted adjacency matrix, allocated once and reused. Every iteration
-    // overwrites exactly the same (i,j) link cells; non-link cells stay 0.0,
-    // so reuse is bit-identical to reallocating a zero-filled matrix each time.
+    // Weighted adjacency matrix, allocated once and reused.
+    // Every iteration overwrites exactly the same (i,j) link cells; non-link cells stay 0.0, so reuse is bit-identical to reallocating a zero-filled matrix each time.
     vector<vector<double>> adj(nsize, vector<double>(nsize, 0.0));
 
     while (true){
@@ -1361,8 +1377,8 @@ void World::route_choice_duo(){
     for (auto dest : nodes){
         int k = dest->id;
 
-        // psum==0.0 iff route_preference[k] has never been reinforced. Tracked
-        // incrementally via route_pref_active[k] to avoid an O(links) sum here.
+        // psum==0.0 iff route_preference[k] has never been reinforced.
+        // Tracked incrementally via route_pref_active[k] to avoid an O(links) sum here.
         auto duo_update_weight_tmp = duo_update_weight;
         if (!route_pref_active[k]){
             duo_update_weight_tmp = 1; //initialize with deterministic shortest path
@@ -1393,8 +1409,8 @@ void World::route_choice_duo_gradual(){
     for (auto dest : nodes){
         int k = dest->id;
 
-        // psum==0.0 iff route_preference[k] has never been reinforced (see
-        // route_choice_duo). Tracked via route_pref_active[k].
+        // psum==0.0 iff route_preference[k] has never been reinforced (see route_choice_duo).
+        // Tracked via route_pref_active[k].
         double w_tmp = weight0;
         if (!route_pref_active[k]){
             w_tmp = 1;
@@ -1477,8 +1493,7 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         return;
     }
 
-    // HOME/WAIT/RUN vehicles in id order; compacted in place each step to drop
-    // vehicles that reach END/ABORT (much faster when many have finished).
+    // HOME/WAIT/RUN vehicles in id order; compacted in place each step to drop vehicles that reach END/ABORT (much faster when many have finished).
     update_order.clear();
     for (auto veh : vehicles){
         if (veh->state <= vsRUN) update_order.push_back(veh);
@@ -1619,15 +1634,19 @@ inline void add_demand(
         double end_t,
         double flow,
         vector<string> links_preferred_str = {}){
+    // Iterate over integer timesteps, mirroring Python's adddemand: `for t in range(int(t_start/DELTAT), int(t_end/DELTAT))`.
+    // This keeps the iteration count and the timestep-quantized departure times identical to Python even when t_start/t_end are not multiples of delta_t.
+    int ts_start = (int)(start_t / w->delta_t);
+    int ts_end = (int)(end_t / w->delta_t);
     double demand = 0.0;
-    for (double t = start_t; t < end_t; t += w->delta_t){
+    for (int ts = ts_start; ts < ts_end; ts++){
         demand += flow * w->delta_t;
         while (demand >= (double)w->delta_n){
             // create new vehicle
             Vehicle *v = new Vehicle(
                 w,
                 std::to_string(w->vehicle_id),
-                t,
+                (double)ts * w->delta_t,
                 orig_name,
                 dest_name);
 
@@ -1642,8 +1661,7 @@ inline void add_demand(
 
 /**
  * @brief Return all vehicle states as (name, state_int) pairs.
- * Efficient bulk query so Python can update VEHICLES_LIVING/RUNNING
- * without calling state on each vehicle individually.
+ * Efficient bulk query so Python can update VEHICLES_LIVING/RUNNING without calling state on each vehicle individually.
  */
 std::vector<std::pair<std::string, int>> World::get_all_vehicle_states() const {
     std::vector<std::pair<std::string, int>> result;
@@ -1749,7 +1767,7 @@ World::CompactFlatLogs World::build_all_vehicle_logs_flat_compact() const {
             bool is_run = (st == vsRUN);
             fl.log_x[idx] = is_run ? v->log_x[i] : -1;
             fl.log_v[idx] = is_run ? v->log_v[i] : -1;
-            fl.log_s[idx] = is_run ? 0 : -1;
+            fl.log_s[idx] = v->log_s[i];
             fl.log_lane[idx] = v->log_lane[i];
             fl.log_link[idx] = v->log_link[i];
         }
