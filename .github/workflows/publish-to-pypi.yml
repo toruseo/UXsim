@@ -1,0 +1,51 @@
+name: Publish to PyPI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_publish:
+    name: Build and publish wheels
+    runs-on: ${{ matrix.os }}
+    permissions:
+      id-token: write
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install cibuildwheel and uv
+        run: |
+          pip install cibuildwheel uv
+
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_SKIP: "pp* *-musllinux*"
+          CIBW_BEFORE_BUILD: "pip install nanobind"
+          CIBW_ENVIRONMENT: "CMAKE_ARGS=''"
+          CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET='11.0'"
+          CIBW_TEST_REQUIRES: "pytest pytest-rerunfailures"
+          CIBW_TEST_COMMAND: "pytest {project}/tests/test_cpp_build.py -v"
+          CIBW_ARCHS_MACOS: "universal2"
+          CIBW_ARCHS_LINUX: "x86_64"
+          CIBW_ARCHS_WINDOWS: "AMD64"
+          CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
+
+      - name: Build sdist
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          uv build --sdist --out-dir wheelhouse
+
+      - name: Publish to PyPI
+        shell: bash
+        run: |
+          uv publish --trusted-publishing always --check-url https://pypi.org/simple/uxsim/ wheelhouse/*
