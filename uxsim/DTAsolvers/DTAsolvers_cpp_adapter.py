@@ -10,6 +10,7 @@ lightweight finalize, etc.). The pure-Python solvers live in ``DTAsolvers.py``.
 instances of the classes defined here via a lazy import in the base class ``__new__``,
 so this module is not imported when only the pure-Python solvers are used.
 """
+import copy
 import random
 import time
 import warnings
@@ -274,10 +275,6 @@ class CppSolverDUE(SolverDUE):
         if print_progress:
             W_orig.print_scenario_stats()
 
-        dict_od_to_vehid = defaultdict(lambda: [])
-        for key, veh in W_orig.VEHICLES.items():
-            dict_od_to_vehid[veh.orig.name, veh.dest.name].append(key)
-
         if W_orig.finalized == False:
             W_orig.finalize_scenario()
 
@@ -344,8 +341,8 @@ class CppSolverDUE(SolverDUE):
 
             W.dict_od_to_routes = dict_od_to_routes
             s.W_intermid_solution = W
-            if is_last_iter:
-                s.dfs_link.append(W.analyzer.link_to_pandas())
+
+            s.dfs_link.append(W.analyzer.link_to_pandas())
 
             rng_seed = random.randint(0, 2**31 - 1)
             cpp_result = W._cpp_world.route_swap_due(
@@ -401,10 +398,6 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
         if print_progress:
             W_orig.print_scenario_stats()
 
-        dict_od_to_vehid = defaultdict(lambda: [])
-        for key, veh in W_orig.VEHICLES.items():
-            dict_od_to_vehid[veh.orig.name, veh.dest.name].append(key)
-
         if W_orig.finalized == False:
             W_orig.finalize_scenario()
 
@@ -444,6 +437,7 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
         cached_analyzer = None
         prev_rs_link_ids = None
         prev_rs_offsets = None
+        best_avg_tt = None
 
         print("solving DSO...")
         for i in range(max_iter):
@@ -469,13 +463,16 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
             W.dict_od_to_routes = dict_od_to_routes
 
             if unfinished_trips == 0:
-                if s.W_intermid_solution is None:
-                    s.W_intermid_solution = W
-                elif W.analyzer.average_travel_time < s.W_intermid_solution.analyzer.average_travel_time:
+                # The Analyzer object is shared across iterations (rebound in
+                # _lightweight_finalize), so compare against a saved scalar and
+                # detach the best W's analyzer by shallow copy to freeze its stats.
+                avg_tt = W.analyzer.average_travel_time
+                if s.W_intermid_solution is None or avg_tt < best_avg_tt:
+                    best_avg_tt = avg_tt
+                    W.analyzer = copy.copy(W.analyzer)
                     s.W_intermid_solution = W
 
-            if is_last_iter:
-                s.dfs_link.append(W.analyzer.link_to_pandas())
+            s.dfs_link.append(W.analyzer.link_to_pandas())
 
             rng_seed = random.randint(0, 2**31 - 1)
             cpp_swap_num = swap_num if swap_num is not None else -1

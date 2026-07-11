@@ -195,7 +195,7 @@ def run_due_dso(seed, cpp):
     results["_duo_link_df"] = W.analyzer.link_to_pandas()
 
     # DUE
-    solver_DUE = SolverDUE(create_world)
+    solver_DUE = SolverDUE(create_world, cpp=cpp)
     t0 = time.perf_counter()
     solver_DUE.solve(max_iter=100)
     elapsed_due = time.perf_counter() - t0
@@ -205,7 +205,7 @@ def run_due_dso(seed, cpp):
     results["_due_link_df"] = _avg_last_n_link_dfs(solver_DUE.dfs_link, n=20)
 
     # DSO
-    solver_DSO = SolverDSO_D2D(create_world)
+    solver_DSO = SolverDSO_D2D(create_world, cpp=cpp)
     t0 = time.perf_counter()
     solver_DSO.solve(max_iter=100)
     elapsed_dso = time.perf_counter() - t0
