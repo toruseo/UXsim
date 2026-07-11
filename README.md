@@ -2,6 +2,7 @@
 
 [![PyPi](https://img.shields.io/pypi/v/uxsim.svg)](https://pypi.python.org/pypi/uxsim)
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/uxsim.svg)](https://anaconda.org/conda-forge/uxsim)<!-- ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/uxsim)-->
+[![latest](https://img.shields.io/github/v/release/toruseo/UXsim?include_prereleases&label=latest)](https://github.com/toruseo/UXsim/releases)
 [![Demo in Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/toruseo/UXsim/blob/main/demos_and_examples/demo_notebook_05en_for_google_colab.ipynb)
 [![codecov](https://codecov.io/gh/toruseo/UXsim/graph/badge.svg?token=DK77Y1Y5AT)](https://codecov.io/gh/toruseo/UXsim)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/uxsim)
