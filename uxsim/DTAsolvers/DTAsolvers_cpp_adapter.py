@@ -275,10 +275,6 @@ class CppSolverDUE(SolverDUE):
         if print_progress:
             W_orig.print_scenario_stats()
 
-        dict_od_to_vehid = defaultdict(lambda: [])
-        for key, veh in W_orig.VEHICLES.items():
-            dict_od_to_vehid[veh.orig.name, veh.dest.name].append(key)
-
         if W_orig.finalized == False:
             W_orig.finalize_scenario()
 
@@ -401,10 +397,6 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
         _ensure_cpp_world(W_orig, "CppSolverDSO_D2D")
         if print_progress:
             W_orig.print_scenario_stats()
-
-        dict_od_to_vehid = defaultdict(lambda: [])
-        for key, veh in W_orig.VEHICLES.items():
-            dict_od_to_vehid[veh.orig.name, veh.dest.name].append(key)
 
         if W_orig.finalized == False:
             W_orig.finalize_scenario()
