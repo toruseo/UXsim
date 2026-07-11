@@ -62,8 +62,7 @@ static void routes_to_csr(std::vector<std::vector<int>> &&routes,
 
 // ----------------------------------------------------------------------
 // Interned Python strings for state names.
-// Heap-allocated and explicitly cleaned up via atexit to avoid
-// static destruction order issues (segfault at interpreter shutdown).
+// Heap-allocated and explicitly cleaned up via atexit to avoid static destruction order issues (segfault at interpreter shutdown).
 // ----------------------------------------------------------------------
 struct InternedStrings {
     nb::str states[5];   // home, wait, run, end, abort
@@ -85,8 +84,7 @@ static InternedStrings *g_intern = nullptr;
 
 // ----------------------------------------------------------------------
 // Custom streambuf that redirects C++ output to Python sys.stdout.
-// Uses raw PyObject* instead of nb::object to avoid GIL issues
-// during static destruction at Python interpreter shutdown.
+// Uses raw PyObject* instead of nb::object to avoid GIL issues during static destruction at Python interpreter shutdown.
 // ----------------------------------------------------------------------
 class py_stdout_redirect_buf : public std::streambuf {
 public:
@@ -133,8 +131,7 @@ private:
 
 // ----------------------------------------------------------------------
 // Helper to get a Python-redirected ostream.
-// Uses heap allocation to control destruction order and avoid
-// static destruction crashes at interpreter shutdown.
+// Uses heap allocation to control destruction order and avoid static destruction crashes at interpreter shutdown.
 // ----------------------------------------------------------------------
 static py_stdout_redirect_buf *g_custom_buf = nullptr;
 static std::ostream *g_pyout = nullptr;
@@ -550,6 +547,11 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("vehicle_log_mode", &World::vehicle_log_mode)
         .def_ro("ave_v", &World::ave_v)
         .def_ro("ave_vratio", &World::ave_vratio)
+        .def_ro("ave_v_sum", &World::ave_v_sum)
+        .def_ro("stat_sample_count", &World::stat_sample_count)
+        .def("set_t_max", &World::set_t_max,
+             nb::arg("new_t_max"),
+             "Update t_max/total_timesteps and resize per-link time-indexed arrays (call before simulation start)")
         .def_ro("trips_total", &World::trips_total)
         .def_ro("trips_completed", &World::trips_completed)
         .def_ro("flag_initialized", &World::flag_initialized)
@@ -900,8 +902,7 @@ NB_MODULE(uxsim_cpp, m) {
     g_intern->init();
 
     // Register cleanup to run before Python interpreter shuts down.
-    // This ensures heap-allocated objects with Python references are
-    // destroyed while Py_IsInitialized() still returns true.
+    // This ensures heap-allocated objects with Python references are destroyed while Py_IsInitialized() still returns true.
     auto atexit = nb::module_::import_("atexit");
     atexit.attr("register")(nb::cpp_function([]() {
         delete g_intern;

@@ -1,14 +1,10 @@
 """
 C++ engine adapter for Dynamic Traffic Assignment solvers.
 
-This module contains everything specific to the C++ engine (``World(cpp=True)``):
-the C++ accelerated solver classes (:class:`CppSolverDUE`, :class:`CppSolverDSO_D2D`)
-and their helper functions (id<->name conversion, nested-CSR route handling,
-lightweight finalize, etc.). The pure-Python solvers live in ``DTAsolvers.py``.
+This module contains everything specific to the C++ engine (``World(cpp=True)``): the C++ accelerated solver classes (:class:`CppSolverDUE`, :class:`CppSolverDSO_D2D`) and their helper functions (id<->name conversion, nested-CSR route handling, lightweight finalize, etc.).
+The pure-Python solvers live in ``DTAsolvers.py``.
 
-``SolverDUE(func_World, cpp=True)`` / ``SolverDSO_D2D(func_World, cpp=True)`` return
-instances of the classes defined here via a lazy import in the base class ``__new__``,
-so this module is not imported when only the pure-Python solvers are used.
+``SolverDUE(func_World, cpp=True)`` / ``SolverDSO_D2D(func_World, cpp=True)`` return instances of the classes defined here via a lazy import in the base class ``__new__``, so this module is not imported when only the pure-Python solvers are used.
 """
 import copy
 import random
@@ -37,8 +33,7 @@ def _ensure_cpp_world(W, solver_name="CppSolver"):
 def _lightweight_finalize(W, cached_analyzer=None):
     """Lightweight finalize_scenario for DTA intermediate iterations.
 
-    Performs essential initialization (TMAX, adj_matrix, TSIZE) but reuses
-    a cached Analyzer object to skip expensive font loading.
+    Performs essential initialization (TMAX, adj_matrix, TSIZE) but reuses a cached Analyzer object to skip expensive font loading.
 
     Parameters
     ----------
@@ -51,8 +46,9 @@ def _lightweight_finalize(W, cached_analyzer=None):
     Analyzer : the (possibly reused) Analyzer object now attached to W.
     """
     if W.TMAX is None:
-        W.TMAX = (getattr(W, '_max_demand_t', 0) // 1800 + 2) * 1800
+        W.TMAX = W._compute_auto_tmax()
     W._ensure_cpp_world()
+    W._cpp_world.set_t_max(float(W.TMAX))
     W._cpp_world.initialize_adj_matrix()
 
     # Minimal _setup_analyzer equivalent
@@ -110,8 +106,7 @@ def _lightweight_finalize(W, cached_analyzer=None):
 def _build_id_lookup_arrays(W):
     """Build id->name lookup arrays/dicts (indexed by C++ id) for a CppWorld.
 
-    Returns (link_name_to_id, link_id_to_name, node_name_to_id, node_id_to_name)
-    where the *_id_to_name are dicts keyed by C++ id.
+    Returns (link_name_to_id, link_id_to_name, node_name_to_id, node_id_to_name) where the *_id_to_name are dicts keyed by C++ id.
     """
     link_name_to_id = {link.name: link.id for link in W.LINKS}
     link_id_to_name = {link.id: link.name for link in W.LINKS}
@@ -123,10 +118,8 @@ def _build_id_lookup_arrays(W):
 class _LazyODRoutes(dict):
     """Lazy {(o_name, d_name): [[link_name, ...], ...]} built on first access.
 
-    The C++ solvers consume OD route sets purely as link IDs, so the name-form
-    dict is only needed if the solution World is later reused (e.g. as an
-    initial_solution_World for a Python solver, or by ALNS). Deferring its
-    construction avoids the per-solve name-building cost in the common case.
+    The C++ solvers consume OD route sets purely as link IDs, so the name-form dict is only needed if the solution World is later reused (e.g. as an initial_solution_World for a Python solver, or by ALNS).
+    Deferring its construction avoids the per-solve name-building cost in the common case.
     Subclasses dict so ``isinstance(x, dict)`` and normal dict access hold.
     """
     __slots__ = ("_csr", "_nid2n", "_lid2n", "_built")
@@ -180,9 +173,8 @@ class _LazyODRoutes(dict):
 def _build_od_name_dict_from_csr(csr, node_id_to_name, link_id_to_name):
     """Build {(o_name, d_name): [[link_name, ...], ...]} from nested-CSR arrays.
 
-    This reuses interned name string objects from the id->name dicts (no new
-    string allocation per element), so it is far cheaper than the per-element
-    nb::str construction of the name-based public API. Built once per solve.
+    This reuses interned name string objects from the id->name dicts (no new string allocation per element), so it is far cheaper than the per-element nb::str construction of the name-based public API.
+    Built once per solve.
     """
     od_o = csr['od_o']
     od_d = csr['od_d']
@@ -207,9 +199,7 @@ def _build_od_name_dict_from_csr(csr, node_id_to_name, link_id_to_name):
 def _convert_flat_result_to_names(result, veh_names, link_id_to_name):
     """Convert flat-CSR C++ route_swap result to name-keyed route_actual/cost_actual.
 
-    routes_specified is intentionally NOT converted to names here: it is kept in
-    flat ID-CSR form (rs_link_ids/rs_offsets) and fed directly back to
-    batch_enforce_routes_csr, avoiding a name<->id round-trip.
+    routes_specified is intentionally NOT converted to names here: it is kept in flat ID-CSR form (rs_link_ids/rs_offsets) and fed directly back to batch_enforce_routes_csr, avoiding a name<->id round-trip.
 
     Returns (route_actual_dict, cost_actual_dict, n_swap, potential_n_swap, total_t_gap).
     """
@@ -278,13 +268,11 @@ class CppSolverDUE(SolverDUE):
         if W_orig.finalized == False:
             W_orig.finalize_scenario()
 
-        # Build id<->name lookups once (node/link ids are stable across
-        # func_World() reconstructions, so W_orig's mapping is valid for all iters).
+        # Build id<->name lookups once (node/link ids are stable across func_World() reconstructions, so W_orig's mapping is valid for all iters).
         (link_name_to_id, link_id_to_name, node_name_to_id,
          node_id_to_name) = _build_id_lookup_arrays(W_orig)
 
-        # Draw the enumeration seed exactly as enumerate_k_random_routes() would,
-        # to preserve global-RNG consumption order (and thus bit-identical results).
+        # Draw the enumeration seed exactly as enumerate_k_random_routes() would, to preserve global-RNG consumption order (and thus bit-identical results).
         enum_seed = random.randint(0, 2**31 - 1)
 
         if route_sets is not None:
@@ -323,9 +311,7 @@ class CppSolverDUE(SolverDUE):
 
             cached_analyzer = _lightweight_finalize(W, cached_analyzer)
 
-            # Skip expensive log cache building on intermediate iterations;
-            # CppWorld log mode is set at __init__ time, so vehicle_logging_timestep_interval
-            # cannot be changed after construction — _skip_log_on_terminate handles this instead.
+            # Skip expensive log cache building on intermediate iterations; CppWorld log mode is set at __init__ time, so vehicle_logging_timestep_interval cannot be changed after construction — _skip_log_on_terminate handles this instead.
             if not is_last_iter:
                 W._skip_log_on_terminate = True
 
@@ -405,8 +391,7 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
         (link_name_to_id, link_id_to_name, node_name_to_id,
          node_id_to_name) = _build_id_lookup_arrays(W_orig)
 
-        # Draw the enumeration seed exactly as enumerate_k_random_routes() would,
-        # to preserve global-RNG consumption order (and thus bit-identical results).
+        # Draw the enumeration seed exactly as enumerate_k_random_routes() would, to preserve global-RNG consumption order (and thus bit-identical results).
         enum_seed = random.randint(0, 2**31 - 1)
 
         if route_sets is not None:
@@ -463,9 +448,7 @@ class CppSolverDSO_D2D(SolverDSO_D2D):
             W.dict_od_to_routes = dict_od_to_routes
 
             if unfinished_trips == 0:
-                # The Analyzer object is shared across iterations (rebound in
-                # _lightweight_finalize), so compare against a saved scalar and
-                # detach the best W's analyzer by shallow copy to freeze its stats.
+                # The Analyzer object is shared across iterations (rebound in _lightweight_finalize), so compare against a saved scalar and detach the best W's analyzer by shallow copy to freeze its stats.
                 avg_tt = W.analyzer.average_travel_time
                 if s.W_intermid_solution is None or avg_tt < best_avg_tt:
                     best_avg_tt = avg_tt

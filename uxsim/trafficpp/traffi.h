@@ -127,10 +127,8 @@ struct Link {
 
     vector<double> arrival_curve;
     vector<double> departure_curve;
-    // traveltime_real is lazily materialized: link-exit events are buffered
-    // as (start_idx, travel_time) pairs and replayed into the array on first
-    // read via ensure_traveltime_real(). Members are mutable so that const
-    // read paths can trigger materialization.
+    // traveltime_real is lazily materialized: link-exit events are buffered as (start_idx, travel_time) pairs and replayed into the array on first read via ensure_traveltime_real().
+    // Members are mutable so that const read paths can trigger materialization.
     mutable vector<double> traveltime_real;
     mutable vector<pair<int, double>> traveltime_real_events;
     mutable size_t traveltime_real_events_applied;
@@ -235,14 +233,11 @@ struct Vehicle {
     vector<double> log_x;
     vector<double> log_v;
     vector<int> log_lane;
+    vector<double> log_s;  // spacing to leader on the same link (-1 if none)
     size_t log_size;  // current number of log entries (used instead of push_back)
 
-    // log_t / log_state are fully reconstructible from these scalars. The log
-    // structure is always HOME x1, WAIT x log_wait_count, RUN x r, [END|ABORT] x
-    // log_end_count, with one entry per timestep after departure; the only
-    // exception is trip end (the update() path records the END entry in the same
-    // timestep as the immediately preceding RUN entry, so log_last_ts may
-    // duplicate the previous timestep).
+    // log_t / log_state are fully reconstructible from these scalars.
+    // The log structure is always HOME x1, WAIT x log_wait_count, RUN x r, [END|ABORT] x log_end_count, with one entry per timestep after departure; the only exception is trip end (the update() path records the END entry in the same timestep as the immediately preceding RUN entry, so log_last_ts may duplicate the previous timestep).
     int log_first_ts;
     int log_last_ts;
     int log_wait_count;
@@ -332,8 +327,8 @@ struct World {
     vector<vector<double>> route_dist;
     map<int, vector<vector<double>>> route_dist_record;
 
-    // Scratch buffers reused across route_search_all() calls (avoid per-call
-    // V*V allocation). Filled by route_search_all; callers read from these.
+    // Scratch buffers reused across route_search_all() calls (avoid per-call V*V allocation).
+    // Filled by route_search_all; callers read from these.
     vector<vector<pair<int, double>>> rsa_adj_list;  // adjacency list (rebuilt each call)
     vector<vector<double>> rsa_dist;                 // all-pairs distances
     vector<vector<int>> rsa_next;                    // all-pairs next-hop
@@ -379,6 +374,10 @@ struct World {
     void initialize_adj_matrix();
     void update_adj_time_matrix();
 
+    // Update t_max/total_timesteps and resize per-link time-indexed arrays.
+    // Must be called before simulation start; the world may be created with a placeholder horizon before the final TMAX is known.
+    void set_t_max(double new_t_max);
+
     void route_choice_duo();
     void route_choice_duo_gradual();
 
@@ -410,8 +409,8 @@ struct World {
     // Useful for Python to update VEHICLES_LIVING/RUNNING without per-vehicle calls
     std::vector<std::pair<std::string, int>> get_all_vehicle_states() const;
 
-    // Build enter_log data: returns (link_id, time, vehicle_index) triples
-    // for all vehicle link-entry events. Used by _build_vehicles_enter_log.
+    // Build enter_log data: returns (link_id, time, vehicle_index) triples for all vehicle link-entry events.
+    // Used by _build_vehicles_enter_log.
     struct EnterLogEntry {
         int link_id;
         double time;

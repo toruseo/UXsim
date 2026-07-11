@@ -78,15 +78,29 @@ class CppNode:
         # Read back from C++ (single source of truth)
         self.x = self._cpp_node.x
         self.y = self._cpp_node.y
-        self.signal = list(self._cpp_node.signal_intervals)
         self.signal_offset = self._cpp_node.signal_offset
-        self.cycle_length = sum(self.signal)
         self.flow_capacity = self._cpp_node.flow_capacity
         self.number_of_lanes = self._cpp_node.number_of_lanes
         self.flag_lanes_automatically_determined = False
 
     def __repr__(self):
         return f"<Node {self.name}>"
+
+    @property
+    def signal(self):
+        return list(self._cpp_node.signal_intervals)
+    @signal.setter
+    def signal(self, value):
+        value = [float(x) for x in value]
+        self._cpp_node.signal_intervals = value
+        # If the current phase no longer exists in the new signal plan, reset it; Python mode raises IndexError in signal_control in this case.
+        if self._cpp_node.signal_phase >= len(value):
+            self._cpp_node.signal_phase = 0
+            self._cpp_node.signal_t = 0
+
+    @property
+    def cycle_length(self):
+        return sum(self.signal)
 
     @property
     def signal_phase(self):
@@ -180,8 +194,6 @@ class CppLink:
         self.merge_priority = cpp.merge_priority
         self.q_star = self.capacity
         self.k_star = self.capacity / self.u
-        self.capacity_out = cpp.capacity_out
-        self.capacity_in = cpp.capacity_in
         self._capacity_out_remain = cpp.capacity_out_remain
         self._capacity_in_remain = cpp.capacity_in_remain
 
@@ -261,6 +273,20 @@ class CppLink:
     @traveltime_actual.setter
     def traveltime_actual(self, value):
         self._traveltime_actual = value
+
+    @property
+    def capacity_out(self):
+        return self._cpp_link.capacity_out
+    @capacity_out.setter
+    def capacity_out(self, value):
+        self._cpp_link.capacity_out = float(value)
+
+    @property
+    def capacity_in(self):
+        return self._cpp_link.capacity_in
+    @capacity_in.setter
+    def capacity_in(self, value):
+        self._cpp_link.capacity_in = float(value)
 
     @property
     def capacity_in_remain(self):
@@ -401,8 +427,7 @@ class CppLink:
 
 
 class CppVehicle:
-    """Proxy wrapper around C++ Vehicle.  Reads most attributes directly from
-    C++ via __getattr__; only Python-only data lives on the Python object.
+    """Proxy wrapper around C++ Vehicle.  Reads most attributes directly from C++ via __getattr__; only Python-only data lives on the Python object.
     Instances are created via __new__ in _register_new_cpp_vehicles — no __init__."""
 
     # State int→str mapping
@@ -785,6 +810,7 @@ class CppWorld:
         self._skip_log_on_terminate = False
         self._skip_analyzer_setup = False
         self._cpp_veh_registered_count = 0
+        self._veh_by_index = []  # CppVehicle objects in C++ vehicle index order
 
     def _ensure_cpp_world(self):
         if self._cpp_world_created:
@@ -804,6 +830,7 @@ class CppWorld:
         self._cpp_world_created = True
         self._cpp_world.route_choice_update_gradual = self.route_choice_update_gradual
         self._cpp_world.no_cyclic_routing = self.no_cyclic_routing
+        self._cpp_world.instantaneous_TT_timestep_interval = int(self.instantaneous_TT_timestep_interval)
 
     # --- Scenario definition ---
 
@@ -846,17 +873,27 @@ class CppWorld:
         dep_is_ts = kwargs.get('departure_time_is_time_step', 0)
         t = departure_time * self.DELTAT if dep_is_ts else float(departure_time)
 
+        # Validate custom vehicle name before creating the C++ vehicle
+        name = kwargs.get('name')
+        if name is not None:
+            name = str(name)
+            if name in self.VEHICLES:
+                if kwargs.get('auto_rename', False):
+                    name = name + "_renamed" + "".join(
+                        self.rng.choice(list(string.ascii_letters + string.digits), size=8))
+                else:
+                    raise ValueError(f"Vehicle name {name} already used by another vehicle. Please specify a unique name.")
+
         # Resolve links_prefer to C++ link name strings
         links_prefer = kwargs.get('links_prefer', [])
         cpp_links_pref = []
         for l in links_prefer:
-            name = l.name if hasattr(l, 'name') else str(l)
-            cpp_links_pref.append(name)
+            lname = l.name if hasattr(l, 'name') else str(l)
+            cpp_links_pref.append(lname)
 
         n_before = self._cpp_world.vehicle_count
         _add_demand(self._cpp_world, orig_name, dest_name,
                    float(t), float(t + self.DELTAT), float(self.DELTAN / self.DELTAT), cpp_links_pref)
-        self._max_demand_t = max(getattr(self, '_max_demand_t', 0), t + self.DELTAT)
 
         # Set links_avoid on newly created C++ vehicles
         links_avoid = kwargs.get('links_avoid', [])
@@ -877,6 +914,19 @@ class CppWorld:
 
         self._register_new_cpp_vehicles()
 
+        veh = self._veh_by_index[n_before]
+        if name is not None:
+            # The new vehicle is the last entry, so pop+reinsert keeps VEHICLES in C++ index order.
+            self.VEHICLES.pop(veh.name, None)
+            self.VEHICLES_LIVING.pop(veh.name, None)
+            veh.name = name
+            self.VEHICLES[name] = veh
+            self.VEHICLES_LIVING[name] = veh
+        veh.attribute = kwargs.get('attribute')
+        veh.user_attribute = kwargs.get('user_attribute')
+        veh.user_function = kwargs.get('user_function')
+        return veh
+
     def _resolve_node_name(self, node):
         """Get node name string from Node object or string."""
         if hasattr(node, 'name'):
@@ -888,10 +938,13 @@ class CppWorld:
         self._ensure_cpp_world()
         if volume > 0:
             flow = volume / (t_end - t_start)
+        n_before = self._cpp_world.vehicle_count
         _add_demand(self._cpp_world, self._resolve_node_name(orig), self._resolve_node_name(dest),
                    float(t_start), float(t_end), float(flow), [])
-        self._max_demand_t = max(getattr(self, '_max_demand_t', 0), t_end)
         self._register_new_cpp_vehicles()
+        if attribute is not None:
+            for veh in self._veh_by_index[n_before:]:
+                veh.attribute = attribute
 
     @demand_info_record
     def adddemand_point2point(self, x_orig, y_orig, x_dest, y_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
@@ -957,11 +1010,25 @@ class CppWorld:
 
     # --- Simulation ---
 
+    def _compute_auto_tmax(self):
+        """Determine TMAX from the latest vehicle departure time, matching Python's finalize_scenario."""
+        tmax = 0
+        for veh in self.VEHICLES.values():
+            dep = veh.departure_time * self.DELTAT
+            if dep > tmax:
+                tmax = dep
+        return (tmax // 1800 + 2) * 1800
+
     def finalize_scenario(self, tmax=None):
         """Initialize C++ world and prepare analyzer."""
         if self.TMAX is None:
-            self.TMAX = tmax if tmax else (getattr(self, '_max_demand_t', 0) // 1800 + 2) * 1800
+            if tmax is None:
+                self.TMAX = self._compute_auto_tmax()
+            else:
+                self.TMAX = tmax
         self._ensure_cpp_world()
+        # The C++ world may have been created before TMAX was known (with a placeholder horizon), so resize its time-indexed arrays to the final TMAX.
+        self._cpp_world.set_t_max(float(self.TMAX))
         self._cpp_world.initialize_adj_matrix()
         self._setup_analyzer()
 
@@ -976,8 +1043,7 @@ class CppWorld:
 
     def _setup_analyzer(self):
         """One-time setup of Python data structures required by analyzer.py.
-        This is NOT simulation logic — it initializes empty containers that
-        analyzer.py reads/writes during post-simulation analysis.
+        This is NOT simulation logic — it initializes empty containers that analyzer.py reads/writes during post-simulation analysis.
         TODO: Move these to C++ or analyzer.py to eliminate from wrapper.
         """
         self.T = 0
@@ -986,8 +1052,7 @@ class CppWorld:
 
         if self._skip_analyzer_setup:
             # Lightweight path for DTA intermediate iterations:
-            # Skip edie matrices (init_after_tmax_fix) and area containers
-            # that are only needed for visualization/compute_edie_state.
+            # Skip edie matrices (init_after_tmax_fix) and area containers that are only needed for visualization/compute_edie_state.
             # ADJ_MAT and Analyzer are still needed for basic_analysis/link_to_pandas.
             self.ADJ_MAT = np.zeros([len(self.NODES), len(self.NODES)])
             self.ADJ_MAT_LINKS = dict()
@@ -1023,22 +1088,32 @@ class CppWorld:
         if not self.finalized:
             self.finalize_scenario()
 
-        # Convert Python duration params to C++ until_t
+        # Determine the last timestep to execute (inclusive), following the same rules as Python's exec_simulation.
+        start_ts = self.T
         if until_t is not None:
-            cpp_until = until_t
+            end_ts = int(until_t / self.DELTAT)
         elif duration_t2 is not None:
-            cpp_until = self.TIME + duration_t2
+            end_ts = start_ts + int(duration_t2 / self.DELTAT) - 1
         elif duration_t is not None:
-            cpp_until = self.TIME + duration_t + self.DELTAT
+            end_ts = start_ts + int(duration_t / self.DELTAT)
         else:
-            cpp_until = self.TMAX
+            end_ts = self.TSIZE
+        if end_ts > self.TSIZE:
+            end_ts = self.TSIZE
 
-        self._cpp_world.main_loop(float(-1), float(cpp_until))
+        if start_ts == end_ts == self.TSIZE:
+            self.simulation_terminated()
+            return 1
+        if end_ts < start_ts:
+            raise Exception("exec_simulation error: Simulation duration is not positive. Check until_t or duration_t or duration_t2")
+
+        # C++ main_loop executes timesteps [current, floor(until_t/delta_t)]
+        self._cpp_world.main_loop(float(-1), float(end_ts * self.DELTAT))
         self._sync_from_cpp()
 
         # Update Python-side time tracking from C++ state
         self.T = self._cpp_world.timestep
-        self.TIME = self._cpp_world.time
+        self.TIME = self.T * self.DELTAT
 
         if self.T >= self.TSIZE:
             self.simulation_terminated()
@@ -1091,12 +1166,12 @@ class CppWorld:
             py_veh.link_old = None
             vehicles[name] = py_veh
             vehicles_living[name] = py_veh
+            self._veh_by_index.append(py_veh)
         self._cpp_veh_registered_count = total
 
     def _sync_from_cpp(self):
         """Update VEHICLES_LIVING / VEHICLES_RUNNING from C++ state.
-        Log caches are never explicitly invalidated — they start as None and are
-        built lazily on first access (e.g. when analyzer reads log_t)."""
+        Log caches are never explicitly invalidated — they start as None and are built lazily on first access (e.g. when analyzer reads log_t)."""
         # Batch-update VEHICLES_LIVING / VEHICLES_RUNNING using C++ bulk query
         try:
             states = self._cpp_world.get_all_vehicle_states()
@@ -1104,15 +1179,15 @@ class CppWorld:
             states = None
 
         if states is not None:
-            vehicles = self.VEHICLES
+            veh_by_index = self._veh_by_index
             living = self.VEHICLES_LIVING
             running = self.VEHICLES_RUNNING
-            # states is list of (cpp_name, state_int); Python names are sequential "0","1",...
+            # states[i] corresponds to the i-th created vehicle (C++ index order)
             for i, (_, st_int) in enumerate(states):
-                name = str(i)
-                veh = vehicles.get(name)
-                if veh is None:
+                if i >= len(veh_by_index):
                     continue
+                veh = veh_by_index[i]
+                name = veh.name
                 if st_int >= 3:  # end(3) or abort(4)
                     living.pop(name, None)
                     running.pop(name, None)
@@ -1136,6 +1211,15 @@ class CppWorld:
                     self.VEHICLES_LIVING[name] = veh
                     self.VEHICLES_RUNNING.pop(name, None)
 
+        # Expose on the analyzer the average speed statistic that Python mode accumulates in record_log.
+        # Waiting vehicles count as zero-speed samples, and the statistic is only available when vehicle logging is enabled, as in Python.
+        if self._cpp_vehicle_log_mode:
+            analyzer = getattr(self, 'analyzer', None)
+            if analyzer is not None:
+                cnt = self._cpp_world.stat_sample_count
+                analyzer.average_speed_count = int(cnt)
+                analyzer.average_speed = self._cpp_world.ave_v_sum / cnt if cnt > 0 else 0
+
     # --- Query methods ---
 
     def check_simulation_ongoing(self):
@@ -1158,7 +1242,7 @@ class CppWorld:
         all_ltl_id = flat['ltl_id']
         all_n_missing = flat.get('n_missing')
         delta_t = self.DELTAT
-        vehicles = list(self.VEHICLES.values())
+        vehicles = self._veh_by_index
         for i, veh in enumerate(vehicles):
             if veh._log_cache is not None:
                 continue
@@ -1217,7 +1301,7 @@ class CppWorld:
             veh_indices = data['vehicle_index']
             links_list = self.LINKS
             n_links = len(links_list)
-            vehicles_list = list(self.VEHICLES.values())
+            vehicles_list = self._veh_by_index
             for i in range(len(link_ids)):
                 lid = int(link_ids[i])
                 if 0 <= lid < n_links:
