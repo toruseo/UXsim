@@ -3,18 +3,114 @@ name: Publish to PyPI
 on:
   workflow_dispatch:
 
+concurrency:
+  group: publish-pypi
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  CIBUILDWHEEL_VERSION: "4.1.0"
+  UV_VERSION: "0.11.28"
+  CIBW_SKIP: "pp* *-musllinux*"
+  CIBW_BEFORE_BUILD: "pip install nanobind"
+  CIBW_ENVIRONMENT: "CMAKE_ARGS=''"
+  CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET='11.0'"
+  CIBW_TEST_REQUIRES: "pytest pytest-rerunfailures"
+  CIBW_TEST_COMMAND: "pytest {project}/tests/test_cpp_build.py -v"
+  CIBW_ARCHS_MACOS: "universal2"
+  CIBW_ARCHS_LINUX: "x86_64"
+  CIBW_ARCHS_WINDOWS: "AMD64"
+  CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
+
 jobs:
-  build_and_publish:
-    name: Build and publish wheels
+  # Phase 1: build and test everything on all platforms, without publishing.
+  # This catches code-level failures before anything is uploaded to PyPI,
+  # so a partially published release can only be caused by infra-level flakiness.
+  test_build:
+    name: Test build wheels (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     permissions:
-      id-token: write
+      contents: read
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install cibuildwheel
+        run: |
+          pip install "cibuildwheel==${{ env.CIBUILDWHEEL_VERSION }}"
+
+      - name: Build and test wheels
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
+
+      - name: Verify wheel output
+        shell: bash
+        run: |
+          ls wheelhouse/*.whl
+
+  test_sdist:
+    name: Test build sdist
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        run: |
+          pip install "uv==${{ env.UV_VERSION }}"
+
+      - name: Build sdist
+        run: |
+          uv build --sdist --out-dir dist
+
+      - name: Smoke test sdist
+        run: |
+          sdist="$(ls dist/*.tar.gz)"
+          uv run --isolated --no-project --with "$sdist" python -c "import uxsim; print(uxsim.__version__)"
+
+  # Phase 2: rebuild the same commit and publish directly from each OS job.
+  # Runs only after phase 1 succeeded on all platforms, and is gated by the
+  # "pypi" environment (configure required reviewers for manual approval).
+  build_and_publish:
+    name: Build and publish (${{ matrix.os }})
+    needs: [test_build, test_sdist]
+    runs-on: ${{ matrix.os }}
+    environment:
+      name: pypi
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -23,22 +119,11 @@ jobs:
 
       - name: Install cibuildwheel and uv
         run: |
-          pip install cibuildwheel uv
+          pip install "cibuildwheel==${{ env.CIBUILDWHEEL_VERSION }}" "uv==${{ env.UV_VERSION }}"
 
       - name: Build wheels
         run: |
           python -m cibuildwheel --output-dir wheelhouse
-        env:
-          CIBW_SKIP: "pp* *-musllinux*"
-          CIBW_BEFORE_BUILD: "pip install nanobind"
-          CIBW_ENVIRONMENT: "CMAKE_ARGS=''"
-          CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET='11.0'"
-          CIBW_TEST_REQUIRES: "pytest pytest-rerunfailures"
-          CIBW_TEST_COMMAND: "pytest {project}/tests/test_cpp_build.py -v"
-          CIBW_ARCHS_MACOS: "universal2"
-          CIBW_ARCHS_LINUX: "x86_64"
-          CIBW_ARCHS_WINDOWS: "AMD64"
-          CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-* cp314-*"
 
       - name: Build sdist
         if: matrix.os == 'ubuntu-latest'
