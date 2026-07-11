@@ -554,7 +554,7 @@ void Link::set_travel_time(){
             vsum += veh->v;
         }
         double avg_v = vsum / (double)vehicles.size();
-        if (avg_v > vmax / 100.0){
+        if (avg_v > 0.0){
             traveltime_instant[w->timestep] = (double)length / avg_v;
         }else{
             traveltime_instant[w->timestep] = (double)length / (vmax / 100.0);
@@ -1154,6 +1154,15 @@ void World::initialize_adj_matrix(){
 
 void World::update_adj_time_matrix(){
     double noise = route_choice_uncertainty;
+    // Reset the cells written by links (running-average state). Matches Python's
+    // route_search_all, which rebuilds adj_mat_time from a zero matrix each call.
+    if (adj_mat_link_count.size() != nodes.size()){
+        adj_mat_link_count.assign(nodes.size(), vector<int>(nodes.size(), 0));
+    }
+    for (auto ln : links){
+        adj_mat_time[ln->start_node->id][ln->end_node->id] = 0.0;
+        adj_mat_link_count[ln->start_node->id][ln->end_node->id] = 0;
+    }
     for (auto ln : links){
         int i = ln->start_node->id;
         int j = ln->end_node->id;
@@ -1166,11 +1175,20 @@ void World::update_adj_time_matrix(){
         if (!ln->toll_timeseries.empty() && timestep < (int)ln->toll_timeseries.size()){
             penalty = ln->toll_timeseries[timestep];
         }
+        double new_link_tt;
         if (hard_deterministic_mode){
-            adj_mat_time[i][j] = tt + penalty;
+            new_link_tt = tt + penalty;
         } else {
             double noise_factor = random_range_float64(1.0, 1.0 + noise, rng);
-            adj_mat_time[i][j] = tt * noise_factor + penalty;
+            new_link_tt = tt * noise_factor + penalty;
+        }
+        // If there are multiple links between the same nodes, average the travel time
+        double n = (double)adj_mat_link_count[i][j];
+        adj_mat_time[i][j] = adj_mat_time[i][j] * n / (n + 1.0) + new_link_tt / (n + 1.0);
+        adj_mat_link_count[i][j] += 1;
+        // If the inflow is prohibited, travel time is assumed to be infinite
+        if (ln->capacity_in == 0.0){
+            adj_mat_time[i][j] = std::numeric_limits<double>::infinity();
         }
     }
 }

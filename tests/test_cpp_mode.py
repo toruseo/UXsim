@@ -8106,6 +8106,62 @@ def test_dta_solver_dfs_link_per_iteration_cpp():
             assert (df["delay_ratio"][df["traffic_volume"] > 0] > 0).all()
 
 
+def test_route_choice_avoids_closed_link_cpp():
+    """Links with capacity_in=0 get infinite route cost, so vehicles route around them (like Python)."""
+    def create_World(cpp):
+        W = uxsim.World(name="", deltan=5, tmax=2000, print_mode=0, save_mode=0,
+                        show_mode=0, random_seed=0, cpp=cpp)
+        W.addNode("O", 0, 0)
+        W.addNode("A", 1, 1)
+        W.addNode("B", 1, -1)
+        W.addNode("D", 2, 0)
+        # short route via A, but its second link is closed
+        W.addLink("OA", "O", "A", length=1000, free_flow_speed=20)
+        W.addLink("AD", "A", "D", length=1000, free_flow_speed=20, capacity_in=0)
+        # long open detour via B
+        W.addLink("OB", "O", "B", length=2000, free_flow_speed=20)
+        W.addLink("BD", "B", "D", length=2000, free_flow_speed=20)
+        W.adddemand("O", "D", 0, 500, 0.3)
+        return W
+
+    results = {}
+    for cpp in [False, True]:
+        W = create_World(cpp)
+        W.exec_simulation()
+        df = W.analyzer.link_to_pandas().set_index("link")
+        results[cpp] = df
+        assert W.analyzer.trip_completed == 150
+        assert df.loc["AD", "traffic_volume"] == 0
+    assert results[True].loc["BD", "traffic_volume"] == results[False].loc["BD", "traffic_volume"]
+
+
+def test_route_choice_parallel_links_averaged_cpp():
+    """Travel times of multiple links between the same node pair are averaged for routing (like Python)."""
+    def create_World(cpp):
+        W = uxsim.World(name="", deltan=5, tmax=2000, print_mode=0, save_mode=0,
+                        show_mode=0, random_seed=0, cpp=cpp)
+        W.addNode("O", 0, 0)
+        W.addNode("M", 1, 1)
+        W.addNode("D", 2, 0)
+        # direct pair O->D: fast (50 s) + slow (300 s), average 175 s
+        W.addLink("direct_fast", "O", "D", length=1000, free_flow_speed=20)
+        W.addLink("direct_slow", "O", "D", length=1500, free_flow_speed=5)
+        # bypass via M: 250 s total. Averaging (175 s) prefers the direct pair;
+        # last-link-wins (300 s) would wrongly prefer the bypass.
+        W.addLink("OM", "O", "M", length=2500, free_flow_speed=20)
+        W.addLink("MD", "M", "D", length=2500, free_flow_speed=20)
+        W.adddemand("O", "D", 0, 500, 0.2)
+        return W
+
+    for cpp in [False, True]:
+        W = create_World(cpp)
+        W.exec_simulation()
+        df = W.analyzer.link_to_pandas().set_index("link")
+        assert W.analyzer.trip_completed == 100
+        assert df.loc["OM", "traffic_volume"] == 0
+        assert df.loc["direct_fast", "traffic_volume"] + df.loc["direct_slow", "traffic_volume"] == 100
+
+
 @pytest.mark.flaky(reruns=5)
 def test_dta_solver_dso_d2d_grid_cpp_vs_python():
     """SolverDSO_D2D on 9x9 grid: C++ and Python produce similar TTT."""

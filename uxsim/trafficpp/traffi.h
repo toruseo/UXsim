@@ -327,6 +327,7 @@ struct World {
     // Graph adjacency
     vector<vector<int>> adj_mat;
     vector<vector<double>> adj_mat_time;
+    vector<vector<int>> adj_mat_link_count;    // scratch for multi-link averaging in update_adj_time_matrix
     vector<vector<int>> route_next;
     vector<vector<double>> route_dist;
     map<int, vector<vector<double>>> route_dist_record;
