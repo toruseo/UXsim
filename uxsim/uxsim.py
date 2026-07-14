@@ -95,15 +95,10 @@ class Node:
         #signal settings
         #If this node does not have a signal, set `signal=[0]`
         #If this node has a signal, set `signal=[green time for group0, green time for group1. ...]`
-        s.signal = signal
-        s.cycle_length = sum(s.signal)
-        s.signal_phase = 0
-        s.signal_t = 0
-        s.signal_offset = signal_offset
-        if signal_offset_old != None:
-            s.signal_offset = s.cycle_length-signal_offset_old
-        
+
+        s.override_signal(signal=signal, groups=None, signal_offset=signal_offset, reset=True, signal_offset_old=signal_offset_old)
         offset = s.cycle_length-s.signal_offset
+
         if s.signal != [0]:
             i = 0
             while 1:
