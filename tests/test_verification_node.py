@@ -1053,3 +1053,80 @@ def test_4phase_signal_jpstyle():
     referemce_avt = [41.40449658, 65.77142857, 41.56507937, 41.41644018, 41.30793651, 65.97619048, 49.7849498, 49.15555556, 69.54444444, 49.11051701, 70.71428571, 48.62857143]
     for i in range(len(avt)):
         assert equal_tolerance(avt[i], referemce_avt[i])
+
+def test_override_signal():
+        
+    # with initial setting
+    W = World(
+        name="",
+        deltan=1,
+        tmax=1200,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=0
+    )
+
+    # scenario
+    #merge network with signal
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("orig3", 0, 3)
+    W.addNode("dest", 2, 1)
+    W.addNode("merge", 1, 1, signal=[30,60]) #`signal` is a list of [duration of phase 0, duration of phase 1, ...]
+    W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=1, signal_group=0) #if `signal_group` is 0, the exit of this link will be green at phase 0
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=1, signal_group=[0,1])
+    W.addLink("link2b", "orig3", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=0.5, signal_group=1)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2, capacity_in=1)
+    W.adddemand("orig1", "dest", 0, 1000, 0.2)
+    W.adddemand("orig2", "dest", 500, 1000, 0.3)
+    W.adddemand("orig3", "dest", 500, 1000, 0.3)
+
+    # execute simulation
+    W.exec_simulation()
+
+    # visualize
+    W.analyzer.print_simple_stats()
+    #W.analyzer.time_space_diagram_traj_links([["link1", "link3"], ["link2", "link3"], ["link2b", "link3"]])
+    #W.analyzer.cumulative_curves()
+
+    ttt1 = W.analyzer.total_travel_time
+    cum1 = W.LINKS[0].cum_arrival
+
+    # with override
+    W = World(
+        name="",
+        deltan=1,
+        tmax=1200,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=0
+    )
+
+    # scenario
+    #merge network with signal
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("orig3", 0, 3)
+    W.addNode("dest", 2, 1)
+    merge = W.addNode("merge", 1, 1)
+    W.addLink("link1", "orig1", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=1)
+    W.addLink("link2", "orig2", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=1)
+    W.addLink("link2b", "orig3", "merge", length=1000, free_flow_speed=20, jam_density=0.2, merge_priority=0.5)
+    W.addLink("link3", "merge", "dest", length=1000, free_flow_speed=20, jam_density=0.2, capacity_in=1)
+    W.adddemand("orig1", "dest", 0, 1000, 0.2)
+    W.adddemand("orig2", "dest", 500, 1000, 0.3)
+    W.adddemand("orig3", "dest", 500, 1000, 0.3)
+
+    merge.override_signal(signal=[30,60], groups=[["link1", "link2"], ["link2", "link2b"]])
+
+    # execute simulation
+    W.exec_simulation()
+
+    # visualize
+    W.analyzer.print_simple_stats()
+    #W.analyzer.time_space_diagram_traj_links([["link1", "link3"], ["link2", "link3"], ["link2b", "link3"]])
+    #W.analyzer.cumulative_curves()
+
+    ttt2 = W.analyzer.total_travel_time
+    cum2 = W.LINKS[0].cum_arrival
+
+    assert ttt1 == ttt2
+    assert cum1 == cum2
