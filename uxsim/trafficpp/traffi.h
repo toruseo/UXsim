@@ -286,6 +286,8 @@ struct World {
     double duo_update_time;
     double duo_update_weight;
     int print_mode;
+    int show_progress;
+    size_t show_progress_deltat_timestep;
     bool hard_deterministic_mode;
     bool route_choice_update_gradual;
     bool no_cyclic_routing;
@@ -354,6 +356,9 @@ struct World {
 
     std::ostream *writer;
 
+    // Wall-clock start of simulation, for the "computation time" column of the progress display (same semantics as Python's W.sim_start_time)
+    std::chrono::steady_clock::time_point sim_start_time;
+
     World(
         const string &world_name,
         double t_max,
@@ -394,6 +399,8 @@ struct World {
 
     void print_scenario_stats();
     void print_simple_results();
+    void reset_sim_start_time();
+    void print_progress_line(double t_print);
     void main_loop(double duration_t, double end_t);
 
     bool check_simulation_ongoing();

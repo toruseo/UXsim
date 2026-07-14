@@ -180,7 +180,7 @@ class CppLink:
 
         # Read derived parameters from C++ (single source of truth)
         cpp = self._cpp_link
-        self.length = cpp.length
+        self.length = length  # keep the user-passed value (C++ stores it unchanged) so prints match Python, e.g. int stays int
         self.u = cpp.vmax
         self.kappa = cpp.kappa
         self.tau = cpp.tau
@@ -1029,6 +1029,8 @@ class CppWorld:
         self._ensure_cpp_world()
         # The C++ world may have been created before TMAX was known (with a placeholder horizon), so resize its time-indexed arrays to the final TMAX.
         self._cpp_world.set_t_max(float(self.TMAX))
+        self._cpp_world.show_progress = int(self.show_progress)
+        self._cpp_world.show_progress_deltat_timestep = max(int(self.show_progress_deltat_timestep), 0)
         self._cpp_world.initialize_adj_matrix()
         self._setup_analyzer()
 
@@ -1039,7 +1041,13 @@ class CppWorld:
                 link._cpp_link.set_toll_timeseries(tolls)
 
         self.finalized = 1
+
+        # Print scenario stats and start message, same as Python's finalize_scenario
+        if self.print_mode:
+            self.print_scenario_stats()
         self.sim_start_time = time.time()
+        self.print("simulating...")
+        self._cpp_world.reset_sim_start_time()
 
     def _setup_analyzer(self):
         """One-time setup of Python data structures required by analyzer.py.
@@ -1102,6 +1110,8 @@ class CppWorld:
             end_ts = self.TSIZE
 
         if start_ts == end_ts == self.TSIZE:
+            if self.print_mode and self.show_progress:
+                self.analyzer.show_simulation_progress()
             self.simulation_terminated()
             return 1
         if end_ts < start_ts:
@@ -1232,6 +1242,9 @@ class CppWorld:
         offsets = flat['offsets']
         ltl_offsets = flat['ltl_offsets']
         all_log_t = flat['log_t']
+        # In Python mode log_t holds T*DELTAT, which is int when DELTAT is int; match that so pandas outputs render identically
+        if isinstance(self.DELTAT, (int, np.integer)):
+            all_log_t = all_log_t.astype(np.int64)
         all_log_x = flat['log_x']
         all_log_v = flat['log_v']
         all_log_state = flat['log_state']
@@ -1259,7 +1272,7 @@ class CppWorld:
             if all_n_missing is not None:
                 nm = int(all_n_missing[i])
                 if nm > 0:
-                    home_t = np.arange(nm, dtype=np.float64) * delta_t
+                    home_t = np.arange(nm, dtype=all_log_t.dtype) * delta_t
                     home_fill_f = np.full(nm, -1.0)
                     home_fill_i = np.full(nm, -1, dtype=np.int32)
                     home_state = np.zeros(nm, dtype=np.int32)  # 0 = home
