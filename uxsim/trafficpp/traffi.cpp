@@ -1124,6 +1124,9 @@ World::World(
     if (timestep_for_route_update == 0){
         timestep_for_route_update = 1;
     }
+    show_progress = 1;
+    show_progress_deltat_timestep = (size_t)(600.0 / delta_t);  // Python World default: show_progress_deltat=600
+    sim_start_time = std::chrono::steady_clock::now();
 }
 
 World::~World(){
@@ -1462,6 +1465,28 @@ void World::print_simple_results(){
               << trips_completed << " / " << trips_total << "\n";
 }
 
+void World::reset_sim_start_time(){
+    sim_start_time = std::chrono::steady_clock::now();
+}
+
+// Print one progress line in the same format and semantics as Python's Analyzer.show_simulation_progress
+void World::print_progress_line(double t_print){
+    double platoon_count = 0;
+    double v_sum = 0;
+    for (auto ln : links){
+        platoon_count += (double)ln->vehicles.size();
+        for (auto veh : ln->vehicles){
+            v_sum += veh->v;
+        }
+    }
+    double sum_vehs = platoon_count * delta_n;
+    double avev = platoon_count > 0 ? v_sum / platoon_count : 0;
+    double elapsed = std::chrono::duration<double>(std::chrono::steady_clock::now() - sim_start_time).count();
+    char buf[128];
+    snprintf(buf, sizeof(buf), "%8.0f s| %8.0f vehs|  %4.1f m/s| %8.2f s", t_print, sum_vehs, avev, elapsed);
+    (*writer) << buf << endl;
+}
+
 // -----------------------------------------------------------------------
 //MARK: mainloop
 // -----------------------------------------------------------------------
@@ -1502,6 +1527,12 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
     for (timestep = start_ts; timestep < end_ts; timestep++){
         time = timestep*delta_t;
 
+        // Progress header and initial line at t=0 (same as Python's exec_simulation)
+        if (print_mode == 1 && timestep == 0){
+            (*writer) << "      time| # of vehicles| ave speed| computation time" << endl;
+            print_progress_line(time);
+        }
+
         // Link updates
         for (auto ln : links){
             ln->update();
@@ -1520,16 +1551,11 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         }
 
         // car-following (update_order is in id order, so hard_deterministic semantics hold)
-        int veh_count = 0;
-        double speed_sum = 0;
         for (auto veh : update_order){
             if (veh->state == vsRUN){
                 veh->car_follow_newell();
-                veh_count++;
-                speed_sum += veh->v;
             }
         }
-        double ave_speed = veh_count > 0 ? speed_sum / veh_count : 0;
 
         // vehicle update, compacting update_order in place (drops END/ABORT vehicles)
         size_t wpos = 0;
@@ -1568,19 +1594,15 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             }
         }
 
-        // Print progress in steps
-        if (print_mode == 1 && total_timesteps > 0 && timestep % (total_timesteps / 10 == 0 ? 1 : total_timesteps / 10) == 0){
-            if (timestep == 0){
-                (*writer) <<  "Simulating..." << endl;
-                (*writer) <<  std::setw(10) << "time" 
-                    << "|"<< std::setw(14) <<  "# of vehicles"
-                    << "|"<< std::setw(11) << " ave speed" << endl;
-            }
-            (*writer) << std::setw(8) << std::fixed << std::setprecision(0) << time << " s"
-                  << "|" << std::setw(10) << veh_count*delta_n << " veh"
-                  << "|" << std::setw(7) << std::fixed << std::setprecision(2) << ave_speed << " m/s"
-                  << endl;
-        }        
+        // Print progress at show_progress_deltat intervals (same as Python's exec_simulation)
+        if (print_mode == 1 && show_progress == 1 && show_progress_deltat_timestep > 0 && timestep > 0 && timestep % show_progress_deltat_timestep == 0){
+            print_progress_line(time);
+        }
+    }
+
+    // Final progress line when the simulation reaches its end (same as Python's exec_simulation)
+    if (print_mode == 1 && show_progress == 1 && timestep >= total_timesteps){
+        print_progress_line(timestep * delta_t);
     }
 }
 
