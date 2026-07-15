@@ -1129,4 +1129,4 @@ def test_override_signal():
     cum2 = W.LINKS[0].cum_arrival
 
     assert ttt1 == ttt2
-    assert cum1 == cum2
+    assert list(cum1) == list(cum2)  # list() for compatibility with cpp mode, where cum_arrival is a numpy array

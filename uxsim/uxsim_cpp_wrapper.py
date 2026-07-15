@@ -123,6 +123,52 @@ class CppNode:
     def signal_log(self, value):
         self._cpp_node.signal_log = value
 
+    def override_signal(self, signal, groups=None, signal_offset=0, reset=False, signal_offset_old=None):
+        """
+        Override signal setting.
+
+        Parameters
+        ----------
+        signal : list of float
+            Duration of each signal phase in seconds.
+            For example, [30, 60] means that this signal has two phases; first is 30 sec green time for phase 0 and second is 60 sec green time for phase 1.
+        groups : list of list of str or Link
+            List of links that have green light for each signal phase.
+            For example, [[link1, link2], [link3, link4]] means that link1, link2 will have green in phase 0, and link3, link4 will have green light in phase 1.
+        signal_offset : float, optional
+            Offset of the signal cycle in seconds.
+        reset : bool, optional
+            If True, reset the current signal phase and elapsed phase time.
+        signal_offset_old : float, optional
+            Previous (wrong) signal offset in seconds. When specified, the new offset is calculated relative to the new cycle length. Kept for backward compatibility.
+        """
+        self.signal = signal
+        self.signal_offset = signal_offset
+        if reset:
+            self._cpp_node.signal_phase = 0
+            self._cpp_node.signal_t = 0
+        if signal_offset_old != None:
+            self.signal_offset = self.cycle_length - signal_offset_old
+        self._cpp_node.signal_offset = float(self.signal_offset)
+
+        if groups is None:
+            return None
+
+        if len(groups) != len(signal):
+            raise ValueError("The length of `group` must match the length of `signal`.")
+
+        phase_info = ddict(list)
+        for i, group in enumerate(groups):
+            for link in group:
+                l = self.W.get_link(link)
+                if l not in self.inlinks.values():
+                    raise ValueError(f"Link {l.name} is not an incoming link of node {self.name}.")
+                phase_info[l].append(i)
+
+        for key in phase_info:
+            key.signal_group = phase_info[key]
+            key._cpp_link.signal_group = phase_info[key]
+
 
 class CppLink:
     """Thin wrapper around C++ Link. Stores attributes for analyzer compatibility."""
