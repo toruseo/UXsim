@@ -120,7 +120,24 @@ struct Link {
     double kappa;
     double capacity;
     double backward_wave_speed;
-    deque<Vehicle *> vehicles;
+
+    // Vehicle queue as an index-based FIFO ring buffer (replaces deque<Vehicle*>).
+    // veh_ring holds vehicle idx (into World SoA), sized to a power of two.
+    // head_seq/tail_seq are monotonically increasing absolute sequence numbers; the
+    // queue position of a vehicle is (its stored World::veh_queue_seq) - head_seq.
+    vector<int> veh_ring;
+    long long veh_head_seq;
+    long long veh_tail_seq;
+    int veh_ring_mask;
+
+    // Queue helpers. q_at_seq/q_front_idx/q_back_idx return a vehicle idx (into World SoA).
+    int q_size() const { return (int)(veh_tail_seq - veh_head_seq); }
+    bool q_empty() const { return veh_tail_seq == veh_head_seq; }
+    int q_front_idx() const { return veh_ring[veh_head_seq & veh_ring_mask]; }
+    int q_back_idx() const { return veh_ring[(veh_tail_seq - 1) & veh_ring_mask]; }
+    int q_at_seq(long long seq) const { return veh_ring[seq & veh_ring_mask]; }
+    void q_pop_front() { veh_head_seq++; }
+    void q_push(int veh_idx);  // appends veh_idx, records its seq into World::veh_queue_seq
 
     vector<double> traveltime_tt; // increments of time
     vector<double> traveltime_t;
@@ -193,8 +210,14 @@ struct Vehicle {
     // Position in World::vehicles and index into the World SoA hot-state arrays
     int idx;
 
-    Vehicle *leader;
-    Vehicle *follower;
+    // leader/follower are derived from the current link's queue position instead of
+    // being stored: the leader is the vehicle number_of_lanes positions ahead in the
+    // link ring buffer, the follower is number_of_lanes positions behind. Both return
+    // -1 / nullptr when no such vehicle is on the current link.
+    int leader_idx() const;
+    int follower_idx() const;
+    Vehicle *leader() const;
+    Vehicle *follower() const;
 
     // Hot state (x, x_next, x_old, v, move_remain, state, link, lane) lives in
     // World SoA arrays; these facade accessors read/write it by idx.
@@ -328,6 +351,7 @@ struct World {
     vector<int> veh_state;
     vector<int> veh_link_id;  // -1 = not on any link
     vector<int> veh_lane;
+    vector<long long> veh_queue_seq;  // link-ring sequence number at link entry; -1 = not queued
     vector<Link *> links;
     vector<Node *> nodes;
     unordered_map<int, Vehicle *> vehicles_living;  //home, wait, run // vehicles_living[id] = vehicle
@@ -488,3 +512,21 @@ inline int &Vehicle::lane() { return w->veh_lane[idx]; }
 inline int Vehicle::lane() const { return w->veh_lane[idx]; }
 inline Link *Vehicle::link() const { int lid = w->veh_link_id[idx]; return lid >= 0 ? w->links[lid] : nullptr; }
 inline void Vehicle::set_link(Link *ln) { w->veh_link_id[idx] = ln ? ln->id : -1; }
+
+// leader/follower derived from the current link ring buffer (see declarations).
+inline int Vehicle::leader_idx() const {
+    int lid = w->veh_link_id[idx];
+    if (lid < 0) return -1;
+    Link *lk = w->links[lid];
+    long long seq_leader = w->veh_queue_seq[idx] - lk->number_of_lanes;
+    return (seq_leader >= lk->veh_head_seq) ? lk->q_at_seq(seq_leader) : -1;
+}
+inline int Vehicle::follower_idx() const {
+    int lid = w->veh_link_id[idx];
+    if (lid < 0) return -1;
+    Link *lk = w->links[lid];
+    long long seq_follower = w->veh_queue_seq[idx] + lk->number_of_lanes;
+    return (seq_follower < lk->veh_tail_seq) ? lk->q_at_seq(seq_follower) : -1;
+}
+inline Vehicle *Vehicle::leader() const { int li = leader_idx(); return li >= 0 ? w->vehicles[li] : nullptr; }
+inline Vehicle *Vehicle::follower() const { int fi = follower_idx(); return fi >= 0 ? w->vehicles[fi] : nullptr; }

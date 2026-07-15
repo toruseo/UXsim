@@ -115,11 +115,11 @@ void Node::generate(){
 
         // Multi-lane acceptance check
         bool can_accept = false;
-        if ((int)outlink->vehicles.size() < outlink->number_of_lanes){
+        if (outlink->q_size() < outlink->number_of_lanes){
             can_accept = true;
         } else {
-            int idx = (int)outlink->vehicles.size() - outlink->number_of_lanes;
-            if (outlink->vehicles[idx]->x() > outlink->delta_per_lane * w->delta_n){
+            int lead = outlink->q_at_seq(outlink->veh_tail_seq - outlink->number_of_lanes);
+            if (w->veh_x[lead] > outlink->delta_per_lane * w->delta_n){
                 can_accept = true;
             }
         }
@@ -151,21 +151,13 @@ void Node::generate(){
         w->vehicles_running[veh->id] = veh;
 
         // Lane assignment
-        if (!outlink->vehicles.empty()){
-            veh->lane() = (outlink->vehicles.back()->lane() + 1) % outlink->number_of_lanes;
+        if (!outlink->q_empty()){
+            veh->lane() = (w->vehicles[outlink->q_back_idx()]->lane() + 1) % outlink->number_of_lanes;
         } else {
             veh->lane() = 0;
         }
 
-        // Leader-Follower (leader is number_of_lanes positions back)
-        veh->leader = nullptr;
-        if ((int)outlink->vehicles.size() >= outlink->number_of_lanes){
-            int leader_idx = (int)outlink->vehicles.size() - outlink->number_of_lanes;
-            veh->leader = outlink->vehicles[leader_idx];
-            veh->leader->follower = veh;
-        }
-
-        outlink->vehicles.push_back(veh);
+        outlink->q_push(veh->idx);
 
         // Cumulative arrival curve
         outlink->arrival_curve[w->timestep] += w->delta_n;
@@ -232,11 +224,11 @@ void Node::transfer(){
     for (auto outlink : outlinks_expanded){
         // Multi-lane acceptance check
         bool can_accept = false;
-        if ((int)outlink->vehicles.size() < outlink->number_of_lanes){
+        if (outlink->q_size() < outlink->number_of_lanes){
             can_accept = true;
         } else {
-            int idx = (int)outlink->vehicles.size() - outlink->number_of_lanes;
-            if (outlink->vehicles[idx]->x() > outlink->delta_per_lane * w->delta_n){
+            int lead = outlink->q_at_seq(outlink->veh_tail_seq - outlink->number_of_lanes);
+            if (w->veh_x[lead] > outlink->delta_per_lane * w->delta_n){
                 can_accept = true;
             }
         }
@@ -257,7 +249,7 @@ void Node::transfer(){
         auto &merge_priorities = _buf_merge_priorities;
         for (auto veh : incoming_vehicles){
             if (veh->route_next_link == outlink &&
-                    veh == veh->link()->vehicles.front() &&
+                    veh == w->vehicles[veh->link()->q_front_idx()] &&
                     veh->link()->capacity_out_remain >= w->delta_n &&
                     (contains(veh->link()->signal_group, signal_phase) || signal_intervals.size() <= 1)){
                 merging_vehs.push_back(veh);
@@ -311,8 +303,9 @@ void Node::transfer(){
 
         chosen_veh->arrival_time_link = (double)w->timestep * w->delta_t;
 
-        // Remove from old link
-        inlink->vehicles.pop_front();
+        // Remove from old link (this also drops the leader link for the vehicle that
+        // was following chosen_veh on inlink: its derived leader is now ahead of head)
+        inlink->q_pop_front();
 
         chosen_veh->set_link(outlink);
         chosen_veh->x() = 0.0;
@@ -325,30 +318,23 @@ void Node::transfer(){
         chosen_veh->_traveled_nodes[outlink->start_node->id] = true;
         chosen_veh->_traveled_link_count++;
 
-        if (chosen_veh->follower){
-            chosen_veh->follower->leader = nullptr;
-        }
-        chosen_veh->follower = nullptr;
-
         // Lane assignment on new link
-        if (!outlink->vehicles.empty()){
-            chosen_veh->lane() = (outlink->vehicles.back()->lane() + 1) % outlink->number_of_lanes;
+        if (!outlink->q_empty()){
+            chosen_veh->lane() = (w->vehicles[outlink->q_back_idx()]->lane() + 1) % outlink->number_of_lanes;
         } else {
             chosen_veh->lane() = 0;
         }
 
-        // Leader-Follower (leader is number_of_lanes positions back in the same lane)
-        chosen_veh->leader = nullptr;
-        if ((int)outlink->vehicles.size() >= outlink->number_of_lanes){
-            int leader_idx = (int)outlink->vehicles.size() - outlink->number_of_lanes;
-            chosen_veh->leader = outlink->vehicles[leader_idx];
-            chosen_veh->leader->follower = chosen_veh;
+        // Leader on new link: number_of_lanes positions back in the pre-push queue
+        Vehicle *chosen_leader = nullptr;
+        if (outlink->q_size() >= outlink->number_of_lanes){
+            chosen_leader = w->vehicles[outlink->q_at_seq(outlink->veh_tail_seq - outlink->number_of_lanes)];
         }
 
         // Move-remain processing: carry residual distance to next link
         double x_next_mr = chosen_veh->move_remain() * outlink->vmax / inlink->vmax;
-        if (chosen_veh->leader != nullptr){
-            double x_cong = chosen_veh->leader->x_old() - outlink->delta_per_lane * w->delta_n;
+        if (chosen_leader != nullptr){
+            double x_cong = chosen_leader->x_old() - outlink->delta_per_lane * w->delta_n;
             if (x_cong < chosen_veh->x()){
                 x_cong = chosen_veh->x();
             }
@@ -367,11 +353,11 @@ void Node::transfer(){
         chosen_veh->move_remain() = 0.0;
 
         // If the new front vehicle of inlink is waiting for trip end, let it end
-        if (!inlink->vehicles.empty() && inlink->vehicles.front()->flag_waiting_for_trip_end){
-            inlink->vehicles.front()->end_trip();
+        if (!inlink->q_empty() && w->vehicles[inlink->q_front_idx()]->flag_waiting_for_trip_end){
+            w->vehicles[inlink->q_front_idx()]->end_trip();
         }
 
-        outlink->vehicles.push_back(chosen_veh);
+        outlink->q_push(chosen_veh->idx);
 
         // Remove from incoming_vehicles
         remove_from_vector(incoming_vehicles, chosen_veh);
@@ -380,8 +366,8 @@ void Node::transfer(){
     // Process trip-end-waiting vehicles at the front of each inlink
     for (auto inlink : in_links){
         for (int lane = 0; lane < inlink->number_of_lanes; lane++){
-            if (!inlink->vehicles.empty() && inlink->vehicles.front()->flag_waiting_for_trip_end){
-                inlink->vehicles.front()->end_trip();
+            if (!inlink->q_empty() && w->vehicles[inlink->q_front_idx()]->flag_waiting_for_trip_end){
+                w->vehicles[inlink->q_front_idx()]->end_trip();
             } else {
                 break;
             }
@@ -461,6 +447,12 @@ Link::Link(
     start_node = w->nodes_map[start_node_name];
     end_node = w->nodes_map[end_node_name];
 
+    // Vehicle queue ring buffer (grows on demand in q_push)
+    veh_ring.assign(8, 0);
+    veh_ring_mask = (int)veh_ring.size() - 1;
+    veh_head_seq = 0;
+    veh_tail_seq = 0;
+
     arrival_curve.resize(w->total_timesteps, 0.0);
     departure_curve.resize(w->total_timesteps, 0.0);
 
@@ -530,12 +522,30 @@ void Link::change_jam_density(double new_value){
 
 int Link::count_vehicles_in_queue() const {
     int count = 0;
-    for (auto veh : vehicles){
-        if (veh->v() < vmax){
+    for (long long s = veh_head_seq; s < veh_tail_seq; s++){
+        if (w->veh_v[veh_ring[s & veh_ring_mask]] < vmax){
             count++;
         }
     }
     return count;
+}
+
+// Append veh_idx to the queue, growing the ring buffer if full (preserving FIFO order
+// and the absolute sequence numbers), and record its entry sequence for leader derivation.
+void Link::q_push(int veh_idx){
+    if (veh_tail_seq - veh_head_seq >= (long long)veh_ring.size()){
+        int newcap = (int)veh_ring.size() * 2;
+        vector<int> newring(newcap, 0);
+        int newmask = newcap - 1;
+        for (long long s = veh_head_seq; s < veh_tail_seq; s++){
+            newring[s & newmask] = veh_ring[s & veh_ring_mask];
+        }
+        veh_ring.swap(newring);
+        veh_ring_mask = newmask;
+    }
+    veh_ring[veh_tail_seq & veh_ring_mask] = veh_idx;
+    w->veh_queue_seq[veh_idx] = veh_tail_seq;
+    veh_tail_seq++;
 }
 
 void Link::set_travel_time(){
@@ -547,12 +557,12 @@ void Link::set_travel_time(){
         return;
     }
     // Instantaneous travel time = length / average speed
-    if (!vehicles.empty()){
+    if (!q_empty()){
         double vsum = 0.0;
-        for (auto veh : vehicles){
-            vsum += veh->v();
+        for (long long s = veh_head_seq; s < veh_tail_seq; s++){
+            vsum += w->veh_v[veh_ring[s & veh_ring_mask]];
         }
-        double avg_v = vsum / (double)vehicles.size();
+        double avg_v = vsum / (double)q_size();
         if (avg_v > 0.0){
             traveltime_instant[w->timestep] = (double)length / avg_v;
         }else{
@@ -674,8 +684,6 @@ Vehicle::Vehicle(
       departure_time(departure_time),
       orig(nullptr),
       dest(nullptr),
-      leader(nullptr),
-      follower(nullptr),
       arrival_time(-1.0),
       travel_time(-1.0),
       arrival_time_link(0.0),
@@ -723,6 +731,7 @@ Vehicle::Vehicle(
     w->veh_state.push_back(vsHOME);
     w->veh_link_id.push_back(-1);
     w->veh_lane.push_back(0);
+    w->veh_queue_seq.push_back(-1);
 
     w->vehicles.push_back(this);
     w->vehicles_living[id] = this;
@@ -760,7 +769,7 @@ void Vehicle::update(){
             if (lk->end_node == dest){
                 // Prepare for trip end (wait if not at front of link)
                 flag_waiting_for_trip_end = 1;
-                if (lk->vehicles.front() == this){
+                if (w->vehicles[lk->q_front_idx()] == this){
                     end_trip();
                 }
             }else if (lk->end_node->out_links.empty() && trip_abort == 1){
@@ -768,7 +777,7 @@ void Vehicle::update(){
                 flag_trip_aborted = 1;
                 route_next_link = nullptr;
                 flag_waiting_for_trip_end = 1;
-                if (lk->vehicles.front() == this){
+                if (w->vehicles[lk->q_front_idx()] == this){
                     end_trip();
                 }
             }else{
@@ -807,11 +816,10 @@ void Vehicle::end_trip(){
     w->vehicles_living.erase(id);
     w->vehicles_running.erase(id);
 
-    lk->vehicles.pop_front();
+    // Pop self from the front of the link (this vehicle is always at the front here);
+    // the trailing vehicle's derived leader becomes null automatically.
+    lk->q_pop_front();
 
-    if (follower){
-        follower->leader = nullptr;
-    }
     set_link(nullptr);
     x() = 0.0;
     flag_waiting_for_trip_end = 0;
@@ -835,8 +843,9 @@ void Vehicle::car_follow_newell(){
     x_next() = x() + lk->vmax * w->delta_t;
 
     // congested (use delta_per_lane for multi-lane car following)
-    if (leader != nullptr){
-        double gap = leader->x() - lk->delta_per_lane * w->delta_n;
+    Vehicle *ld = leader();
+    if (ld != nullptr){
+        double gap = ld->x() - lk->delta_per_lane * w->delta_n;
         if (gap < x()){
             gap = x();
         }
@@ -1012,7 +1021,10 @@ void Vehicle::log_data(){
             log_x.push_back(x());
             log_v.push_back(v());
             log_lane.push_back(lane());
-            log_s.push_back((leader != nullptr && leader->link() == lk) ? leader->x() - x() : -1.0);
+            // The derived leader is always on the same link, so the same-link guard of
+            // the original (leader->link() == lk) is implicit.
+            Vehicle *ld = leader();
+            log_s.push_back(ld != nullptr ? ld->x() - x() : -1.0);
         } else {
             log_link.push_back(-1);
             log_x.push_back(-1);
@@ -1480,9 +1492,9 @@ void World::print_progress_line(double t_print){
     double platoon_count = 0;
     double v_sum = 0;
     for (auto ln : links){
-        platoon_count += (double)ln->vehicles.size();
-        for (auto veh : ln->vehicles){
-            v_sum += veh->v();
+        platoon_count += (double)ln->q_size();
+        for (long long s = ln->veh_head_seq; s < ln->veh_tail_seq; s++){
+            v_sum += veh_v[ln->veh_ring[s & ln->veh_ring_mask]];
         }
     }
     double sum_vehs = platoon_count * delta_n;

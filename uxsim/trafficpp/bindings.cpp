@@ -802,14 +802,16 @@ NB_MODULE(uxsim_cpp, m) {
         .def("change_jam_density", &Link::change_jam_density, nb::arg("new_value"))
         .def("count_vehicles_in_queue", &Link::count_vehicles_in_queue)
         .def_prop_ro("vehicle_count", [](const Link &l) -> size_t {
-                 return l.vehicles.size();
+                 return (size_t)l.q_size();
              },
              "Number of vehicles on this link (O(1), no list conversion)")
         .def_prop_ro("avg_speed", [](const Link &l) -> double {
-                 if (l.vehicles.empty()) return l.vmax;
+                 if (l.q_empty()) return l.vmax;
                  double sum = 0;
-                 for (auto *v : l.vehicles) sum += v->v();
-                 return sum / l.vehicles.size();
+                 for (long long s = l.veh_head_seq; s < l.veh_tail_seq; s++){
+                     sum += l.w->veh_v[l.veh_ring[s & l.veh_ring_mask]];
+                 }
+                 return sum / l.q_size();
              },
              "Average speed of vehicles on this link (computed in C++)")
         // Numpy array accessors — avoid list() conversion overhead on Python side
@@ -853,8 +855,8 @@ NB_MODULE(uxsim_cpp, m) {
         .def_prop_ro("x_next", [](const Vehicle &v) { return v.x_next(); })
         .def_prop_ro("v", [](const Vehicle &v) { return v.v(); })
         .def_prop_ro("lane", [](const Vehicle &v) { return v.lane(); })
-        .def_ro("leader", &Vehicle::leader)
-        .def_ro("follower", &Vehicle::follower)
+        .def_prop_ro("leader", [](const Vehicle &v) { return v.leader(); })
+        .def_prop_ro("follower", [](const Vehicle &v) { return v.follower(); })
         .def_prop_rw("state", [](const Vehicle &v) { return v.state(); }, [](Vehicle &v, int val) { v.state() = val; })
         .def_ro("arrival_time_link", &Vehicle::arrival_time_link)
         .def_rw("route_next_link", &Vehicle::route_next_link)
