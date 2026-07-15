@@ -341,7 +341,8 @@ struct World {
     vector<vector<pair<int, double>>> rsa_adj_list;  // adjacency list (rebuilt each call)
     vector<vector<double>> rsa_dist;                 // all-pairs distances
     vector<vector<int>> rsa_next;                    // all-pairs next-hop
-    vector<char> rsa_visited;                        // per-source visited flags
+    // The per-source Dijkstra visited flags and priority queue are thread_local (see
+    // route_search_all): the source loop is parallelized, so this scratch cannot be shared.
 
     bool flag_initialized;
 

@@ -8,6 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(nanobind CONFIG REQUIRED)
 
+# OpenMP for the deterministic parallel main-loop stages. Not REQUIRED: when it is
+# unavailable the `#pragma omp` directives are ignored and the engine runs serially
+# (the code calls no omp_* runtime functions, only pragmas), so the build still succeeds.
+find_package(OpenMP)
+
 # Python extension module
 # Note: bindings.cpp includes traffi.cpp directly via #include "traffi.cpp",
 # so we only compile bindings.cpp as the single translation unit.
@@ -25,6 +30,11 @@ if(MSVC)
     target_compile_options(uxsim_cpp PRIVATE /O2)
 else()
     target_compile_options(uxsim_cpp PRIVATE -O3)
+endif()
+
+# Link OpenMP when available (enables the parallel main-loop stages).
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(uxsim_cpp PRIVATE OpenMP::OpenMP_CXX)
 endif()
 
 # Static linking for MinGW
