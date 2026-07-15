@@ -862,7 +862,14 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("route_next_link", &Vehicle::route_next_link)
         .def_rw("route_choice_flag_on_link", &Vehicle::route_choice_flag_on_link)
         .def_rw("route_adaptive", &Vehicle::route_adaptive)
-        .def_rw("route_preference", &Vehicle::route_preference)
+        // route_preference is stored lazily (empty until written): the getter returns
+        // links.size() zeros when empty, matching the old eager per-vehicle vector.
+        .def_prop_rw("route_preference",
+            [](const Vehicle &v) -> vector<double> {
+                if (v.route_preference.empty()) return vector<double>(v.w->links.size(), 0.0);
+                return v.route_preference;
+            },
+            [](Vehicle &v, vector<double> val) { v.route_preference = std::move(val); })
         .def_rw("links_preferred", &Vehicle::links_preferred)
         .def_rw("links_avoid", &Vehicle::links_avoid)
         .def_rw("specified_route", &Vehicle::specified_route)

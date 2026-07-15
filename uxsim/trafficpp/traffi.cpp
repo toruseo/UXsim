@@ -729,8 +729,9 @@ Vehicle::Vehicle(
     orig = w->nodes_map[orig_name];
     dest = w->nodes_map[dest_name];
 
-    // Initialize link preference (vector indexed by link_id)
-    route_preference.assign(w->links.size(), 0.0);
+    // route_preference is left empty (lazy): the engine never reads Vehicle::route_preference
+    // (route choice uses World::route_preference), so the O(L) per-vehicle zero-fill is skipped.
+    // The Python getter materializes links.size() zeros on demand (see bindings.cpp).
     route_choice_uncertainty = w->route_choice_uncertainty;
 
     // Incremental tracking for no_cyclic_routing and specified_route
@@ -742,15 +743,8 @@ Vehicle::Vehicle(
     log_last_ts = -1;
     log_wait_count = 0;
     log_end_count = 0;
-    if (w->vehicle_log_mode) {
-        // Reserve log arrays: total_timesteps + margin for extra log_data calls
-        size_t log_cap = w->total_timesteps + 10;
-        log_link.reserve(log_cap);
-        log_x.reserve(log_cap);
-        log_v.reserve(log_cap);
-        log_lane.reserve(log_cap);
-        log_s.reserve(log_cap);
-    }
+    // Log arrays are reserved lazily at the first log entry (departure), right-sized to the
+    // remaining horizon instead of the full total_timesteps (see Vehicle::log_data).
 
     idx = (int)w->vehicles.size();
     w->veh_x.push_back(0.0);
@@ -841,32 +835,33 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
     }
 
     // Filter by links_preferred (intersection with linkset)
-    _buf_outlinks.clear();
-    _buf_outlinks.insert(_buf_outlinks.end(), linkset.begin(), linkset.end());
-    auto &outlinks = _buf_outlinks;
+    vector<Link *> &buf_filtered = w->_buf_filtered;
+    w->_buf_outlinks.clear();
+    w->_buf_outlinks.insert(w->_buf_outlinks.end(), linkset.begin(), linkset.end());
+    auto &outlinks = w->_buf_outlinks;
     if (!links_preferred.empty()){
-        _buf_filtered.clear();
+        buf_filtered.clear();
         for (auto ln : outlinks){
             if (contains(links_preferred, ln)){
-                _buf_filtered.push_back(ln);
+                buf_filtered.push_back(ln);
             }
         }
-        if (!_buf_filtered.empty()){
-            outlinks.swap(_buf_filtered);
+        if (!buf_filtered.empty()){
+            outlinks.swap(buf_filtered);
         }
     }
 
     // Filter out links_avoid (subtraction from linkset).
     // As in Python, the subtraction applies whenever any outlink is avoided, even if the result becomes empty; an empty result raises ValueError.
     if (!links_avoid.empty()){
-        _buf_filtered.clear();
+        buf_filtered.clear();
         for (auto ln : outlinks){
             if (!contains(links_avoid, ln)){
-                _buf_filtered.push_back(ln);
+                buf_filtered.push_back(ln);
             }
         }
-        if (_buf_filtered.size() != outlinks.size()){
-            outlinks.swap(_buf_filtered);
+        if (buf_filtered.size() != outlinks.size()){
+            outlinks.swap(buf_filtered);
         }
         if (outlinks.empty()){
             throw std::invalid_argument("Vehicle " + name + ": links_avoid excludes all outgoing links of the current node");
@@ -875,15 +870,15 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
 
     // Filter out links leading to already-traveled nodes (no_cyclic_routing)
     if (w->no_cyclic_routing){
-        _buf_filtered.clear();
+        buf_filtered.clear();
         for (auto ln : outlinks){
             auto end_node_id = ln->end_node->id;
             if (static_cast<size_t>(end_node_id) >= _traveled_nodes.size() || !_traveled_nodes[end_node_id]){
-                _buf_filtered.push_back(ln);
+                buf_filtered.push_back(ln);
             }
         }
-        if (!_buf_filtered.empty()){
-            outlinks.swap(_buf_filtered);
+        if (!buf_filtered.empty()){
+            outlinks.swap(buf_filtered);
         }
     }
 
@@ -894,8 +889,8 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
     }
 
     // Build preference weights (O(1) vector access by link id)
-    _buf_outlink_pref.clear();
-    auto &outlink_pref = _buf_outlink_pref;
+    w->_buf_outlink_pref.clear();
+    auto &outlink_pref = w->_buf_outlink_pref;
     for (auto ln : outlinks){
         outlink_pref.push_back(w->route_preference[dest->id][ln->id]);
     }
@@ -939,6 +934,24 @@ void Vehicle::record_travel_time(Link *link, double t){
 }
 
 /**
+ * @brief Reserve the 5 log arrays right-sized to the remaining horizon.
+ * Called once per vehicle at its first log entry (departure timestep). Upper bound on the
+ * remaining entry count: the log records one entry per timestep from the current timestep
+ * through the last simulated timestep (total_timesteps - 1), i.e. (total_timesteps - timestep)
+ * entries, plus a single END/ABORT tail entry that on the update() path duplicates the final
+ * RUN timestep (+1). A +4 slack absorbs any boundary rounding; the exact bound is +1, so this
+ * never under-reserves and realloc count stays 0.
+ */
+void Vehicle::reserve_log_arrays(){
+    size_t log_cap = w->total_timesteps - w->timestep + 4;
+    log_link.reserve(log_cap);
+    log_x.reserve(log_cap);
+    log_v.reserve(log_cap);
+    log_lane.reserve(log_cap);
+    log_s.reserve(log_cap);
+}
+
+/**
  * @brief Log vehicle data for analysis.
  * Uses reserve'd arrays — push_back is O(1) with no reallocation.
  * log_size tracks actual count (vector::size() is equivalent but log_size avoids any ambiguity if resize was used elsewhere).
@@ -958,7 +971,10 @@ void Vehicle::log_data(){
     }
 
     if (w->vehicle_log_mode){
-        if (log_size == 0) log_first_ts = (int)w->timestep;
+        if (log_size == 0){
+            log_first_ts = (int)w->timestep;
+            reserve_log_arrays();
+        }
         log_last_ts = (int)w->timestep;
         if (state() == vsWAIT) log_wait_count++;
         if (state() == vsEND || state() == vsABORT) log_end_count++;
@@ -998,7 +1014,10 @@ void Vehicle::log_data_run(double spacing){
     w->stat_sample_count += 1.0;
 
     if (w->vehicle_log_mode){
-        if (log_size == 0) log_first_ts = (int)w->timestep;
+        if (log_size == 0){
+            log_first_ts = (int)w->timestep;
+            reserve_log_arrays();
+        }
         log_last_ts = (int)w->timestep;
         log_link.push_back(lk ? lk->id : -1);
         log_x.push_back(x());

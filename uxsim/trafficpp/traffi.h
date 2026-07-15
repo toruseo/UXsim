@@ -255,11 +255,6 @@ struct Vehicle {
     vector<Link *> links_avoid;
     vector<Link *> specified_route;
 
-    // Reusable buffers for route_next_link_choice() to avoid per-call allocation
-    vector<Link *> _buf_outlinks;
-    vector<Link *> _buf_filtered;
-    vector<double> _buf_outlink_pref;
-
     // Incremental tracking for no_cyclic_routing (O(1) lookup instead of log_link scan)
     vector<bool> _traveled_nodes;       // _traveled_nodes[node_id] = true if visited
     int _traveled_link_count;           // number of distinct links traveled (for specified_route)
@@ -290,6 +285,7 @@ struct Vehicle {
     void route_next_link_choice(const vector<Link*>& linkset);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
+    void reserve_log_arrays();
     void log_data();
     // RUN-state logging with an externally supplied leader spacing (used by the fused
     // RUN system pass, which derives the spacing from the link ring buffer directly).
@@ -370,6 +366,13 @@ struct World {
     double route_choice_uncertainty;
     vector<vector<double>> route_preference;   // route_preference[dest_id][link_id]: preference weight for link towards dest
     vector<char> route_pref_active;            // route_pref_active[dest_id]: true once sum(route_preference[dest]) != 0
+
+    // Shared scratch for Vehicle::route_next_link_choice() (serial: called only from the
+    // single-threaded generate/RUN passes). Moved off Vehicle to cut per-vehicle fixed cost.
+    // To parallelize the RUN pass later, replace these with per-thread/thread_local scratch.
+    vector<Link *> _buf_outlinks;
+    vector<Link *> _buf_filtered;
+    vector<double> _buf_outlink_pref;
 
     // Graph adjacency
     vector<vector<int>> adj_mat;
