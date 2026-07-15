@@ -136,6 +136,13 @@ struct Link {
 
     double merge_priority;
 
+    // Per-link buffer collecting vehicles that reached this link's end this timestep and
+    // will transfer to a next link. Filled by the RUN pass (Vehicle::update, this link's
+    // exclusive context) and drained/aggregated into the end_node's incoming_vehicles at the
+    // start of Node::transfer. Replaces the RUN pass pushing directly into the shared node
+    // buffer, so per-link stages can run independently once parallelized.
+    vector<Vehicle *> arrived_vehicles;
+
     double capacity_out;
     double capacity_out_remain;
     double capacity_in;
@@ -253,7 +260,7 @@ struct Vehicle {
     void update();
     void end_trip();
     void car_follow_newell();
-    void route_next_link_choice(const vector<Link*>& linkset);
+    void route_next_link_choice(const vector<Link*>& linkset, std::mt19937 &rng);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
     void log_data();
@@ -307,8 +314,6 @@ struct World {
     vector<Vehicle *> update_order;
     vector<Link *> links;
     vector<Node *> nodes;
-    unordered_map<int, Vehicle *> vehicles_living;  //home, wait, run // vehicles_living[id] = vehicle
-    unordered_map<int, Vehicle *> vehicles_running; //run
     unordered_map<string, Node *> nodes_map;
     unordered_map<string, Link *> links_map;
     unordered_map<string, Vehicle *> vehicles_map;
@@ -344,15 +349,30 @@ struct World {
     double trips_total;
     double trips_completed;
 
-    // incremental stats accumulators (updated during simulation)
-    double ave_v_sum;
-    double ave_vratio_sum;
-    double stat_sample_count;
-    double trips_completed_count;
+    // Incremental stats accumulators as per-entity partial sums (parallel-safe). RUN-state
+    // samples accumulate on the vehicle's current link; WAIT-state samples on the origin
+    // node. Read back via the id-ordered reductions below so repeated reads are identical.
+    // Indexed by link id (link_*) / node id (node_*), grown in the Link/Node constructors.
+    vector<double> link_ave_v_sum;
+    vector<double> link_ave_vratio_sum;
+    vector<double> link_stat_count;
+    vector<double> link_trips_completed;
+    vector<double> node_stat_count;
 
-    // Randomness
+    // Fixed-order (id-ascending) reductions of the per-entity partial sums above.
+    double ave_v_sum() const;
+    double ave_vratio_sum() const;
+    double stat_sample_count() const;
+    double trips_completed_count() const;
+
+    // Randomness. The single World rng is split into per-node and per-link streams, seeded
+    // deterministically from (random_seed, kind, id) so results are independent of thread
+    // count once the per-node/per-link stages are parallelized. node_rngs: Node::transfer
+    // shuffle + merge lottery and generate-time route_next_link_choice. link_rngs: RUN-path
+    // route_next_link_choice and update_adj_time_matrix per-link noise.
     long long random_seed;
-    std::mt19937 rng;
+    vector<std::mt19937> node_rngs;
+    vector<std::mt19937> link_rngs;
 
     std::ostream *writer;
 

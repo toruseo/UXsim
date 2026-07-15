@@ -44,6 +44,9 @@ Node::Node(World *w, const string &node_name, double x, double y, vector<double>
       flow_capacity(flow_capacity),
       number_of_lanes(number_of_lanes){
     w->nodes.push_back(this);
+    // Per-node RNG stream (kind=1) and stat partial sum, seeded/sized by node id.
+    w->node_rngs.push_back(make_entity_rng(w->random_seed, 1u, (unsigned int)id));
+    w->node_stat_count.push_back(0.0);
     w->node_id++;
     w->nodes_map[node_name] = this;
 
@@ -105,8 +108,8 @@ void Node::generate(){
         }
         Vehicle *veh = generation_queue.front();
 
-        // Choose the next link
-        veh->route_next_link_choice(out_links);
+        // Choose the next link (generate uses this node's RNG stream)
+        veh->route_next_link_choice(out_links, w->node_rngs[id]);
 
         if (veh->route_next_link == nullptr){
             break;
@@ -147,8 +150,6 @@ void Node::generate(){
         }
         veh->_traveled_nodes[outlink->start_node->id] = true;
         veh->_traveled_link_count++;
-
-        w->vehicles_running[veh->id] = veh;
 
         // Lane assignment
         if (!outlink->vehicles.empty()){
@@ -205,6 +206,26 @@ void Node::flow_capacity_update(){
  * @brief Transfer vehicles between links at the node.
  */
 void Node::transfer(){
+    // Aggregate the per-link arrival buffers (filled by the RUN pass) into this node's
+    // incoming_vehicles. in_links are iterated in a fixed order; sorting by vehicle id below
+    // makes the final order independent of the aggregation order, reproducing the id-ordered
+    // fill of the original update() loop (which pushed arrivals in vehicle-id order).
+    for (auto inlink : in_links){
+        for (auto veh : inlink->arrived_vehicles){
+            incoming_vehicles.push_back(veh);
+        }
+        inlink->arrived_vehicles.clear();
+    }
+    if (incoming_vehicles.size() > 1){
+        std::sort(incoming_vehicles.begin(), incoming_vehicles.end(),
+                  [](Vehicle *a, Vehicle *b){ return a->id < b->id; });
+    }
+    // incoming_vehicles_requests mirrors incoming_vehicles (request == veh->route_next_link,
+    // set in Vehicle::update and unchanged since). Kept for the observable node member layout.
+    for (auto veh : incoming_vehicles){
+        incoming_vehicles_requests.push_back(veh->route_next_link);
+    }
+
     // Build outlink list with repetition per lane (multi-lane gets more transfer attempts)
     _buf_outlinks_expanded.clear();
     _buf_seen_outlinks.clear();
@@ -224,7 +245,7 @@ void Node::transfer(){
     if (!w->hard_deterministic_mode){
         for (int i = (int)outlinks_expanded.size() - 1; i > 0; i--){
             std::uniform_int_distribution<int> dist(0, i);
-            int j = dist(w->rng);
+            int j = dist(w->node_rngs[id]);
             std::swap(outlinks_expanded[i], outlinks_expanded[j]);
         }
     }
@@ -282,7 +303,7 @@ void Node::transfer(){
             chosen_veh = random_choice<Vehicle>(
                 merging_vehs,
                 merge_priorities,
-                w->rng);
+                w->node_rngs[id]);
         }
         if (!chosen_veh){
             continue;
@@ -474,6 +495,12 @@ Link::Link(
     end_node->in_links.push_back(this);
 
     w->links.push_back(this);
+    // Per-link RNG stream (kind=2) and stat partial sums, seeded/sized by link id.
+    w->link_rngs.push_back(make_entity_rng(w->random_seed, 2u, (unsigned int)id));
+    w->link_ave_v_sum.push_back(0.0);
+    w->link_ave_vratio_sum.push_back(0.0);
+    w->link_stat_count.push_back(0.0);
+    w->link_trips_completed.push_back(0.0);
     w->link_id++;
     w->links_map[link_name] = this;
 }
@@ -723,7 +750,6 @@ Vehicle::Vehicle(
     }
 
     w->vehicles.push_back(this);
-    w->vehicles_living[id] = this;
     w->vehicle_id++;
     w->vehicles_map[vehicle_name] = this;
 }
@@ -769,9 +795,11 @@ void Vehicle::update(){
                     end_trip();
                 }
             }else{
-                route_next_link_choice(link->end_node->out_links);
-                link->end_node->incoming_vehicles.push_back(this);
-                link->end_node->incoming_vehicles_requests.push_back(route_next_link);
+                // RUN-path route choice uses the current link's RNG stream. The arrival is
+                // buffered on this link and aggregated into the end node's incoming_vehicles
+                // at the start of Node::transfer.
+                route_next_link_choice(link->end_node->out_links, w->link_rngs[link->id]);
+                link->arrived_vehicles.push_back(this);
             }
         }
     }else if (state == vsEND || state == vsABORT){
@@ -784,7 +812,8 @@ void Vehicle::update(){
  */
 void Vehicle::end_trip(){
     state = vsEND;
-    w->trips_completed_count += 1.0;
+    // Per-link completed-trip counter (end_trip runs in this link's exclusive context).
+    w->link_trips_completed[link->id] += 1.0;
     link->departure_curve[w->timestep] += w->delta_n;
 
     // Record traveltime_real event (lazily materialized on read, matching Python's traveltime_actual slice update)
@@ -799,9 +828,6 @@ void Vehicle::end_trip(){
 
     arrival_time = (double)w->timestep * w->delta_t;
     travel_time = arrival_time - departure_time;
-
-    w->vehicles_living.erase(id);
-    w->vehicles_running.erase(id);
 
     link->vehicles.pop_front();
 
@@ -857,7 +883,7 @@ void Vehicle::car_follow_newell(){
  * 
  * @param linkset Available links to choose from.
  */
-void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
+void Vehicle::route_next_link_choice(const vector<Link*>& linkset, std::mt19937 &rng){
     if (linkset.empty()){
         route_next_link = nullptr;
         route_choice_flag_on_link = 1;
@@ -953,7 +979,7 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset){
         route_next_link = random_choice<Link>(
             outlinks,
             outlink_pref,
-            w->rng);
+            rng);
     }
     route_choice_flag_on_link = 1;
 }
@@ -987,13 +1013,15 @@ void Vehicle::log_data(){
     // Accumulate stats for print_simple_results (regardless of log mode).
     // A waiting vehicle counts as a zero-speed sample for the average speed statistic, as in Python's record_log.
     if (state == vsRUN){
-        w->ave_v_sum += v;
+        // RUN samples accumulate on the current link's partial sums.
         if (link){
-            w->ave_vratio_sum += v / link->vmax;
+            w->link_ave_v_sum[link->id] += v;
+            w->link_ave_vratio_sum[link->id] += v / link->vmax;
+            w->link_stat_count[link->id] += 1.0;
         }
-        w->stat_sample_count += 1.0;
     } else if (state == vsWAIT){
-        w->stat_sample_count += 1.0;
+        // WAIT samples accumulate on the origin node (where the vehicle queues).
+        w->node_stat_count[orig->id] += 1.0;
     }
 
     if (w->vehicle_log_mode){
@@ -1112,11 +1140,6 @@ World::World(
       ave_vratio(0.0),
       trips_total(0.0),
       trips_completed(0.0),
-      ave_v_sum(0.0),
-      ave_vratio_sum(0.0),
-      stat_sample_count(0.0),
-      trips_completed_count(0.0),
-      rng((std::mt19937::result_type)random_seed),
       flag_initialized(false),
       writer(&std::cout){
     // The route update interval has a minimum of 1 timestep, like Python's DELTAT_ROUTE.
@@ -1138,8 +1161,6 @@ World::~World(){
     vehicles.clear();
     links.clear();
     nodes.clear();
-    vehicles_living.clear();
-    vehicles_running.clear();
     nodes_map.clear();
     links_map.clear();
     vehicles_map.clear();
@@ -1200,7 +1221,7 @@ void World::update_adj_time_matrix(){
         if (hard_deterministic_mode){
             new_link_tt = tt + penalty;
         } else {
-            double noise_factor = random_range_float64(1.0, 1.0 + noise, rng);
+            double noise_factor = random_range_float64(1.0, 1.0 + noise, link_rngs[ln->id]);
             new_link_tt = tt * noise_factor + penalty;
         }
         // If there are multiple links between the same nodes, average the travel time
@@ -1449,13 +1470,38 @@ void World::print_scenario_stats(){
     }
 }
 
+// Id-ordered reductions of the per-entity statistic partial sums. Summation is over index
+// (== entity id) in ascending order so repeated reads are bit-identical.
+double World::ave_v_sum() const {
+    double s = 0.0;
+    for (size_t i = 0; i < link_ave_v_sum.size(); i++) s += link_ave_v_sum[i];
+    return s;
+}
+double World::ave_vratio_sum() const {
+    double s = 0.0;
+    for (size_t i = 0; i < link_ave_vratio_sum.size(); i++) s += link_ave_vratio_sum[i];
+    return s;
+}
+double World::stat_sample_count() const {
+    double s = 0.0;
+    for (size_t i = 0; i < link_stat_count.size(); i++) s += link_stat_count[i];
+    for (size_t i = 0; i < node_stat_count.size(); i++) s += node_stat_count[i];
+    return s;
+}
+double World::trips_completed_count() const {
+    double s = 0.0;
+    for (size_t i = 0; i < link_trips_completed.size(); i++) s += link_trips_completed[i];
+    return s;
+}
+
 void World::print_simple_results(){
     // Compute from incrementally accumulated stats (no log scan needed)
     trips_total = (double)vehicles.size() * delta_n;
-    trips_completed = trips_completed_count * delta_n;
-    if (stat_sample_count > 0){
-        ave_v = ave_v_sum / stat_sample_count;
-        ave_vratio = ave_vratio_sum / stat_sample_count;
+    trips_completed = trips_completed_count() * delta_n;
+    double n_samples = stat_sample_count();
+    if (n_samples > 0){
+        ave_v = ave_v_sum() / n_samples;
+        ave_vratio = ave_vratio_sum() / n_samples;
     }
 
     (*writer) << "Stats:\n";
