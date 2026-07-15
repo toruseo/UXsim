@@ -15,6 +15,10 @@
 #include <climits>
 #include <exception>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include "traffi.h"
 
 using std::string, std::vector, std::deque, std::pair, std::map, std::unordered_map;
@@ -1159,6 +1163,15 @@ void World::update_adj_time_matrix(){
     }
 }
 
+int World::resolve_num_threads() const {
+#ifdef _OPENMP
+    if (num_threads == -1) return omp_get_max_threads();
+    return num_threads;
+#else
+    return 1;
+#endif
+}
+
 void World::route_search_all(const vector<vector<double>> &adj, double infty) {
     int nsize = (int)adj.size();
     if (std::fabs(infty) < 1e-9) {
@@ -1193,7 +1206,7 @@ void World::route_search_all(const vector<vector<double>> &adj, double infty) {
     // rsa_next[start] rows, and rsa_adj_list is read-only here, so the source loop is
     // parallel-safe with per-thread visited flags and priority queue. The result is
     // independent of thread count.
-    #pragma omp parallel
+    #pragma omp parallel num_threads(resolve_num_threads())
     {
         vector<char> visited(nsize);
         std::priority_queue<pdi, vector<pdi>, std::greater<pdi>> pq;
@@ -1333,7 +1346,7 @@ void World::route_choice_duo(){
     // route_next and links are read-only here, so the destination loop is parallel-safe and
     // independent of thread count.
     int nnodes = (int)nodes.size();
-    #pragma omp parallel for schedule(static)
+    #pragma omp parallel for schedule(static) num_threads(resolve_num_threads())
     for (int di = 0; di < nnodes; di++){
         Node *dest = nodes[di];
         int k = dest->id;
@@ -1369,7 +1382,7 @@ void World::route_choice_duo_gradual(){
 
     // Per-destination and thread-count independent (see route_choice_duo).
     int nnodes = (int)nodes.size();
-    #pragma omp parallel for schedule(static)
+    #pragma omp parallel for schedule(static) num_threads(resolve_num_threads())
     for (int di = 0; di < nnodes; di++){
         Node *dest = nodes[di];
         int k = dest->id;
@@ -1546,7 +1559,7 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         // cross the OpenMP boundary.
         std::exception_ptr gen_exc; int gen_exc_id = INT_MAX;
         std::exception_ptr run_exc; int run_exc_id = INT_MAX;
-        #pragma omp parallel
+        #pragma omp parallel num_threads(resolve_num_threads())
         {
         // Link updates (per-link): Link::update() touches only its own time-indexed arrays
         // and capacities, so it is entity-exclusive and independent of thread count.

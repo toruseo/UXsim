@@ -297,6 +297,7 @@ struct World {
     bool route_choice_update_gradual;
     bool no_cyclic_routing;
     int instantaneous_TT_timestep_interval = 5;
+    int num_threads = 1;   // OpenMP thread count for parallel regions; -1 = all cores
 
     double delta_t;
     size_t total_timesteps;
@@ -405,6 +406,11 @@ struct World {
     // Update t_max/total_timesteps and resize per-link time-indexed arrays.
     // Must be called before simulation start; the world may be created with a placeholder horizon before the final TMAX is known.
     void set_t_max(double new_t_max);
+
+    // Resolve num_threads into a concrete OpenMP thread count for the num_threads() clause.
+    // -1 means all available cores (omp_get_max_threads(), which honours OMP_NUM_THREADS and
+    // affinity limits). Returns 1 when OpenMP is disabled at build time.
+    int resolve_num_threads() const;
 
     void route_choice_duo();
     void route_choice_duo_gradual();
