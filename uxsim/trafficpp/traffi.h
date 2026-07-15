@@ -137,10 +137,10 @@ struct Link {
     double merge_priority;
 
     // Per-link buffer collecting vehicles that reached this link's end this timestep and
-    // will transfer to a next link. Filled by the RUN pass (Vehicle::update, this link's
-    // exclusive context) and drained/aggregated into the end_node's incoming_vehicles at the
-    // start of Node::transfer. Replaces the RUN pass pushing directly into the shared node
-    // buffer, so per-link stages can run independently once parallelized.
+    // will transfer to a next link. Filled by the RUN system pass (this link's exclusive
+    // context) and drained/aggregated into the end_node's incoming_vehicles at the start of
+    // Node::transfer. Replaces the RUN pass pushing directly into the shared node buffer, so
+    // per-link stages can run independently once parallelized.
     vector<Vehicle *> arrived_vehicles;
 
     double capacity_out;
@@ -257,9 +257,7 @@ struct Vehicle {
         const string &orig_name,
         const string &dest_name);
 
-    void update();
     void end_trip();
-    void car_follow_newell();
     void route_next_link_choice(const vector<Link*>& linkset, std::mt19937 &rng);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
@@ -310,8 +308,12 @@ struct World {
 
     // Collections of objects
     vector<Vehicle *> vehicles;         //all state
-    // HOME/WAIT/RUN vehicles in id order; rebuilt per main_loop call, compacted in place each step
-    vector<Vehicle *> update_order;
+    // HOME departure schedule: departure_buckets[ts] holds the HOME vehicles (id ascending,
+    // since `vehicles` is in id order) whose first departing timestep is ts. Rebuilt per
+    // main_loop call; replaces the old id-ordered update_order full-scan for the HOME->WAIT
+    // transition. The RUN/WAIT stages find their vehicles via the per-link deques and the
+    // per-node generation_queues, so no global update order is needed.
+    vector<vector<Vehicle *>> departure_buckets;
     vector<Link *> links;
     vector<Node *> nodes;
     unordered_map<string, Node *> nodes_map;
