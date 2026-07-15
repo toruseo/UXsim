@@ -372,12 +372,9 @@ struct World {
     vector<vector<double>> route_preference;   // route_preference[dest_id][link_id]: preference weight for link towards dest
     vector<char> route_pref_active;            // route_pref_active[dest_id]: true once sum(route_preference[dest]) != 0
 
-    // Shared scratch for Vehicle::route_next_link_choice() (serial: called only from the
-    // single-threaded generate/RUN passes). Moved off Vehicle to cut per-vehicle fixed cost.
-    // To parallelize the RUN pass later, replace these with per-thread/thread_local scratch.
-    vector<Link *> _buf_outlinks;
-    vector<Link *> _buf_filtered;
-    vector<double> _buf_outlink_pref;
+    // Scratch for Vehicle::route_next_link_choice() lives in thread_local vectors (see
+    // traffi.cpp): the generate pass (per-node) and the RUN pass (per-link) both call it in
+    // parallel, so the scratch must be per-thread rather than a shared World member.
 
     // Graph adjacency
     vector<vector<int>> adj_mat;
@@ -392,7 +389,8 @@ struct World {
     vector<vector<pair<int, double>>> rsa_adj_list;  // adjacency list (rebuilt each call)
     vector<vector<double>> rsa_dist;                 // all-pairs distances
     vector<vector<int>> rsa_next;                    // all-pairs next-hop
-    vector<char> rsa_visited;                        // per-source visited flags
+    // The per-source Dijkstra visited flags and priority queue are thread_local (see
+    // route_search_all): the source loop is parallelized, so this scratch cannot be shared.
 
     bool flag_initialized;
 

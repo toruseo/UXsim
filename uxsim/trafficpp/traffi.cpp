@@ -12,12 +12,21 @@
 #include <algorithm>
 #include <chrono>
 #include <queue>
+#include <climits>
+#include <exception>
 
 #include "traffi.h"
 
 using std::string, std::vector, std::deque, std::pair, std::map, std::unordered_map;
 using std::round, std::floor, std::ceil;
 using std::cout, std::endl;
+
+// Thread-local scratch for Vehicle::route_next_link_choice(). The generate pass (per-node)
+// and the RUN pass (per-link) call route choice concurrently, so these buffers must be
+// per-thread; a single World-shared buffer would race. They are cleared on each call.
+static thread_local vector<Link *> tls_buf_outlinks;
+static thread_local vector<Link *> tls_buf_filtered;
+static thread_local vector<double> tls_buf_outlink_pref;
 
 // -----------------------------------------------------------------------
 // MARK: Node 
@@ -851,10 +860,10 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset, std::mt19937 
     }
 
     // Filter by links_preferred (intersection with linkset)
-    vector<Link *> &buf_filtered = w->_buf_filtered;
-    w->_buf_outlinks.clear();
-    w->_buf_outlinks.insert(w->_buf_outlinks.end(), linkset.begin(), linkset.end());
-    auto &outlinks = w->_buf_outlinks;
+    vector<Link *> &buf_filtered = tls_buf_filtered;
+    tls_buf_outlinks.clear();
+    tls_buf_outlinks.insert(tls_buf_outlinks.end(), linkset.begin(), linkset.end());
+    auto &outlinks = tls_buf_outlinks;
     if (!links_preferred.empty()){
         buf_filtered.clear();
         for (auto ln : outlinks){
@@ -905,8 +914,8 @@ void Vehicle::route_next_link_choice(const vector<Link*>& linkset, std::mt19937 
     }
 
     // Build preference weights (O(1) vector access by link id)
-    w->_buf_outlink_pref.clear();
-    auto &outlink_pref = w->_buf_outlink_pref;
+    tls_buf_outlink_pref.clear();
+    auto &outlink_pref = tls_buf_outlink_pref;
     for (auto ln : outlinks){
         outlink_pref.push_back(w->route_preference[dest->id][ln->id]);
     }
@@ -1259,36 +1268,43 @@ void World::route_search_all(const vector<vector<double>> &adj, double infty) {
         rsa_dist[i].assign(nsize, infty);
         rsa_next[i].assign(nsize, -1);
     }
-    rsa_visited.resize(nsize);
 
     using pdi = pair<double, int>;
-    std::priority_queue<pdi, vector<pdi>, std::greater<pdi>> pq;
 
-    // Dijkstra from each source node
-    for (int start = 0; start < nsize; start++) {
-        std::fill(rsa_visited.begin(), rsa_visited.end(), (char)0);
-        auto &dstart = rsa_dist[start];
-        auto &nhstart = rsa_next[start];
-        dstart[start] = 0.0;
-        nhstart[start] = start;
-        pq.push({0.0, start});
+    // Dijkstra from each source node. Each source writes only its own rsa_dist[start] /
+    // rsa_next[start] rows, and rsa_adj_list is read-only here, so the source loop is
+    // parallel-safe with per-thread visited flags and priority queue (the shared scratch is
+    // thread-local). The result is independent of thread count.
+    #pragma omp parallel
+    {
+        vector<char> visited(nsize);
+        std::priority_queue<pdi, vector<pdi>, std::greater<pdi>> pq;
+        #pragma omp for schedule(static)
+        for (int start = 0; start < nsize; start++) {
+            std::fill(visited.begin(), visited.end(), (char)0);
+            auto &dstart = rsa_dist[start];
+            auto &nhstart = rsa_next[start];
+            dstart[start] = 0.0;
+            nhstart[start] = start;
+            pq.push({0.0, start});
 
-        while (!pq.empty()) {
-            auto [d, current] = pq.top();
-            pq.pop();
+            while (!pq.empty()) {
+                auto [d, current] = pq.top();
+                pq.pop();
 
-            if (rsa_visited[current]) continue;
-            rsa_visited[current] = 1;
+                if (visited[current]) continue;
+                visited[current] = 1;
 
-            // Explore neighbors via adjacency list
-            double dcur = dstart[current];
-            for (const auto& [next, weight] : rsa_adj_list[current]) {
-                double new_dist = dcur + weight;
-                if (new_dist < dstart[next]) {
-                    dstart[next] = new_dist;
-                    // Update next hop
-                    nhstart[next] = (current == start) ? next : nhstart[current];
-                    pq.push({new_dist, next});
+                // Explore neighbors via adjacency list
+                double dcur = dstart[current];
+                for (const auto& [next, weight] : rsa_adj_list[current]) {
+                    double new_dist = dcur + weight;
+                    if (new_dist < dstart[next]) {
+                        dstart[next] = new_dist;
+                        // Update next hop
+                        nhstart[next] = (current == start) ? next : nhstart[current];
+                        pq.push({new_dist, next});
+                    }
                 }
             }
         }
@@ -1395,7 +1411,13 @@ World::enumerate_k_random_routes_cpp(int k, unsigned int seed){
  * @brief Update route choice using dynamic user optimum.
  */
 void World::route_choice_duo(){
-    for (auto dest : nodes){
+    // Per-destination: route_preference[k] and route_pref_active[k] are exclusive to dest k;
+    // route_next and links are read-only here, so the destination loop is parallel-safe and
+    // independent of thread count.
+    int nnodes = (int)nodes.size();
+    #pragma omp parallel for schedule(static)
+    for (int di = 0; di < nnodes; di++){
+        Node *dest = nodes[di];
         int k = dest->id;
 
         // psum==0.0 iff route_preference[k] has never been reinforced.
@@ -1427,7 +1449,11 @@ void World::route_choice_duo_gradual(){
     // Gradual DUO update: scaled weight applied every timestep
     double weight0 = duo_update_weight * (delta_t / duo_update_time);
 
-    for (auto dest : nodes){
+    // Per-destination and thread-count independent (see route_choice_duo).
+    int nnodes = (int)nodes.size();
+    #pragma omp parallel for schedule(static)
+    for (int di = 0; di < nnodes; di++){
+        Node *dest = nodes[di];
         int k = dest->id;
 
         // psum==0.0 iff route_preference[k] has never been reinforced (see route_choice_duo).
@@ -1585,28 +1611,67 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             print_progress_line(time);
         }
 
-        // Link updates
-        for (auto ln : links){
-            ln->update();
+        int nlinks = (int)links.size();
+        int nnodes = (int)nodes.size();
+
+        // All entity-exclusive timestep stages run inside a single parallel region to keep the
+        // OpenMP setup/barrier overhead low (one region per timestep instead of one per stage;
+        // this keeps the 1-thread path lean). Each `omp for` has an implicit barrier, so the
+        // stage order (update -> generate -> transfer -> RUN -> WAIT) and its data dependencies
+        // are preserved. The serial transfer runs in an `omp single`. Exceptions thrown by
+        // route_next_link_choice (specified_route) are captured per stage (smallest entity id
+        // wins, for determinism) and rethrown after the region, since an exception must never
+        // cross the OpenMP boundary.
+        std::exception_ptr gen_exc; int gen_exc_id = INT_MAX;
+        std::exception_ptr run_exc; int run_exc_id = INT_MAX;
+        #pragma omp parallel
+        {
+        // Link updates (per-link): Link::update() touches only its own time-indexed arrays
+        // and capacities, so it is entity-exclusive and independent of thread count.
+        #pragma omp for schedule(static)
+        for (int i = 0; i < nlinks; i++){
+            links[i]->update();
         }
 
-        // Node generate + update (matches Python: node.generate() then node.update())
-        for (auto nd : nodes){
-            nd->generate();
+        // Node generate + signal + capacity (per-node): a node's out_links are its exclusive
+        // property (a link has a single start_node), and generate() uses this node's RNG
+        // stream; signal/capacity touch only this node.
+        #pragma omp for schedule(static)
+        for (int i = 0; i < nnodes; i++){
+            Node *nd = nodes[i];
+            try {
+                nd->generate();
+            } catch (...) {
+                #pragma omp critical (ecs_exc)
+                { if (nd->id < gen_exc_id){ gen_exc_id = nd->id; gen_exc = std::current_exception(); } }
+            }
             nd->signal_update();
             nd->flow_capacity_update();
         }
 
-        // Node transfer
-        for (auto nd : nodes){
-            nd->transfer();
+        // Node transfer: serial. Serial id-ordered node processing has a sequential visibility
+        // semantics (a node's acceptance decisions are seen by later nodes through the shared
+        // out-link queues), matching Python; parallelizing it would break bit identity.
+        #pragma omp single
+        {
+            for (auto nd : nodes){
+                nd->transfer();
+            }
         }
 
         // RUN system pass: fuse the old car_follow + update(RUN) into a single link-ordered
         // sweep. Each link is processed front-to-back over a head/tail snapshot so leaders
         // (ahead in the queue) are moved before their followers, matching the old two-phase
         // (car_follow-all then update-all) reads via x_old.
-        for (auto lk : links){
+        // Parallel per-link: a vehicle is on exactly one link, so each link touches only its
+        // own ring/queue, its own vehicles' SoA state and logs, its own curves/traveltime
+        // events/arrived buffers, its own stat partial sums and RNG stream. The result is
+        // independent of thread count. route_next_link_choice may throw (specified_route);
+        // capture and rethrow the smallest-link-id exception after the region.
+        #pragma omp for schedule(static)
+        for (int li = 0; li < nlinks; li++){
+          Link *lk = links[li];
+          try {
             long long head0 = lk->veh_head_seq;
             long long tail0 = lk->veh_tail_seq;
             int lanes = lk->number_of_lanes;
@@ -1703,16 +1768,27 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             link_ave_v_sum[lk->id] += l_ave_v;
             link_ave_vratio_sum[lk->id] += l_ave_vratio;
             link_stat_count[lk->id] += l_stat;
+          } catch (...) {
+            #pragma omp critical (ecs_exc)
+            { if (lk->id < run_exc_id){ run_exc_id = lk->id; run_exc = std::current_exception(); } }
+          }
         }
 
-        // WAIT system pass: vehicles still in a generation_queue (those not generated this
-        // step) log a WAIT entry. Vehicles departing this step are logged as HOME below and
-        // enter the queue only afterwards, so they are not double-logged here.
-        for (auto nd : nodes){
-            for (auto veh : nd->generation_queue){
+        // WAIT system pass (per-node): vehicles still in a generation_queue (those not
+        // generated this step) log a WAIT entry. A queued vehicle's origin is this node, so
+        // its WAIT stat sample (node_stat_count[orig->id]) and per-vehicle log are exclusive
+        // to this node; the pass is thread-count independent. Vehicles departing this step are
+        // logged as HOME below and enter the queue only afterwards, so no double-logging.
+        #pragma omp for schedule(static)
+        for (int i = 0; i < nnodes; i++){
+            for (auto veh : nodes[i]->generation_queue){
                 veh->log_data();
             }
         }
+        } // end omp parallel region
+        // Rethrow the deterministic (smallest-id) captured exception, if any.
+        if (gen_exc) std::rethrow_exception(gen_exc);
+        if (run_exc) std::rethrow_exception(run_exc);
 
         // HOME departure pass: vehicles whose departure timestep is now log a HOME entry,
         // transition to WAIT, and enter their origin generation_queue (id ascending).
