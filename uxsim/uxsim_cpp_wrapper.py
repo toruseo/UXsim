@@ -787,7 +787,14 @@ class CppRouteChoice:
 
 
 class CppWorld:
-    """Thin wrapper around C++ World. Delegates simulation to C++ engine."""
+    """Thin wrapper around C++ World. Delegates simulation to C++ engine.
+
+    C++-mode-only argument:
+        threads (int): number of OpenMP threads for the C++ engine. 1 (default)
+            runs single-threaded (the legacy behaviour); N>=1 uses N threads;
+            -1 uses all available cores (honouring OMP_NUM_THREADS and affinity
+            limits). This argument does not exist on the Python-mode World.
+    """
 
     def __init__(self, name="", deltan=5, reaction_time=1,
                  duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01,
@@ -801,7 +808,8 @@ class CppWorld:
                  reduce_memory_delete_vehicle_route_pref=False,
                  hard_deterministic_mode=False,
                  no_cyclic_routing=False,
-                 meta_data=None, user_attribute=None, user_function=None):
+                 meta_data=None, user_attribute=None, user_function=None,
+                 threads=1):
 
         self.W = self  # self-reference for W.W access pattern
         self.rng = np.random.default_rng(seed=random_seed)
@@ -835,6 +843,9 @@ class CppWorld:
         self.name = name
         self.hard_deterministic_mode = hard_deterministic_mode
         self.no_cyclic_routing = no_cyclic_routing
+        if not isinstance(threads, int) or isinstance(threads, bool) or (threads < 1 and threads != -1):
+            raise ValueError(f"threads must be a positive integer or -1 (all cores), got {threads!r}.")
+        self.num_threads = threads
         self.meta_data = meta_data if meta_data is not None else {}
         self.network_info = ddict(list)
         self.demand_info = ddict(list)
@@ -877,6 +888,7 @@ class CppWorld:
         self._cpp_world.route_choice_update_gradual = self.route_choice_update_gradual
         self._cpp_world.no_cyclic_routing = self.no_cyclic_routing
         self._cpp_world.instantaneous_TT_timestep_interval = int(self.instantaneous_TT_timestep_interval)
+        self._cpp_world.num_threads = int(self.num_threads)
 
     # --- Scenario definition ---
 

@@ -542,6 +542,7 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("route_choice_update_gradual", &World::route_choice_update_gradual)
         .def_rw("no_cyclic_routing", &World::no_cyclic_routing)
         .def_rw("instantaneous_TT_timestep_interval", &World::instantaneous_TT_timestep_interval)
+        .def_rw("num_threads", &World::num_threads)
         .def_ro("route_dist", &World::route_dist)
         .def_ro("route_dist_record", &World::route_dist_record)
         .def_ro("route_next", &World::route_next)
