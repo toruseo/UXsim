@@ -808,7 +808,7 @@ NB_MODULE(uxsim_cpp, m) {
         .def_prop_ro("avg_speed", [](const Link &l) -> double {
                  if (l.vehicles.empty()) return l.vmax;
                  double sum = 0;
-                 for (auto *v : l.vehicles) sum += v->v;
+                 for (auto *v : l.vehicles) sum += v->v();
                  return sum / l.vehicles.size();
              },
              "Average speed of vehicles on this link (computed in C++)")
@@ -848,14 +848,14 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("departure_time", &Vehicle::departure_time)
         .def_rw("orig", &Vehicle::orig)
         .def_rw("dest", &Vehicle::dest)
-        .def_ro("link", &Vehicle::link)
-        .def_ro("x", &Vehicle::x)
-        .def_ro("x_next", &Vehicle::x_next)
-        .def_ro("v", &Vehicle::v)
-        .def_ro("lane", &Vehicle::lane)
+        .def_prop_ro("link", [](const Vehicle &v) { return v.link(); })
+        .def_prop_ro("x", [](const Vehicle &v) { return v.x(); })
+        .def_prop_ro("x_next", [](const Vehicle &v) { return v.x_next(); })
+        .def_prop_ro("v", [](const Vehicle &v) { return v.v(); })
+        .def_prop_ro("lane", [](const Vehicle &v) { return v.lane(); })
         .def_ro("leader", &Vehicle::leader)
         .def_ro("follower", &Vehicle::follower)
-        .def_rw("state", &Vehicle::state)
+        .def_prop_rw("state", [](const Vehicle &v) { return v.state(); }, [](Vehicle &v, int val) { v.state() = val; })
         .def_ro("arrival_time_link", &Vehicle::arrival_time_link)
         .def_rw("route_next_link", &Vehicle::route_next_link)
         .def_rw("route_choice_flag_on_link", &Vehicle::route_choice_flag_on_link)
@@ -865,8 +865,8 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("links_avoid", &Vehicle::links_avoid)
         .def_rw("specified_route", &Vehicle::specified_route)
         .def("enforce_route", &Vehicle::enforce_route, nb::arg("route"))
-        .def_rw("move_remain", &Vehicle::move_remain)
-        .def_ro("x_old", &Vehicle::x_old)
+        .def_prop_rw("move_remain", [](const Vehicle &v) { return v.move_remain(); }, [](Vehicle &v, double val) { v.move_remain() = val; })
+        .def_prop_ro("x_old", [](const Vehicle &v) { return v.x_old(); })
         .def_rw("trip_abort", &Vehicle::trip_abort)
         .def_ro("flag_trip_aborted", &Vehicle::flag_trip_aborted)
         .def_ro("flag_waiting_for_trip_end", &Vehicle::flag_waiting_for_trip_end)

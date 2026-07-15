@@ -185,23 +185,36 @@ struct Vehicle {
     double departure_time;
     Node *orig;
     Node *dest;
-    Link *link;
 
     double arrival_time;
     double travel_time;
     double distance_traveled;
 
-    double x;
-    double x_next;
-    double x_old;
-    double v;
-    double move_remain;
-    int lane;
+    // Position in World::vehicles and index into the World SoA hot-state arrays
+    int idx;
 
     Vehicle *leader;
     Vehicle *follower;
 
-    int state; // VehicleState enum: 0=home, 1=wait, 2=run, 3=end, 4=abort
+    // Hot state (x, x_next, x_old, v, move_remain, state, link, lane) lives in
+    // World SoA arrays; these facade accessors read/write it by idx.
+    double &x();
+    double x() const;
+    double &x_next();
+    double x_next() const;
+    double &x_old();
+    double x_old() const;
+    double &v();
+    double v() const;
+    double &move_remain();
+    double move_remain() const;
+    int &state();  // VehicleState enum: 0=home, 1=wait, 2=run, 3=end, 4=abort
+    int state() const;
+    int &lane();
+    int lane() const;
+    Link *link() const;
+    void set_link(Link *ln);
+
     int flag_waiting_for_trip_end;
     int flag_trip_aborted;
     int trip_abort;
@@ -305,6 +318,16 @@ struct World {
     vector<Vehicle *> vehicles;         //all state
     // HOME/WAIT/RUN vehicles in id order; rebuilt per main_loop call, compacted in place each step
     vector<Vehicle *> update_order;
+
+    // Vehicle hot state as SoA arrays, indexed by Vehicle::idx (parallel to `vehicles`)
+    vector<double> veh_x;
+    vector<double> veh_x_next;
+    vector<double> veh_x_old;
+    vector<double> veh_v;
+    vector<double> veh_move_remain;
+    vector<int> veh_state;
+    vector<int> veh_link_id;  // -1 = not on any link
+    vector<int> veh_lane;
     vector<Link *> links;
     vector<Node *> nodes;
     unordered_map<int, Vehicle *> vehicles_living;  //home, wait, run // vehicles_living[id] = vehicle
@@ -444,3 +467,24 @@ struct World {
     CompactFlatLogs build_all_vehicle_logs_flat_compact() const;
 
 };
+
+// -----------------------------------------------------------------------
+// MARK: Vehicle hot-state accessors (SoA facade)
+// -----------------------------------------------------------------------
+
+inline double &Vehicle::x() { return w->veh_x[idx]; }
+inline double Vehicle::x() const { return w->veh_x[idx]; }
+inline double &Vehicle::x_next() { return w->veh_x_next[idx]; }
+inline double Vehicle::x_next() const { return w->veh_x_next[idx]; }
+inline double &Vehicle::x_old() { return w->veh_x_old[idx]; }
+inline double Vehicle::x_old() const { return w->veh_x_old[idx]; }
+inline double &Vehicle::v() { return w->veh_v[idx]; }
+inline double Vehicle::v() const { return w->veh_v[idx]; }
+inline double &Vehicle::move_remain() { return w->veh_move_remain[idx]; }
+inline double Vehicle::move_remain() const { return w->veh_move_remain[idx]; }
+inline int &Vehicle::state() { return w->veh_state[idx]; }
+inline int Vehicle::state() const { return w->veh_state[idx]; }
+inline int &Vehicle::lane() { return w->veh_lane[idx]; }
+inline int Vehicle::lane() const { return w->veh_lane[idx]; }
+inline Link *Vehicle::link() const { int lid = w->veh_link_id[idx]; return lid >= 0 ? w->links[lid] : nullptr; }
+inline void Vehicle::set_link(Link *ln) { w->veh_link_id[idx] = ln ? ln->id : -1; }

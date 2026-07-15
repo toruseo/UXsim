@@ -47,7 +47,7 @@ TraveledRouteInfo dta_get_traveled_route(const Vehicle *veh) {
         }
     }
 
-    if (veh->state == vsEND && veh->arrival_time >= 0){
+    if (veh->state() == vsEND && veh->arrival_time >= 0){
         info.arrival_time = veh->arrival_time;
     }
     return info;
@@ -165,7 +165,7 @@ RouteSwapResult dta_route_swap_due(
         }
 
         // Skip vehicles that didn't finish their trip (leave empty = no enforce_route)
-        if (veh->state != vsEND){
+        if (veh->state() != vsEND){
             continue;
         }
 
@@ -305,7 +305,7 @@ RouteSwapResult dta_route_swap_dso(
         }
 
         // Skip vehicles that didn't finish their trip (leave empty = no enforce_route)
-        if (veh->state != vsEND){
+        if (veh->state() != vsEND){
             continue;
         }
 

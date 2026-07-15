@@ -119,7 +119,7 @@ void Node::generate(){
             can_accept = true;
         } else {
             int idx = (int)outlink->vehicles.size() - outlink->number_of_lanes;
-            if (outlink->vehicles[idx]->x > outlink->delta_per_lane * w->delta_n){
+            if (outlink->vehicles[idx]->x() > outlink->delta_per_lane * w->delta_n){
                 can_accept = true;
             }
         }
@@ -134,10 +134,10 @@ void Node::generate(){
         // Accept vehicle
         generation_queue.pop_front();
 
-        veh->state = vsRUN;
-        veh->link = outlink;
-        veh->x = 0.0;
-        veh->v = outlink->vmax;  // initial speed at link entry (matches Python)
+        veh->state() = vsRUN;
+        veh->set_link(outlink);
+        veh->x() = 0.0;
+        veh->v() = outlink->vmax;  // initial speed at link entry (matches Python)
         veh->record_travel_time(nullptr, (double)w->timestep * w->delta_t);
 
         // Track visited nodes for no_cyclic_routing and link count for specified_route
@@ -152,9 +152,9 @@ void Node::generate(){
 
         // Lane assignment
         if (!outlink->vehicles.empty()){
-            veh->lane = (outlink->vehicles.back()->lane + 1) % outlink->number_of_lanes;
+            veh->lane() = (outlink->vehicles.back()->lane() + 1) % outlink->number_of_lanes;
         } else {
-            veh->lane = 0;
+            veh->lane() = 0;
         }
 
         // Leader-Follower (leader is number_of_lanes positions back)
@@ -236,7 +236,7 @@ void Node::transfer(){
             can_accept = true;
         } else {
             int idx = (int)outlink->vehicles.size() - outlink->number_of_lanes;
-            if (outlink->vehicles[idx]->x > outlink->delta_per_lane * w->delta_n){
+            if (outlink->vehicles[idx]->x() > outlink->delta_per_lane * w->delta_n){
                 can_accept = true;
             }
         }
@@ -257,11 +257,11 @@ void Node::transfer(){
         auto &merge_priorities = _buf_merge_priorities;
         for (auto veh : incoming_vehicles){
             if (veh->route_next_link == outlink &&
-                    veh == veh->link->vehicles.front() &&
-                    veh->link->capacity_out_remain >= w->delta_n &&
-                    (contains(veh->link->signal_group, signal_phase) || signal_intervals.size() <= 1)){
+                    veh == veh->link()->vehicles.front() &&
+                    veh->link()->capacity_out_remain >= w->delta_n &&
+                    (contains(veh->link()->signal_group, signal_phase) || signal_intervals.size() <= 1)){
                 merging_vehs.push_back(veh);
-                merge_priorities.push_back(veh->link ? veh->link->merge_priority : 1.0);
+                merge_priorities.push_back(veh->link() ? veh->link()->merge_priority : 1.0);
             }
         }
         if (merging_vehs.empty()){
@@ -288,7 +288,7 @@ void Node::transfer(){
             continue;
         }
 
-        Link *inlink = chosen_veh->link;
+        Link *inlink = chosen_veh->link();
 
         // Update capacity
         inlink->capacity_out_remain -= w->delta_n;
@@ -314,8 +314,8 @@ void Node::transfer(){
         // Remove from old link
         inlink->vehicles.pop_front();
 
-        chosen_veh->link = outlink;
-        chosen_veh->x = 0.0;
+        chosen_veh->set_link(outlink);
+        chosen_veh->x() = 0.0;
 
         // Track visited nodes for no_cyclic_routing and link count for specified_route
         const std::size_t required_size = w->nodes.size();
@@ -332,9 +332,9 @@ void Node::transfer(){
 
         // Lane assignment on new link
         if (!outlink->vehicles.empty()){
-            chosen_veh->lane = (outlink->vehicles.back()->lane + 1) % outlink->number_of_lanes;
+            chosen_veh->lane() = (outlink->vehicles.back()->lane() + 1) % outlink->number_of_lanes;
         } else {
-            chosen_veh->lane = 0;
+            chosen_veh->lane() = 0;
         }
 
         // Leader-Follower (leader is number_of_lanes positions back in the same lane)
@@ -346,11 +346,11 @@ void Node::transfer(){
         }
 
         // Move-remain processing: carry residual distance to next link
-        double x_next_mr = chosen_veh->move_remain * outlink->vmax / inlink->vmax;
+        double x_next_mr = chosen_veh->move_remain() * outlink->vmax / inlink->vmax;
         if (chosen_veh->leader != nullptr){
-            double x_cong = chosen_veh->leader->x_old - outlink->delta_per_lane * w->delta_n;
-            if (x_cong < chosen_veh->x){
-                x_cong = chosen_veh->x;
+            double x_cong = chosen_veh->leader->x_old() - outlink->delta_per_lane * w->delta_n;
+            if (x_cong < chosen_veh->x()){
+                x_cong = chosen_veh->x();
             }
             if (x_next_mr > x_cong){
                 x_next_mr = x_cong;
@@ -362,9 +362,9 @@ void Node::transfer(){
         if (x_next_mr < 0.0){
             x_next_mr = 0.0;
         }
-        chosen_veh->x = x_next_mr;
-        chosen_veh->v += chosen_veh->x / w->delta_t;
-        chosen_veh->move_remain = 0.0;
+        chosen_veh->x() = x_next_mr;
+        chosen_veh->v() += chosen_veh->x() / w->delta_t;
+        chosen_veh->move_remain() = 0.0;
 
         // If the new front vehicle of inlink is waiting for trip end, let it end
         if (!inlink->vehicles.empty() && inlink->vehicles.front()->flag_waiting_for_trip_end){
@@ -531,7 +531,7 @@ void Link::change_jam_density(double new_value){
 int Link::count_vehicles_in_queue() const {
     int count = 0;
     for (auto veh : vehicles){
-        if (veh->v < vmax){
+        if (veh->v() < vmax){
             count++;
         }
     }
@@ -550,7 +550,7 @@ void Link::set_travel_time(){
     if (!vehicles.empty()){
         double vsum = 0.0;
         for (auto veh : vehicles){
-            vsum += veh->v;
+            vsum += veh->v();
         }
         double avg_v = vsum / (double)vehicles.size();
         if (avg_v > 0.0){
@@ -674,16 +674,8 @@ Vehicle::Vehicle(
       departure_time(departure_time),
       orig(nullptr),
       dest(nullptr),
-      link(nullptr),
-      x(0.0),
-      x_next(0.0),
-      x_old(0.0),
-      v(0.0),
-      move_remain(0.0),
-      lane(0),
       leader(nullptr),
       follower(nullptr),
-      state(vsHOME),
       arrival_time(-1.0),
       travel_time(-1.0),
       arrival_time_link(0.0),
@@ -722,6 +714,16 @@ Vehicle::Vehicle(
         log_s.reserve(log_cap);
     }
 
+    idx = (int)w->vehicles.size();
+    w->veh_x.push_back(0.0);
+    w->veh_x_next.push_back(0.0);
+    w->veh_x_old.push_back(0.0);
+    w->veh_v.push_back(0.0);
+    w->veh_move_remain.push_back(0.0);
+    w->veh_state.push_back(vsHOME);
+    w->veh_link_id.push_back(-1);
+    w->veh_lane.push_back(0);
+
     w->vehicles.push_back(this);
     w->vehicles_living[id] = this;
     w->vehicle_id++;
@@ -733,48 +735,49 @@ Vehicle::Vehicle(
  */
 void Vehicle::update(){
 
-    if (state == vsHOME){
+    if (state() == vsHOME){
         if ((double)w->timestep * w->delta_t >= departure_time){
             log_data();
-            state = vsWAIT;
+            state() = vsWAIT;
             orig->generation_queue.push_back(this);
         }
-    }else if (state == vsWAIT){
+    }else if (state() == vsWAIT){
         log_data();
-    }else if (state == vsRUN){
+    }else if (state() == vsRUN){
         log_data();
-        if (x == 0.0){
+        if (x() == 0.0){
             route_choice_flag_on_link = 0;
         }
 
-        v = (x_next - x) / (w->delta_t);
-        x_old = x;
-        x = x_next;
+        v() = (x_next() - x()) / (w->delta_t);
+        x_old() = x();
+        x() = x_next();
 
-        distance_traveled += x - x_old;
+        distance_traveled += x() - x_old();
 
-        if (std::fabs(x - link->length) < 1e-9){
-            if (link->end_node == dest){
+        Link *lk = link();
+        if (std::fabs(x() - lk->length) < 1e-9){
+            if (lk->end_node == dest){
                 // Prepare for trip end (wait if not at front of link)
                 flag_waiting_for_trip_end = 1;
-                if (link->vehicles.front() == this){
+                if (lk->vehicles.front() == this){
                     end_trip();
                 }
-            }else if (link->end_node->out_links.empty() && trip_abort == 1){
+            }else if (lk->end_node->out_links.empty() && trip_abort == 1){
                 // Dead-end: abort trip
                 flag_trip_aborted = 1;
                 route_next_link = nullptr;
                 flag_waiting_for_trip_end = 1;
-                if (link->vehicles.front() == this){
+                if (lk->vehicles.front() == this){
                     end_trip();
                 }
             }else{
-                route_next_link_choice(link->end_node->out_links);
-                link->end_node->incoming_vehicles.push_back(this);
-                link->end_node->incoming_vehicles_requests.push_back(route_next_link);
+                route_next_link_choice(lk->end_node->out_links);
+                lk->end_node->incoming_vehicles.push_back(this);
+                lk->end_node->incoming_vehicles_requests.push_back(route_next_link);
             }
         }
-    }else if (state == vsEND || state == vsABORT){
+    }else if (state() == vsEND || state() == vsABORT){
         // do nothing
     }
 }
@@ -783,19 +786,20 @@ void Vehicle::update(){
  * @brief End the vehicle's trip.
  */
 void Vehicle::end_trip(){
-    state = vsEND;
+    state() = vsEND;
     w->trips_completed_count += 1.0;
-    link->departure_curve[w->timestep] += w->delta_n;
+    Link *lk = link();
+    lk->departure_curve[w->timestep] += w->delta_n;
 
     // Record traveltime_real event (lazily materialized on read, matching Python's traveltime_actual slice update)
     {
         double current_tt = ((double)w->timestep + 1.0) * w->delta_t - arrival_time_link;
         int start_idx = (int)(arrival_time_link / w->delta_t);
         if (start_idx < 0) start_idx = 0;
-        link->traveltime_real_events.emplace_back(start_idx, current_tt);
+        lk->traveltime_real_events.emplace_back(start_idx, current_tt);
     }
 
-    record_travel_time(link, (double)w->timestep * w->delta_t);
+    record_travel_time(lk, (double)w->timestep * w->delta_t);
 
     arrival_time = (double)w->timestep * w->delta_t;
     travel_time = arrival_time - departure_time;
@@ -803,17 +807,17 @@ void Vehicle::end_trip(){
     w->vehicles_living.erase(id);
     w->vehicles_running.erase(id);
 
-    link->vehicles.pop_front();
+    lk->vehicles.pop_front();
 
     if (follower){
         follower->leader = nullptr;
     }
-    link = nullptr;
-    x = 0.0;
+    set_link(nullptr);
+    x() = 0.0;
     flag_waiting_for_trip_end = 0;
 
     if (flag_trip_aborted){
-        state = vsABORT;
+        state() = vsABORT;
         arrival_time = -1.0;
         travel_time = -1.0;
     }
@@ -826,29 +830,30 @@ void Vehicle::end_trip(){
  * @brief Apply Newell's car-following model.
  */
 void Vehicle::car_follow_newell(){
+    Link *lk = link();
     // free-flow
-    x_next = x + link->vmax * w->delta_t;
+    x_next() = x() + lk->vmax * w->delta_t;
 
     // congested (use delta_per_lane for multi-lane car following)
     if (leader != nullptr){
-        double gap = leader->x - link->delta_per_lane * w->delta_n;
-        if (gap < x){
-            gap = x;
+        double gap = leader->x() - lk->delta_per_lane * w->delta_n;
+        if (gap < x()){
+            gap = x();
         }
-        if (x_next > gap){
-            x_next = gap;
+        if (x_next() > gap){
+            x_next() = gap;
         }
     }
 
     // non-decreasing
-    if (x_next < x){
-        x_next = x;
+    if (x_next() < x()){
+        x_next() = x();
     }
 
     // clamp to link length, carry over residual as move_remain
-    if (x_next > link->length){
-        move_remain = x_next - link->length;
-        x_next = link->length;
+    if (x_next() > lk->length){
+        move_remain() = x_next() - lk->length;
+        x_next() = lk->length;
     }
 }
 
@@ -986,27 +991,28 @@ void Vehicle::record_travel_time(Link *link, double t){
 void Vehicle::log_data(){
     // Accumulate stats for print_simple_results (regardless of log mode).
     // A waiting vehicle counts as a zero-speed sample for the average speed statistic, as in Python's record_log.
-    if (state == vsRUN){
-        w->ave_v_sum += v;
-        if (link){
-            w->ave_vratio_sum += v / link->vmax;
+    Link *lk = link();
+    if (state() == vsRUN){
+        w->ave_v_sum += v();
+        if (lk){
+            w->ave_vratio_sum += v() / lk->vmax;
         }
         w->stat_sample_count += 1.0;
-    } else if (state == vsWAIT){
+    } else if (state() == vsWAIT){
         w->stat_sample_count += 1.0;
     }
 
     if (w->vehicle_log_mode){
         if (log_size == 0) log_first_ts = (int)w->timestep;
         log_last_ts = (int)w->timestep;
-        if (state == vsWAIT) log_wait_count++;
-        if (state == vsEND || state == vsABORT) log_end_count++;
-        if (state == vsRUN){
-            log_link.push_back(link ? link->id : -1);
-            log_x.push_back(x);
-            log_v.push_back(v);
-            log_lane.push_back(lane);
-            log_s.push_back((leader != nullptr && leader->link == link) ? leader->x - x : -1.0);
+        if (state() == vsWAIT) log_wait_count++;
+        if (state() == vsEND || state() == vsABORT) log_end_count++;
+        if (state() == vsRUN){
+            log_link.push_back(lk ? lk->id : -1);
+            log_x.push_back(x());
+            log_v.push_back(v());
+            log_lane.push_back(lane());
+            log_s.push_back((leader != nullptr && leader->link() == lk) ? leader->x() - x() : -1.0);
         } else {
             log_link.push_back(-1);
             log_x.push_back(-1);
@@ -1035,7 +1041,7 @@ double Vehicle::log_t_at(size_t i) const {
  * Log structure is always: HOME x1, WAIT x log_wait_count, RUN x r, [END|ABORT] x log_end_count.
  */
 int Vehicle::log_state_at(size_t i) const {
-    if (log_end_count > 0 && i >= log_size - (size_t)log_end_count) return state;
+    if (log_end_count > 0 && i >= log_size - (size_t)log_end_count) return state();
     if (i == 0) return vsHOME;
     if (i < (size_t)(1 + log_wait_count)) return vsWAIT;
     return vsRUN;
@@ -1476,7 +1482,7 @@ void World::print_progress_line(double t_print){
     for (auto ln : links){
         platoon_count += (double)ln->vehicles.size();
         for (auto veh : ln->vehicles){
-            v_sum += veh->v;
+            v_sum += veh->v();
         }
     }
     double sum_vehs = platoon_count * delta_n;
@@ -1521,7 +1527,7 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
     // HOME/WAIT/RUN vehicles in id order; compacted in place each step to drop vehicles that reach END/ABORT (much faster when many have finished).
     update_order.clear();
     for (auto veh : vehicles){
-        if (veh->state <= vsRUN) update_order.push_back(veh);
+        if (veh->state() <= vsRUN) update_order.push_back(veh);
     }
 
     for (timestep = start_ts; timestep < end_ts; timestep++){
@@ -1552,7 +1558,7 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
 
         // car-following (update_order is in id order, so hard_deterministic semantics hold)
         for (auto veh : update_order){
-            if (veh->state == vsRUN){
+            if (veh->state() == vsRUN){
                 veh->car_follow_newell();
             }
         }
@@ -1561,10 +1567,10 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         size_t wpos = 0;
         for (size_t r = 0; r < update_order.size(); r++){
             Vehicle *veh = update_order[r];
-            if (veh->state <= vsRUN){
+            if (veh->state() <= vsRUN){
                 veh->update();
             }
-            if (veh->state <= vsRUN){
+            if (veh->state() <= vsRUN){
                 update_order[wpos++] = veh;
             }
         }
@@ -1689,7 +1695,7 @@ std::vector<std::pair<std::string, int>> World::get_all_vehicle_states() const {
     std::vector<std::pair<std::string, int>> result;
     result.reserve(vehicles.size());
     for (auto *v : vehicles) {
-        int effective_state = v->state;
+        int effective_state = v->state();
         if (effective_state == vsEND && (v->flag_trip_aborted || (v->arrival_time < 0 && v->travel_time <= 0))) {
             effective_state = vsABORT;
         }
@@ -1758,7 +1764,7 @@ World::CompactFlatLogs World::build_all_vehicle_logs_flat_compact() const {
                 prev_lid = lid;
             }
         }
-        if (v->state == vsEND) ltl_count++;
+        if (v->state() == vsEND) ltl_count++;
         fl.ltl_offsets[vi] = total_ltl;
         total_ltl += ltl_count;
     }
@@ -1811,7 +1817,7 @@ World::CompactFlatLogs World::build_all_vehicle_logs_flat_compact() const {
                 prev_lid = lid;
             }
         }
-        if (v->state == vsEND) {
+        if (v->state() == vsEND) {
             fl.ltl_t[ltl_base + ltl_idx] = (v->arrival_time >= 0) ? v->arrival_time : -1.0;
             fl.ltl_id[ltl_base + ltl_idx] = Vehicle::LOG_T_LINK_END;
             ltl_idx++;
