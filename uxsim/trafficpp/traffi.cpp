@@ -197,6 +197,36 @@ void Node::flow_capacity_update(){
  * @brief Transfer vehicles between links at the node.
  */
 void Node::transfer(){
+    // Canonicalize incoming order to vehicle idx (== id) ascending. The fused RUN pass
+    // registers arriving vehicles in link/queue order rather than id order; restoring id
+    // order here keeps the hard_deterministic tie-break and RNG-independent scenarios
+    // bit-identical to the original id-ordered update loop. requests stays parallel.
+    {
+        size_t n = incoming_vehicles.size();
+        if (n > 1){
+            bool sorted = true;
+            for (size_t i = 1; i < n; i++){
+                if (incoming_vehicles[i - 1]->idx > incoming_vehicles[i]->idx){ sorted = false; break; }
+            }
+            if (!sorted){
+                vector<int> order(n);
+                for (size_t i = 0; i < n; i++) order[i] = (int)i;
+                std::sort(order.begin(), order.end(), [&](int a, int b){
+                    return incoming_vehicles[a]->idx < incoming_vehicles[b]->idx;
+                });
+                vector<Vehicle *> sv(n);
+                vector<Link *> sr(incoming_vehicles_requests.size());
+                bool has_req = incoming_vehicles_requests.size() == n;
+                for (size_t i = 0; i < n; i++){
+                    sv[i] = incoming_vehicles[order[i]];
+                    if (has_req) sr[i] = incoming_vehicles_requests[order[i]];
+                }
+                incoming_vehicles.swap(sv);
+                if (has_req) incoming_vehicles_requests.swap(sr);
+            }
+        }
+    }
+
     // Build outlink list with repetition per lane (multi-lane gets more transfer attempts)
     _buf_outlinks_expanded.clear();
     _buf_seen_outlinks.clear();
@@ -740,58 +770,6 @@ Vehicle::Vehicle(
 }
 
 /**
- * @brief Update vehicle state and movement.
- */
-void Vehicle::update(){
-
-    if (state() == vsHOME){
-        if ((double)w->timestep * w->delta_t >= departure_time){
-            log_data();
-            state() = vsWAIT;
-            orig->generation_queue.push_back(this);
-        }
-    }else if (state() == vsWAIT){
-        log_data();
-    }else if (state() == vsRUN){
-        log_data();
-        if (x() == 0.0){
-            route_choice_flag_on_link = 0;
-        }
-
-        v() = (x_next() - x()) / (w->delta_t);
-        x_old() = x();
-        x() = x_next();
-
-        distance_traveled += x() - x_old();
-
-        Link *lk = link();
-        if (std::fabs(x() - lk->length) < 1e-9){
-            if (lk->end_node == dest){
-                // Prepare for trip end (wait if not at front of link)
-                flag_waiting_for_trip_end = 1;
-                if (w->vehicles[lk->q_front_idx()] == this){
-                    end_trip();
-                }
-            }else if (lk->end_node->out_links.empty() && trip_abort == 1){
-                // Dead-end: abort trip
-                flag_trip_aborted = 1;
-                route_next_link = nullptr;
-                flag_waiting_for_trip_end = 1;
-                if (w->vehicles[lk->q_front_idx()] == this){
-                    end_trip();
-                }
-            }else{
-                route_next_link_choice(lk->end_node->out_links);
-                lk->end_node->incoming_vehicles.push_back(this);
-                lk->end_node->incoming_vehicles_requests.push_back(route_next_link);
-            }
-        }
-    }else if (state() == vsEND || state() == vsABORT){
-        // do nothing
-    }
-}
-
-/**
  * @brief End the vehicle's trip.
  */
 void Vehicle::end_trip(){
@@ -832,38 +810,6 @@ void Vehicle::end_trip(){
 
     // Final log entry
     log_data();
-}
-
-/**
- * @brief Apply Newell's car-following model.
- */
-void Vehicle::car_follow_newell(){
-    Link *lk = link();
-    // free-flow
-    x_next() = x() + lk->vmax * w->delta_t;
-
-    // congested (use delta_per_lane for multi-lane car following)
-    Vehicle *ld = leader();
-    if (ld != nullptr){
-        double gap = ld->x() - lk->delta_per_lane * w->delta_n;
-        if (gap < x()){
-            gap = x();
-        }
-        if (x_next() > gap){
-            x_next() = gap;
-        }
-    }
-
-    // non-decreasing
-    if (x_next() < x()){
-        x_next() = x();
-    }
-
-    // clamp to link length, carry over residual as move_remain
-    if (x_next() > lk->length){
-        move_remain() = x_next() - lk->length;
-        x_next() = lk->length;
-    }
 }
 
 /**
@@ -1032,6 +978,33 @@ void Vehicle::log_data(){
             log_lane.push_back(-1);
             log_s.push_back(-1.0);
         }
+        log_size++;
+    }
+}
+
+/**
+ * @brief Log a RUN-state vehicle with a caller-supplied leader spacing.
+ * The fused RUN system pass processes links front-to-back and derives the leader
+ * spacing from the ring buffer directly (the generic log_data() leader() accessor
+ * would read the leader's post-move position unconditionally, which does not
+ * reproduce the id-ordered read semantics of the original update() loop).
+ */
+void Vehicle::log_data_run(double spacing){
+    Link *lk = link();
+    w->ave_v_sum += v();
+    if (lk){
+        w->ave_vratio_sum += v() / lk->vmax;
+    }
+    w->stat_sample_count += 1.0;
+
+    if (w->vehicle_log_mode){
+        if (log_size == 0) log_first_ts = (int)w->timestep;
+        log_last_ts = (int)w->timestep;
+        log_link.push_back(lk ? lk->id : -1);
+        log_x.push_back(x());
+        log_v.push_back(v());
+        log_lane.push_back(lane());
+        log_s.push_back(spacing);
         log_size++;
     }
 }
@@ -1536,10 +1509,19 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         return;
     }
 
-    // HOME/WAIT/RUN vehicles in id order; compacted in place each step to drop vehicles that reach END/ABORT (much faster when many have finished).
-    update_order.clear();
+    // Rebuild HOME departure buckets: bucket[ts] holds the idx (id ascending, since
+    // `vehicles` is in id order) of HOME vehicles whose first departing timestep is ts.
+    // ts0 is the smallest timestep with (double)ts0*delta_t >= departure_time, using the
+    // exact same FP comparison as the original per-step HOME predicate, then clamped to
+    // the chunk start (past-due vehicles depart on the first step of the chunk).
+    departure_buckets.assign(total_timesteps, {});
     for (auto veh : vehicles){
-        if (veh->state() <= vsRUN) update_order.push_back(veh);
+        if (veh->state() == vsHOME){
+            int ts0 = (int)(veh->departure_time / delta_t);
+            while ((double)ts0 * delta_t < veh->departure_time) ts0++;
+            if (ts0 < start_ts) ts0 = start_ts;
+            if (ts0 < (int)total_timesteps) departure_buckets[ts0].push_back(veh->idx);
+        }
     }
 
     for (timestep = start_ts; timestep < end_ts; timestep++){
@@ -1568,25 +1550,112 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             nd->transfer();
         }
 
-        // car-following (update_order is in id order, so hard_deterministic semantics hold)
-        for (auto veh : update_order){
-            if (veh->state() == vsRUN){
-                veh->car_follow_newell();
+        // RUN system pass: fuse the old car_follow + update(RUN) into a single link-ordered
+        // sweep. Each link is processed front-to-back over a head/tail snapshot so leaders
+        // (ahead in the queue) are moved before their followers, matching the old two-phase
+        // (car_follow-all then update-all) reads via x_old.
+        for (auto lk : links){
+            long long head0 = lk->veh_head_seq;
+            long long tail0 = lk->veh_tail_seq;
+            int lanes = lk->number_of_lanes;
+            int mask = lk->veh_ring_mask;
+            double dpl_dn = lk->delta_per_lane * delta_n;
+            double vmax_dt = lk->vmax * delta_t;
+            double length = lk->length;
+            for (long long s = head0; s < tail0; s++){
+                int vi = lk->veh_ring[s & mask];
+                Vehicle *veh = vehicles[vi];
+
+                // Leader derived from the pre-pass queue snapshot (head0), so a leader that
+                // end_trip()'d earlier in this pass is still readable from its ring slot.
+                long long seq_leader = s - lanes;
+                int leader_vi = (seq_leader >= head0) ? lk->veh_ring[seq_leader & mask] : -1;
+
+                // car_follow (Newell): self uses its current x, the leader uses x_old
+                // (its pre-move position this step, already stored since the leader moved
+                // first in this front-to-back sweep).
+                double self_x = veh_x[vi];
+                double xn = self_x + vmax_dt;
+                if (leader_vi >= 0){
+                    double gap = veh_x_old[leader_vi] - dpl_dn;
+                    if (gap < self_x) gap = self_x;
+                    if (xn > gap) xn = gap;
+                }
+                if (xn < self_x) xn = self_x;
+                if (xn > length){
+                    veh_move_remain[vi] = xn - length;
+                    xn = length;
+                }
+                veh_x_next[vi] = xn;
+
+                // log_data (RUN): spacing to the leader reproduces the id-ordered read of the
+                // original update() loop. A lower-id leader was updated before self, so self
+                // saw its post-move x (or, if it end_trip()'d, no leader -> -1); a higher-id
+                // leader had not moved when self logged, so self saw its pre-move x (x_old).
+                double spacing = -1.0;
+                if (leader_vi >= 0){
+                    Vehicle *ld = vehicles[leader_vi];
+                    if (ld->id < veh->id){
+                        int lst = veh_state[leader_vi];
+                        if (lst != vsEND && lst != vsABORT){
+                            spacing = veh_x[leader_vi] - self_x;
+                        }
+                    } else {
+                        spacing = veh_x_old[leader_vi] - self_x;
+                    }
+                }
+                veh->log_data_run(spacing);
+
+                // move + link-end handling (identical to the old update() RUN branch)
+                if (self_x == 0.0){
+                    veh->route_choice_flag_on_link = 0;
+                }
+                veh_v[vi] = (xn - self_x) / delta_t;
+                veh_x_old[vi] = self_x;
+                veh_x[vi] = xn;
+                veh->distance_traveled += xn - self_x;
+
+                if (std::fabs(xn - length) < 1e-9){
+                    if (lk->end_node == veh->dest){
+                        veh->flag_waiting_for_trip_end = 1;
+                        if (vehicles[lk->q_front_idx()] == veh){
+                            veh->end_trip();
+                        }
+                    } else if (lk->end_node->out_links.empty() && veh->trip_abort == 1){
+                        veh->flag_trip_aborted = 1;
+                        veh->route_next_link = nullptr;
+                        veh->flag_waiting_for_trip_end = 1;
+                        if (vehicles[lk->q_front_idx()] == veh){
+                            veh->end_trip();
+                        }
+                    } else {
+                        veh->route_next_link_choice(lk->end_node->out_links);
+                        lk->end_node->incoming_vehicles.push_back(veh);
+                        lk->end_node->incoming_vehicles_requests.push_back(veh->route_next_link);
+                    }
+                }
             }
         }
 
-        // vehicle update, compacting update_order in place (drops END/ABORT vehicles)
-        size_t wpos = 0;
-        for (size_t r = 0; r < update_order.size(); r++){
-            Vehicle *veh = update_order[r];
-            if (veh->state() <= vsRUN){
-                veh->update();
-            }
-            if (veh->state() <= vsRUN){
-                update_order[wpos++] = veh;
+        // WAIT system pass: vehicles still in a generation_queue (those not generated this
+        // step) log a WAIT entry. Vehicles departing this step are logged as HOME below and
+        // enter the queue only afterwards, so they are not double-logged here.
+        for (auto nd : nodes){
+            for (auto veh : nd->generation_queue){
+                veh->log_data();
             }
         }
-        update_order.resize(wpos);
+
+        // HOME departure pass: vehicles whose departure timestep is now log a HOME entry,
+        // transition to WAIT, and enter their origin generation_queue (id ascending).
+        if (timestep < total_timesteps){
+            for (int vi : departure_buckets[timestep]){
+                Vehicle *veh = vehicles[vi];
+                veh->log_data();
+                veh->state() = vsWAIT;
+                veh->orig->generation_queue.push_back(veh);
+            }
+        }
 
         // route choice update
         if (route_choice_update_gradual){

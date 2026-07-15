@@ -286,13 +286,14 @@ struct Vehicle {
         const string &orig_name,
         const string &dest_name);
 
-    void update();
     void end_trip();
-    void car_follow_newell();
     void route_next_link_choice(const vector<Link*>& linkset);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
     void log_data();
+    // RUN-state logging with an externally supplied leader spacing (used by the fused
+    // RUN system pass, which derives the spacing from the link ring buffer directly).
+    void log_data_run(double spacing);
 
     // Reconstruct log_t / log_state entry i from the scalar counters above.
     double log_t_at(size_t i) const;
@@ -339,8 +340,10 @@ struct World {
 
     // Collections of objects
     vector<Vehicle *> vehicles;         //all state
-    // HOME/WAIT/RUN vehicles in id order; rebuilt per main_loop call, compacted in place each step
-    vector<Vehicle *> update_order;
+    // Departure buckets: departure_buckets[ts] holds vehicle idx (id ascending) whose
+    // first departing timestep is ts. Rebuilt per main_loop call, replacing the old
+    // id-ordered update_order full-scan for HOME->WAIT transitions.
+    vector<vector<int>> departure_buckets;
 
     // Vehicle hot state as SoA arrays, indexed by Vehicle::idx (parallel to `vehicles`)
     vector<double> veh_x;
