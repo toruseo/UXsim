@@ -550,8 +550,8 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("vehicle_log_mode", &World::vehicle_log_mode)
         .def_ro("ave_v", &World::ave_v)
         .def_ro("ave_vratio", &World::ave_vratio)
-        .def_ro("ave_v_sum", &World::ave_v_sum)
-        .def_ro("stat_sample_count", &World::stat_sample_count)
+        .def_prop_ro("ave_v_sum", [](const World &w) { return w.ave_v_sum(); })
+        .def_prop_ro("stat_sample_count", [](const World &w) { return w.stat_sample_count(); })
         .def("set_t_max", &World::set_t_max,
              nb::arg("new_t_max"),
              "Update t_max/total_timesteps and resize per-link time-indexed arrays (call before simulation start)")
