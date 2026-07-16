@@ -798,14 +798,7 @@ class CppRouteChoice:
 
 
 class CppWorld:
-    """Thin wrapper around C++ World. Delegates simulation to C++ engine.
-
-    C++-mode-only argument:
-        threads (int): number of OpenMP threads for the C++ engine. 1 (default)
-            runs single-threaded (the legacy behaviour); N>=1 uses N threads;
-            -1 uses all available cores (honouring OMP_NUM_THREADS and affinity
-            limits). This argument does not exist on the Python-mode World.
-    """
+    """Thin wrapper around C++ World. Delegates simulation to C++ engine."""
 
     def __init__(self, name="", deltan=5, reaction_time=1,
                  duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01,
