@@ -149,6 +149,9 @@ void Node::generate(){
         generation_queue.pop_front();
 
         veh->state = vsRUN;
+        // Structural parity with Python: a generated vehicle enters VEHICLES_RUNNING. Staged in
+        // this node's buffer (generate runs in the per-node parallel stage) and applied serially.
+        running_gen_buf.push_back(veh);
         veh->link = outlink;
         veh->x = 0.0;
         veh->v = outlink->vmax;  // initial speed at link entry (matches Python)
@@ -763,6 +766,101 @@ Vehicle::Vehicle(
     w->vehicles.push_back(this);
     w->vehicle_id++;
     w->vehicles_map[vehicle_name] = this;
+    // Structural parity with Python: a newly created vehicle is "living" (home) from birth.
+    w->vehicles_living[id] = this;
+}
+
+/**
+ * @brief Apply Newell's car-following model (computes x_next only).
+ *
+ * Mirrors uxsim.py Vehicle.carfollow. Runs as an independent pass before the RUN update pass, so
+ * the leader is read at its pre-move position (leader->x, unchanged this step): the result is
+ * independent of the intra-link processing order and of the OpenMP thread count. The leader is
+ * this->leader (the maintained same-link leader pointer, nullptr once the leader leaves).
+ */
+void Vehicle::car_follow_newell(){
+    // free-flow
+    x_next = x + link->vmax * w->delta_t;
+
+    // congested (use delta_per_lane for multi-lane car following)
+    if (leader != nullptr){
+        double gap = leader->x - link->delta_per_lane * w->delta_n;
+        if (gap < x){
+            gap = x;
+        }
+        if (x_next > gap){
+            x_next = gap;
+        }
+    }
+
+    // non-decreasing
+    if (x_next < x){
+        x_next = x;
+    }
+
+    // clamp to link length, carry over residual as move_remain
+    if (x_next > link->length){
+        move_remain = x_next - link->length;
+        x_next = link->length;
+    }
+}
+
+/**
+ * @brief Update the vehicle's state and position (HOME/WAIT/RUN/END state machine).
+ *
+ * Mirrors uxsim.py Vehicle.update. record_log runs first for every state; the RUN branch then
+ * applies the already-computed x_next, and handles trip end / link transfer at the link end.
+ * snap_leader (the pre-pass queue-position leader) is forwarded to log_data so the RUN-state
+ * leader-spacing reproduces the original id-ordered read even though the RUN pass is per-link.
+ */
+void Vehicle::update(Vehicle *snap_leader){
+    log_data(snap_leader);
+
+    if (state == vsHOME){
+        // depart when the current time reaches the departure time
+        if ((double)w->timestep * w->delta_t >= departure_time){
+            state = vsWAIT;
+            orig->generation_queue.push_back(this);
+        }
+    } else if (state == vsWAIT){
+        // wait in the vertical queue at the origin node (route pref update is World-level in C++)
+    } else if (state == vsRUN){
+        // drive within the link
+        if (x == 0.0){
+            route_choice_flag_on_link = 0;
+        }
+
+        v = (x_next - x) / w->delta_t;
+        x_old = x;
+        x = x_next;
+
+        distance_traveled += x - x_old;
+
+        // at the end of the link
+        if (std::fabs(x - link->length) < 1e-9){
+            if (link->end_node == dest){
+                // prepare for trip end (wait if not at front of link)
+                flag_waiting_for_trip_end = 1;
+                if (link->vehicles.front() == this){
+                    end_trip();
+                }
+            } else if (link->end_node->out_links.empty() && trip_abort == 1){
+                // dead-end: abort trip
+                flag_trip_aborted = 1;
+                route_next_link = nullptr;
+                flag_waiting_for_trip_end = 1;
+                if (link->vehicles.front() == this){
+                    end_trip();
+                }
+            } else {
+                // request link transfer (RUN-path route choice uses this link's RNG stream; the
+                // arrival is staged in this link's buffer, aggregated id-ordered in transfer)
+                route_next_link_choice(link->end_node->out_links, w->link_rngs[link->id]);
+                link->arrived_vehicles.push_back(this);
+            }
+        }
+    }
+    // vsEND / vsABORT: nothing
 }
 
 /**
@@ -787,6 +885,11 @@ void Vehicle::end_trip(){
     arrival_time = (double)w->timestep * w->delta_t;
     travel_time = arrival_time - departure_time;
 
+    // Structural parity with Python's VEHICLES_RUNNING.pop / VEHICLES_LIVING.pop. Staged in this
+    // link's buffer (end_trip runs both in the per-link RUN pass and the serial transfer) and
+    // applied serially post-region, so the shared registries are never mutated concurrently.
+    link->ended_buf.push_back(this);
+
     link->vehicles.pop_front();
 
     if (follower){
@@ -802,7 +905,7 @@ void Vehicle::end_trip(){
         travel_time = -1.0;
     }
 
-    // Final log entry
+    // Final log entry (END/ABORT tail; non-RUN state logs -1s, so no leader spacing needed)
     log_data();
 }
 
@@ -937,7 +1040,7 @@ void Vehicle::record_travel_time(Link *link, double t){
  * Uses reserve'd arrays — push_back is O(1) with no reallocation.
  * log_size tracks actual count (vector::size() is equivalent but log_size avoids any ambiguity if resize was used elsewhere).
  */
-void Vehicle::log_data(){
+void Vehicle::log_data(Vehicle *snap_leader){
     // Accumulate stats for print_simple_results (regardless of log mode).
     // A waiting vehicle counts as a zero-speed sample for the average speed statistic, as in Python's record_log.
     if (state == vsRUN){
@@ -958,11 +1061,26 @@ void Vehicle::log_data(){
         if (state == vsWAIT) log_wait_count++;
         if (state == vsEND || state == vsABORT) log_end_count++;
         if (state == vsRUN){
+            // Leader spacing reproduces the original id-ordered read even though the RUN pass is
+            // per-link front-to-back. snap_leader is the pre-pass queue-position leader: a lower-id
+            // leader was updated before self, so self saw its post-move x (or, if it end_trip()'d,
+            // no leader -> -1); a higher-id leader had not yet moved when self logged in id order,
+            // so self saw its pre-move x (x_old). (Python's record_log reads s.leader.x - s.x.)
+            double spacing = -1.0;
+            if (snap_leader != nullptr){
+                if (snap_leader->id < id){
+                    if (snap_leader->state != vsEND && snap_leader->state != vsABORT){
+                        spacing = snap_leader->x - x;
+                    }
+                } else {
+                    spacing = snap_leader->x_old - x;
+                }
+            }
             log_link.push_back(link ? link->id : -1);
             log_x.push_back(x);
             log_v.push_back(v);
             log_lane.push_back(lane);
-            log_s.push_back((leader != nullptr && leader->link == link) ? leader->x - x : -1.0);
+            log_s.push_back(spacing);
         } else {
             log_link.push_back(-1);
             log_x.push_back(-1);
@@ -1092,6 +1210,8 @@ World::~World(){
     nodes_map.clear();
     links_map.clear();
     vehicles_map.clear();
+    vehicles_living.clear();
+    vehicles_running.clear();
 }
 
 void World::set_t_max(double new_t_max){
@@ -1594,14 +1714,28 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             }
         }
 
-        // RUN system pass: a per-link, front-to-back sweep over each link's queue snapshot
-        // that fuses the old car_follow_newell() and update() RUN branch. Parallel per-link: a
-        // vehicle is on exactly one link, so each link touches only its own queue, its own
-        // vehicles' state and logs, its own curves/traveltime events/arrived buffers, its own
-        // per-link stat sums and RNG stream; the result is independent of thread count.
-        // Leaders are ahead in the queue (lower index), so they are moved before their
-        // followers, matching the old two-phase (car_follow-all then update-all) reads via
-        // x_old. Per-link stat sums are hoisted to locals and flushed once after the sweep.
+        // Car-following pass (per-link): an independent sweep that computes each running
+        // vehicle's x_next (Vehicle::car_follow_newell) before any movement, matching uxsim.py's
+        // separate carfollow loop. Because no vehicle has moved yet, each leader is read at its
+        // pre-move position, so the result is independent of intra-link order and thread count.
+        // A vehicle is on exactly one link, and its leader is on the same link, so per-link is
+        // exclusive. A separate omp for (barrier before the RUN pass) guarantees every x_next is
+        // computed before the RUN pass starts applying movement.
+        #pragma omp for schedule(static)
+        for (int li = 0; li < nlinks; li++){
+            Link *lk = links[li];
+            for (auto veh : lk->vehicles){
+                veh->car_follow_newell();
+            }
+        }
+
+        // RUN update pass (per-link): a front-to-back sweep over each link's queue snapshot that
+        // calls Vehicle::update() (RUN branch: apply x_next, log, handle trip end / transfer).
+        // Parallel per-link: each link touches only its own queue, its own vehicles' state and
+        // logs, its own curves/traveltime events/arrived buffers, its own per-link stat sums and
+        // RNG stream; the result is independent of thread count. The snapshot is stable while
+        // end_trip() pops from the live deque. snap_leader is the pre-pass queue-position leader
+        // (lower index = ahead), forwarded so log_data reproduces the id-ordered spacing read.
         // route_next_link_choice may throw (specified_route); capture and rethrow the
         // smallest-link-id exception after the region.
         #pragma omp for schedule(static)
@@ -1612,100 +1746,12 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
             vector<Vehicle *> &run_snapshot = tls_run_snapshot;
             run_snapshot.assign(lk->vehicles.begin(), lk->vehicles.end());
             int lanes = lk->number_of_lanes;
-            double dpl_dn = lk->delta_per_lane * delta_n;
-            double vmax_dt = lk->vmax * delta_t;
-            double length = lk->length;
-            double vmax = lk->vmax;
             int n = (int)run_snapshot.size();
-
-            double ave_v_sum_local = 0.0;
-            double ave_vratio_sum_local = 0.0;
-            double stat_count_local = 0.0;
-
             for (int i = 0; i < n; i++){
                 Vehicle *veh = run_snapshot[i];
-                // Leader from the pre-pass queue snapshot: a leader that end_trip()'d earlier
-                // in this sweep is still readable here (its x_old is untouched by end_trip).
-                Vehicle *leader = (i - lanes >= 0) ? run_snapshot[i - lanes] : nullptr;
-
-                // car_follow (Newell): self uses its current x, the leader uses x_old (its
-                // pre-move position this step, already stored since it moved first).
-                double self_x = veh->x;
-                double xn = self_x + vmax_dt;
-                if (leader){
-                    double gap = leader->x_old - dpl_dn;
-                    if (gap < self_x) gap = self_x;
-                    if (xn > gap) xn = gap;
-                }
-                if (xn < self_x) xn = self_x;
-                if (xn > length){
-                    veh->move_remain = xn - length;
-                    xn = length;
-                }
-                veh->x_next = xn;
-
-                // log_data (RUN): spacing to the leader reproduces the id-ordered read of the
-                // original update() loop. A lower-id leader moved before self, so self saw its
-                // post-move x (or, if it end_trip()'d, no leader -> -1); a higher-id leader had
-                // not moved when self logged, so self saw its pre-move x (x_old).
-                double spacing = -1.0;
-                if (leader){
-                    if (leader->id < veh->id){
-                        if (leader->state != vsEND && leader->state != vsABORT){
-                            spacing = leader->x - self_x;
-                        }
-                    } else {
-                        spacing = leader->x_old - self_x;
-                    }
-                }
-                // Inline the RUN stat accumulation into link-local sums (flushed once below);
-                // the log push is unchanged from log_data_run().
-                ave_v_sum_local += veh->v;
-                ave_vratio_sum_local += veh->v / vmax;
-                stat_count_local += 1.0;
-                if (vehicle_log_mode){
-                    if (veh->log_size == 0) veh->log_first_ts = (int)timestep;
-                    veh->log_last_ts = (int)timestep;
-                    veh->log_link.push_back(lk->id);
-                    veh->log_x.push_back(self_x);
-                    veh->log_v.push_back(veh->v);
-                    veh->log_lane.push_back(veh->lane);
-                    veh->log_s.push_back(spacing);
-                    veh->log_size++;
-                }
-
-                // move + link-end handling (identical to the old update() RUN branch).
-                if (self_x == 0.0){
-                    veh->route_choice_flag_on_link = 0;
-                }
-                veh->v = (xn - self_x) / delta_t;
-                veh->x_old = self_x;
-                veh->x = xn;
-                veh->distance_traveled += xn - self_x;
-
-                if (std::fabs(xn - length) < 1e-9){
-                    if (lk->end_node == veh->dest){
-                        veh->flag_waiting_for_trip_end = 1;
-                        if (lk->vehicles.front() == veh){
-                            veh->end_trip();
-                        }
-                    } else if (lk->end_node->out_links.empty() && veh->trip_abort == 1){
-                        veh->flag_trip_aborted = 1;
-                        veh->route_next_link = nullptr;
-                        veh->flag_waiting_for_trip_end = 1;
-                        if (lk->vehicles.front() == veh){
-                            veh->end_trip();
-                        }
-                    } else {
-                        veh->route_next_link_choice(lk->end_node->out_links, link_rngs[lk->id]);
-                        lk->arrived_vehicles.push_back(veh);
-                    }
-                }
+                Vehicle *snap_leader = (i - lanes >= 0) ? run_snapshot[i - lanes] : nullptr;
+                veh->update(snap_leader);
             }
-
-            link_ave_v_sum[lk->id] += ave_v_sum_local;
-            link_ave_vratio_sum[lk->id] += ave_vratio_sum_local;
-            link_stat_count[lk->id] += stat_count_local;
           } catch (...) {
             #pragma omp critical (aos_exc)
             { if (lk->id < run_exc_id){ run_exc_id = lk->id; run_exc = std::current_exception(); } }
@@ -1713,14 +1759,15 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         }
 
         // WAIT system pass (per-node): vehicles still in a generation_queue (those not
-        // generated this step) log a WAIT entry. A queued vehicle's origin is this node, so its
-        // WAIT stat sample (node_stat_count[orig->id]) and per-vehicle log are exclusive to
-        // this node; the pass is thread-count independent. Vehicles departing this step are
-        // logged as HOME below and enter the queue only afterwards, so no double-logging.
+        // generated this step) get update() -> log_data() (WAIT branch). A queued vehicle's
+        // origin is this node, so its WAIT stat sample (node_stat_count[orig->id]) and per-vehicle
+        // log are exclusive to this node; the pass is thread-count independent. Vehicles departing
+        // this step are logged as HOME below and enter the queue only afterwards, so no
+        // double-logging.
         #pragma omp for schedule(static)
         for (int i = 0; i < nnodes; i++){
             for (auto veh : nodes[i]->generation_queue){
-                veh->log_data();
+                veh->update();
             }
         }
         } // end omp parallel region
@@ -1728,14 +1775,36 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         if (gen_exc) std::rethrow_exception(gen_exc);
         if (run_exc) std::rethrow_exception(run_exc);
 
-        // HOME departure pass: vehicles whose departure timestep is now log a HOME entry,
-        // transition to WAIT, and enter their origin generation_queue (id ascending).
+        // HOME departure pass (serial): vehicles whose departure timestep is now get update()
+        // -> log_data() (HOME entry) and the HOME branch transitions them to WAIT and appends
+        // them to their origin generation_queue (id ascending, since `vehicles` is in id order).
+        // Run after the WAIT pass so a vehicle departing this step is not logged twice.
         if (timestep < total_timesteps){
             for (auto veh : departure_buckets[timestep]){
-                veh->log_data();
-                veh->state = vsWAIT;
-                veh->orig->generation_queue.push_back(veh);
+                veh->update();
             }
+        }
+
+        // Reconcile the VEHICLES_LIVING / VEHICLES_RUNNING registries: replay the per-node
+        // running-insert buffers (from generate) and the per-link end-trip buffers (from the RUN
+        // pass and transfer) that were staged to avoid concurrent mutation of the shared maps.
+        // Inserts first, then erases, so a vehicle generated and ended in the same step ends up
+        // absent, matching the mid-step insert/erase order in Python. Applied in node/link id
+        // order; membership at step end matches the original per-vehicle mutation.
+        for (int i = 0; i < nnodes; i++){
+            Node *nd = nodes[i];
+            for (auto veh : nd->running_gen_buf){
+                vehicles_running[veh->id] = veh;
+            }
+            nd->running_gen_buf.clear();
+        }
+        for (int li = 0; li < nlinks; li++){
+            Link *lk = links[li];
+            for (auto veh : lk->ended_buf){
+                vehicles_running.erase(veh->id);
+                vehicles_living.erase(veh->id);
+            }
+            lk->ended_buf.clear();
         }
 
         // route choice update

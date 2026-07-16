@@ -62,6 +62,12 @@ struct Node {
     // Vehicles waiting to be generated onto the outgoing link
     deque<Vehicle *> generation_queue;
 
+    // Per-node buffer recording vehicles that entered the RUN state via generate() this
+    // timestep (their World::vehicles_running insert). generate() runs in the per-node parallel
+    // stage, so the insert into the shared registry is deferred here and applied in id order in
+    // the serial post-region reconciliation (see main_loop).
+    vector<Vehicle *> running_gen_buf;
+
     double x;
     double y;
 
@@ -142,6 +148,12 @@ struct Link {
     // Node::transfer. Replaces the RUN pass pushing directly into the shared node buffer, so
     // per-link stages can run independently once parallelized.
     vector<Vehicle *> arrived_vehicles;
+
+    // Per-link buffer recording vehicles that ended their trip on this link this timestep (their
+    // World::vehicles_living / vehicles_running erase). end_trip() runs in the per-link RUN pass
+    // (parallel) and in the serial transfer; both defer the shared-registry erase here, applied
+    // in id order in the serial post-region reconciliation (see main_loop).
+    vector<Vehicle *> ended_buf;
 
     double capacity_out;
     double capacity_out_remain;
@@ -258,10 +270,18 @@ struct Vehicle {
         const string &dest_name);
 
     void end_trip();
+    // Newell car-following: computes x_next only (no state change), read as an independent pass
+    // before the RUN update pass so leaders are read at their pre-move position (order-neutral).
+    void car_follow_newell();
+    // update() drives the HOME/WAIT/RUN/END state machine (structural parity with Python's
+    // Vehicle.update). snap_leader is the pre-pass queue-position leader supplied by the RUN
+    // pass so log_data() can reproduce the id-ordered leader-spacing read; nullptr for the
+    // WAIT/HOME passes and the end_trip tail entry.
+    void update(Vehicle *snap_leader = nullptr);
     void route_next_link_choice(const vector<Link*>& linkset, std::mt19937 &rng);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
-    void log_data();
+    void log_data(Vehicle *snap_leader = nullptr);
 
     // Reconstruct log_t / log_state entry i from the scalar counters above.
     double log_t_at(size_t i) const;
@@ -320,6 +340,16 @@ struct World {
     unordered_map<string, Node *> nodes_map;
     unordered_map<string, Link *> links_map;
     unordered_map<string, Vehicle *> vehicles_map;
+
+    // Live-vehicle registries, restored for structural parity with Python's VEHICLES_LIVING /
+    // VEHICLES_RUNNING (same membership semantics: living = home|wait|run, running = run).
+    // Populated at Vehicle construction (living) and Node::generate (running); entries removed
+    // in Vehicle::end_trip. Not exposed to bindings (read-out is zero); maintained so future
+    // feature ports keep line-by-line correspondence with uxsim.py. Mutations from the parallel
+    // generate/RUN stages are staged in Node::running_gen_buf / Link::ended_buf and applied in
+    // the serial post-region reconciliation, so the shared maps are never touched concurrently.
+    unordered_map<int, Vehicle *> vehicles_living;   // home, wait, run
+    unordered_map<int, Vehicle *> vehicles_running;  // run
 
     size_t timestep;    //simulation timestep
     double time;    //simulation time in second
