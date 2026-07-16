@@ -169,6 +169,17 @@ class CppNode:
             key.signal_group = phase_info[key]
             key._cpp_link.signal_group = phase_info[key]
 
+    def adjust_node_capacity(self):
+        """
+        Automatically determine the `flow_capacity` of this node based on the capacity of connected links. It does not override if `flow_capacity` was already set.
+        This calculation is based on an assumption that the node is an intersection with two major roads and two minor roads or similar types. In this case, the node capacity should be the same to that of major roads.
+        """
+        self._cpp_node.adjust_node_capacity()
+        if self._cpp_node.number_of_lanes != self.number_of_lanes:
+            self.flag_lanes_automatically_determined = True
+        self.flow_capacity = self._cpp_node.flow_capacity
+        self.number_of_lanes = self._cpp_node.number_of_lanes
+
 
 class CppLink:
     """Thin wrapper around C++ Link. Stores attributes for analyzer compatibility."""
@@ -808,6 +819,7 @@ class CppWorld:
                  reduce_memory_delete_vehicle_route_pref=False,
                  hard_deterministic_mode=False,
                  no_cyclic_routing=False,
+                 adjust_node_capacity=False,
                  meta_data=None, user_attribute=None, user_function=None,
                  threads=1):
 
@@ -843,6 +855,7 @@ class CppWorld:
         self.name = name
         self.hard_deterministic_mode = hard_deterministic_mode
         self.no_cyclic_routing = no_cyclic_routing
+        self.adjust_node_capacity = adjust_node_capacity
         if not isinstance(threads, int) or isinstance(threads, bool) or (threads < 1 and threads != -1):
             raise ValueError(f"threads must be a positive integer or -1 (all cores), got {threads!r}.")
         self.num_threads = threads
@@ -887,6 +900,7 @@ class CppWorld:
         self._cpp_world_created = True
         self._cpp_world.route_choice_update_gradual = self.route_choice_update_gradual
         self._cpp_world.no_cyclic_routing = self.no_cyclic_routing
+        self._cpp_world.adjust_node_capacity = bool(self.adjust_node_capacity)
         self._cpp_world.instantaneous_TT_timestep_interval = int(self.instantaneous_TT_timestep_interval)
         self._cpp_world.num_threads = int(self.num_threads)
 
@@ -1090,6 +1104,12 @@ class CppWorld:
         self._cpp_world.show_progress = int(self.show_progress)
         self._cpp_world.show_progress_deltat_timestep = max(int(self.show_progress_deltat_timestep), 0)
         self._cpp_world.initialize_adj_matrix()
+
+        # Adjust node capacities (done in C++ by initialize_adj_matrix; here we sync the wrapper-side attributes)
+        if self.adjust_node_capacity:
+            for node in self.NODES:
+                node.adjust_node_capacity()
+
         self._setup_analyzer()
 
         # Pre-compute congestion pricing tolls and pass to C++ as timeseries
