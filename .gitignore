@@ -126,6 +126,12 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# pre-commit
+.pre-commit-config.yaml
+
+# Pycharm
+.idea/
+
 # Pyre type checker
 .pyre/
 
@@ -148,8 +154,4 @@ demos_and_examples/uxsim/*
 _bench*
 /demo_*
 
-# pre-commit
-.pre-commit-config.yaml
-
-# Pycharm
-.idea/
+benchmark_*.md

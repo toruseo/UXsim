@@ -1,7 +1,7 @@
 """
 UXsim benchmark: cpp=False vs cpp=True across multiple random seeds.
 
-3 scenarios (Small-scale, Large-scale, DUE/DSO) x 2 modes (Python, C++) x 20 seeds.
+3 scenarios (Small-scale, Large-scale, DUE/DSO) x 2 modes (Python, C++) x N seeds.
 Collects wall-clock time and key simulation metrics, then prints summary statistics.
 """
 
@@ -15,21 +15,22 @@ import uxsim
 from uxsim import World
 from uxsim.DTAsolvers import SolverDUE, SolverDSO_D2D
 
-N_SEEDS = 2 #for accurate results, set 20 or more.
+N_SEEDS = 2
 SEEDS = list(range(N_SEEDS))
+MAX_ITER_DUE_DSO = 50
 
 
 # ============================================================
 # Scenario builders
 # ============================================================
 
-def run_small(seed, cpp):
+def run_small(seed, cpp, threads=1):
     """Small-scale merge scenario."""
     W = World(
         name="", deltan=5, tmax=1200,
         no_cyclic_routing=True,
         print_mode=0, save_mode=0, show_mode=0,
-        random_seed=seed, cpp=cpp,
+        random_seed=seed, cpp=cpp, threads=threads,
     )
     W.addNode("orig1", 0, 0)
     W.addNode("orig2", 0, 2)
@@ -56,13 +57,13 @@ def run_small(seed, cpp):
     }
 
 
-def run_large(seed, cpp):
+def run_large(seed, cpp, threads=1):
     """Large-scale 11x11 grid scenario."""
     W = World(
         name="", deltan=5, tmax=7200,
         no_cyclic_routing=True,
         print_mode=0, save_mode=0, show_mode=0,
-        random_seed=seed, cpp=cpp,
+        random_seed=seed, cpp=cpp, threads=threads,
     )
     imax, jmax = 11, 11
     nodes = {}
@@ -197,7 +198,7 @@ def run_due_dso(seed, cpp):
     # DUE
     solver_DUE = SolverDUE(create_world, cpp=cpp)
     t0 = time.perf_counter()
-    solver_DUE.solve(max_iter=100)
+    solver_DUE.solve(max_iter=MAX_ITER_DUE_DSO)
     elapsed_due = time.perf_counter() - t0
     df_due = solver_DUE.W_sol.analyzer.basic_to_pandas()
     results["due_elapsed"] = elapsed_due
@@ -207,7 +208,7 @@ def run_due_dso(seed, cpp):
     # DSO
     solver_DSO = SolverDSO_D2D(create_world, cpp=cpp)
     t0 = time.perf_counter()
-    solver_DSO.solve(max_iter=100)
+    solver_DSO.solve(max_iter=MAX_ITER_DUE_DSO)
     elapsed_dso = time.perf_counter() - t0
     df_dso = solver_DSO.W_sol.analyzer.basic_to_pandas()
     results["dso_elapsed"] = elapsed_dso
@@ -337,6 +338,20 @@ if __name__ == "__main__":
     all_dfs.append(df_large)
     all_link_data["large"] = link_large
 
+    # --- Small & Large with threads=8 (C++ only) ---
+    print("=" * 60)
+    print("Small & Large scenarios (C++, threads=8)")
+    print("=" * 60)
+    rows_threads8 = []
+    for name, run_fn in [("small", run_small), ("large", run_large)]:
+        for seed in tqdm(SEEDS, desc=f"{name} (C++, threads=8)"):
+            res = run_fn(seed, True, threads=8)
+            res = {k: v for k, v in res.items() if not k.startswith("_")}
+            res["scenario"] = name
+            res["seed"] = seed
+            rows_threads8.append(res)
+    df_threads8 = pd.DataFrame(rows_threads8)
+
     # --- DUE/DSO ---
     print("=" * 60)
     print("DUE/DSO scenario")
@@ -420,56 +435,138 @@ if __name__ == "__main__":
     # ============================================================
     # Scatter plots: Python vs C++ (seed-averaged)
     # ============================================================
-    scatter_configs = [
+#    scatter_configs = [
+#        ("small", link_small, "_link_df"),
+#        ("large", link_large, "_link_df"),
+#        ("DUO", link_due, "_duo_link_df"),
+#        ("DUE", link_due, "_due_link_df"),
+#        ("DSO", link_due, "_dso_link_df"),
+#    ]
+#    metrics_plot = ["traffic_volume", "delay_ratio"]
+#
+#    fig, axes = plt.subplots(len(metrics_plot), len(scatter_configs), figsize=(20, 8))
+#    for j, (label, ld, key) in enumerate(scatter_configs):
+#        py_dfs = [ld[s]["Python"][key] for s in SEEDS]
+#        cpp_dfs = [ld[s]["C++"][key] for s in SEEDS]
+#        links = py_dfs[0]["link"]
+#        avg_data = {"link": links}
+#        for col in metrics_plot:
+#            avg_data[f"{col}_py"] = np.column_stack(
+#                [df[col].values.astype(float) for df in py_dfs]).mean(axis=1)
+#            avg_data[f"{col}_cpp"] = np.column_stack(
+#                [df[col].values.astype(float) for df in cpp_dfs]).mean(axis=1)
+#        merged = pd.DataFrame(avg_data)
+#
+#        for i, metric in enumerate(metrics_plot):
+#            ax = axes[i, j]
+#            x = merged[f"{metric}_py"].values
+#            y = merged[f"{metric}_cpp"].values
+#            ax.scatter(x, y, s=10, alpha=0.5)
+#            lo, hi = min(x.min(), y.min()), max(x.max(), y.max())
+#            margin = (hi - lo) * 0.05
+#            ax.plot([lo - margin, hi + margin], [lo - margin, hi + margin],
+#                    "r--", linewidth=0.8)
+#            ax.set_xlim(lo - margin, hi + margin)
+#            ax.set_ylim(lo - margin, hi + margin)
+#            ax.set_aspect("equal")
+#            if np.std(x) > 0 and np.std(y) > 0:
+#                corr = np.corrcoef(x, y)[0, 1]
+#                ax.set_title(f"{label} / {metric}\nr={corr:.3f}", fontsize=10)
+#            else:
+#                ax.set_title(f"{label} / {metric}", fontsize=10)
+#            if j == 0:
+#                ax.set_ylabel("C++")
+#            if i == len(metrics_plot) - 1:
+#                ax.set_xlabel("Python")
+#
+#    fig.suptitle(f"Link-level: Python vs C++ (averaged over {N_SEEDS} seeds)", fontsize=13)
+#    fig.tight_layout()
+#    fig.savefig("scatter_link_accuracy.png", dpi=150)
+#    print("\nScatter plot saved to scatter_link_accuracy.png")
+
+    # ============================================================
+    # Markdown summary output
+    # ============================================================
+    md = []
+
+    md.append(f"### Small & Large scenarios (mean ± std, {N_SEEDS} seeds)\n")
+    md.append("| Scenario | Mode | Elapsed (s) | Total Travel Time | Average Delay | Completed Trips |")
+    md.append("| --- | --- | ---:| ---:| ---:| ---:|")
+    for scenario in ["small", "large"]:
+        for mode in ["Python", "C++"]:
+            sub = df_sl[(df_sl["scenario"] == scenario) & (df_sl["mode"] == mode)]
+            md.append(
+                f"| **{scenario}** | {mode} "
+                f"| {sub['elapsed'].mean():.3f} ± {sub['elapsed'].std():.3f} "
+                f"| {sub['total_travel_time'].mean():,.0f} ± {sub['total_travel_time'].std():,.0f} "
+                f"| {sub['average_delay'].mean():.1f} ± {sub['average_delay'].std():.1f} "
+                f"| {sub['completed_trips'].mean():,.0f} ± {sub['completed_trips'].std():,.0f} |"
+            )
+
+    md.append(f"\n### DUE/DSO scenario (mean ± std, {N_SEEDS} seeds)\n")
+    md.append("| Mode | Total Elapsed (s) | DUO TTT | DUE TTT | DSO TTT |")
+    md.append("| --- | ---:| ---:| ---:| ---:|")
+    for mode in ["Python", "C++"]:
+        sub = df_due[df_due["mode"] == mode]
+        md.append(
+            f"| {mode} | {sub['total_elapsed'].mean():.1f} ± {sub['total_elapsed'].std():.1f} "
+            f"| {sub['duo_ttt'].mean():,.0f} ± {sub['duo_ttt'].std():,.0f} "
+            f"| {sub['due_ttt'].mean():,.0f} ± {sub['due_ttt'].std():,.0f} "
+            f"| {sub['dso_ttt'].mean():,.0f} ± {sub['dso_ttt'].std():,.0f} |"
+        )
+
+    md.append("\n### Speedup (Python / C++)\n")
+    for scenario in ["small", "large"]:
+        sub = df_sl[df_sl["scenario"] == scenario]
+        ratio = sub[sub["mode"] == "Python"]["elapsed"].mean() / sub[sub["mode"] == "C++"]["elapsed"].mean()
+        md.append(f"- **{scenario}**: {ratio:.2f}x")
+    ratio = df_due[df_due["mode"] == "Python"]["total_elapsed"].mean() / df_due[df_due["mode"] == "C++"]["total_elapsed"].mean()
+    md.append(f"- **due_dso**: {ratio:.2f}x")
+
+    md.append(f"\n### C++ threads comparison: threads=1 (default) vs threads=8 (mean ± std, {N_SEEDS} seeds)\n")
+    md.append("| Scenario | Threads | Elapsed (s) | Total Travel Time | Speedup vs threads=1 |")
+    md.append("| --- | --- | ---:| ---:| ---:|")
+    for scenario in ["small", "large"]:
+        sub1 = df_sl[(df_sl["scenario"] == scenario) & (df_sl["mode"] == "C++")]
+        sub8 = df_threads8[df_threads8["scenario"] == scenario]
+        for threads, sub in [(1, sub1), (8, sub8)]:
+            speedup = f"{sub1['elapsed'].mean() / sub['elapsed'].mean():.2f}x" if threads != 1 else "-"
+            md.append(
+                f"| **{scenario}** | {threads} "
+                f"| {sub['elapsed'].mean():.3f} ± {sub['elapsed'].std():.3f} "
+                f"| {sub['total_travel_time'].mean():,.0f} ± {sub['total_travel_time'].std():,.0f} "
+                f"| {speedup} |"
+            )
+
+    md.append("\n### Link-level accuracy: Python vs C++\n")
+    md.append("DUE metrics are based on average link values over the last 20 iterations. DSO metrics are based on the iteration with the minimum total travel time.\n")
+
+    acc_configs = [
         ("small", link_small, "_link_df"),
         ("large", link_large, "_link_df"),
         ("DUO", link_due, "_duo_link_df"),
         ("DUE", link_due, "_due_link_df"),
         ("DSO", link_due, "_dso_link_df"),
     ]
-    metrics_plot = ["traffic_volume", "delay_ratio"]
 
-    fig, axes = plt.subplots(len(metrics_plot), len(scatter_configs), figsize=(20, 8))
-    for j, (label, ld, key) in enumerate(scatter_configs):
-        py_dfs = [ld[s]["Python"][key] for s in SEEDS]
-        cpp_dfs = [ld[s]["C++"][key] for s in SEEDS]
-        links = py_dfs[0]["link"]
-        avg_data = {"link": links}
-        for col in metrics_plot:
-            avg_data[f"{col}_py"] = np.column_stack(
-                [df[col].values.astype(float) for df in py_dfs]).mean(axis=1)
-            avg_data[f"{col}_cpp"] = np.column_stack(
-                [df[col].values.astype(float) for df in cpp_dfs]).mean(axis=1)
-        merged = pd.DataFrame(avg_data)
+    md.append(f"#### Per-seed (mean ± std, {N_SEEDS} seeds)\n")
+    md.append("| Scenario | Metric | Corr | MAE |")
+    md.append("| --- | --- | ---:| ---:|")
+    for label, ld, key in acc_configs:
+        acc = compute_link_accuracy(ld, SEEDS, link_df_key=key)
+        for metric in ["traffic_volume", "delay_ratio"]:
+            sub = acc[acc["metric"] == metric]
+            md.append(f"| **{label}** | {metric} | {sub['corr'].mean():.3f} ± {sub['corr'].std():.3f} | {sub['MAE'].mean():.2f} ± {sub['MAE'].std():.2f} |")
 
-        for i, metric in enumerate(metrics_plot):
-            ax = axes[i, j]
-            x = merged[f"{metric}_py"].values
-            y = merged[f"{metric}_cpp"].values
-            ax.scatter(x, y, s=10, alpha=0.5)
-            lo, hi = min(x.min(), y.min()), max(x.max(), y.max())
-            margin = (hi - lo) * 0.05
-            ax.plot([lo - margin, hi + margin], [lo - margin, hi + margin],
-                    "r--", linewidth=0.8)
-            ax.set_xlim(lo - margin, hi + margin)
-            ax.set_ylim(lo - margin, hi + margin)
-            ax.set_aspect("equal")
-            if np.std(x) > 0 and np.std(y) > 0:
-                corr = np.corrcoef(x, y)[0, 1]
-                ax.set_title(f"{label} / {metric}\nr={corr:.3f}", fontsize=10)
-            else:
-                ax.set_title(f"{label} / {metric}", fontsize=10)
-            if j == 0:
-                ax.set_ylabel("C++")
-            if i == len(metrics_plot) - 1:
-                ax.set_xlabel("Python")
+    md.append(f"\n#### Seed-averaged ({N_SEEDS}-seed mean vs {N_SEEDS}-seed mean)\n")
+    md.append("| Scenario | Metric | Corr | MAE |")
+    md.append("| --- | --- | ---:| ---:|")
+    for label, ld, key in acc_configs:
+        acc_mean = compute_link_accuracy_mean(ld, SEEDS, link_df_key=key)
+        for _, row in acc_mean.iterrows():
+            md.append(f"| **{label}** | {row['metric']} | {row['corr']:.3f} | {row['MAE']:.2f} |")
 
-    fig.suptitle(f"Link-level: Python vs C++ (averaged over {N_SEEDS} seeds)", fontsize=13)
-    fig.tight_layout()
-    fig.savefig("scatter_link_accuracy.png", dpi=150)
-    print("\nScatter plot saved to scatter_link_accuracy.png")
-
-    # Save raw results
-    df_all = pd.concat(all_dfs, ignore_index=True)
-    df_all.to_csv("benchmark_results.csv", index=False)
-    print("Raw results saved to benchmark_results.csv")
+    md_filename = f"benchmark_summary_v{uxsim.__version__}.md"
+    with open(md_filename, "w", encoding="utf-8") as f:
+        f.write("\n".join(md) + "\n")
+    print(f"Markdown summary saved to {md_filename}")
