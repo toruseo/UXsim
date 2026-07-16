@@ -206,6 +206,23 @@ void Node::signal_update(){
     signal_log.push_back(signal_phase);
 }
 
+/**
+ * @brief Automatically determine the flow capacity of this node from the capacities of connected links, matching Python's Node.adjust_node_capacity. Does not override an already-set flow_capacity.
+ */
+void Node::adjust_node_capacity(){
+    if (flow_capacity < 0.0 && !in_links.empty() && !out_links.empty()){
+        double capacity_in = in_links[0]->capacity;
+        for (auto l : in_links) capacity_in = std::max(capacity_in, l->capacity);
+        double capacity_out = out_links[0]->capacity;
+        for (auto l : out_links) capacity_out = std::max(capacity_out, l->capacity);
+        flow_capacity = (capacity_in + capacity_out) / 2.0;
+        flow_capacity_remain = flow_capacity * w->delta_t;
+        if (number_of_lanes <= 0){
+            number_of_lanes = (int)std::ceil(flow_capacity / 0.8); //the number of lanes is determined by assuming 0.8 veh/s capacity per lane
+        }
+    }
+}
+
 void Node::flow_capacity_update(){
     if (flow_capacity >= 0.0){
         if (flow_capacity_remain < w->delta_n * (number_of_lanes > 0 ? number_of_lanes : 1)){
@@ -1227,6 +1244,11 @@ void World::set_t_max(double new_t_max){
 
 void World::initialize_adj_matrix(){
     if (flag_initialized==false){
+        if (adjust_node_capacity){
+            for (auto nd : nodes){
+                nd->adjust_node_capacity();
+            }
+        }
         adj_mat.resize(node_id, vector<int>(node_id, 0));
         adj_mat_time.resize(node_id, vector<double>(node_id, 0.0));
         for (auto ln : links){

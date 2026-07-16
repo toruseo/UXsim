@@ -103,6 +103,7 @@ struct Node {
     void transfer();
     void signal_update();
     void flow_capacity_update();
+    void adjust_node_capacity();
 };
 
 // -----------------------------------------------------------------------
@@ -316,6 +317,7 @@ struct World {
     bool hard_deterministic_mode;
     bool route_choice_update_gradual;
     bool no_cyclic_routing;
+    bool adjust_node_capacity = false;
     int instantaneous_TT_timestep_interval = 5;
     int num_threads = 1;   // OpenMP thread count for parallel regions; -1 = all cores
 

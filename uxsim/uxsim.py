@@ -1686,6 +1686,7 @@ class World:
                  reduce_memory_delete_vehicle_route_pref: bool=False,
                  hard_deterministic_mode: bool=False,
                  meta_data: dict={}, user_attribute=None, user_function=None,
+                 threads: int=1,
                  cpp: bool=False):
         """
         Create a World.
@@ -1751,6 +1752,8 @@ class World:
             >>> ... #define your scenario
             >>> W.exec_simulation()
 
+        threads : int, optional
+            Number of threads for the C++ simulation engine (cpp=True). Default is 1 (single-threaded). N>=1 uses N threads; -1 uses all available cores. This argument is ignored in the Python mode (cpp=False).
         cpp : bool, optional
             Use C++ super-fast simulation mode. 
         
