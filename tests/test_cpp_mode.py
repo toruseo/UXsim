@@ -3156,7 +3156,7 @@ def test_route_choice_one_is_too_long_and_another_has_bottleneck():
     assert equal_tolerance(np.average(atts2), 200)
 
 
-def test_route_choice_4route_congestion_avoidance():
+def test_route_choice_4route_congestion_avoidance_multilane():
     tt1s = []
     tt2s = []
     tt3s = []
@@ -8715,8 +8715,6 @@ def test_exec_simulation_partial_run_python_cpp_equivalence():
         assert Wpy.analyzer.trip_completed == Wcpp.analyzer.trip_completed
 
 
-## misc
-
 def test_threads_parameter():
     """C++-mode `threads` argument: results must be bit-identical across thread counts, and invalid values must raise ValueError.
 
@@ -8766,6 +8764,8 @@ def test_threads_parameter():
             World(name="", tmax=100, print_mode=0, save_mode=0, show_mode=0, cpp=True, threads=bad)
 
 
+## misc
+
 def test_access_vehicle_running():
     def create_World(cpp):
         W = World(cpp=cpp,
@@ -8808,3 +8808,4 @@ def test_access_vehicle_running():
 
     assert val1p == val1c
     assert val2p == val2c
+
