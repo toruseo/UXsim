@@ -189,6 +189,21 @@ class Node:
         for key in phase_info:
             key.signal_group = phase_info[key]
 
+    def adjust_node_capacity(s):
+        """
+        Automatically determine the `flow_capacity` of this node based on the capacity of connected links. It does not override if `flow_capacity` was already set.
+        This calculation is based on an assumption that the node is an intersection with two major roads and two minor roads or similar types. In this case, the node capacity should be the same to that of major roads.
+        """
+        if s.flow_capacity == None and len(s.inlinks) and len(s.outlinks):
+            capacity_in = np.max([l.capacity for l in list(s.inlinks.values())])
+            capacity_out = np.max([l.capacity for l in list(s.outlinks.values())])
+            s.flow_capacity = np.average([capacity_in, capacity_out])
+            s.flow_capacity_remain = s.flow_capacity*s.W.DELTAT
+            if s.number_of_lanes == None:
+                s.number_of_lanes = math.ceil(s.flow_capacity/0.8) #the number of lanes is determined by assuming 0.8 veh/s capacity per lane
+                s.flag_lanes_automatically_determined = True
+
+
     def signal_control(s):
         """
         Updates the signal timings for a traffic signal node.
@@ -1662,6 +1677,7 @@ class World:
     def __init__(W, name: str="", deltan: int=5, reaction_time: float=1,
                  duo_update_time: float=600, duo_update_weight: float=0.5, duo_noise: float=0.01, route_choice_principle: str="homogeneous_DUO", route_choice_update_gradual: bool=False, instantaneous_TT_timestep_interval: int=5,
                  no_cyclic_routing: bool = False,
+                 adjust_node_capacity = False,
                  eular_dt: float=120, eular_dx: float=100,
                  random_seed: Any|None=None,
                  print_mode: bool=1, save_mode: bool=1, show_mode: bool=0, show_progress: bool=1, show_progress_deltat: float=600,
@@ -1716,6 +1732,8 @@ class World:
             If it is longer than the DUO update timestep interval, it is substituted by DUO update timestep interval to maintain reasonable route choice behavior.            
         no_cyclic_routing : bool, optional
            If True, normal vehicles do not travel the same node twice. This will prevent cyclic paths, but may introduce some  detours. Default is False.
+        adjust_node_capacity : bool, optional
+            If Trune, the flow capacity of all nodes are automatically adjusted to produce proper congestion at crossing intersections.
         hard_deterministic_mode : bool, optional
             If True, the simulation will not use any random variables. At a merging node, a link with higher merge_priority will be always prioritized, and vehicles always choose the shortest path. This may be useful for analysis that need strict predictability. Be aware that the simulation results will be significantly different from ones with `hard_deterministic_mode=False`.
         reduce_memory_delete_vehicle_route_pref : bool, optional
@@ -1787,6 +1805,8 @@ class World:
             W.instantaneous_TT_timestep_interval = W.DELTAT_ROUTE
 
         W.no_cyclic_routing = no_cyclic_routing
+
+        W.adjust_node_capacity = adjust_node_capacity
 
         W.route_pref_for_vehs = None
 
@@ -2333,6 +2353,11 @@ class World:
             W.ADJ_MAT[i,j] = 1
             W.ADJ_MAT_LINKS[i,j] = link
             W.NODE_PAIR_LINKS[start_node.name,end_node.name] = link
+
+        #adjust node capacities
+        if W.adjust_node_capacity:
+            for node in W.NODES:
+                node.adjust_node_capacity()
 
         W.analyzer = Analyzer(W)
 
