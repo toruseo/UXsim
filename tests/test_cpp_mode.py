@@ -8640,3 +8640,49 @@ def test_exec_simulation_partial_run_python_cpp_equivalence():
         Wcpp.analyzer.basic_analysis()
         assert eq_tol(Wpy.analyzer.total_travel_time, Wcpp.analyzer.total_travel_time, rel_tol=0.02)
         assert Wpy.analyzer.trip_completed == Wcpp.analyzer.trip_completed
+
+
+## misc
+
+def test_access_vehicle_running():
+    def create_World(cpp):
+        W = World(cpp=cpp,
+            name="",
+            deltan=5,
+            tmax=1200,
+            print_mode=0, save_mode=0, show_mode=0,
+            random_seed=0,
+        )
+
+        W.addNode(name="orig", x=0, y=0)
+        W.addNode(name="mid", x=1, y=1)
+        W.addNode(name="dest", x=2, y=1)
+
+        W.addLink(name="link1", start_node="orig", end_node="mid", length=1000, free_flow_speed=20, number_of_lanes=1)
+        W.addLink(name="link2", start_node="mid", end_node="dest", length=1000, free_flow_speed=20, number_of_lanes=1)
+
+        W.adddemand(orig="orig", dest="dest", t_start=0, t_end=1000, flow=0.3)
+        W.adddemand(orig="orig", dest="dest", t_start=500, t_end=1000, flow=0.3)
+
+        return W
+
+    W = create_World(cpp=False)
+    W.exec_simulation(duration_t2=800)
+    val1p = (W.TIME, len(W.VEHICLES_RUNNING), set([(veh.x, veh.link.name) for veh in W.VEHICLES_RUNNING.values()]))
+    val2p = [(key, W.VEHICLES[key].link.name, float(W.VEHICLES[key].x)) for key in ["71", "72", "73"]]
+    link = W.LINKS[0]
+    print(link.name, link.num_vehicles)
+    W.exec_simulation()
+    W.analyzer.print_simple_stats(force_print=True)
+
+    W = create_World(cpp=True)
+    W.exec_simulation(duration_t2=800)
+    val1c = (W.TIME, len(W.VEHICLES_RUNNING), set([(veh.x, veh.link.name) for veh in W.VEHICLES_RUNNING.values()]))
+    val2c = [(key, W.VEHICLES[key].link.name, float(W.VEHICLES[key].x)) for key in ["71", "72", "73"]]
+    link = W.LINKS[0]
+    print(link.name, link.num_vehicles)
+    W.exec_simulation()
+    W.analyzer.print_simple_stats(force_print=True)
+
+    assert val1p == val1c
+    assert val2p == val2c
