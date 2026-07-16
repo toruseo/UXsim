@@ -62,6 +62,12 @@ struct Node {
     // Vehicles waiting to be generated onto the outgoing link
     deque<Vehicle *> generation_queue;
 
+    // Per-node buffer recording vehicles that entered the RUN state via generate() this
+    // timestep (their World::vehicles_running insert). generate() runs in the per-node parallel
+    // stage, so the insert into the shared registry is deferred here and applied in id order in
+    // the serial post-region reconciliation (see main_loop).
+    vector<Vehicle *> running_gen_buf;
+
     double x;
     double y;
 
@@ -135,6 +141,19 @@ struct Link {
     vector<double> traveltime_instant;
 
     double merge_priority;
+
+    // Per-link buffer collecting vehicles that reached this link's end this timestep and
+    // will transfer to a next link. Filled by the RUN system pass (this link's exclusive
+    // context) and drained/aggregated into the end_node's incoming_vehicles at the start of
+    // Node::transfer. Replaces the RUN pass pushing directly into the shared node buffer, so
+    // per-link stages can run independently once parallelized.
+    vector<Vehicle *> arrived_vehicles;
+
+    // Per-link buffer recording vehicles that ended their trip on this link this timestep (their
+    // World::vehicles_living / vehicles_running erase). end_trip() runs in the per-link RUN pass
+    // (parallel) and in the serial transfer; both defer the shared-registry erase here, applied
+    // in id order in the serial post-region reconciliation (see main_loop).
+    vector<Vehicle *> ended_buf;
 
     double capacity_out;
     double capacity_out_remain;
@@ -250,13 +269,19 @@ struct Vehicle {
         const string &orig_name,
         const string &dest_name);
 
-    void update();
     void end_trip();
+    // Newell car-following: computes x_next only (no state change), read as an independent pass
+    // before the RUN update pass so leaders are read at their pre-move position (order-neutral).
     void car_follow_newell();
-    void route_next_link_choice(const vector<Link*>& linkset);
+    // update() drives the HOME/WAIT/RUN/END state machine (structural parity with Python's
+    // Vehicle.update). snap_leader is the pre-pass queue-position leader supplied by the RUN
+    // pass so log_data() can reproduce the id-ordered leader-spacing read; nullptr for the
+    // WAIT/HOME passes and the end_trip tail entry.
+    void update(Vehicle *snap_leader = nullptr);
+    void route_next_link_choice(const vector<Link*>& linkset, std::mt19937 &rng);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
-    void log_data();
+    void log_data(Vehicle *snap_leader = nullptr);
 
     // Reconstruct log_t / log_state entry i from the scalar counters above.
     double log_t_at(size_t i) const;
@@ -292,6 +317,7 @@ struct World {
     bool route_choice_update_gradual;
     bool no_cyclic_routing;
     int instantaneous_TT_timestep_interval = 5;
+    int num_threads = 1;   // OpenMP thread count for parallel regions; -1 = all cores
 
     double delta_t;
     size_t total_timesteps;
@@ -303,15 +329,27 @@ struct World {
 
     // Collections of objects
     vector<Vehicle *> vehicles;         //all state
-    // HOME/WAIT/RUN vehicles in id order; rebuilt per main_loop call, compacted in place each step
-    vector<Vehicle *> update_order;
+    // HOME departure schedule: departure_buckets[ts] holds the HOME vehicles (id ascending,
+    // since `vehicles` is in id order) whose first departing timestep is ts. Rebuilt per
+    // main_loop call; replaces the old id-ordered update_order full-scan for the HOME->WAIT
+    // transition. The RUN/WAIT stages find their vehicles via the per-link deques and the
+    // per-node generation_queues, so no global update order is needed.
+    vector<vector<Vehicle *>> departure_buckets;
     vector<Link *> links;
     vector<Node *> nodes;
-    unordered_map<int, Vehicle *> vehicles_living;  //home, wait, run // vehicles_living[id] = vehicle
-    unordered_map<int, Vehicle *> vehicles_running; //run
     unordered_map<string, Node *> nodes_map;
     unordered_map<string, Link *> links_map;
     unordered_map<string, Vehicle *> vehicles_map;
+
+    // Live-vehicle registries, restored for structural parity with Python's VEHICLES_LIVING /
+    // VEHICLES_RUNNING (same membership semantics: living = home|wait|run, running = run).
+    // Populated at Vehicle construction (living) and Node::generate (running); entries removed
+    // in Vehicle::end_trip. Not exposed to bindings (read-out is zero); maintained so future
+    // feature ports keep line-by-line correspondence with uxsim.py. Mutations from the parallel
+    // generate/RUN stages are staged in Node::running_gen_buf / Link::ended_buf and applied in
+    // the serial post-region reconciliation, so the shared maps are never touched concurrently.
+    unordered_map<int, Vehicle *> vehicles_living;   // home, wait, run
+    unordered_map<int, Vehicle *> vehicles_running;  // run
 
     size_t timestep;    //simulation timestep
     double time;    //simulation time in second
@@ -334,7 +372,8 @@ struct World {
     vector<vector<pair<int, double>>> rsa_adj_list;  // adjacency list (rebuilt each call)
     vector<vector<double>> rsa_dist;                 // all-pairs distances
     vector<vector<int>> rsa_next;                    // all-pairs next-hop
-    vector<char> rsa_visited;                        // per-source visited flags
+    // The per-source Dijkstra visited flags and priority queue are thread_local (see
+    // route_search_all): the source loop is parallelized, so this scratch cannot be shared.
 
     bool flag_initialized;
 
@@ -344,15 +383,30 @@ struct World {
     double trips_total;
     double trips_completed;
 
-    // incremental stats accumulators (updated during simulation)
-    double ave_v_sum;
-    double ave_vratio_sum;
-    double stat_sample_count;
-    double trips_completed_count;
+    // Incremental stats accumulators as per-entity partial sums (parallel-safe). RUN-state
+    // samples accumulate on the vehicle's current link; WAIT-state samples on the origin
+    // node. Read back via the id-ordered reductions below so repeated reads are identical.
+    // Indexed by link id (link_*) / node id (node_*), grown in the Link/Node constructors.
+    vector<double> link_ave_v_sum;
+    vector<double> link_ave_vratio_sum;
+    vector<double> link_stat_count;
+    vector<double> link_trips_completed;
+    vector<double> node_stat_count;
 
-    // Randomness
+    // Fixed-order (id-ascending) reductions of the per-entity partial sums above.
+    double ave_v_sum() const;
+    double ave_vratio_sum() const;
+    double stat_sample_count() const;
+    double trips_completed_count() const;
+
+    // Randomness. The single World rng is split into per-node and per-link streams, seeded
+    // deterministically from (random_seed, kind, id) so results are independent of thread
+    // count once the per-node/per-link stages are parallelized. node_rngs: Node::transfer
+    // shuffle + merge lottery and generate-time route_next_link_choice. link_rngs: RUN-path
+    // route_next_link_choice and update_adj_time_matrix per-link noise.
     long long random_seed;
-    std::mt19937 rng;
+    vector<std::mt19937> node_rngs;
+    vector<std::mt19937> link_rngs;
 
     std::ostream *writer;
 
@@ -382,6 +436,11 @@ struct World {
     // Update t_max/total_timesteps and resize per-link time-indexed arrays.
     // Must be called before simulation start; the world may be created with a placeholder horizon before the final TMAX is known.
     void set_t_max(double new_t_max);
+
+    // Resolve num_threads into a concrete OpenMP thread count for the num_threads() clause.
+    // -1 means all available cores (omp_get_max_threads(), which honours OMP_NUM_THREADS and
+    // affinity limits). Returns 1 when OpenMP is disabled at build time.
+    int resolve_num_threads() const;
 
     void route_choice_duo();
     void route_choice_duo_gradual();

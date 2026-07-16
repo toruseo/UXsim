@@ -3156,7 +3156,7 @@ def test_route_choice_one_is_too_long_and_another_has_bottleneck():
     assert equal_tolerance(np.average(atts2), 200)
 
 
-def test_route_choice_4route_congestion_avoidance():
+def test_route_choice_4route_congestion_avoidance_multilane():
     tt1s = []
     tt2s = []
     tt3s = []
@@ -8715,6 +8715,55 @@ def test_exec_simulation_partial_run_python_cpp_equivalence():
         assert Wpy.analyzer.trip_completed == Wcpp.analyzer.trip_completed
 
 
+def test_threads_parameter():
+    """C++-mode `threads` argument: results must be bit-identical across thread counts, and invalid values must raise ValueError.
+
+    The same seeded grid scenario (route choice active, so the parallel route_search / route_choice / main-loop regions are exercised) is run with threads=1, threads=2 and threads=-1 (all cores). Every vehicle's log_t/log_x/log_v and the total travel time must be exactly equal, confirming the num_threads() clauses preserve determinism regardless of thread count.
+    """
+    def build_and_run(threads):
+        W = World(name="", deltan=5, tmax=1500, print_mode=0, save_mode=0, show_mode=0,
+                  random_seed=42, no_cyclic_routing=True, cpp=True, threads=threads)
+        imax = jmax = 5
+        nodes = {}
+        for i in range(imax):
+            for j in range(jmax):
+                nodes[i, j] = W.addNode(f"n{(i, j)}", i, j)
+        for i in range(imax):
+            for j in range(jmax):
+                if i != imax - 1:
+                    W.addLink(f"l{(i, j, i+1, j)}", nodes[i, j], nodes[i+1, j], length=1000, free_flow_speed=20, jam_density=0.2)
+                if i != 0:
+                    W.addLink(f"l{(i, j, i-1, j)}", nodes[i, j], nodes[i-1, j], length=1000, free_flow_speed=20, jam_density=0.2)
+                if j != jmax - 1:
+                    W.addLink(f"l{(i, j, i, j+1)}", nodes[i, j], nodes[i, j+1], length=1000, free_flow_speed=20, jam_density=0.2)
+                if j != 0:
+                    W.addLink(f"l{(i, j, i, j-1)}", nodes[i, j], nodes[i, j-1], length=1000, free_flow_speed=20, jam_density=0.2)
+        for j in range(jmax):
+            W.adddemand(nodes[0, j], nodes[imax - 1, jmax - 1 - j], 0, 1000, 0.3)
+            W.adddemand(nodes[imax - 1, j], nodes[0, jmax - 1 - j], 0, 1000, 0.3)
+        W.exec_simulation()
+        W.analyzer.basic_analysis()
+        logs = {}
+        for name, veh in W.VEHICLES.items():
+            logs[name] = (list(veh.log_t), list(veh.log_x), list(veh.log_v))
+        return logs, W.analyzer.total_travel_time
+
+    logs1, ttt1 = build_and_run(1)
+    logs2, ttt2 = build_and_run(2)
+    logsN, tttN = build_and_run(-1)
+
+    assert logs1.keys() == logs2.keys() == logsN.keys()
+    for name in logs1:
+        for other in (logs2, logsN):
+            for a, b in zip(logs1[name], other[name]):
+                assert (np.asarray(a) == np.asarray(b)).all(), f"vehicle {name} log mismatch across thread counts"
+    assert ttt1 == ttt2 == tttN
+
+    for bad in (0, -2):
+        with pytest.raises(ValueError):
+            World(name="", tmax=100, print_mode=0, save_mode=0, show_mode=0, cpp=True, threads=bad)
+
+
 ## misc
 
 def test_access_vehicle_running():
@@ -8759,3 +8808,4 @@ def test_access_vehicle_running():
 
     assert val1p == val1c
     assert val2p == val2c
+

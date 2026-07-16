@@ -542,6 +542,7 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("route_choice_update_gradual", &World::route_choice_update_gradual)
         .def_rw("no_cyclic_routing", &World::no_cyclic_routing)
         .def_rw("instantaneous_TT_timestep_interval", &World::instantaneous_TT_timestep_interval)
+        .def_rw("num_threads", &World::num_threads)
         .def_ro("route_dist", &World::route_dist)
         .def_ro("route_dist_record", &World::route_dist_record)
         .def_ro("route_next", &World::route_next)
@@ -550,8 +551,8 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("vehicle_log_mode", &World::vehicle_log_mode)
         .def_ro("ave_v", &World::ave_v)
         .def_ro("ave_vratio", &World::ave_vratio)
-        .def_ro("ave_v_sum", &World::ave_v_sum)
-        .def_ro("stat_sample_count", &World::stat_sample_count)
+        .def_prop_ro("ave_v_sum", [](const World &w) { return w.ave_v_sum(); })
+        .def_prop_ro("stat_sample_count", [](const World &w) { return w.stat_sample_count(); })
         .def("set_t_max", &World::set_t_max,
              nb::arg("new_t_max"),
              "Update t_max/total_timesteps and resize per-link time-indexed arrays (call before simulation start)")

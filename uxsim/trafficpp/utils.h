@@ -7,6 +7,7 @@
 #include <random>
 #include <algorithm>
 #include <map>
+#include <cstdint>
 
 using std::vector, std::cout, std::endl;
 
@@ -22,6 +23,16 @@ inline void remove_from_vector(vector<T *> &vec, T *item) {
     vec.erase(
         std::remove(vec.begin(), vec.end(), item),
         vec.end());
+}
+
+/**
+ * make_entity_rng: build a deterministic per-entity mt19937 stream seeded from the
+ * world seed, an entity-kind tag (node=1, link=2), and the entity id. The stream is a
+ * function of (seed, kind, id) only, so it is independent of node/link insertion order.
+ */
+inline std::mt19937 make_entity_rng(long long seed, unsigned int kind, unsigned int entity_id) {
+    std::seed_seq sq{(std::uint32_t)seed, (std::uint32_t)((std::uint64_t)seed >> 32), (std::uint32_t)kind, (std::uint32_t)entity_id};
+    return std::mt19937(sq);
 }
 
 /**
