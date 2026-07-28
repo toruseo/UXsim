@@ -216,6 +216,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_09en_dynamic_traffic_assignment.html">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_11en_fast_simulation_by_cpp_mode.html">Fast Simulation Mode with the Internal C++ Engine</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mechanism.html">Simulation Mechanism</a></li>
@@ -459,15 +460,23 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    W : World</span>
-<span class="sd">        The world object containing the network.   </span>
+<span class="sd">        The world object containing the network.</span>
 <span class="sd">    k : int</span>
 <span class="sd">        The number of random routes to enumerate.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict_routes : dict</span>
 <span class="sd">        A dictionary of k random routes. The key is a tuple of the origin and destination nodes. The value is a list of link names.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="s1">&#39;_cpp_world&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">_cpp_world</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">cpp_result</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">_cpp_world</span><span class="o">.</span><span class="n">enumerate_k_random_routes_cpp</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+        <span class="n">dict_routes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">routes</span> <span class="ow">in</span> <span class="n">cpp_result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dict_routes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">dict_routes</span>
+
     <span class="n">dict_routes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
@@ -742,6 +751,11 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">link</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="s1">&#39;_cpp_world&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">_cpp_world</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">link</span><span class="o">.</span><span class="n">_cpp_link</span><span class="o">.</span><span class="n">estimate_congestion_externality</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
         <span class="n">ts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)</span>
 
         <span class="c1">#同じ待ち行列で自分より後ろで待っている車両台数の算出</span>
@@ -752,12 +766,12 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">ts_end</span> <span class="o">=</span> <span class="n">i</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">break</span>
-        
+
         <span class="n">veh_count</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">[</span><span class="n">ts_end</span><span class="p">]</span><span class="o">-</span><span class="n">link</span><span class="o">.</span><span class="n">cum_arrival</span><span class="p">[</span><span class="n">ts</span><span class="p">]</span>
 
         <span class="c1">#局所的容量の算出</span>
         <span class="c1">#TODO:微妙に系統的にずれる</span>
-        <span class="c1">#TODO:スピルオーバー時の除外 </span>
+        <span class="c1">#TODO:スピルオーバー時の除外</span>
         <span class="c1">#TODO:信号待ちの一台目のときに破綻してしまう．頑健で賢い方法あるか？信号，このリンクの容量制約，下流側リンク・ノード容量制約を全部考えられるもの</span>
         <span class="n">ts_out</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ts</span><span class="o">+</span><span class="nb">int</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">traveltime_actual</span><span class="p">[</span><span class="n">ts</span><span class="p">]</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span>
         <span class="n">ts_out_leader</span> <span class="o">=</span> <span class="n">ts_out</span>
@@ -766,12 +780,12 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">ts_out_leader</span> <span class="o">=</span> <span class="n">i</span>
                 <span class="k">break</span>
 
-        <span class="n">headway_consumed</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts_out</span><span class="o">-</span><span class="n">ts_out_leader</span><span class="p">)</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span> 
+        <span class="n">headway_consumed</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts_out</span><span class="o">-</span><span class="n">ts_out_leader</span><span class="p">)</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span>
 
         <span class="n">ext</span> <span class="o">=</span> <span class="n">headway_consumed</span><span class="o">*</span><span class="n">veh_count</span>
-        
+
         <span class="k">return</span> <span class="n">ext</span>
-    
+
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="c1">#細かいインデックスエラーなどを一時的に回避 TODO: fix</span>
 
@@ -798,12 +812,16 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        The departure time of the hypothetical vehicle.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="s1">&#39;_cpp_world&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">W</span><span class="o">.</span><span class="n">_cpp_world</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">route_links</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">_cpp_link</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">route</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">W</span><span class="o">.</span><span class="n">_cpp_world</span><span class="o">.</span><span class="n">estimate_congestion_externality_route</span><span class="p">(</span><span class="n">route_links</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
     <span class="n">tts</span> <span class="o">=</span> <span class="n">route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">return_details</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">exts</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">link</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">route</span><span class="p">):</span>
         <span class="n">exts</span> <span class="o">+=</span> <span class="n">estimate_congestion_externality_link</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
         <span class="n">t</span> <span class="o">+=</span> <span class="n">tts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-    
+
     <span class="k">return</span> <span class="n">exts</span></div>
 
 

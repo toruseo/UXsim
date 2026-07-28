@@ -217,6 +217,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_09en_dynamic_traffic_assignment.html">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_11en_fast_simulation_by_cpp_mode.html">Fast Simulation Mode with the Internal C++ Engine</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
@@ -407,11 +408,17 @@ For example, <a href="#id3"><span class="problematic" id="id4">`</span></a>signa
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Node.__init__" title="uxsim.Node.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(W, name, x, y[, signal, ...])</p></td>
 <td><p>Create a node.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Node.flow_capacity_update" title="uxsim.Node.flow_capacity_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flow_capacity_update</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Node.adjust_node_capacity" title="uxsim.Node.adjust_node_capacity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adjust_node_capacity</span></code></a>()</p></td>
+<td><p>Automatically determine the <cite>flow_capacity</cite> of this node based on the capacity of connected links.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Node.flow_capacity_update" title="uxsim.Node.flow_capacity_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flow_capacity_update</span></code></a>()</p></td>
 <td><p>flow capacity updates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Node.generate" title="uxsim.Node.generate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Node.generate" title="uxsim.Node.generate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code></a>()</p></td>
 <td><p>Departs vehicles from the waiting queue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Node.override_signal" title="uxsim.Node.override_signal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">override_signal</span></code></a>(signal[, groups, ...])</p></td>
+<td><p>Override signal setting.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Node.signal_control" title="uxsim.Node.signal_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signal_control</span></code></a>()</p></td>
 <td><p>Updates the signal timings for a traffic signal node.</p></td>
@@ -426,6 +433,13 @@ For example, <a href="#id3"><span class="problematic" id="id4">`</span></a>signa
 </table>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.adjust_node_capacity">
+<span class="sig-name descname"><span class="pre">adjust_node_capacity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.adjust_node_capacity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.adjust_node_capacity" title="Link to this definition">¶</a></dt>
+<dd><p>Automatically determine the <cite>flow_capacity</cite> of this node based on the capacity of connected links. It does not override if <cite>flow_capacity</cite> was already set.
+This calculation is based on an assumption that the node is an intersection with two major roads and two minor roads or similar types. In this case, the node capacity should be the same to that of major roads.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Node.flow_capacity_update">
 <span class="sig-name descname"><span class="pre">flow_capacity_update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.flow_capacity_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.flow_capacity_update" title="Link to this definition">¶</a></dt>
 <dd><p>flow capacity updates.</p>
@@ -438,6 +452,25 @@ For example, <a href="#id3"><span class="problematic" id="id4">`</span></a>signa
 <p class="rubric">Notes</p>
 <p>If there are vehicles in the generation queue of the node, this method attempts to depart a vehicle to one of the outgoing links.
 The choice of the outgoing link is based on the vehicle’s route preference for each link. Once a vehicle is departed, it is removed from the generation queue, added to the list of vehicles on the chosen link, and its state is set to “run”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Node.override_signal">
+<span class="sig-name descname"><span class="pre">override_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_offset_old</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Node.override_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Node.override_signal" title="Link to this definition">¶</a></dt>
+<dd><p>Override signal setting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>list</em><em> of </em><em>float</em>) – Duration of each signal phase in seconds.
+For example, [30, 60] means that this signal has two phases; first is 30 sec green time for phase 0 and second is 60 sec green time for phase 1.</p></li>
+<li><p><strong>groups</strong> (<em>list</em><em> of </em><em>list</em><em> of </em><em>str</em><em> or </em><a class="reference internal" href="uxsim.Link.html#uxsim.Link" title="uxsim.Link"><em>Link</em></a>) – List of links that have green light for each signal phase.
+For example, [[link1, link2], [link3, link4]] means that link1, link2 will have green in phase 0, and link3, link4 will have green light in phase 1.</p></li>
+<li><p><strong>signal_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – Offset of the signal cycle in seconds.</p></li>
+<li><p><strong>reset</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, reset the current signal phase and elapsed phase time.</p></li>
+<li><p><strong>signal_offset_old</strong> (<em>float</em><em>, </em><em>optional</em>) – Previous (wrong) signal offset in seconds. When specified, the new offset is calculated relative to the new cycle length. Kept for backward compatibility.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -535,8 +568,10 @@ A vehicle is eligible for transfer if:</p>
 <li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Node.signal_t</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#uxsim.Node.adjust_node_capacity"><code class="docutils literal notranslate"><span class="pre">Node.adjust_node_capacity()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Node.flow_capacity_update"><code class="docutils literal notranslate"><span class="pre">Node.flow_capacity_update()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Node.generate"><code class="docutils literal notranslate"><span class="pre">Node.generate()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Node.override_signal"><code class="docutils literal notranslate"><span class="pre">Node.override_signal()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Node.signal_control"><code class="docutils literal notranslate"><span class="pre">Node.signal_control()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Node.transfer"><code class="docutils literal notranslate"><span class="pre">Node.transfer()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Node.update"><code class="docutils literal notranslate"><span class="pre">Node.update()</span></code></a></li>

@@ -216,6 +216,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_09en_dynamic_traffic_assignment.html">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../notebooks/demo_notebook_11en_fast_simulation_by_cpp_mode.html">Fast Simulation Mode with the Internal C++ Engine</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../mechanism.html">Simulation Mechanism</a></li>
@@ -377,12 +378,14 @@ gtag('config', 'UA-111714220-1');
 
     
 
+<span class="n">_cached_matplotlib_font</span> <span class="o">=</span> <span class="kc">None</span>
+
 <div class="viewcode-block" id="get_font_for_matplotlib">
 <a class="viewcode-back" href="../../utils.html#uxsim.utils.get_font_for_matplotlib">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_font_for_matplotlib</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a multi-language (currently Japanese only) font for matplotlib.</span>
-<span class="sd">    TODO: check if it works on different OS. It is only checked on Japanese Windows. </span>
+<span class="sd">    TODO: check if it works on different OS. It is only checked on Japanese Windows.</span>
 <span class="sd">    TODO: explore if it can be extended for other languages.</span>
 
 <span class="sd">    Returns</span>
@@ -390,6 +393,10 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">    str</span>
 <span class="sd">        The name of a Japanese font that is available on the system. If no Japanese font is found, &quot;monospace&quot; is returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_cached_matplotlib_font</span>
+    <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_cached_matplotlib_font</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_cached_matplotlib_font</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">font_manager</span>
 
     <span class="n">font_list</span> <span class="o">=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">()</span>
@@ -402,7 +409,9 @@ gtag('config', 'UA-111714220-1');
         <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;MS Gothic&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;monospace&quot;</span>
-        
+
+    <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_cached_matplotlib_font</span> <span class="o">=</span> <span class="n">font</span>
     <span class="k">return</span> <span class="n">font</span></div>
 
 

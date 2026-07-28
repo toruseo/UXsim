@@ -14,8 +14,10 @@
    .. autosummary::
    
       ~Node.__init__
+      ~Node.adjust_node_capacity
       ~Node.flow_capacity_update
       ~Node.generate
+      ~Node.override_signal
       ~Node.signal_control
       ~Node.transfer
       ~Node.update

@@ -217,6 +217,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_09en_dynamic_traffic_assignment.html">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/demo_notebook_11en_fast_simulation_by_cpp_mode.html">Fast Simulation Mode with the Internal C++ Engine</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../mechanism.html">Simulation Mechanism</a></li>
@@ -287,11 +288,14 @@ gtag('config', 'UA-111714220-1');
 <h1>uxsim.DTAsolvers.SolverDSO_D2D<a class="headerlink" href="#uxsim-dtasolvers-solverdso-d2d" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="uxsim.DTAsolvers.SolverDSO_D2D">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.DTAsolvers.</span></span><span class="sig-name descname"><span class="pre">SolverDSO_D2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_World</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/DTAsolvers/DTAsolvers.html#SolverDSO_D2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.DTAsolvers.SolverDSO_D2D" title="Link to this definition">¶</a></dt>
-<dd><p>Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">uxsim.DTAsolvers.</span></span><span class="sig-name descname"><span class="pre">SolverDSO_D2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_World</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/DTAsolvers/DTAsolvers.html#SolverDSO_D2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.DTAsolvers.SolverDSO_D2D" title="Link to this definition">¶</a></dt>
+<dd><p>Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics. Optional C++ eccelerator is available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>func_World</strong> (<em>function</em>) – function that returns a World object with nodes, links, and demand specifications</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_World</strong> (<em>function</em>) – function that returns a World object with nodes, links, and demand specifications</p></li>
+<li><p><strong>cpp</strong> (<em>bool</em>) – if True, use C++ accelerated simulation engine for DSO.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -306,11 +310,14 @@ Apart from these point, this algorithm is almost the same to <cite>SolverDUE</ci
 <p>In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take a long time. This <cite>SolverDSO_D2D</cite> speeds up the solution process significantly, but it weakens the convergence guarantee.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.DTAsolvers.SolverDSO_D2D.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_World</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/DTAsolvers/DTAsolvers.html#SolverDSO_D2D.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.DTAsolvers.SolverDSO_D2D.__init__" title="Link to this definition">¶</a></dt>
-<dd><p>Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics.</p>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_World</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/DTAsolvers/DTAsolvers.html#SolverDSO_D2D.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.DTAsolvers.SolverDSO_D2D.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics. Optional C++ eccelerator is available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>func_World</strong> (<em>function</em>) – function that returns a World object with nodes, links, and demand specifications</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_World</strong> (<em>function</em>) – function that returns a World object with nodes, links, and demand specifications</p></li>
+<li><p><strong>cpp</strong> (<em>bool</em>) – if True, use C++ accelerated simulation engine for DSO.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -329,7 +336,7 @@ Apart from these point, this algorithm is almost the same to <cite>SolverDUE</ci
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.DTAsolvers.SolverDSO_D2D.__init__" title="uxsim.DTAsolvers.SolverDSO_D2D.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(func_World)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.DTAsolvers.SolverDSO_D2D.__init__" title="uxsim.DTAsolvers.SolverDSO_D2D.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(func_World[, cpp])</p></td>
 <td><p>Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.DTAsolvers.SolverDSO_D2D.plot_convergence" title="uxsim.DTAsolvers.SolverDSO_D2D.plot_convergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_convergence</span></code></a>()</p></td>

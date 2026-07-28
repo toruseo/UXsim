@@ -216,6 +216,7 @@ gtag('config', 'UA-111714220-1');
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_06en_taxi_or_shared_mobility.html">Taxi / Shared mobility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_09en_dynamic_traffic_assignment.html">Dynamic Traffic Assignments: DUO, DUE, DSO</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_08en_chicago.html">Huge-scale simulation using Chicago-Sketch dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notebooks/demo_notebook_11en_fast_simulation_by_cpp_mode.html">Fast Simulation Mode with the Internal C++ Engine</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../mechanism.html">Simulation Mechanism</a></li>
@@ -295,20 +296,30 @@ gtag('config', 'UA-111714220-1');
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
+
 <div class="viewcode-block" id="SolverDUE">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SolverDUE</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_World</span><span class="p">,</span> <span class="n">cpp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cpp</span> <span class="ow">and</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="n">SolverDUE</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.DTAsolvers_cpp_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">CppSolverDUE</span>
+            <span class="k">return</span> <span class="n">CppSolverDUE</span><span class="p">(</span><span class="n">func_World</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
 <div class="viewcode-block" id="SolverDUE.__init__">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDUE.html#uxsim.DTAsolvers.SolverDUE.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">,</span> <span class="n">cpp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics.</span>
+<span class="sd">        Solve quasi Dynamic User Equilibrium (DUE) problem using day-to-day dynamics. Optional C++ eccelerator is available.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        func_World : function</span>
 <span class="sd">            function that returns a World object with nodes, links, and demand specifications</span>
-<span class="sd">            </span>
+<span class="sd">        cpp : bool</span>
+<span class="sd">            if True, use C++ accelerated simulation engine for DUE.</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">            This function computes a near dynamic user equilibrium state as a steady state of day-to-day dynamical routing game.</span>
@@ -327,6 +338,8 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            - Iryo, T., Urata, J., &amp; Kawase, R. (2024). Traffic Flow Simulator and Travel Demand Simulators for Assessing Congestion on Roads After a Major Earthquake. In APPLICATION OF HIGH-PERFORMANCE COMPUTING TO EARTHQUAKE-RELATED PROBLEMS (pp. 413-447). https://doi.org/10.1142/9781800614635_0007</span>
 <span class="sd">            - Iryo, T., Watling, D., &amp; Hazelton, M. (2024). Estimating Markov Chain Mixing Times: Convergence Rate Towards Equilibrium of a Stochastic Process Traffic Assignment Model. Transportation Science. https://doi.org/10.1287/trsc.2024.0523</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;_is_cpp_solver&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span>  <span class="c1"># CppSolverDUE.__init__ handles its own init</span>
         <span class="n">s</span><span class="o">.</span><span class="n">func_World</span> <span class="o">=</span> <span class="n">func_World</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#final solution</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#latest solution in the iterative process. Can be used when a user terminates the solution algorithm</span>
@@ -375,10 +388,10 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        -------</span>
 <span class="sd">        W : World</span>
 <span class="sd">            World object with quasi DUE solution (if properly converged)</span>
-<span class="sd">        </span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        `self.W_sol` is the final solution. </span>
+<span class="sd">        `self.W_sol` is the final solution.</span>
 <span class="sd">        `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -437,11 +450,11 @@ gtag('config', 'UA-111714220-1');
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">routes_specified</span><span class="p">:</span>
                         <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">enforce_route</span><span class="p">(</span><span class="n">routes_specified</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-            
+
             <span class="n">route_set</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span> <span class="c1">#routes[o,d] = [Route, Route, ...]</span>
             <span class="k">for</span> <span class="n">o</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="n">dict_od_to_vehid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
-                    <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">defRoute</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> 
+                    <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">defRoute</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
 
             <span class="c1"># simulation</span>
             <span class="n">W</span><span class="o">.</span><span class="n">exec_simulation</span><span class="p">()</span>
@@ -457,7 +470,7 @@ gtag('config', 'UA-111714220-1');
 
             <span class="c1"># attach route choice set to W object for later re-use at different solvers like DSO-GA</span>
             <span class="n">W</span><span class="o">.</span><span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">dict_od_to_routes</span>
-            
+
             <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="n">W</span>
 
             <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">link_to_pandas</span><span class="p">())</span>
@@ -475,7 +488,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">d</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span>
                 <span class="n">r</span><span class="p">,</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()</span>
                 <span class="n">travel_time</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                
+
                 <span class="n">route_actual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">rr</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
                 <span class="n">cost_actual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">travel_time</span>
 
@@ -492,7 +505,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">t_gap</span> <span class="o">=</span> <span class="mi">0</span>
 
                 <span class="n">cost_current</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">([</span><span class="n">l</span><span class="o">.</span><span class="n">get_toll</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r</span><span class="p">)])</span>
-                
+
                 <span class="n">potential_n_swap_updated</span> <span class="o">=</span> <span class="n">potential_n_swap</span>
                 <span class="k">for</span> <span class="n">alt_route</span> <span class="ow">in</span> <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
                     <span class="n">alt_route_tts</span> <span class="o">=</span> <span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">return_details</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
@@ -505,9 +518,9 @@ gtag('config', 'UA-111714220-1');
                                 <span class="n">flag_route_changed</span> <span class="o">=</span> <span class="kc">True</span>
                                 <span class="n">route_changed</span> <span class="o">=</span> <span class="n">alt_route</span>
                                 <span class="n">cost_current</span> <span class="o">=</span> <span class="n">cost_alt</span>
-                                
+
                 <span class="n">potential_n_swap</span> <span class="o">=</span> <span class="n">potential_n_swap_updated</span>
-                
+
                 <span class="n">total_t_gap</span> <span class="o">+=</span> <span class="n">t_gap</span>
                 <span class="n">routes_specified</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
                 <span class="k">if</span> <span class="n">flag_route_changed</span><span class="p">:</span>
@@ -525,7 +538,7 @@ gtag('config', 'UA-111714220-1');
             <span class="n">s</span><span class="o">.</span><span class="n">n_swaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_swap</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">potential_swaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">potential_n_swap</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">t_gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_gap_per_vehicle</span><span class="p">)</span>
-        
+
         <span class="n">s</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DUE summary:&quot;</span><span class="p">)</span>
@@ -662,38 +675,48 @@ gtag('config', 'UA-111714220-1');
 <div class="viewcode-block" id="SolverDSO_D2D">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_D2D.html#uxsim.DTAsolvers.SolverDSO_D2D">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SolverDSO_D2D</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_World</span><span class="p">,</span> <span class="n">cpp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cpp</span> <span class="ow">and</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="n">SolverDSO_D2D</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.DTAsolvers_cpp_adapter</span><span class="w"> </span><span class="kn">import</span> <span class="n">CppSolverDSO_D2D</span>
+            <span class="k">return</span> <span class="n">CppSolverDSO_D2D</span><span class="p">(</span><span class="n">func_World</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
 <div class="viewcode-block" id="SolverDSO_D2D.__init__">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_D2D.html#uxsim.DTAsolvers.SolverDSO_D2D.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">func_World</span><span class="p">,</span> <span class="n">cpp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics. </span>
+<span class="sd">        Solve quasi Dynamic System Optimum (DSO) problem using day-to-day dynamics. Optional C++ eccelerator is available.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        func_World : function</span>
 <span class="sd">            function that returns a World object with nodes, links, and demand specifications</span>
-<span class="sd">            </span>
+<span class="sd">        cpp : bool</span>
+<span class="sd">            if True, use C++ accelerated simulation engine for DSO.</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">            This function computes a near DSO state as a steady state of day-to-day dynamical routing game.</span>
-<span class="sd">            </span>
+
 <span class="sd">            This is a modification of Iryo&#39;s DUE algorithm, in which each traveler minimize marginal travel time (i.e., private cost + externality) instead of private cost as in DUE.</span>
 <span class="sd">            Since the externality (i.e., the total system cost without the ego vehicle) is costly to compute directly, it is estimated based on the queueing principle of the traffic flow model.</span>
 <span class="sd">            Apart from these point, this algorithm is almost the same to `SolverDUE` and thus expected to have the desirable properties discussed in the papers cited above.</span>
-<span class="sd">            </span>
+
 <span class="sd">            This algorithm is a loose generalization of &quot;DSO game&quot; of the following paper.</span>
 
 <span class="sd">            - Satsukawa, K., Wada, K., &amp; Watling, D. (2022). Dynamic system optimal traffic assignment with atomic users: Convergence and stability. Transportation Research Part B: Methodological, 155, 188-209.</span>
 
 <span class="sd">            In this paper, it is theoretically guaranteed that their DSO game algorithm converges to the global optimal DSO state. However, it may take a long time. This `SolverDSO_D2D` speeds up the solution process significantly, but it weakens the convergence guarantee.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;_is_cpp_solver&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span>
         <span class="n">s</span><span class="o">.</span><span class="n">func_World</span> <span class="o">=</span> <span class="n">func_World</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W_sol</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#final solution</span>
         <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1">#latest solution in the iterative process. Can be used when a user terminates the solution algorithm</span>
         <span class="n">s</span><span class="o">.</span><span class="n">dfs_link</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-    
+
 <div class="viewcode-block" id="SolverDSO_D2D.solve">
 <a class="viewcode-back" href="../../../_autosummary/uxsim.DTAsolvers.SolverDSO_D2D.html#uxsim.DTAsolvers.SolverDSO_D2D.solve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">n_routes_per_od</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">swap_prob</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">swap_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route_sets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -736,10 +759,10 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        -------</span>
 <span class="sd">        W : World</span>
 <span class="sd">            World object with quasi DUE solution (if properly converged)</span>
-<span class="sd">        </span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        `self.W_sol` is the final solution. </span>
+<span class="sd">        `self.W_sol` is the final solution.</span>
 <span class="sd">        `self.W_intermid_solution` is the latest solution in the iterative process. Can be used when a user terminates the solution algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -774,7 +797,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes</span><span class="p">:</span>
                     <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">W_orig</span><span class="o">.</span><span class="n">get_link</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">route</span><span class="p">])</span>
-        
+
         <span class="k">if</span> <span class="n">print_progress</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;number of OD pairs: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dict_od_to_routes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">, number of routes: </span><span class="si">{</span><span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">dict_od_to_routes</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -798,7 +821,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">routes_specified</span><span class="p">:</span>
                         <span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">enforce_route</span><span class="p">(</span><span class="n">routes_specified</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-            
+
             <span class="n">route_set</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span> <span class="c1">#routes[o,d] = [Route, Route, ...]</span>
             <span class="k">for</span> <span class="n">o</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="n">dict_od_to_vehid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">dict_od_to_routes</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
@@ -818,7 +841,7 @@ gtag('config', 'UA-111714220-1');
 
             <span class="c1"># attach route choice set to W object for later re-use at different solvers like DSO-GA</span>
             <span class="n">W</span><span class="o">.</span><span class="n">dict_od_to_routes</span> <span class="o">=</span> <span class="n">dict_od_to_routes</span>
-            
+
             <span class="k">if</span> <span class="n">unfinished_trips</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">W_intermid_solution</span> <span class="o">=</span> <span class="n">W</span>
@@ -845,7 +868,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">d</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">name</span>
                 <span class="n">r</span><span class="p">,</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">veh</span><span class="o">.</span><span class="n">traveled_route</span><span class="p">()</span>
                 <span class="n">travel_time</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                
+
                 <span class="n">route_actual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">rr</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">rr</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
                 <span class="n">cost_actual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">travel_time</span>
 
@@ -866,7 +889,7 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">cost_current</span> <span class="o">=</span> <span class="n">private_cost</span><span class="o">+</span><span class="n">ext</span>
 
                 <span class="n">potential_n_swap_updated</span> <span class="o">=</span> <span class="n">potential_n_swap</span>
-                
+
                 <span class="k">for</span> <span class="n">alt_route</span> <span class="ow">in</span> <span class="n">route_set</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="n">d</span><span class="p">]:</span>
                     <span class="n">ext</span> <span class="o">=</span> <span class="n">estimate_congestion_externality_route</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">alt_route</span><span class="p">,</span> <span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="n">private_cost</span> <span class="o">=</span> <span class="n">alt_route</span><span class="o">.</span><span class="n">actual_travel_time</span><span class="p">(</span><span class="n">ts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -879,8 +902,8 @@ gtag('config', 'UA-111714220-1');
                             <span class="k">if</span> <span class="n">flag_swap</span><span class="p">:</span>
                                 <span class="n">flag_route_changed</span> <span class="o">=</span> <span class="kc">True</span>
                                 <span class="n">route_changed</span> <span class="o">=</span> <span class="n">alt_route</span>
-                                <span class="n">cost_current</span> <span class="o">=</span> <span class="n">cost_alt</span> 
-                
+                                <span class="n">cost_current</span> <span class="o">=</span> <span class="n">cost_alt</span>
+
                 <span class="n">potential_n_swap</span> <span class="o">=</span> <span class="n">potential_n_swap_updated</span>
 
                 <span class="n">total_t_gap</span> <span class="o">+=</span> <span class="n">t_gap</span>
@@ -900,7 +923,7 @@ gtag('config', 'UA-111714220-1');
             <span class="n">s</span><span class="o">.</span><span class="n">n_swaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_swap</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">potential_swaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">potential_n_swap</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">t_gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_gap_per_vehicle</span><span class="p">)</span>
-        
+
         <span class="n">s</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DSO summary:&quot;</span><span class="p">)</span>

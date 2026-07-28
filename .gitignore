@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+build_cov/
 develop-eggs/
 dist/
 downloads/
@@ -25,7 +26,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST.in
+#MANIFEST.in
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -125,9 +126,14 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# pre-commit
+.pre-commit-config.yaml
+
+# Pycharm
+.idea/
+
 # Pyre type checker
 .pyre/
-
 
 out*/
 out/
@@ -146,12 +152,6 @@ p*_*.py
 demos_and_examples/uxsim/*
 /*.pkl
 _bench*
-demo_*
+/demo_*
 
-*.prof
-
-# pre-commit
-.pre-commit-config.yaml
-
-# Pycharm
-.idea/
+benchmark_*.md
