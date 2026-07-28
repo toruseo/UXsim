@@ -4389,6 +4389,123 @@ def test_override_signal():
     assert list(cum1) == list(cum2)  # list() for compatibility with cpp mode, where cum_arrival is a numpy array
 
 
+@pytest.mark.flaky(reruns=10)
+def test_adjust_node_capacity():
+
+    # simulation world
+    W = World(cpp=True,
+        name="",
+        deltan=1,
+        tmax=1200,
+        print_mode=1, save_mode=1, show_mode=1,
+        adjust_node_capacity=True,
+        random_seed=None,
+    )
+
+    # scenario
+    #merge network with signal
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("dest1", 0, 3)
+    W.addNode("dest2", 2, 1)
+    merge = W.addNode("merge", 1, 1)
+    W.addLink("link1", "orig1", "merge", length=3000, free_flow_speed=20, jam_density=0.2)
+    W.addLink("link2", "orig2", "merge", length=3000, free_flow_speed=20, jam_density=0.2)
+    link3 = W.addLink("link3", "merge", "dest1", length=1000, free_flow_speed=20, jam_density=0.2)
+    link4 = W.addLink("link4", "merge", "dest2", length=1000, free_flow_speed=20, jam_density=0.2)
+    W.adddemand("orig1", "dest1", 0, 500, 0.6)
+    W.adddemand("orig2", "dest2", 0, 500, 0.6)
+
+
+    # execute simulation
+    W.exec_simulation()
+
+    # visualize
+    #W.analyzer.time_space_diagram_traj_links([["link1", "link3"], ["link2", "link4"]], figsize=(6,3))
+    W.analyzer.print_simple_stats()
+
+    assert eq_tol(merge.flow_capacity, 0.8)
+    assert eq_tol((link3.departure_count(800)-link3.departure_count(300))/500, 0.4)
+    assert eq_tol((link4.departure_count(800)-link4.departure_count(300))/500, 0.4)
+
+
+@pytest.mark.flaky(reruns=10)
+def test_adjust_node_capacity_major_minor_free_flow():
+    W = World(cpp=True,
+        name="",
+        deltan=1,
+        tmax=1200,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None,
+        adjust_node_capacity=True,
+    )
+
+    # scenario
+    #merge network with signal
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("dest1", 0, 3)
+    W.addNode("dest2", 2, 1)
+    merge = W.addNode("merge", 1, 1)
+    link1 = W.addLink("link1", "orig1", "merge", length=3000, free_flow_speed=20, number_of_lanes=2, jam_density_per_lane=0.2)
+    link2 = W.addLink("link2", "orig2", "merge", length=3000, free_flow_speed=20)
+    link3 = W.addLink("link3", "merge", "dest1", length=1000, free_flow_speed=20, number_of_lanes=2, jam_density_per_lane=0.2)
+    link4 = W.addLink("link4", "merge", "dest2", length=1000, free_flow_speed=20)
+    W.adddemand("orig1", "dest1", 0, 500, 1)
+    W.adddemand("orig2", "dest2", 0, 500, 0.5)
+
+    #merge.adjust_node_capacity()
+
+    # execute simulation
+    W.exec_simulation()
+
+    # visualize
+    #W.analyzer.time_space_diagram_traj_links([["link1", "link3"], ["link2", "link4"]], figsize=(6,3))
+    W.analyzer.print_simple_stats()
+
+    assert eq_tol(merge.flow_capacity, 1.6)
+    assert eq_tol((link3.departure_count(600)-link3.departure_count(300))/300, 1)
+    assert eq_tol((link4.departure_count(600)-link4.departure_count(300))/300, 0.5)
+
+@pytest.mark.flaky(reruns=10)
+def test_adjust_node_capacity_major_minor_congested():
+    W = World(cpp=True,
+        name="",
+        deltan=1,
+        tmax=1200,
+        print_mode=1, save_mode=1, show_mode=1,
+        random_seed=None,
+        adjust_node_capacity=True,
+    )
+
+    # scenario
+    #merge network with signal
+    W.addNode("orig1", 0, 0)
+    W.addNode("orig2", 0, 2)
+    W.addNode("dest1", 0, 3)
+    W.addNode("dest2", 2, 1)
+    merge = W.addNode("merge", 1, 1)
+    link1 = W.addLink("link1", "orig1", "merge", length=3000, free_flow_speed=20, number_of_lanes=2, jam_density_per_lane=0.2)
+    link2 = W.addLink("link2", "orig2", "merge", length=3000, free_flow_speed=20)
+    link3 = W.addLink("link3", "merge", "dest1", length=1000, free_flow_speed=20, number_of_lanes=2, jam_density_per_lane=0.2)
+    link4 = W.addLink("link4", "merge", "dest2", length=1000, free_flow_speed=20)
+    W.adddemand("orig1", "dest1", 0, 500, 1.2)
+    W.adddemand("orig2", "dest2", 0, 500, 0.6)
+
+    #merge.adjust_node_capacity()
+
+    # execute simulation
+    W.exec_simulation()
+
+    # visualize
+    #W.analyzer.time_space_diagram_traj_links([["link1", "link3"], ["link2", "link4"]], figsize=(6,3))
+    W.analyzer.print_simple_stats()
+
+    assert eq_tol(merge.flow_capacity, 1.6)
+    assert eq_tol((link3.departure_count(600)-link3.departure_count(300))/300, 1.6*2/3)
+    assert eq_tol((link4.departure_count(600)-link4.departure_count(300))/300, 1.6*1/3)
+
+
 # ======================================================================
 # From test_wrapper_functions.py
 # ======================================================================
@@ -8762,6 +8879,29 @@ def test_threads_parameter():
     for bad in (0, -2):
         with pytest.raises(ValueError):
             World(name="", tmax=100, print_mode=0, save_mode=0, show_mode=0, cpp=True, threads=bad)
+
+    # Python mode: `threads` is a defined-but-ignored argument. It must not raise
+    # (no validation, any value accepted) and must not affect the result.
+    def build_and_run_python(threads):
+        kwargs = dict(name="", deltan=5, tmax=1000, print_mode=0, save_mode=0, show_mode=0,
+                      random_seed=42, no_cyclic_routing=True, cpp=False)
+        if threads is not None:
+            kwargs["threads"] = threads
+        W = World(**kwargs)
+        W.addNode("orig", 0, 0)
+        W.addNode("mid", 1, 0)
+        W.addNode("dest", 2, 0)
+        W.addLink("l1", "orig", "mid", length=1000, free_flow_speed=20, jam_density=0.2)
+        W.addLink("l2", "mid", "dest", length=1000, free_flow_speed=20, jam_density=0.2)
+        W.adddemand("orig", "dest", 0, 500, 0.3)
+        W.exec_simulation()
+        W.analyzer.basic_analysis()
+        return W.analyzer.total_travel_time
+
+    ttt_default = build_and_run_python(None)
+    ttt_4 = build_and_run_python(4)
+    ttt_all = build_and_run_python(-1)
+    assert ttt_default == ttt_4 == ttt_all
 
 
 ## misc

@@ -541,6 +541,7 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("hard_deterministic_mode", &World::hard_deterministic_mode)
         .def_rw("route_choice_update_gradual", &World::route_choice_update_gradual)
         .def_rw("no_cyclic_routing", &World::no_cyclic_routing)
+        .def_rw("adjust_node_capacity", &World::adjust_node_capacity)
         .def_rw("instantaneous_TT_timestep_interval", &World::instantaneous_TT_timestep_interval)
         .def_rw("num_threads", &World::num_threads)
         .def_ro("route_dist", &World::route_dist)
@@ -734,6 +735,7 @@ NB_MODULE(uxsim_cpp, m) {
         .def("transfer", &Node::transfer)
         .def("signal_update", &Node::signal_update)
         .def("flow_capacity_update", &Node::flow_capacity_update)
+        .def("adjust_node_capacity", &Node::adjust_node_capacity)
         ;
 
     //
