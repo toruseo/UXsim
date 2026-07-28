@@ -15,7 +15,7 @@ import uxsim
 from uxsim import World
 from uxsim.DTAsolvers import SolverDUE, SolverDSO_D2D
 
-N_SEEDS = 2
+N_SEEDS = 10
 SEEDS = list(range(N_SEEDS))
 MAX_ITER_DUE_DSO = 50
 
