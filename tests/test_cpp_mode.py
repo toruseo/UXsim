@@ -8949,3 +8949,191 @@ def test_access_vehicle_running():
     assert val1p == val1c
     assert val2p == val2c
 
+
+
+# ======================================================================
+# Post-construction parameter read/write (GitHub issue #350)
+# ======================================================================
+
+def test_node_flow_capacity_posthoc_assignment():
+    """https://github.com/toruseo/UXsim/issues/350: assigning Node.flow_capacity after construction must not be silently ignored."""
+    def run(cpp, mode):
+        W = World(cpp=cpp, name='', deltan=5, tmax=3600, print_mode=0, random_seed=0)
+        W.addNode('A', 0, 0)
+        if mode == 'init':
+            W.addNode('B', 2000, 0, flow_capacity=0.2)
+        else:
+            W.addNode('B', 2000, 0)
+        W.addNode('C', 4000, 0)
+        W.addLink('AB', 'A', 'B', length=2000, free_flow_speed=20, number_of_lanes=2)
+        W.addLink('BC', 'B', 'C', length=2000, free_flow_speed=20, number_of_lanes=2)
+        if mode == 'posthoc':
+            n = W.get_node('B')
+            n.flow_capacity = 0.2  # single assignment must be sufficient in cpp mode
+        W.adddemand('A', 'C', 0, 3000, flow=0.8)
+        W.exec_simulation()
+        df = W.analyzer.basic_to_pandas()
+        return df.average_travel_time[0], df.completed_trips[0]
+
+    tt_init, ct_init = run(True, 'init')
+    tt_post, ct_post = run(True, 'posthoc')
+    assert tt_init == tt_post
+    assert ct_init == ct_post
+
+    # capacity must actually bind (unconstrained case gives much smaller travel time)
+    tt_none, ct_none = run(True, 'none')
+    assert tt_post > tt_none * 2
+
+    # cross-mode consistency with Python backend
+    tt_py, ct_py = run(False, 'init')
+    assert eq_tol(tt_post, tt_py, rel_tol=0.05)
+    assert eq_tol(ct_post, ct_py, rel_tol=0.05)
+
+
+def test_node_parameter_read_write():
+    """Node parameters are readable and writable after construction, mirroring Python mode semantics."""
+    W = World(cpp=True, name='', deltan=5, tmax=100, print_mode=0, random_seed=0)
+    node = W.addNode('A', 1, 2)
+    W.addNode('B', 3, 4)
+    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
+
+    # unset flow_capacity / number_of_lanes read as None, as in Python mode
+    assert node.flow_capacity is None
+    assert node.number_of_lanes is None
+
+    # setting flow_capacity initializes flow_capacity_remain and derives number_of_lanes, mirroring Node.__init__
+    node.flow_capacity = 0.8
+    assert eq_tol(node.flow_capacity, 0.8)
+    assert eq_tol(node._cpp_node.flow_capacity, 0.8)
+    assert eq_tol(node.flow_capacity_remain, 0.8 * W.DELTAT)
+    assert node.number_of_lanes == 1
+
+    # explicit writes reach C++
+    node.number_of_lanes = 3
+    assert node._cpp_node.number_of_lanes == 3
+    node.flow_capacity_remain = 12.5
+    assert eq_tol(node._cpp_node.flow_capacity_remain, 12.5)
+
+    # unsetting flow_capacity restores the unconstrained state
+    node.flow_capacity = None
+    assert node.flow_capacity is None
+    assert node._cpp_node.flow_capacity_remain >= 10e9
+
+    node.x = 10
+    node.y = 20
+    node.signal_offset = 5
+    assert node._cpp_node.x == 10
+    assert node._cpp_node.y == 20
+    assert node._cpp_node.signal_offset == 5
+    assert node.x == 10 and node.y == 20 and node.signal_offset == 5
+
+
+def test_link_parameter_read_write():
+    """Link parameters are readable and writable after construction; writes reach the C++ engine."""
+    W = World(cpp=True, name='', deltan=5, tmax=1000, print_mode=0, random_seed=0)
+    W.addNode('A', 0, 0)
+    W.addNode('B', 2000, 0)
+    link = W.addLink('AB', 'A', 'B', length=2000, free_flow_speed=20, number_of_lanes=2)
+
+    for attr, cpp_attr, value in [
+        ('u', 'vmax', 15.0), ('kappa', 'kappa', 0.25), ('tau', 'tau', 0.6),
+        ('w', 'w', 4.0), ('capacity', 'capacity', 0.9), ('delta', 'delta', 4.0),
+        ('delta_per_lane', 'delta_per_lane', 8.0), ('merge_priority', 'merge_priority', 2.0),
+        ('number_of_lanes', 'number_of_lanes', 3), ('length', 'length', 2500),
+    ]:
+        setattr(link, attr, value)
+        assert getattr(link, attr) == value
+        assert getattr(link._cpp_link, cpp_attr) == value
+
+    link.signal_group = [1, 2]
+    assert link.signal_group == [1, 2]
+    assert list(link._cpp_link.signal_group) == [1, 2]
+    link.signal_group = 0
+    assert link.signal_group == [0]
+
+
+def test_link_free_flow_speed_posthoc_assignment():
+    """Assigning Link.u after construction changes the actual simulated speed."""
+    W = World(cpp=True, name='', deltan=5, tmax=2000, print_mode=0, random_seed=0)
+    W.addNode('A', 0, 0)
+    W.addNode('B', 2000, 0)
+    link = W.addLink('AB', 'A', 'B', length=2000, free_flow_speed=20)
+    link.u = 10
+    W.adddemand('A', 'B', 0, 500, flow=0.2)
+    W.exec_simulation()
+    df = W.analyzer.basic_to_pandas()
+    assert eq_tol(df.average_travel_time[0], 2000 / 10, rel_tol=0.1)
+
+
+def test_link_merge_priority_posthoc_assignment():
+    """Assigning Link.merge_priority after construction gives the same result as setting it at construction."""
+    def run(mode):
+        W = World(cpp=True, name='', deltan=5, tmax=2500, print_mode=0, random_seed=0)
+        W.addNode('orig1', 0, 0)
+        W.addNode('orig2', 0, 2)
+        W.addNode('merge', 1, 1)
+        W.addNode('dest', 2, 1)
+        mp = 4 if mode == 'init' else 1
+        link1 = W.addLink('link1', 'orig1', 'merge', length=1000, free_flow_speed=20, merge_priority=mp)
+        W.addLink('link2', 'orig2', 'merge', length=1000, free_flow_speed=20)
+        W.addLink('link3', 'merge', 'dest', length=1000, free_flow_speed=20)
+        if mode == 'posthoc':
+            link1.merge_priority = 4
+        W.adddemand('orig1', 'dest', 0, 2000, 0.5)
+        W.adddemand('orig2', 'dest', 0, 2000, 0.5)
+        W.exec_simulation()
+        df = W.analyzer.link_to_pandas()
+        return list(df['average_travel_time'])
+
+    res_init = run('init')
+    res_posthoc = run('posthoc')
+    res_baseline = run('baseline')
+    assert res_init == res_posthoc
+    assert res_posthoc != res_baseline  # the knob must actually change the outcome
+
+
+def test_world_duo_update_weight_posthoc_assignment():
+    """Assigning World.DUO_UPDATE_WEIGHT after network construction reaches the C++ engine."""
+    def run(mode):
+        weight = 1 if mode == 'init' else 0.02
+        W = World(cpp=True, name='', deltan=5, tmax=4000, print_mode=0, random_seed=0, duo_update_weight=weight)
+        W.addNode('orig', 0, 0)
+        W.addNode('a', 1, 1)
+        W.addNode('b', 1, -1)
+        W.addNode('dest', 2, 0)
+        W.addLink('oa', 'orig', 'a', length=1000, free_flow_speed=20)
+        W.addLink('ob', 'orig', 'b', length=1000, free_flow_speed=20)
+        W.addLink('ad', 'a', 'dest', length=1000, free_flow_speed=20, capacity_in=0.3)
+        W.addLink('bd', 'b', 'dest', length=2000, free_flow_speed=20)
+        if mode == 'posthoc':
+            W.DUO_UPDATE_WEIGHT = 1
+        assert W._cpp_world.duo_update_weight == 1 or mode == 'baseline'
+        W.adddemand('orig', 'dest', 0, 3000, 0.8)
+        W.exec_simulation()
+        df = W.analyzer.link_to_pandas()
+        return list(df['traffic_volume'])
+
+    res_init = run('init')
+    res_posthoc = run('posthoc')
+    res_baseline = run('baseline')
+    assert res_init == res_posthoc
+    assert res_posthoc != res_baseline  # the knob must actually change the outcome
+
+
+def test_vehicle_dest_posthoc_assignment():
+    """Assigning Vehicle.dest after creation changes the actual trip destination."""
+    W = World(cpp=True, name='', deltan=5, tmax=2000, print_mode=0, random_seed=0)
+    W.addNode('A', 0, 0)
+    W.addNode('B', 1, 0)
+    W.addNode('C', 2, 0)
+    W.addNode('D', 1, 1)
+    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
+    W.addLink('BC', 'B', 'C', length=1000, free_flow_speed=20)
+    W.addLink('BD', 'B', 'D', length=1000, free_flow_speed=20)
+    veh = W.addVehicle('A', 'C', 0)
+    veh.dest = 'D'
+    assert veh.dest.name == 'D'
+    W.exec_simulation()
+    assert veh.state == 'end'
+    route, ts = veh.traveled_route()
+    assert [l.name for l in route] == ['AB', 'BD']
