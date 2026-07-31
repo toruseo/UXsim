@@ -258,6 +258,7 @@ class CppLink:
     capacity = CppProperty()
     delta = CppProperty()
     delta_per_lane = CppProperty()
+    length = CppProperty()
     merge_priority = CppProperty()
     number_of_lanes = CppProperty(conv=int)
     capacity_out = CppProperty()
@@ -319,7 +320,6 @@ class CppLink:
         # Flow parameters (u, kappa, tau, ...) are live properties reading from C++ (single source of truth).
         # Only Python-only bookkeeping attributes are stored here, mirroring Python's Link.__init__.
         cpp = self._cpp_link
-        self._length = length  # keep the user-passed value (C++ stores it unchanged) so prints match Python, e.g. int stays int
         self.free_flow_speed = cpp.vmax
         self.jam_density = jam_density
         self.jam_density_per_lane = jam_density_per_lane
@@ -349,14 +349,6 @@ class CppLink:
         return f"<Link {self.name}>"
 
     # --- Parameters needing special handling (explicit properties) ---
-
-    @property
-    def length(self):
-        return self._length
-    @length.setter
-    def length(self, value):
-        self._length = value
-        self._cpp_link.length = float(value)
 
     @property
     def signal_group(self):
@@ -554,23 +546,32 @@ class CppVehicle:
 
     # --- Properties that need conversion between C++ and Python ---
 
-    # orig/dest are cached on the Python side for read performance (the C++ engine never changes them itself); writes go through to C++
     @property
     def orig(self):
-        return self._orig
+        cpp_orig = self._cpp_vehicle.orig
+        if cpp_orig is not None:
+            node_id = cpp_orig.id
+            nodes = self.W.NODES
+            if 0 <= node_id < len(nodes):
+                return nodes[node_id]
+        return None
     @orig.setter
     def orig(self, value):
         node = self.W.get_node(value)
-        self._orig = node
         self._cpp_vehicle.orig = node._cpp_node if node is not None else None
 
     @property
     def dest(self):
-        return self._dest
+        cpp_dest = self._cpp_vehicle.dest
+        if cpp_dest is not None:
+            node_id = cpp_dest.id
+            nodes = self.W.NODES
+            if 0 <= node_id < len(nodes):
+                return nodes[node_id]
+        return None
     @dest.setter
     def dest(self, value):
         node = self.W.get_node(value)
-        self._dest = node
         self._cpp_vehicle.dest = node._cpp_node if node is not None else None
 
     @property
@@ -1275,7 +1276,6 @@ class CppWorld:
         n_new = total - start_idx
         if n_new <= 0:
             return
-        nodes_name_dict = self.NODES_NAME_DICT
         vehicles = self.VEHICLES
         vehicles_living = self.VEHICLES_LIVING
         rcp = self.route_choice_principle
@@ -1294,8 +1294,7 @@ class CppWorld:
             veh_id += 1
             py_veh._cpp_vehicle = cpp_veh
             py_veh._log_cache = None
-            py_veh._orig = nodes_name_dict.get(cpp_veh.orig.name) if cpp_veh.orig else None
-            py_veh._dest = nodes_name_dict.get(cpp_veh.dest.name) if cpp_veh.dest else None
+            # orig / dest are live properties reading from C++
             c = colors[j]
             py_veh.color = (float(c[0]), float(c[1]), float(c[2]))
             # Python-only attributes (not in C++)
