@@ -13,7 +13,7 @@ nontest_files = [
     "example_14en_multiple_signals_Deep_Reinforcement_Learning_pytorch.py", #takes too much time. DQN can be tested by example_12en_* as well.
     "example_17en_result_GUI_viewer_sioux_falls.py", #GUI viewer is not testable in Github Actions
     "example_18en_result_GUI_viewer_grid.py", #GUI viewer is not testable in Github Actions
-    "example_28en_benchmark_cpp_mode.py", "example_16en_import_from_OpenStreetMap", "example_05jp_gridlock_and_prevention", #takes too much time
+    "example_28en_benchmark_cpp_mode.py", "example_16en_import_from_OpenStreetMap.py", "example_05jp_gridlock_and_prevention.py", "example_04jp_automatic_network_generation.py", "example_27jp_interactive_simulation_by_streamlit.py", "example_03jp_data_loading_sioux_falls_network.py", #takes too much time and/or redundant
 ]
 
 # Dynamically generate test cases for each example script
