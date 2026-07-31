@@ -108,16 +108,16 @@ def get_font_for_matplotlib(fname=None):
 
     from matplotlib import font_manager
 
-    font_list = font_manager.findSystemFonts()
-
     if fname is not None:
         font = fname
-    elif any("Noto Sans Mono CJK JP" in font.lower() for font in font_list):
-        font = "Noto Sans Mono CJK JP"
-    elif any("msgothic" in font.lower() for font in font_list):
-        font = "MS Gothic"
     else:
-        font = "monospace"
+        try:
+            import os, uxsim.files
+            font_path = os.path.join(os.path.dirname(uxsim.files.__file__), "HackGen-Regular.ttf")
+            font_manager.fontManager.addfont(font_path)
+            font = font_manager.FontProperties(fname=font_path).get_name()  # -> "HackGen"
+        except Exception:
+            font = "monospace"
 
     if fname is None:
         _cached_matplotlib_font = font
