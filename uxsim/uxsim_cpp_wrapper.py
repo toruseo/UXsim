@@ -9,6 +9,7 @@ This module only handles:
   - Analyzer-compatible attribute exposure
 """
 
+import math
 import random
 import time
 import string
@@ -37,8 +38,68 @@ _add_link = trafficppy.add_link
 _add_demand = trafficppy.add_demand
 
 
+class CppProperty:
+    """Descriptor forwarding an attribute to the underlying C++ object (single source of truth).
+
+    The owner class must define `_cpp_holder`, the name of the instance attribute holding the C++ object (e.g. '_cpp_node').
+
+    Parameters
+    ----------
+    cpp_name : str, optional
+        Attribute name on the C++ object. Defaults to the Python-side attribute name.
+    conv : callable, optional
+        Conversion applied to the value on write (default float). None for pass-through.
+    """
+    def __init__(self, cpp_name=None, conv=float):
+        self.cpp_name = cpp_name
+        self.conv = conv
+    def __set_name__(self, owner, name):
+        self.name = self.cpp_name or name
+        self.holder = owner._cpp_holder
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        return getattr(getattr(obj, self.holder), self.name)
+    def __set__(self, obj, value):
+        if self.conv is not None:
+            value = self.conv(value)
+        setattr(getattr(obj, self.holder), self.name, value)
+
+
+class CppWorldProperty:
+    """Descriptor for CppWorld parameters that must work before and after the C++ world is created.
+
+    The value lives in a Python backing attribute ('_' + lowercased name) until the C++ world is created; after that, reads and writes go to the C++ world (write-through), which reads these parameters dynamically during simulation.
+    """
+    def __init__(self, cpp_name, conv=float):
+        self.cpp_name = cpp_name
+        self.conv = conv
+    def __set_name__(self, owner, name):
+        self.backing = '_' + name.lower()
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        if obj._cpp_world_created:
+            return getattr(obj._cpp_world, self.cpp_name)
+        return getattr(obj, self.backing)
+    def __set__(self, obj, value):
+        setattr(obj, self.backing, value)
+        if obj._cpp_world_created:
+            setattr(obj._cpp_world, self.cpp_name, self.conv(value))
+
+
 class CppNode:
     """Thin wrapper around C++ Node. Stores attributes for analyzer compatibility."""
+
+    _cpp_holder = '_cpp_node'
+
+    # Simple write-through parameters (live in C++; see CppProperty)
+    x = CppProperty()
+    y = CppProperty()
+    signal_offset = CppProperty()
+    flow_capacity_remain = CppProperty()
+    signal_phase = CppProperty(conv=None)
+    signal_t = CppProperty(conv=None)
 
     def __init__(self, W, name, x, y, signal=[0], signal_offset=0, signal_offset_old=None,
                  flow_capacity=None, number_of_lanes=None, auto_rename=False,
@@ -75,16 +136,36 @@ class CppNode:
                   int(number_of_lanes) if number_of_lanes is not None else -1)
         self._cpp_node = self.W._cpp_world.get_node(self.name)
 
-        # Read back from C++ (single source of truth)
-        self.x = self._cpp_node.x
-        self.y = self._cpp_node.y
-        self.signal_offset = self._cpp_node.signal_offset
-        self.flow_capacity = self._cpp_node.flow_capacity
-        self.number_of_lanes = self._cpp_node.number_of_lanes
+        # x, y, signal_offset, flow_capacity, etc. are live properties reading from C++ (single source of truth)
         self.flag_lanes_automatically_determined = False
 
     def __repr__(self):
         return f"<Node {self.name}>"
+
+    @property
+    def flow_capacity(self):
+        v = self._cpp_node.flow_capacity
+        return v if v >= 0 else None
+    @flow_capacity.setter
+    def flow_capacity(self, value):
+        # Mirror Python Node.__init__: setting flow_capacity also (re)initializes flow_capacity_remain, and derives number_of_lanes if it is not set yet
+        cpp = self._cpp_node
+        if value is None:
+            cpp.flow_capacity = -1.0
+            cpp.flow_capacity_remain = 10e10
+        else:
+            cpp.flow_capacity = float(value)
+            cpp.flow_capacity_remain = float(value) * self.W.DELTAT
+            if cpp.number_of_lanes <= 0:
+                cpp.number_of_lanes = math.ceil(value / 0.8)
+
+    @property
+    def number_of_lanes(self):
+        n = self._cpp_node.number_of_lanes
+        return n if n > 0 else None
+    @number_of_lanes.setter
+    def number_of_lanes(self, value):
+        self._cpp_node.number_of_lanes = int(value) if value is not None else 0
 
     @property
     def signal(self):
@@ -101,20 +182,6 @@ class CppNode:
     @property
     def cycle_length(self):
         return sum(self.signal)
-
-    @property
-    def signal_phase(self):
-        return self._cpp_node.signal_phase
-    @signal_phase.setter
-    def signal_phase(self, value):
-        self._cpp_node.signal_phase = value
-
-    @property
-    def signal_t(self):
-        return self._cpp_node.signal_t
-    @signal_t.setter
-    def signal_t(self, value):
-        self._cpp_node.signal_t = value
 
     @property
     def signal_log(self):
@@ -149,7 +216,6 @@ class CppNode:
             self._cpp_node.signal_t = 0
         if signal_offset_old != None:
             self.signal_offset = self.cycle_length - signal_offset_old
-        self._cpp_node.signal_offset = float(self.signal_offset)
 
         if groups is None:
             return None
@@ -167,22 +233,38 @@ class CppNode:
 
         for key in phase_info:
             key.signal_group = phase_info[key]
-            key._cpp_link.signal_group = phase_info[key]
 
     def adjust_node_capacity(self):
         """
         Automatically determine the `flow_capacity` of this node based on the capacity of connected links. It does not override if `flow_capacity` was already set.
         This calculation is based on an assumption that the node is an intersection with two major roads and two minor roads or similar types. In this case, the node capacity should be the same to that of major roads.
         """
+        lanes_before = self._cpp_node.number_of_lanes
         self._cpp_node.adjust_node_capacity()
-        if self._cpp_node.number_of_lanes != self.number_of_lanes:
+        if self._cpp_node.number_of_lanes != lanes_before:
             self.flag_lanes_automatically_determined = True
-        self.flow_capacity = self._cpp_node.flow_capacity
-        self.number_of_lanes = self._cpp_node.number_of_lanes
 
 
 class CppLink:
     """Thin wrapper around C++ Link. Stores attributes for analyzer compatibility."""
+
+    _cpp_holder = '_cpp_link'
+
+    # Simple write-through parameters (live in C++; see CppProperty)
+    u = CppProperty('vmax')
+    kappa = CppProperty()
+    tau = CppProperty()
+    w = CppProperty()
+    capacity = CppProperty()
+    delta = CppProperty()
+    delta_per_lane = CppProperty()
+    length = CppProperty()
+    merge_priority = CppProperty()
+    number_of_lanes = CppProperty(conv=int)
+    capacity_out = CppProperty()
+    capacity_in = CppProperty()
+    capacity_out_remain = CppProperty()
+    capacity_in_remain = CppProperty()
 
     def __init__(self, W, name, start_node, end_node, length,
                  free_flow_speed=20, jam_density=0.2, jam_density_per_lane=None,
@@ -194,10 +276,10 @@ class CppLink:
         self.W = W
         self.start_node = self.W.get_node(start_node)
         self.end_node = self.W.get_node(end_node)
-        self.number_of_lanes = int(number_of_lanes)
+        number_of_lanes = int(number_of_lanes)
 
         # Signal
-        self.signal_group = [signal_group] if isinstance(signal_group, int) else list(signal_group)
+        signal_group = [signal_group] if isinstance(signal_group, int) else list(signal_group)
 
         # ID and name registration
         self.id = len(self.W.LINKS)
@@ -225,34 +307,24 @@ class CppLink:
             kappa = jam_density_per_lane * number_of_lanes
         cpp_capacity_out = capacity_out if capacity_out is not None else -1
         cpp_capacity_in = capacity_in if capacity_in is not None else -1
-        cpp_signal_group = list(self.signal_group)
+        cpp_signal_group = list(signal_group)
         try:
             _add_link(self.W._cpp_world, self.name, self.start_node.name, self.end_node.name,
-                      float(free_flow_speed), float(kappa), float(length), int(self.number_of_lanes),
+                      float(free_flow_speed), float(kappa), float(length), int(number_of_lanes),
                       float(merge_priority), float(cpp_capacity_out), float(cpp_capacity_in), cpp_signal_group)
         except TypeError:
             _add_link(self.W._cpp_world, self.name, self.start_node.name, self.end_node.name,
                       float(free_flow_speed), float(kappa), float(length), float(merge_priority), float(cpp_capacity_out), cpp_signal_group)
         self._cpp_link = self.W._cpp_world.get_link(self.name)
 
-        # Read derived parameters from C++ (single source of truth)
+        # Flow parameters (u, kappa, tau, ...) are live properties reading from C++ (single source of truth).
+        # Only Python-only bookkeeping attributes are stored here, mirroring Python's Link.__init__.
         cpp = self._cpp_link
-        self.length = length  # keep the user-passed value (C++ stores it unchanged) so prints match Python, e.g. int stays int
-        self.u = cpp.vmax
-        self.kappa = cpp.kappa
-        self.tau = cpp.tau
-        self.w = cpp.w
-        self.capacity = cpp.capacity
-        self.delta = cpp.delta
-        self.delta_per_lane = cpp.delta_per_lane
-        self.free_flow_speed = self.u
-        self.jam_density = self.kappa
+        self.free_flow_speed = cpp.vmax
+        self.jam_density = jam_density
         self.jam_density_per_lane = jam_density_per_lane
-        self.merge_priority = cpp.merge_priority
-        self.q_star = self.capacity
-        self.k_star = self.capacity / self.u
-        self._capacity_out_remain = cpp.capacity_out_remain
-        self._capacity_in_remain = cpp.capacity_in_remain
+        self.q_star = cpp.capacity
+        self.k_star = cpp.capacity / cpp.vmax
 
         # Containers for analyzer compatibility
         self.vehicles = deque()
@@ -276,6 +348,15 @@ class CppLink:
     def __repr__(self):
         return f"<Link {self.name}>"
 
+    # --- Parameters needing special handling (explicit properties) ---
+
+    @property
+    def signal_group(self):
+        return list(self._cpp_link.signal_group)
+    @signal_group.setter
+    def signal_group(self, value):
+        self._cpp_link.signal_group = [value] if isinstance(value, int) else [int(g) for g in value]
+
     def init_after_tmax_fix(self):
         """Initialize analyzer data structures after TMAX is known."""
         self.edie_dt = self.W.EULAR_DT
@@ -285,8 +366,8 @@ class CppLink:
         self.tn_mat = np.zeros(self.k_mat.shape)
         self.dn_mat = np.zeros(self.k_mat.shape)
         self.an = self.edie_dt * self.edie_dx
-        self.traveltime_actual = np.array([self.length / self.u for _ in range(self.W.TSIZE)])
         self._free_flow_tt = self.length / self.u
+        self.traveltime_actual = np.full(self.W.TSIZE, self._free_flow_tt)
         self._deltat = self.W.DELTAT
 
     @property
@@ -330,36 +411,6 @@ class CppLink:
     @traveltime_actual.setter
     def traveltime_actual(self, value):
         self._traveltime_actual = value
-
-    @property
-    def capacity_out(self):
-        return self._cpp_link.capacity_out
-    @capacity_out.setter
-    def capacity_out(self, value):
-        self._cpp_link.capacity_out = float(value)
-
-    @property
-    def capacity_in(self):
-        return self._cpp_link.capacity_in
-    @capacity_in.setter
-    def capacity_in(self, value):
-        self._cpp_link.capacity_in = float(value)
-
-    @property
-    def capacity_in_remain(self):
-        return self._cpp_link.capacity_in_remain
-    @capacity_in_remain.setter
-    def capacity_in_remain(self, value):
-        self._capacity_in_remain = value
-        self._cpp_link.capacity_in_remain = float(value)
-
-    @property
-    def capacity_out_remain(self):
-        return self._cpp_link.capacity_out_remain
-    @capacity_out_remain.setter
-    def capacity_out_remain(self, value):
-        self._capacity_out_remain = value
-        self._cpp_link.capacity_out_remain = float(value)
 
     # --- Data access methods for analyzer (read directly from C++) ---
 
@@ -457,35 +508,25 @@ class CppLink:
         return self.congestion_pricing(t) if self.congestion_pricing else self.route_choice_penalty
 
     def change_free_flow_speed(self, new_value):
-        """Forward to C++ Link.change_free_flow_speed()."""
+        """Forward to C++ Link.change_free_flow_speed(). Derived parameters (u, w, capacity, delta) are live properties."""
         self._cpp_link.change_free_flow_speed(float(new_value))
-        self._read_from_cpp()
+        self.free_flow_speed = self._cpp_link.vmax
 
     def change_jam_density(self, new_value):
-        """Forward to C++ Link.change_jam_density()."""
+        """Forward to C++ Link.change_jam_density(). Derived parameters (kappa, w, capacity, delta, delta_per_lane) are live properties."""
         self._cpp_link.change_jam_density(float(new_value))
-        self._read_from_cpp()
-
-    def _read_from_cpp(self):
-        """Read all flow parameters from C++ link."""
-        cpp = self._cpp_link
-        self.u = cpp.vmax
-        self.kappa = cpp.kappa
-        self.tau = cpp.tau
-        self.w = cpp.w
-        self.capacity = cpp.capacity
-        self.delta = cpp.delta
-        self.delta_per_lane = cpp.delta_per_lane
-        self.free_flow_speed = self.u
-        self.jam_density = self.kappa
-        self.q_star = self.capacity
-        self.k_star = self.capacity / self.u if self.u > 0 else 0
+        self.jam_density = self._cpp_link.kappa
 
 
 
 class CppVehicle:
     """Proxy wrapper around C++ Vehicle.  Reads most attributes directly from C++ via __getattr__; only Python-only data lives on the Python object.
     Instances are created via __new__ in _register_new_cpp_vehicles — no __init__."""
+
+    _cpp_holder = '_cpp_vehicle'
+
+    # Simple write-through parameters (live in C++; see CppProperty)
+    distance_traveled = CppProperty()
 
     # State int→str mapping
     _STATE_MAP = {0: "home", 1: "wait", 2: "run", 3: "end", 4: "abort"}
@@ -504,6 +545,34 @@ class CppVehicle:
             raise AttributeError(f"'CppVehicle' object has no attribute '{name}'")
 
     # --- Properties that need conversion between C++ and Python ---
+
+    @property
+    def orig(self):
+        cpp_orig = self._cpp_vehicle.orig
+        if cpp_orig is not None:
+            node_id = cpp_orig.id
+            nodes = self.W.NODES
+            if 0 <= node_id < len(nodes):
+                return nodes[node_id]
+        return None
+    @orig.setter
+    def orig(self, value):
+        node = self.W.get_node(value)
+        self._cpp_vehicle.orig = node._cpp_node if node is not None else None
+
+    @property
+    def dest(self):
+        cpp_dest = self._cpp_vehicle.dest
+        if cpp_dest is not None:
+            node_id = cpp_dest.id
+            nodes = self.W.NODES
+            if 0 <= node_id < len(nodes):
+                return nodes[node_id]
+        return None
+    @dest.setter
+    def dest(self, value):
+        node = self.W.get_node(value)
+        self._cpp_vehicle.dest = node._cpp_node if node is not None else None
 
     @property
     def state(self):
@@ -564,13 +633,6 @@ class CppVehicle:
     @property
     def link_arrival_time(self):
         return self._cpp_vehicle.arrival_time_link
-
-    @property
-    def distance_traveled(self):
-        return self._cpp_vehicle.distance_traveled
-    @distance_traveled.setter
-    def distance_traveled(self, value):
-        self._cpp_vehicle.distance_traveled = float(value)
 
     # --- Log properties (lazily computed and cached) ---
 
@@ -800,6 +862,11 @@ class CppRouteChoice:
 class CppWorld:
     """Thin wrapper around C++ World. Delegates simulation to C++ engine."""
 
+    # Write-through parameters (see CppWorldProperty). The C++ engine reads these dynamically (duo_update_weight at each route update, route_choice_uncertainty at each adjacency matrix update), matching Python's runtime use of DUO_UPDATE_WEIGHT / DUO_NOISE.
+    DUO_UPDATE_TIME = CppWorldProperty('duo_update_time')
+    DUO_UPDATE_WEIGHT = CppWorldProperty('duo_update_weight')
+    DUO_NOISE = CppWorldProperty('route_choice_uncertainty')
+
     def __init__(self, name="", deltan=5, reaction_time=1,
                  duo_update_time=600, duo_update_weight=0.5, duo_noise=0.01,
                  route_choice_principle="homogeneous_DUO", route_choice_update_gradual=False,
@@ -817,6 +884,8 @@ class CppWorld:
                  threads=1):
 
         self.W = self  # self-reference for W.W access pattern
+        self._cpp_world = None
+        self._cpp_world_created = False
         self.rng = np.random.default_rng(seed=random_seed)
         self.random_seed = random_seed
         self.TMAX = tmax
@@ -864,8 +933,6 @@ class CppWorld:
         self.user_attribute = user_attribute
         self.user_function = user_function
 
-        self._cpp_world = None
-        self._cpp_world_created = False
         self._cpp_vehicle_log_mode = 1 if vehicle_logging_timestep_interval > 0 else 0
         if vehicle_logging_timestep_interval not in (0, 1, -1):
             warnings.warn("vehicle_logging_timestep_interval is not 0, 1, or -1. C++ mode only supports 0 (no logging) and 1 (full logging). The value will be treated as 1 (logging enabled).", stacklevel=2)
@@ -1209,7 +1276,6 @@ class CppWorld:
         n_new = total - start_idx
         if n_new <= 0:
             return
-        nodes_name_dict = self.NODES_NAME_DICT
         vehicles = self.VEHICLES
         vehicles_living = self.VEHICLES_LIVING
         rcp = self.route_choice_principle
@@ -1228,8 +1294,7 @@ class CppWorld:
             veh_id += 1
             py_veh._cpp_vehicle = cpp_veh
             py_veh._log_cache = None
-            py_veh.orig = nodes_name_dict.get(cpp_veh.orig.name) if cpp_veh.orig else None
-            py_veh.dest = nodes_name_dict.get(cpp_veh.dest.name) if cpp_veh.dest else None
+            # orig / dest are live properties reading from C++
             c = colors[j]
             py_veh.color = (float(c[0]), float(c[1]), float(c[2]))
             # Python-only attributes (not in C++)
