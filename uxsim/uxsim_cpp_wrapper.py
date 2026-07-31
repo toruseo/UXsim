@@ -374,8 +374,8 @@ class CppLink:
         self.tn_mat = np.zeros(self.k_mat.shape)
         self.dn_mat = np.zeros(self.k_mat.shape)
         self.an = self.edie_dt * self.edie_dx
-        self.traveltime_actual = np.array([self.length / self.u for _ in range(self.W.TSIZE)])
         self._free_flow_tt = self.length / self.u
+        self.traveltime_actual = np.full(self.W.TSIZE, self._free_flow_tt)
         self._deltat = self.W.DELTAT
 
     @property
@@ -554,22 +554,23 @@ class CppVehicle:
 
     # --- Properties that need conversion between C++ and Python ---
 
+    # orig/dest are cached on the Python side for read performance (the C++ engine never changes them itself); writes go through to C++
     @property
     def orig(self):
-        cpp_orig = self._cpp_vehicle.orig
-        return self.W.NODES_NAME_DICT.get(cpp_orig.name) if cpp_orig is not None else None
+        return self._orig
     @orig.setter
     def orig(self, value):
         node = self.W.get_node(value)
+        self._orig = node
         self._cpp_vehicle.orig = node._cpp_node if node is not None else None
 
     @property
     def dest(self):
-        cpp_dest = self._cpp_vehicle.dest
-        return self.W.NODES_NAME_DICT.get(cpp_dest.name) if cpp_dest is not None else None
+        return self._dest
     @dest.setter
     def dest(self, value):
         node = self.W.get_node(value)
+        self._dest = node
         self._cpp_vehicle.dest = node._cpp_node if node is not None else None
 
     @property
@@ -1274,6 +1275,7 @@ class CppWorld:
         n_new = total - start_idx
         if n_new <= 0:
             return
+        nodes_name_dict = self.NODES_NAME_DICT
         vehicles = self.VEHICLES
         vehicles_living = self.VEHICLES_LIVING
         rcp = self.route_choice_principle
@@ -1292,7 +1294,8 @@ class CppWorld:
             veh_id += 1
             py_veh._cpp_vehicle = cpp_veh
             py_veh._log_cache = None
-            # orig / dest are live properties reading from C++
+            py_veh._orig = nodes_name_dict.get(cpp_veh.orig.name) if cpp_veh.orig else None
+            py_veh._dest = nodes_name_dict.get(cpp_veh.dest.name) if cpp_veh.dest else None
             c = colors[j]
             py_veh.color = (float(c[0]), float(c[1]), float(c[2]))
             # Python-only attributes (not in C++)
