@@ -30,18 +30,18 @@ If you are interested, please see:
 - Theoretically valid models commonly used in academic and professional transportation research
 - Implementation of traffic control and management schemes such as taxi/shared-mobility, traffic signals, road pricing, and so on
 - Flexible and customizable thanks to pure Python implementation
-	- Basic analysis of simulation results and their export to `pandas.DataFrame` and CSV files
-	- Visualization of simulation results using `Matplotlib`; interactive GUI is also available
 	- Can also be directly integrated with other Python-based frameworks, such as `PyTorch` for deep reinforcement learning traffic control
 	- The main code `uxsim.py` is only about 1200 lines of code. Users may easily understand and customize it
   - Dependency-free: you can use the simulator by doing `pip install uxsim` only
 - Provides a seamless user experience by integrating scenario construction, simulation, and data analysis into a unified, transparent Python workflow
+- Optional C++ accelerated simulation engine without external dependency
+- LLM friendly: AI agents can easily set up simulation scenarios and conduct various experiments autonomously and efficiently thanks to the code-only design
 
 ## Simulation Examples
 
 ### Large-scale scenario
 
-Below are simulation results where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC.
+Below are simulation results where approximately 60000 vehicles pass through a 10km x 10km grid network in 2 hours. The computation time was about 30 seconds on a standard desktop PC (less than 1 sec if optional C++ mode is used).
 
 Visualization of link traffic states (thicker lines mean more vehicles, darker colors mean slower speeds) and some vehicle trajectories:
 <p float="left">
