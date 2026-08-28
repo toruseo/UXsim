@@ -1855,10 +1855,12 @@ class World:
         To avoid this, the recursion limit is temporarily raised while
         the standard ``deepcopy`` logic runs.
         """
-        import sys, copy
+        import sys
         old_limit = sys.getrecursionlimit()
-        # Estimate a safe limit: base depth plus proportional to
-        # the number of objects in the simulation.
+        # Each simulation object (Vehicle, Node, Link) adds several frames
+        # to the deepcopy call stack due to nested __dict__ traversal.
+        # The multiplier of 4 accounts for the deepcopy frames per object,
+        # and the base of 2000 covers the World/Analyzer overhead.
         n_objects = len(W.VEHICLES) + len(W.NODES) + len(W.LINKS)
         new_limit = max(old_limit, n_objects * 4 + 2000)
         sys.setrecursionlimit(new_limit)
