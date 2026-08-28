@@ -264,3 +264,4 @@ Specifically, UXsim directly uses the following works:
 
 - [Toru Seo (Author)](https://toruseo.jp/index_en.html)
 - [Seo Laboratory, Institute of Science Tokyo](http://seo.cv.ens.titech.ac.jp/en/)
+- [UNsim](https://github.com/toruseo/UNsim): An advanced macroscopic traffic simulator with Autodiff capability
