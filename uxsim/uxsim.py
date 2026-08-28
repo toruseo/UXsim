@@ -1845,6 +1845,34 @@ class World:
         W.user_attribute = user_attribute
         W.user_function = user_function
 
+    def __deepcopy__(W, memo):
+        """
+        Support ``copy.deepcopy`` for World objects.
+
+        The default recursive ``deepcopy`` can exceed the interpreter's
+        recursion limit on large networks because the object graph
+        (World ↔ Node ↔ Link ↔ Vehicle chains) is very deep.
+        To avoid this, the recursion limit is temporarily raised while
+        the standard ``deepcopy`` logic runs.
+        """
+        import sys, copy
+        old_limit = sys.getrecursionlimit()
+        # Estimate a safe limit: base depth plus proportional to
+        # the number of objects in the simulation.
+        n_objects = len(W.VEHICLES) + len(W.NODES) + len(W.LINKS)
+        new_limit = max(old_limit, n_objects * 4 + 2000)
+        sys.setrecursionlimit(new_limit)
+        try:
+            # Perform a normal deepcopy by reconstructing from __dict__
+            cls = W.__class__
+            result = cls.__new__(cls)
+            memo[id(W)] = result
+            for k, v in W.__dict__.items():
+                setattr(result, k, copy.deepcopy(v, memo))
+            return result
+        finally:
+            sys.setrecursionlimit(old_limit)
+
     def addNode(W, name: str, x: float, y: float, signal: list[float]=[0], signal_offset: float=0, signal_offset_old: float|None=None, flow_capacity: float|None=None, number_of_lanes: int=None, auto_rename=False, attribute=None, user_attribute=None, user_function=None) -> Node:
         """
         Add a node to world.
