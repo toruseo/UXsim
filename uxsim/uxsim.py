@@ -3,7 +3,7 @@ UXsim: Macroscopic/mesoscopic traffic flow simulator in a network.
 This `uxsim.py` is the core of UXsim. It summarizes the classes and methods that are essential for the simulation.
 """
 
-import csv, time, math, string, warnings, copy
+import sys, csv, time, math, string, warnings, copy
 from collections import deque, OrderedDict
 from collections import defaultdict as ddict
 import warnings
@@ -1845,36 +1845,6 @@ class World:
         W.user_attribute = user_attribute
         W.user_function = user_function
 
-    def __deepcopy__(W, memo):
-        """
-        Support ``copy.deepcopy`` for World objects.
-
-        The default recursive ``deepcopy`` can exceed the interpreter's
-        recursion limit on large networks because the object graph
-        (World ↔ Node ↔ Link ↔ Vehicle chains) is very deep.
-        To avoid this, the recursion limit is temporarily raised while
-        the standard ``deepcopy`` logic runs.
-        """
-        import sys
-        old_limit = sys.getrecursionlimit()
-        # Each simulation object (Vehicle, Node, Link) adds several frames
-        # to the deepcopy call stack due to nested __dict__ traversal.
-        # The multiplier of 4 accounts for the deepcopy frames per object,
-        # and the base of 2000 covers the World/Analyzer overhead.
-        n_objects = len(W.VEHICLES) + len(W.NODES) + len(W.LINKS)
-        new_limit = max(old_limit, n_objects * 4 + 2000)
-        sys.setrecursionlimit(new_limit)
-        try:
-            # Perform a normal deepcopy by reconstructing from __dict__
-            cls = W.__class__
-            result = cls.__new__(cls)
-            memo[id(W)] = result
-            for k, v in W.__dict__.items():
-                setattr(result, k, copy.deepcopy(v, memo))
-            return result
-        finally:
-            sys.setrecursionlimit(old_limit)
-
     def addNode(W, name: str, x: float, y: float, signal: list[float]=[0], signal_offset: float=0, signal_offset_old: float|None=None, flow_capacity: float|None=None, number_of_lanes: int=None, auto_rename=False, attribute=None, user_attribute=None, user_function=None) -> Node:
         """
         Add a node to world.
@@ -2905,6 +2875,46 @@ class World:
         with open(f"{fname}.pkl", "wb") as f:
             pickle.dump(W, f)
 
+    def __deepcopy__(W, memo):
+        """
+        Support ``copy.deepcopy`` for World objects.
+    
+        The default recursive ``deepcopy`` can exceed the interpreter's recursion limit on large networks because the object graph (World ↔ Node ↔ Link ↔ Vehicle chains) is very deep.
+        To avoid this, the recursion limit is temporarily raised while the standard ``deepcopy`` logic runs.
+    
+        The raised limit is capped to avoid exhausting the C stack, which would crash the interpreter (segfault) instead of raising a catchable ``RecursionError``.
+        """
+    
+        # Hard cap on the recursion limit. Raising the limit does not grow the actual C stack, so an excessively high limit can cause a segmentation fault instead of a RecursionError. ~100k is generally safe on typical 8 MB stacks; adjust with care if needed.
+        MAX_RECURSION_LIMIT = 100_000
+    
+        old_limit = sys.getrecursionlimit()
+        # Each simulation object (Vehicle, Node, Link) adds several frames to the deepcopy call stack due to nested __dict__ traversal. The multiplier of 4 accounts for the deepcopy frames per object, and the base of 2000 covers the World/Analyzer overhead.
+        n_objects = len(W.VEHICLES) + len(W.NODES) + len(W.LINKS)
+        estimated = n_objects * 4 + 2000
+        new_limit = max(old_limit, min(estimated, MAX_RECURSION_LIMIT))
+    
+        if estimated > MAX_RECURSION_LIMIT:
+            import warnings
+            warnings.warn(
+                f"deepcopy of World: estimated recursion depth ({estimated}) "
+                f"exceeds the safety cap ({MAX_RECURSION_LIMIT}). "
+                "Proceeding with the capped limit; a RecursionError may occur "
+                "for very large networks.",
+                RuntimeWarning,
+            )
+    
+        sys.setrecursionlimit(new_limit)
+        try:
+            # Perform a normal deepcopy by reconstructing from __dict__
+            cls = W.__class__
+            result = cls.__new__(cls)
+            memo[id(W)] = result
+            for k, v in W.__dict__.items():
+                setattr(result, k, copy.deepcopy(v, memo))
+            return result
+        finally:
+            sys.setrecursionlimit(old_limit)
 
 class Route:
     """
