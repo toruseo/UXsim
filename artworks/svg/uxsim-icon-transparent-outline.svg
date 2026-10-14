@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img">
+  <title>UXsim</title>
+  <defs>
+    <linearGradient id="uxsim-icon-transparent-outline-blue" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="452" y2="452">
+      <stop offset="0" stop-color="#5A9FD4"/>
+      <stop offset="1" stop-color="#306998"/>
+    </linearGradient>
+    <linearGradient id="uxsim-icon-transparent-outline-yellow" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="452" y2="452">
+      <stop offset="0" stop-color="#FFE873"/>
+      <stop offset="1" stop-color="#FFD43B"/>
+    </linearGradient>
+    <clipPath id="uxsim-icon-transparent-outline-bite">
+      <path clip-rule="evenodd" d="M0 0H512V512H0Z M271.75 75.72 A76.50 63.00 30.00 1 0 404.25 152.22 A76.50 63.00 30.00 1 0 271.75 75.72Z"/>
+    </clipPath>
+    <!-- The bite shrunk by the outline width, so that the outline also runs along the bitten edge of the tail -->
+    <clipPath id="uxsim-icon-transparent-outline-bite-outline">
+      <path clip-rule="evenodd" d="M0 0H512V512H0Z M275.21 77.72 A72.50 59.00 30.00 1 0 400.79 150.22 A72.50 59.00 30.00 1 0 275.21 77.72Z"/>
+    </clipPath>
+  </defs>
+  <!-- Transparent background with a thin white outline around the mark, for any background -->
+  <!-- White outline: both halves filled and stroked in white underneath the mark -->
+  <g fill="#fff" stroke="#fff" stroke-width="8" stroke-linejoin="round">
+    <path clip-path="url(#uxsim-icon-transparent-outline-bite-outline)" d="M146.28 435.05 A210.00 210.00 0 0 0 382.38 423.71 C402.87 408.27 420.10 388.54 432.60 366.35 C445.10 344.16 452.85 319.55 455.42 294.76 C457.98 269.98 455.38 245.06 448.24 222.10 C441.11 199.14 429.47 178.17 414.75 160.61 C400.04 143.06 382.28 128.93 363.20 118.79 A10.12 10.12 0 0 0 350.74 134.74 C363.24 149.28 372.48 165.66 378.40 182.46 C384.32 199.25 386.95 216.44 386.77 232.94 C386.60 249.45 383.64 265.27 378.56 279.82 C373.48 294.37 366.30 307.67 357.56 319.46 C348.82 331.25 338.53 341.56 327.01 350.24 A118.00 118.00 0 0 1 194.35 356.61 Z"/>
+    <path d="M151.00 437.87 A210.00 210.00 0 0 1 277.95 47.15 C287.67 48.17 297.44 48.99 307.31 50.23 C317.17 51.46 327.13 53.13 336.89 55.80 C346.65 58.46 356.21 62.13 365.00 67.21 A67.50 54.00 30.00 0 1 311.00 160.74 C306.57 158.18 302.38 155.14 297.98 152.09 C293.59 149.03 288.99 145.97 284.05 143.52 C279.10 141.06 273.80 139.22 268.33 138.65 A118.00 118.00 0 0 0 197.00 358.19 Z"/>
+  </g>
+  <!-- Tail half: yellow, clipped by a gap around the head -->
+  <path fill="url(#uxsim-icon-transparent-outline-yellow)" clip-path="url(#uxsim-icon-transparent-outline-bite)" d="M146.28 435.05 A210.00 210.00 0 0 0 382.38 423.71 C402.87 408.27 420.10 388.54 432.60 366.35 C445.10 344.16 452.85 319.55 455.42 294.76 C457.98 269.98 455.38 245.06 448.24 222.10 C441.11 199.14 429.47 178.17 414.75 160.61 C400.04 143.06 382.28 128.93 363.20 118.79 A10.12 10.12 0 0 0 350.74 134.74 C363.24 149.28 372.48 165.66 378.40 182.46 C384.32 199.25 386.95 216.44 386.77 232.94 C386.60 249.45 383.64 265.27 378.56 279.82 C373.48 294.37 366.30 307.67 357.56 319.46 C348.82 331.25 338.53 341.56 327.01 350.24 A118.00 118.00 0 0 1 194.35 356.61 Z"/>
+  <!-- Head half: blue -->
+  <path fill="url(#uxsim-icon-transparent-outline-blue)" d="M151.00 437.87 A210.00 210.00 0 0 1 277.95 47.15 C287.67 48.17 297.44 48.99 307.31 50.23 C317.17 51.46 327.13 53.13 336.89 55.80 C346.65 58.46 356.21 62.13 365.00 67.21 A67.50 54.00 30.00 0 1 311.00 160.74 C306.57 158.18 302.38 155.14 297.98 152.09 C293.59 149.03 288.99 145.97 284.05 143.52 C279.10 141.06 273.80 139.22 268.33 138.65 A118.00 118.00 0 0 0 197.00 358.19 Z"/>
+  <!-- Lane marking -->
+  <path fill="none" stroke="#fff" stroke-width="8" stroke-dasharray="29.01 20.30" d="M413.82 211.41 C419.77 232.46 421.45 254.71 418.72 276.41 C416.00 298.12 408.88 319.26 397.92 338.19 C386.96 357.11 372.17 373.81 354.70 386.98 A164.00 164.00 0 1 1 256.00 92.00"/>
+  <!-- Eye -->
+  <circle cx="360.39" cy="101.24" r="10.1" fill="#fff"/>
+</svg>
