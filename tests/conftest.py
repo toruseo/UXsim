@@ -42,3 +42,23 @@ def _patch_world_cpp_default(request):
     # Restore originals
     _OrigWorld.__new__ = _orig_new
     _OrigWorld.__init__ = _orig_init
+
+# Skip tests that failed due to external service issue, especially OSM and Overpass API
+_NETWORK_ERROR_NAMES = {
+    "ResponseStatusCodeError",     # osmnx: 502/503/504 
+    "InsufficientResponseError",   # osmnx: empty
+    "ConnectionError",             # requests
+    "ReadTimeout",                 # requests
+    "ConnectTimeout",              # requests
+}
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    if call.when == "call" and report.failed and call.excinfo is not None:
+        exc = call.excinfo.value
+        if type(exc).__name__ in _NETWORK_ERROR_NAMES:
+            report.outcome = "skipped"
+            report.longrepr = (str(item.fspath), item.location[1],
+                               f"Skipped: external service unavailable ({type(exc).__name__}: {exc})")

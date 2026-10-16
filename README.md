@@ -1,8 +1,4 @@
-
-<img align="center">
-  <src="https://github.com/toruseo/UXsim/blob/images/artworks/svg/uxsim-hero-white.svg">
-  <img alt="UXsim Logo" src="https://github.com/toruseo/UXsim/blob/images/artworks/svg/uxsim-hero-white.svg">
-</img>
+<img align="center"><img alt="UXsim Logo" src="https://github.com/toruseo/UXsim/blob/images/artworks/svg/uxsim-hero-white.svg"></img>
 
 # UXsim: Fast network traffic flow simulator for Python
 

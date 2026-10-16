@@ -1229,6 +1229,7 @@ class Vehicle:
 
         if s.follower != None:
             s.follower.leader = None
+            s.follower = None
 
         s.link.vehicles.popleft()
         s.link = None
