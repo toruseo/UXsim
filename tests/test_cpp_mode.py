@@ -9137,3 +9137,27 @@ def test_vehicle_dest_posthoc_assignment():
     assert veh.state == 'end'
     route, ts = veh.traveled_route()
     assert [l.name for l in route] == ['AB', 'BD']
+
+
+def test_average_speed_without_vehicle_logging():
+    """analyzer.average_speed does not depend on vehicle logging and matches Python mode (toruseo/UXsim#351).
+
+    The demand exceeds the capacity, so vehicles waiting at the origin contribute zero-speed samples.
+    """
+    def run(cpp, vli):
+        W = World(cpp=cpp, name='', deltan=5, tmax=3600, print_mode=0, random_seed=0, vehicle_logging_timestep_interval=vli)
+        W.addNode('A', 0, 0)
+        W.addNode('B', 2000, 0)
+        W.addNode('C', 4000, 0)
+        W.addLink('AB', 'A', 'B', length=2000, free_flow_speed=20, number_of_lanes=2)
+        W.addLink('BC', 'B', 'C', length=2000, free_flow_speed=20, number_of_lanes=2, capacity_out=0.4)
+        W.adddemand('A', 'C', 0, 3000, flow=2.0)
+        W.exec_simulation()
+        return W.analyzer.average_speed, W.analyzer.average_speed_count
+
+    v_py, n_py = run(False, 1)
+    assert 0 < v_py < 20
+    for vli in (1, -1):
+        v_cpp, n_cpp = run(True, vli)
+        assert n_cpp == n_py
+        assert v_cpp == pytest.approx(v_py, rel=1e-9)
