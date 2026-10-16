@@ -5,6 +5,8 @@ This is for local test only. I don't know how to test it in Github Actions prope
 
 import pytest
 
+pytest.importorskip("PyQt5")
+
 def test_result_gui_viewer():
     import uxsim as UX
     from uxsim.ResultGUIViewer import ResultGUIViewer

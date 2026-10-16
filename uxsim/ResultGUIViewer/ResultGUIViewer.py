@@ -15,9 +15,13 @@ Usage:
 import sys
 import numpy as np
 from matplotlib import colormaps
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsItem, QMenu, QSlider, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QInputDialog, QMessageBox, QTableView, QDialog, QFileDialog
-from PyQt5.QtGui import QPen, QColor, QPainter, QPainterPath
-from PyQt5.QtCore import Qt, QPointF, QRectF, QTimer, QAbstractTableModel
+try:
+    from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsView, QGraphicsScene, QGraphicsItem, QMenu, QSlider, QVBoxLayout, QWidget, QHBoxLayout, QLabel, QPushButton, QInputDialog, QMessageBox, QTableView, QDialog, QFileDialog
+    from PyQt5.QtGui import QPen, QColor, QPainter, QPainterPath
+    from PyQt5.QtCore import Qt, QPointF, QRectF, QTimer, QAbstractTableModel
+except ImportError as e:
+    raise ImportError("To use `ResultGUIViewer`, please install PyQt5 module (e.g., using `pip install uxsim[gui]` or `pip install PyQt5`)") from e
+
 
 
 class EdgeItem(QGraphicsItem):
