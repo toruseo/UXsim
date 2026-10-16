@@ -500,6 +500,10 @@ class Link:
             Capacity for inflow to the link.
         merge_priority : float
             The priority of the link when merging at the downstream node.
+
+        Note
+        -----
+        If you want to change the FD parameters of the link, use the `change_free_flow_speed()` or `change_jam_density()` method after the link is created in order to maintain consistency among FD parameters. TODO: implement proper setter/getter. This requires removal of scenario reader/writer. This is task for v2.
         """
 
         s.W = W
@@ -961,6 +965,14 @@ class Link:
     #         warnings.warn(f"ignored negative jam_density at {s}", UserWarning)
 
     def change_free_flow_speed(s, new_value):
+        """
+        Change the free flow speed of the link. The FD parameters of the link must be updated throught this method or `change_jam_density()` to maintain consistency.
+
+        Parameters
+        ----------
+        new_value : float
+            The new free flow speed value. Must be non-negative.
+        """
         if new_value >= 0:
             s.free_flow_speed = new_value
             s.u = new_value
@@ -971,6 +983,14 @@ class Link:
             warnings.warn(f"ignored negative free_flow_speed at {s}", UserWarning)
 
     def change_jam_density(s, new_value):
+        """
+        Change the jam density of the link. The FD parameters of the link must be updated through this method or `change_free_flow_speed()` to maintain consistency.
+
+        Parameters
+        ----------
+        new_value : float
+            The new jam density value. Must be non-negative.
+        """
         if new_value >= 0:
             s.jam_density = new_value
             s.kappa = new_value
@@ -980,6 +1000,7 @@ class Link:
             s.delta_per_lane = s.delta*s.number_of_lanes
         else:
             warnings.warn(f"ignored negative jam_density at {s}", UserWarning)
+
 
 
 
