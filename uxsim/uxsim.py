@@ -1851,6 +1851,8 @@ class World:
         W.network_info = ddict(list)
         W.demand_info = ddict(list)
 
+        W.demand_total_given = 0 #demand specified by parameters of `adddemand` etc. This will be diminished by large deltan.
+
         W.finalized = 0
         W.world_start_time = time.time()
 
@@ -2066,6 +2068,8 @@ class World:
         if volume > 0:
             flow = volume/(t_end-t_start)
 
+        W.demand_total_given += (t_end-t_start)*flow
+
         f = 0
 
         for t in range(int(t_start/W.DELTAT), int(t_end/W.DELTAT)):
@@ -2073,8 +2077,6 @@ class World:
             while f >= W.DELTAN:
                 W.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute, direct_call=False)
                 f -= W.DELTAN
-
-        
 
     @demand_info_record
     def adddemand_point2point(W, x_orig, y_orig, x_dest, y_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
@@ -2250,6 +2252,9 @@ class World:
 
         if flow >= 0 and volume == -1:
             volume = flow*(t_end-t_start)
+
+        W.demand_total_given += (t_end-t_start)*flow
+
         size = int(volume/W.DELTAN)
 
         origs_new = []
@@ -2306,6 +2311,9 @@ class World:
         
         if flow >= 0 and volume == -1:
             volume = flow*(t_end-t_start)
+            
+        W.demand_total_given += (t_end-t_start)*flow
+        
         size = int(volume/W.DELTAN)
 
         origs_new = []
@@ -2383,6 +2391,11 @@ class World:
         if W.adjust_node_capacity:
             for node in W.NODES:
                 node.adjust_node_capacity()
+
+        #demand check 
+        demand_actual = len(W.VEHICLES)*W.DELTAN
+        if demand_actual < W.demand_total_given*0.8:
+            warnings.warn(f"The actual demand generated for the simulation is {demand_actual:.0f} veh, although the intended demand specified by the scenario parameters is {W.demand_total_given:.0f} veh. This difference is likely due to a large `deltan` value, as demand smaller than `deltan` is ignored in this simulation. If this is critical, please consider changing the demand settings (e.g., aggregating generation/attraction nodes or changing the `deltan` value).")
 
         W.analyzer = Analyzer(W)
 
