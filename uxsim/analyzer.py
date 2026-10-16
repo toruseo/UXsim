@@ -249,6 +249,9 @@ class Analyzer:
         """
         Compute Edie's traffic state for each link.
         """
+        if s.W.vehicle_logging_timestep_interval == -1:
+            warnings.warn("vehicle_logging_timestep_interval is off (==-1). Traffic state information may be empty.", LoggingWarning)
+
         if s.flag_edie_state_computed:
             return 0
         else:
@@ -1460,6 +1463,9 @@ class Analyzer:
         The MFD provides a relationship between the network average density and the network average flow.
         The plot is saved to the directory `out<W.name>` with the filename `mfd<fname>.png`.
         """
+
+        if s.W.vehicle_logging_timestep_interval == -1:
+            warnings.warn("vehicle_logging_timestep_interval is off (==-1). MFD will be empty.", LoggingWarning)
 
         if links == None:
             links = s.W.LINKS
