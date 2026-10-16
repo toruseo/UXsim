@@ -130,7 +130,39 @@ jobs:
         run: |
           uv build --sdist --out-dir wheelhouse
 
+      - name: Remove files already on PyPI
+        shell: bash
+        run: |
+          python - <<'EOF'
+          import json, pathlib, urllib.error, urllib.request
+
+          req = urllib.request.Request(
+              "https://pypi.org/simple/uxsim/",
+              headers={"Accept": "application/vnd.pypi.simple.v1+json"},
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  existing = {f["filename"] for f in json.load(r)["files"]}
+          except urllib.error.HTTPError as e:
+              if e.code != 404:
+                  raise
+              existing = set()
+
+          for p in sorted(pathlib.Path("wheelhouse").iterdir()):
+              if p.name in existing:
+                  print(f"Already on PyPI, skipping: {p.name}")
+                  p.unlink()
+              else:
+                  print(f"Will upload: {p.name}")
+          EOF
+
       - name: Publish to PyPI
         shell: bash
         run: |
-          uv publish --trusted-publishing always --check-url https://pypi.org/simple/uxsim/ wheelhouse/*
+          shopt -s nullglob
+          files=(wheelhouse/*.whl wheelhouse/*.tar.gz)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "All files already exist on PyPI. Nothing to upload."
+            exit 0
+          fi
+          uv publish --trusted-publishing always --check-url https://pypi.org/simple/uxsim/ "${files[@]}"
