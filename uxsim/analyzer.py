@@ -250,7 +250,7 @@ class Analyzer:
         Compute Edie's traffic state for each link.
         """
         if s.W.vehicle_logging_timestep_interval == -1:
-            warnings.warn("vehicle_logging_timestep_interval is off (==-1). Traffic state infomarion may be empty.", LoggingWarning)
+            warnings.warn("vehicle_logging_timestep_interval is off (==-1). Traffic state information may be empty.", LoggingWarning)
 
         if s.flag_edie_state_computed:
             return 0
@@ -1465,7 +1465,7 @@ class Analyzer:
         """
 
         if s.W.vehicle_logging_timestep_interval == -1:
-            warnings.warn("vehicle_logging_timestep_interval is off (==-1). MFD cannot be drawn.", LoggingWarning)
+            warnings.warn("vehicle_logging_timestep_interval is off (==-1). MFD will be empty.", LoggingWarning)
 
         if links == None:
             links = s.W.LINKS
