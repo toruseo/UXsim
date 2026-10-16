@@ -84,7 +84,26 @@ pip install uxsim
 
 <details>
 <summary>Alternative methods for advanced users (click to see)</summary>
-	
+
+### Optional dependencies
+
+There are some optional dependencies for specific purposes as follows.
+
+GUI viewer:
+```
+pip install uxsim[gui]
+```
+
+Experimental OSM importer. This requires Python 3.11 or higher:
+```
+pip install uxsim[advanced]
+```
+
+Test suite for developers:
+```
+pip install uxsim[dev]
+```
+
 ### Using conda
 
 You can also install with `conda` from `conda-forge` channel:
