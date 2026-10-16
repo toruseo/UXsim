@@ -38,7 +38,7 @@ bash script/export_png.sh
 
 | ファイル | マーク | ワードマーク | タグライン |
 |---|---|---|---|
-| hero（1280×640） | translate(32.676 56.422) scale(1.0296) | translate(572.947 353.637) scale(0.206961) | translate(583.397 431.419) scale(0.0443788) |
+| hero（1280×592） | translate(32.676 32.640) scale(1.0296) | translate(572.947 329.855) scale(0.206961) | translate(583.397 407.637) scale(0.0443788) |
 | logo-transparent-*（610×148） | translate(-11.333 -11.333) scale(0.333333) | translate(173.442 118) scale(0.142653) | なし |
 | logo-white・logo-dark（682×220） | 上の2つを translate(36 36) で包む | 同左 | なし |
 | icon（512×512） | そのまま | なし | なし |
