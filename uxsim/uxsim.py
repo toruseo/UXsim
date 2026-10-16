@@ -1527,10 +1527,6 @@ class Vehicle:
                     s.log_s.append(-1)
                     s.log_v.append(-1)
                     s.log_lane.append(-1)
-
-                    if s.state == "wait":
-                        s.W.analyzer.average_speed_count += 1
-                        s.W.analyzer.average_speed += 0
                 else:
                     # if len(s.log_link) == 0 or s.log_link[-1] != s.link:
                     #     s.log_t_link.append([t, s.link])
@@ -1546,8 +1542,12 @@ class Vehicle:
                     else:
                         s.log_s.append(-1)
 
-                    s.W.analyzer.average_speed_count += 1
-                    s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
+        if s.state == "wait":
+            s.W.analyzer.average_speed_count += 1
+            s.W.analyzer.average_speed += 0
+        elif s.state == "run":
+            s.W.analyzer.average_speed_count += 1
+            s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
         
         if s.link != s.link_old:
             if s.state == "run":
