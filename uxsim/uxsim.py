@@ -1544,7 +1544,7 @@ class Vehicle:
 
         if s.state == "wait":
             s.W.analyzer.average_speed_count += 1
-            s.W.analyzer.average_speed += 0
+            s.W.analyzer.average_speed += (0 - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
         elif s.state == "run":
             s.W.analyzer.average_speed_count += 1
             s.W.analyzer.average_speed += (s.v - s.W.analyzer.average_speed)/s.W.analyzer.average_speed_count
