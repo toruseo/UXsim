@@ -47,19 +47,32 @@ def _patch_world_cpp_default(request):
 _NETWORK_ERROR_NAMES = {
     "ResponseStatusCodeError",     # osmnx: 502/503/504 
     "InsufficientResponseError",   # osmnx: empty
-    "JSONDecodeError",             # osmnx: no response
     "ConnectionError",             # requests
     "ReadTimeout",                 # requests
     "ConnectTimeout",              # requests
 }
+
+def _find_network_error(exc):
+    """Return "name: message" of the first network error in the exception chain of `exc`, or None.
+    Notebook tests re-raise a kernel-side error as nbclient's CellExecutionError (and then pytest.fail), which carries the original exception name and message in `ename` and `evalue`.
+    """
+    seen = set()
+    while exc is not None and id(exc) not in seen:
+        seen.add(id(exc))
+        if type(exc).__name__ in _NETWORK_ERROR_NAMES:
+            return f"{type(exc).__name__}: {exc}"
+        if getattr(exc, "ename", None) in _NETWORK_ERROR_NAMES:
+            return f"{exc.ename}: {exc.evalue}"
+        exc = exc.__cause__ or exc.__context__
+    return None
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
     if call.when == "call" and report.failed and call.excinfo is not None:
-        exc = call.excinfo.value
-        if type(exc).__name__ in _NETWORK_ERROR_NAMES:
+        found = _find_network_error(call.excinfo.value)
+        if found:
             report.outcome = "skipped"
             report.longrepr = (str(item.fspath), item.location[1],
-                               f"Skipped: external service unavailable ({type(exc).__name__}: {exc})")
+                               f"Skipped: external service unavailable ({found})")
