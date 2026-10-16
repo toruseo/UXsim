@@ -1358,13 +1358,12 @@ class CppWorld:
                     self.VEHICLES_RUNNING.pop(name, None)
 
         # Expose on the analyzer the average speed statistic that Python mode accumulates in record_log.
-        # Waiting vehicles count as zero-speed samples, and the statistic is only available when vehicle logging is enabled, as in Python.
-        if self._cpp_vehicle_log_mode:
-            analyzer = getattr(self, 'analyzer', None)
-            if analyzer is not None:
-                cnt = self._cpp_world.stat_sample_count
-                analyzer.average_speed_count = int(cnt)
-                analyzer.average_speed = self._cpp_world.ave_v_sum / cnt if cnt > 0 else 0
+        # Waiting vehicles count as zero-speed samples, and the statistic is available regardless of vehicle logging, as in Python.
+        analyzer = getattr(self, 'analyzer', None)
+        if analyzer is not None:
+            cnt = self._cpp_world.stat_sample_count
+            analyzer.average_speed_count = int(cnt)
+            analyzer.average_speed = self._cpp_world.ave_v_sum / cnt if cnt > 0 else 0
 
     # --- Query methods ---
 
