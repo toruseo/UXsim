@@ -47,6 +47,7 @@ def _patch_world_cpp_default(request):
 _NETWORK_ERROR_NAMES = {
     "ResponseStatusCodeError",     # osmnx: 502/503/504 
     "InsufficientResponseError",   # osmnx: empty
+    "JSONDecodeError",             # osmnx: no response
     "ConnectionError",             # requests
     "ReadTimeout",                 # requests
     "ConnectTimeout",              # requests

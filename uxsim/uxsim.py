@@ -1851,7 +1851,7 @@ class World:
         W.network_info = ddict(list)
         W.demand_info = ddict(list)
 
-        W.demand_total_given = 0 #demand specified by parameters of `adddemand` etc. This will be diminished by large deltan.
+        W.demand_total_given = 0 #demand specified by parameters of `adddemand` etc. This will be decimated by large deltan.
 
         W.finalized = 0
         W.world_start_time = time.time()
