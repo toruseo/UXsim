@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
-        <title>uxsim.uxsim - UXsim: Traffic Simulation in Python v1 documentation</title>
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-icon-transparent-light@2x.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
+        <title>uxsim.uxsim - UXsim: Python traffic simulator v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -174,7 +174,7 @@ gtag('config', 'UA-111714220-1');
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">UXsim: Traffic Simulation in Python v1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">UXsim: Python traffic simulator v1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -196,9 +196,10 @@ gtag('config', 'UA-111714220-1');
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
-  
-  <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
-  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-logo-transparent-light@2x.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-logo-transparent-dark@2x.png" alt="Dark Logo"/>
+  </div>
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -811,6 +812,10 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">            Capacity for inflow to the link.</span>
 <span class="sd">        merge_priority : float</span>
 <span class="sd">            The priority of the link when merging at the downstream node.</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        -----</span>
+<span class="sd">        If you want to change the FD parameters of the link, use the `change_free_flow_speed()` or `change_jam_density()` method after the link is created in order to maintain consistency among FD parameters. TODO: implement proper setter/getter. This requires removal of scenario reader/writer. This is task for v2.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">W</span>
@@ -1317,7 +1322,17 @@ gtag('config', 'UA-111714220-1');
     <span class="c1">#     else:</span>
     <span class="c1">#         warnings.warn(f&quot;ignored negative jam_density at {s}&quot;, UserWarning)</span>
 
+<div class="viewcode-block" id="Link.change_free_flow_speed">
+<a class="viewcode-back" href="../../uxsim.html#uxsim.Link.change_free_flow_speed">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">change_free_flow_speed</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the free flow speed of the link. The FD parameters of the link must be updated throught this method or `change_jam_density()` to maintain consistency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_value : float</span>
+<span class="sd">            The new free flow speed value. Must be non-negative.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">new_value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">free_flow_speed</span> <span class="o">=</span> <span class="n">new_value</span>
             <span class="n">s</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="n">new_value</span>
@@ -1325,9 +1340,20 @@ gtag('config', 'UA-111714220-1');
             <span class="n">s</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">u</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">w</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">kappa</span><span class="o">/</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">u</span><span class="o">+</span><span class="n">s</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">kappa</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ignored negative free_flow_speed at </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ignored negative free_flow_speed at </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="Link.change_jam_density">
+<a class="viewcode-back" href="../../uxsim.html#uxsim.Link.change_jam_density">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">change_jam_density</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">new_value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the jam density of the link. The FD parameters of the link must be updated through this method or `change_free_flow_speed()` to maintain consistency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_value : float</span>
+<span class="sd">            The new jam density value. Must be non-negative.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">new_value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">jam_density</span> <span class="o">=</span> <span class="n">new_value</span>
             <span class="n">s</span><span class="o">.</span><span class="n">kappa</span> <span class="o">=</span> <span class="n">new_value</span>
@@ -1337,6 +1363,8 @@ gtag('config', 'UA-111714220-1');
             <span class="n">s</span><span class="o">.</span><span class="n">delta_per_lane</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">delta</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">number_of_lanes</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ignored negative jam_density at </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span></div>
+</div>
+
 
 
 
@@ -1597,6 +1625,7 @@ gtag('config', 'UA-111714220-1');
 
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">follower</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">follower</span><span class="o">.</span><span class="n">leader</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">follower</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">vehicles</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
         <span class="n">s</span><span class="o">.</span><span class="n">link</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1927,10 +1956,6 @@ gtag('config', 'UA-111714220-1');
                     <span class="n">s</span><span class="o">.</span><span class="n">log_s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">log_v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">log_lane</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-                    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;wait&quot;</span><span class="p">:</span>
-                        <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed_count</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed</span> <span class="o">+=</span> <span class="mi">0</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># if len(s.log_link) == 0 or s.log_link[-1] != s.link:</span>
                     <span class="c1">#     s.log_t_link.append([t, s.link])</span>
@@ -1946,8 +1971,12 @@ gtag('config', 'UA-111714220-1');
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">s</span><span class="o">.</span><span class="n">log_s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-                    <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed_count</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed</span> <span class="o">+=</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">v</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed</span><span class="p">)</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed_count</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;wait&quot;</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed</span><span class="p">)</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed_count</span>
+        <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed</span> <span class="o">+=</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">v</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed</span><span class="p">)</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">average_speed_count</span>
         
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">link</span> <span class="o">!=</span> <span class="n">s</span><span class="o">.</span><span class="n">link_old</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span>
@@ -2248,6 +2277,8 @@ gtag('config', 'UA-111714220-1');
         <span class="n">W</span><span class="o">.</span><span class="n">network_info</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="n">W</span><span class="o">.</span><span class="n">demand_info</span> <span class="o">=</span> <span class="n">ddict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
 
+        <span class="n">W</span><span class="o">.</span><span class="n">demand_total_given</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#demand specified by parameters of `adddemand` etc. This will be decimated by large deltan.</span>
+
         <span class="n">W</span><span class="o">.</span><span class="n">finalized</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">W</span><span class="o">.</span><span class="n">world_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -2475,6 +2506,8 @@ gtag('config', 'UA-111714220-1');
         <span class="k">if</span> <span class="n">volume</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">flow</span> <span class="o">=</span> <span class="n">volume</span><span class="o">/</span><span class="p">(</span><span class="n">t_end</span><span class="o">-</span><span class="n">t_start</span><span class="p">)</span>
 
+        <span class="n">W</span><span class="o">.</span><span class="n">demand_total_given</span> <span class="o">+=</span> <span class="p">(</span><span class="n">t_end</span><span class="o">-</span><span class="n">t_start</span><span class="p">)</span><span class="o">*</span><span class="n">flow</span>
+
         <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">t_start</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">t_end</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAT</span><span class="p">)):</span>
@@ -2483,8 +2516,6 @@ gtag('config', 'UA-111714220-1');
                 <span class="n">W</span><span class="o">.</span><span class="n">addVehicle</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">departure_time_is_time_step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">direct_call</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="n">f</span> <span class="o">-=</span> <span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span></div>
 
-
-        
 
 <div class="viewcode-block" id="World.adddemand_point2point">
 <a class="viewcode-back" href="../../uxsim.html#uxsim.World.adddemand_point2point">[docs]</a>
@@ -2671,6 +2702,9 @@ gtag('config', 'UA-111714220-1');
 
         <span class="k">if</span> <span class="n">flow</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">volume</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">volume</span> <span class="o">=</span> <span class="n">flow</span><span class="o">*</span><span class="p">(</span><span class="n">t_end</span><span class="o">-</span><span class="n">t_start</span><span class="p">)</span>
+
+        <span class="n">W</span><span class="o">.</span><span class="n">demand_total_given</span> <span class="o">+=</span> <span class="p">(</span><span class="n">t_end</span><span class="o">-</span><span class="n">t_start</span><span class="p">)</span><span class="o">*</span><span class="n">flow</span>
+
         <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">volume</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">)</span>
 
         <span class="n">origs_new</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2730,6 +2764,9 @@ gtag('config', 'UA-111714220-1');
         
         <span class="k">if</span> <span class="n">flow</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">volume</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">volume</span> <span class="o">=</span> <span class="n">flow</span><span class="o">*</span><span class="p">(</span><span class="n">t_end</span><span class="o">-</span><span class="n">t_start</span><span class="p">)</span>
+            
+        <span class="n">W</span><span class="o">.</span><span class="n">demand_total_given</span> <span class="o">+=</span> <span class="p">(</span><span class="n">t_end</span><span class="o">-</span><span class="n">t_start</span><span class="p">)</span><span class="o">*</span><span class="n">flow</span>
+        
         <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">volume</span><span class="o">/</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span><span class="p">)</span>
 
         <span class="n">origs_new</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2810,6 +2847,11 @@ gtag('config', 'UA-111714220-1');
         <span class="k">if</span> <span class="n">W</span><span class="o">.</span><span class="n">adjust_node_capacity</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">W</span><span class="o">.</span><span class="n">NODES</span><span class="p">:</span>
                 <span class="n">node</span><span class="o">.</span><span class="n">adjust_node_capacity</span><span class="p">()</span>
+
+        <span class="c1">#demand check </span>
+        <span class="n">demand_actual</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">VEHICLES</span><span class="p">)</span><span class="o">*</span><span class="n">W</span><span class="o">.</span><span class="n">DELTAN</span>
+        <span class="k">if</span> <span class="n">demand_actual</span> <span class="o">&lt;</span> <span class="n">W</span><span class="o">.</span><span class="n">demand_total_given</span><span class="o">*</span><span class="mf">0.8</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The actual demand generated for the simulation is </span><span class="si">{</span><span class="n">demand_actual</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> veh, although the intended demand specified by the scenario parameters is </span><span class="si">{</span><span class="n">W</span><span class="o">.</span><span class="n">demand_total_given</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> veh. This difference is likely due to a large `deltan` value, as demand smaller than `deltan` is ignored in this simulation. If this is critical, please consider changing the demand settings (e.g., aggregating generation/attraction nodes or changing the `deltan` value).&quot;</span><span class="p">)</span>
 
         <span class="n">W</span><span class="o">.</span><span class="n">analyzer</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
 

@@ -14,11 +14,22 @@
    </style>
 
 
-UXsim: Traffic Simulation in Python
-===================================
+UXsim: Python traffic simulator
+===============================
+
+.. image:: https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-hero-transparent-light@2x.png
+    :width: 400
+    :align: center
+    :class: only-light
+
+.. image:: https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-hero-transparent-dark@2x.png
+    :width: 400
+    :align: center
+    :class: only-dark
 
 About
 -----
+
 
 UXsim is an open-source macroscopic and mesoscopic network traffic flow simulator developed in Python. 
 This webpage is a technical documentation of UXsim codes.
@@ -42,6 +53,7 @@ The first animation shows link congestion level and the second shows sampled veh
 
 .. image:: https://raw.githubusercontent.com/toruseo/UXsim/images/gridnetwork_fancy.gif
     :width: 45%
+
 
 
 Contents

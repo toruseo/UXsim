@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="uxsim.Vehicle" href="uxsim.Vehicle.html" /><link rel="prev" title="uxsim.Node" href="uxsim.Node.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
-        <title>uxsim.Link - UXsim: Traffic Simulation in Python v1 documentation</title>
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-icon-transparent-light@2x.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
+        <title>uxsim.Link - UXsim: Python traffic simulator v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -175,7 +175,7 @@ gtag('config', 'UA-111714220-1');
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">UXsim: Traffic Simulation in Python v1 documentation</div></a>
+      <a href="../index.html"><div class="brand">UXsim: Python traffic simulator v1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -197,9 +197,10 @@ gtag('config', 'UA-111714220-1');
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
-  
-  <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
-  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-logo-transparent-light@2x.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-logo-transparent-dark@2x.png" alt="Dark Logo"/>
+  </div>
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -435,6 +436,10 @@ gtag('config', 'UA-111714220-1');
 </dl>
 </dd></dl>
 
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to change the FD parameters of the link, use the <cite>change_free_flow_speed()</cite> or <cite>change_jam_density()</cite> method after the link is created in order to maintain consistency among FD parameters. TODO: implement proper setter/getter. This requires removal of scenario reader/writer. This is task for v2.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="uxsim.Link.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.World" title="uxsim.uxsim.World"><span class="pre">World</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../uxsim.html#uxsim.uxsim.Node" title="uxsim.uxsim.Node"><span class="pre">Node</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free_flow_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jam_density_per_lane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_lanes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">congestion_pricing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eular_dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_rename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.__init__" title="Link to this definition">¶</a></dt>
@@ -583,6 +588,10 @@ gtag('config', 'UA-111714220-1');
 </dl>
 </dd></dl>
 
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to change the FD parameters of the link, use the <cite>change_free_flow_speed()</cite> or <cite>change_jam_density()</cite> method after the link is created in order to maintain consistency among FD parameters. TODO: implement proper setter/getter. This requires removal of scenario reader/writer. This is task for v2.</p>
+</div>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -610,11 +619,11 @@ gtag('config', 'UA-111714220-1');
 <tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.average_travel_time_between" title="uxsim.Link.average_travel_time_between"><code class="xref py py-obj docutils literal notranslate"><span class="pre">average_travel_time_between</span></code></a>(t0, t1)</p></td>
 <td><p>Get average travel time on this link between time t0 and t1 based on the cumulative curves.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_free_flow_speed</span></code>(new_value)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.change_free_flow_speed" title="uxsim.Link.change_free_flow_speed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_free_flow_speed</span></code></a>(new_value)</p></td>
+<td><p>Change the free flow speed of the link.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_jam_density</span></code>(new_value)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#uxsim.Link.change_jam_density" title="uxsim.Link.change_jam_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_jam_density</span></code></a>(new_value)</p></td>
+<td><p>Change the jam density of the link.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#uxsim.Link.departure_count" title="uxsim.Link.departure_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">departure_count</span></code></a>(t)</p></td>
 <td><p>Get cumulative vehicle count of departure from this link on time t.</p></td>
@@ -769,6 +778,28 @@ gtag('config', 'UA-111714220-1');
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.change_free_flow_speed">
+<span class="sig-name descname"><span class="pre">change_free_flow_speed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.change_free_flow_speed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.change_free_flow_speed" title="Link to this definition">¶</a></dt>
+<dd><p>Change the free flow speed of the link. The FD parameters of the link must be updated throught this method or <cite>change_jam_density()</cite> to maintain consistency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_value</strong> (<em>float</em>) – The new free flow speed value. Must be non-negative.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="uxsim.Link.change_jam_density">
+<span class="sig-name descname"><span class="pre">change_jam_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uxsim/uxsim.html#Link.change_jam_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#uxsim.Link.change_jam_density" title="Link to this definition">¶</a></dt>
+<dd><p>Change the jam density of the link. The FD parameters of the link must be updated through this method or <cite>change_free_flow_speed()</cite> to maintain consistency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_value</strong> (<em>float</em>) – The new jam density value. Must be non-negative.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -975,6 +1006,8 @@ gtag('config', 'UA-111714220-1');
 <li><a class="reference internal" href="#uxsim.Link.average_flow"><code class="docutils literal notranslate"><span class="pre">Link.average_flow()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.average_speed"><code class="docutils literal notranslate"><span class="pre">Link.average_speed()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.average_travel_time_between"><code class="docutils literal notranslate"><span class="pre">Link.average_travel_time_between()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Link.change_free_flow_speed"><code class="docutils literal notranslate"><span class="pre">Link.change_free_flow_speed()</span></code></a></li>
+<li><a class="reference internal" href="#uxsim.Link.change_jam_density"><code class="docutils literal notranslate"><span class="pre">Link.change_jam_density()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.departure_count"><code class="docutils literal notranslate"><span class="pre">Link.departure_count()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.get_toll"><code class="docutils literal notranslate"><span class="pre">Link.get_toll()</span></code></a></li>
 <li><a class="reference internal" href="#uxsim.Link.in_out_flow_constraint"><code class="docutils literal notranslate"><span class="pre">Link.in_out_flow_constraint()</span></code></a></li>

@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
-        <title>uxsim.analyzer - UXsim: Traffic Simulation in Python v1 documentation</title>
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-icon-transparent-light@2x.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
+        <title>uxsim.analyzer - UXsim: Python traffic simulator v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -174,7 +174,7 @@ gtag('config', 'UA-111714220-1');
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">UXsim: Traffic Simulation in Python v1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">UXsim: Python traffic simulator v1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -196,9 +196,10 @@ gtag('config', 'UA-111714220-1');
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
-  
-  <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
-  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-logo-transparent-light@2x.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-logo-transparent-dark@2x.png" alt="Dark Logo"/>
+  </div>
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -551,6 +552,9 @@ gtag('config', 'UA-111714220-1');
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute Edie&#39;s traffic state for each link.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;vehicle_logging_timestep_interval is off (==-1). Traffic state information may be empty.&quot;</span><span class="p">,</span> <span class="n">LoggingWarning</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">flag_edie_state_computed</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1801,6 +1805,9 @@ gtag('config', 'UA-111714220-1');
 <span class="sd">        The MFD provides a relationship between the network average density and the network average flow.</span>
 <span class="sd">        The plot is saved to the directory `out&lt;W.name&gt;` with the filename `mfd&lt;fname&gt;.png`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">vehicle_logging_timestep_interval</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;vehicle_logging_timestep_interval is off (==-1). MFD will be empty.&quot;</span><span class="p">,</span> <span class="n">LoggingWarning</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">links</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">links</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">LINKS</span>

@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
-        <title>uxsim.utils - UXsim: Traffic Simulation in Python v1 documentation</title>
+    <link rel="shortcut icon" href="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-icon-transparent-light@2x.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
+        <title>uxsim.utils - UXsim: Python traffic simulator v1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -174,7 +174,7 @@ gtag('config', 'UA-111714220-1');
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">UXsim: Traffic Simulation in Python v1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">UXsim: Python traffic simulator v1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -196,9 +196,10 @@ gtag('config', 'UA-111714220-1');
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
-  
-  <span class="sidebar-brand-text">UXsim: Traffic Simulation in Python v1 documentation</span>
-  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-logo-transparent-light@2x.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="https://raw.githubusercontent.com/toruseo/UXsim/images/artworks/png/uxsim-logo-transparent-dark@2x.png" alt="Dark Logo"/>
+  </div>
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -399,16 +400,16 @@ gtag('config', 'UA-111714220-1');
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">font_manager</span>
 
-    <span class="n">font_list</span> <span class="o">=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">findSystemFonts</span><span class="p">()</span>
-
     <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">font</span> <span class="o">=</span> <span class="n">fname</span>
-    <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;Noto Sans Mono CJK JP&quot;</span> <span class="ow">in</span> <span class="n">font</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">font_list</span><span class="p">):</span>
-        <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;Noto Sans Mono CJK JP&quot;</span>
-    <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="s2">&quot;msgothic&quot;</span> <span class="ow">in</span> <span class="n">font</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">font_list</span><span class="p">):</span>
-        <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;MS Gothic&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;monospace&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">uxsim.files</span>
+            <span class="n">font_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">uxsim</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;HackGen-Regular.ttf&quot;</span><span class="p">)</span>
+            <span class="n">font_manager</span><span class="o">.</span><span class="n">fontManager</span><span class="o">.</span><span class="n">addfont</span><span class="p">(</span><span class="n">font_path</span><span class="p">)</span>
+            <span class="n">font</span> <span class="o">=</span> <span class="n">font_manager</span><span class="o">.</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">font_path</span><span class="p">)</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>  <span class="c1"># -&gt; &quot;HackGen&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">font</span> <span class="o">=</span> <span class="s2">&quot;monospace&quot;</span>
 
     <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_cached_matplotlib_font</span> <span class="o">=</span> <span class="n">font</span>
