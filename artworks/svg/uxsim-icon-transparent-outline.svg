@@ -17,7 +17,7 @@
       <path clip-rule="evenodd" d="M0 0H512V512H0Z M275.21 77.72 A72.50 59.00 30.00 1 0 400.79 150.22 A72.50 59.00 30.00 1 0 275.21 77.72Z"/>
     </clipPath>
   </defs>
-  <!-- Transparent background with a thin white outline around the mark, for any background -->
+  <!-- Transparent background with a thin white outline around the mark and the text, for any background -->
   <!-- White outline: both halves filled and stroked in white underneath the mark -->
   <g fill="#fff" stroke="#fff" stroke-width="8" stroke-linejoin="round">
     <path clip-path="url(#uxsim-icon-transparent-outline-bite-outline)" d="M146.28 435.05 A210.00 210.00 0 0 0 382.38 423.71 C402.87 408.27 420.10 388.54 432.60 366.35 C445.10 344.16 452.85 319.55 455.42 294.76 C457.98 269.98 455.38 245.06 448.24 222.10 C441.11 199.14 429.47 178.17 414.75 160.61 C400.04 143.06 382.28 128.93 363.20 118.79 A10.12 10.12 0 0 0 350.74 134.74 C363.24 149.28 372.48 165.66 378.40 182.46 C384.32 199.25 386.95 216.44 386.77 232.94 C386.60 249.45 383.64 265.27 378.56 279.82 C373.48 294.37 366.30 307.67 357.56 319.46 C348.82 331.25 338.53 341.56 327.01 350.24 A118.00 118.00 0 0 1 194.35 356.61 Z"/>
