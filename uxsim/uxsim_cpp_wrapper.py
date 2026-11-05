@@ -942,6 +942,7 @@ class CppWorld:
         self._cpp_veh_registered_count = 0
         self._veh_by_index = []  # CppVehicle objects in C++ vehicle index order
         self._synced_states = np.zeros(0, dtype=np.int32)  # C++ vehicle states at the previous _sync_from_cpp
+        self._numeric_name_used = False  # True after a custom vehicle name made of digits, which can equal an automatic name
 
     def _ensure_cpp_world(self):
         if self._cpp_world_created:
@@ -1004,18 +1005,23 @@ class CppWorld:
         orig_name = orig.name if hasattr(orig, 'name') else str(orig)
         dest_name = dest.name if hasattr(dest, 'name') else str(dest)
         dep_is_ts = kwargs.get('departure_time_is_time_step', 0)
-        t = departure_time * self.DELTAT if dep_is_ts else float(departure_time)
+        # As in Python, a vehicle departs at the first step T >= departure_time.
+        ts = math.ceil(departure_time) if dep_is_ts else int(departure_time / self.DELTAT)
 
-        # Validate custom vehicle name before creating the C++ vehicle
+        # Validate the vehicle name before creating the C++ vehicle.
+        # As in Python's Vehicle.__init__, the automatic name is the vehicle id and is checked like a custom name.
+        n_before = self._cpp_world.vehicle_count
         name = kwargs.get('name')
-        if name is not None:
-            name = str(name)
-            if name in self.VEHICLES:
-                if kwargs.get('auto_rename', False):
-                    name = name + "_renamed" + "".join(
-                        self.rng.choice(list(string.ascii_letters + string.digits), size=8))
-                else:
-                    raise ValueError(f"Vehicle name {name} already used by another vehicle. Please specify a unique name.")
+        if name is None:
+            name = str(n_before)
+        elif isinstance(name, str) and name.isdecimal():
+            self._numeric_name_used = True
+        if name in self.VEHICLES:
+            if kwargs.get('auto_rename', False):
+                name = name + "_renamed" + "".join(
+                    self.rng.choice(list(string.ascii_letters + string.digits), size=8))
+            else:
+                raise ValueError(f"Vehicle name {name} already used by another vehicle. Please specify a unique name.")
 
         # Resolve links_prefer to C++ link name strings
         links_prefer = kwargs.get('links_prefer', [])
@@ -1024,9 +1030,11 @@ class CppWorld:
             lname = l.name if hasattr(l, 'name') else str(l)
             cpp_links_pref.append(lname)
 
-        n_before = self._cpp_world.vehicle_count
+        # C++ converts both ends of the window to steps by truncation toward zero, so half takes the sign of ts.
+        # Both ends then lie inside a step, and the flow gives 1.5 platoons per step, so C++ makes one vehicle at step ts, also when DELTAT is inexact in binary.
+        half = 0.5 if ts >= 0 else -0.5
         _add_demand(self._cpp_world, orig_name, dest_name,
-                   float(t), float(t + self.DELTAT), float(self.DELTAN / self.DELTAT), cpp_links_pref)
+                   float((ts + half) * self.DELTAT), float((ts + 1 + half) * self.DELTAT), float(1.5 * self.DELTAN / self.DELTAT), cpp_links_pref)
 
         # Set links_avoid on newly created C++ vehicles
         links_avoid = kwargs.get('links_avoid', [])
@@ -1045,16 +1053,9 @@ class CppWorld:
                 except (AttributeError, TypeError):
                     pass
 
-        self._register_new_cpp_vehicles()
+        self._register_new_cpp_vehicles(name)
 
         veh = self._veh_by_index[n_before]
-        if name is not None:
-            # The new vehicle is the last entry, so pop+reinsert keeps VEHICLES in C++ index order.
-            self.VEHICLES.pop(veh.name, None)
-            self.VEHICLES_LIVING.pop(veh.name, None)
-            veh.name = name
-            self.VEHICLES[name] = veh
-            self.VEHICLES_LIVING[name] = veh
         veh.attribute = kwargs.get('attribute')
         veh.user_attribute = kwargs.get('user_attribute')
         veh.user_function = kwargs.get('user_function')
@@ -1072,6 +1073,16 @@ class CppWorld:
         if volume > 0:
             flow = volume / (t_end - t_start)
         n_before = self._cpp_world.vehicle_count
+        # C++ creates the whole demand at once with automatic names.
+        # If a custom name can equal one of these names, add vehicles one by one as Python does, so that ValueError comes at that vehicle.
+        if self._numeric_name_used:
+            f = 0
+            for t in range(int(t_start / self.DELTAT), int(t_end / self.DELTAT)):
+                f += flow * self.DELTAT
+                while f >= self.DELTAN:
+                    self.addVehicle(orig, dest, t, departure_time_is_time_step=1, attribute=attribute, direct_call=False)
+                    f -= self.DELTAN
+            return
         _add_demand(self._cpp_world, self._resolve_node_name(orig), self._resolve_node_name(dest),
                    float(t_start), float(t_end), float(flow), [])
         self._register_new_cpp_vehicles()
@@ -1269,8 +1280,9 @@ class CppWorld:
             return 1
         return 0
 
-    def _register_new_cpp_vehicles(self):
+    def _register_new_cpp_vehicles(self, newest_name=None):
         """Register any new C++ vehicles into Python VEHICLES dict.
+        newest_name replaces the automatic name of the newest vehicle (addVehicle has validated it).
         Creates lightweight proxy objects — most attributes are read from C++ on demand."""
         start_idx = self._cpp_veh_registered_count
         total = self._cpp_world.vehicle_count
@@ -1287,7 +1299,7 @@ class CppWorld:
         for j in range(n_new):
             i = start_idx + j
             cpp_veh = get_veh(i)
-            name = cpp_veh.name
+            name = newest_name if newest_name is not None and j == n_new - 1 else cpp_veh.name
             py_veh = CppVehicle.__new__(CppVehicle)
             py_veh.W = self
             py_veh.name = name
@@ -1333,11 +1345,10 @@ class CppWorld:
             states = states[:len(veh_by_index)]
             # A vehicle that keeps its state is already in the right dicts, so only the changed ones are visited, in index order.
             # A vehicle registered after the previous call counts as home(0), as _register_new_cpp_vehicles put it in VEHICLES_LIVING.
-            # Vehicles that share a name write the same keys and VEHICLES is then shorter than the vehicle list, so all of them are visited.
             synced = self._synced_states
             if len(synced) < len(states):
                 synced = np.concatenate([synced, np.zeros(len(states) - len(synced), dtype=np.int32)])
-            changed = np.flatnonzero(states != synced) if len(self.VEHICLES) == len(states) else np.arange(len(states))
+            changed = np.flatnonzero(states != synced)
             for i, st_int in zip(changed.tolist(), states[changed].tolist()):
                 veh = veh_by_index[i]
                 name = veh.name

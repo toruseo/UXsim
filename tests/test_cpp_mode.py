@@ -9210,3 +9210,76 @@ def test_vehicle_registries_match_python_mode():
         return registries
 
     assert run(True) == run(False)
+
+
+def _vehicle_at_every_time_step(W):
+    for t in range(40):
+        W.addVehicle('A', 'B', t, departure_time_is_time_step=1)
+
+
+def _negative_departure_times(W):
+    W.addVehicle('A', 'B', -7)
+    W.addVehicle('A', 'B', -1, departure_time_is_time_step=1)
+    W.addVehicle('A', 'B', -2, departure_time_is_time_step=1)
+
+
+def _custom_names_numbered_from_one(W):
+    for i in range(4):
+        W.addVehicle('A', 'B', 40 * i, name=str(i + 1))
+
+
+def _custom_name_then_automatic_names(W):
+    W.addVehicle('A', 'B', 0, name='3')
+    for i in range(4):
+        W.addVehicle('A', 'B', 40 * i)
+
+
+def _custom_name_then_demand(W):
+    W.addVehicle('A', 'B', 0, name='3')
+    W.adddemand('A', 'B', 0, 100, 0.5)
+
+
+def _custom_name_beyond_the_demand(W):
+    W.addVehicle('A', 'B', 0, name='100')
+    W.adddemand('A', 'B', 20, 100, 0.5, attribute='demand')
+
+
+def _duplicate_custom_name(W):
+    W.addVehicle('A', 'B', 0, name='x')
+    W.addVehicle('A', 'B', 10, name='x')
+
+
+def _integer_custom_names(W):
+    W.addVehicle('A', 'B', 0, name=2)
+    for i in range(4):
+        W.addVehicle('A', 'B', 40 * i)
+
+
+def _automatic_name_with_auto_rename(W):
+    W.addVehicle('A', 'B', 0, name='1')
+    W.addVehicle('A', 'B', 10, auto_rename=True)
+    W.addVehicle('A', 'B', 20)
+
+
+@pytest.mark.parametrize('deltan, reaction_time', [(5, 1), (7, 0.83), (1, 0.7), (1, 0.95)])
+@pytest.mark.parametrize('add', [_vehicle_at_every_time_step, _negative_departure_times, _custom_names_numbered_from_one, _custom_name_then_automatic_names, _custom_name_then_demand, _custom_name_beyond_the_demand, _duplicate_custom_name, _integer_custom_names, _automatic_name_with_auto_rename])
+def test_vehicle_names_match_python_mode(add, deltan, reaction_time):
+    """Vehicle names, the error for a used name, attributes, departures and trips are the same in both modes, also when custom names look like automatic names or DELTAT is inexact in binary."""
+    def run(cpp):
+        W = World(cpp=cpp, name='', deltan=deltan, reaction_time=reaction_time, tmax=600, print_mode=0, random_seed=0)
+        W.addNode('A', 0, 0)
+        W.addNode('B', 1000, 0)
+        W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
+        error = None
+        try:
+            add(W)
+        except ValueError as e:
+            error = str(e)
+        # The random suffix of a renamed vehicle differs between the modes.
+        names = [name.split('_renamed')[0] if isinstance(name, str) else name for name in W.VEHICLES]
+        ids = [veh.id for veh in W.VEHICLES.values()]
+        attributes = [veh.attribute for veh in W.VEHICLES.values()]
+        W.exec_simulation()
+        return names, ids, attributes, error, W.analyzer.trip_all, W.analyzer.trip_completed, list(W.get_link('AB').cum_arrival)
+
+    assert run(True) == run(False)
