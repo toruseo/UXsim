@@ -1948,7 +1948,6 @@ inline void add_demand(
 
 /**
  * @brief Return all vehicle states as (name, state_int) pairs.
- * Efficient bulk query so Python can update VEHICLES_LIVING/RUNNING without calling state on each vehicle individually.
  */
 std::vector<std::pair<std::string, int>> World::get_all_vehicle_states() const {
     std::vector<std::pair<std::string, int>> result;

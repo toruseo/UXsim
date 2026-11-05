@@ -513,7 +513,6 @@ struct World {
     bool vehicle_state_overridden = false;
 
     // Helper: return vehicle states as a vector of (name, state_int) pairs
-    // Useful for Python to update VEHICLES_LIVING/RUNNING without per-vehicle calls
     std::vector<std::pair<std::string, int>> get_all_vehicle_states() const;
 
     // Build enter_log data: returns (link_id, time, vehicle_index) triples for all vehicle link-entry events.
