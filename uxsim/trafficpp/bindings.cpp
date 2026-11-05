@@ -578,6 +578,12 @@ NB_MODULE(uxsim_cpp, m) {
         .def("get_all_vehicle_states", &World::get_all_vehicle_states,
              "Get (name, state_int) pairs for all vehicles. "
              "Abort is detected and returned as state 4.")
+        .def("get_vehicle_state_codes", [](const World &w) {
+                 std::vector<int> states(w.vehicles.size());
+                 for (size_t i = 0; i < states.size(); i++) states[i] = w.vehicles[i]->state;
+                 return make_numpy_move(std::move(states));
+             },
+             "Get Vehicle::state of all vehicles in index order as a numpy array.")
         .def("build_all_vehicle_logs_flat_compact", [](const World &w) -> nb::dict {
                  // Compact flat SoA: no home prepend. Only actual log entries.
                  auto fl = w.build_all_vehicle_logs_flat_compact();

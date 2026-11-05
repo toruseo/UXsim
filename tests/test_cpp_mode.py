@@ -9275,3 +9275,96 @@ def test_route_dist_attribute_follows_route_updates():
         W.exec_simulation(duration_t=500)
         record = W._cpp_world.route_dist_record
         assert W._cpp_world.route_dist == record[sorted(record.keys())[-1]]
+
+
+@pytest.mark.parametrize('numeric_names', [False, True])
+def test_vehicle_registries_follow_engine_states_between_chunks(numeric_names):
+    """VEHICLES_LIVING and VEHICLES_RUNNING equal a model that visits every vehicle in index order after every chunk, including their order.
+
+    The run covers a vehicle added between chunks and a Python write of Vehicle.state on a queued vehicle, which leaves VEHICLES_LIVING and re-enters it at the end when it is generated.
+    With numeric_names, custom names equal the automatic names of other vehicles, so several vehicles write the same keys.
+    """
+    W = World(cpp=True, name='', deltan=5, tmax=1200, print_mode=0, random_seed=0)
+    W.addNode('A', 0, 0)
+    W.addNode('B', 1000, 0)
+    W.addNode('C', 2000, 0)
+    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
+    W.addLink('BC', 'B', 'C', length=1000, free_flow_speed=20, capacity_out=0.2)
+    if numeric_names:
+        for i in range(6):
+            W.addVehicle('A', 'C', 40 * i, name=str(i + 1))
+    W.adddemand('A', 'C', 0, 300, flow=1.0)
+    W.finalize_scenario()
+
+    model_living = dict(W.VEHICLES_LIVING)
+    model_running = {}
+    states_seen = set()
+    written = None
+    chunk = 0
+    while W.check_simulation_ongoing():
+        W.exec_simulation(duration_t2=50)
+        for veh in W._veh_by_index:
+            name = veh.name
+            state = veh.state
+            states_seen.add(state)
+            if state == 'end' or state == 'abort':
+                model_living.pop(name, None)
+                model_running.pop(name, None)
+            elif state == 'run':
+                model_living[name] = veh
+                model_running[name] = veh
+            else:
+                model_living[name] = veh
+                model_running.pop(name, None)
+        assert list(W.VEHICLES_LIVING) == list(model_living)
+        assert list(W.VEHICLES_RUNNING) == list(model_running)
+
+        if chunk == 1:
+            late = W.addVehicle('A', 'C', W.TIME + 30, name='late')
+            model_living['late'] = late
+        if chunk == 3:
+            written = [veh for veh in W._veh_by_index if veh.state == 'wait'][-1]
+            written.state = 'end'
+        chunk += 1
+
+    assert {'wait', 'run', 'end'} <= states_seen
+    assert written.state == 'end' and written.travel_time > 0
+    assert 'late' not in W.VEHICLES_LIVING and W.VEHICLES['late'].state == 'end'
+
+
+def test_vehicle_written_back_to_home_returns_to_living():
+    """A state written back to home after a sync saw another state puts the vehicle back at the end of VEHICLES_LIVING."""
+    W = World(cpp=True, name='', deltan=5, tmax=600, print_mode=0, random_seed=0)
+    W.addNode('A', 0, 0)
+    W.addNode('B', 1000, 0)
+    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
+    W.adddemand('A', 'B', 0, 20, flow=0.5)
+    veh = W.addVehicle('A', 'B', 400, name='later')
+    W.finalize_scenario()
+    W.exec_simulation(duration_t2=50)
+    veh.state = 'end'
+    W.exec_simulation(duration_t2=50)
+    assert 'later' not in W.VEHICLES_LIVING
+    veh.state = 'home'
+    W.exec_simulation(duration_t2=50)
+    assert list(W.VEHICLES_LIVING)[-1] == 'later'
+
+
+def test_engine_vehicles_outside_the_wrapper_are_skipped():
+    """Vehicles created by the raw binding stay out of the registries until the wrapper registers them."""
+    from uxsim.uxsim_cpp_wrapper import _add_demand
+
+    W = World(cpp=True, name='', deltan=5, tmax=600, print_mode=0, random_seed=0)
+    W.addNode('A', 0, 0)
+    W.addNode('B', 1000, 0)
+    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
+    W.adddemand('A', 'B', 0, 50, flow=0.5)
+    W.finalize_scenario()
+    W.exec_simulation(duration_t2=30)
+    _add_demand(W._cpp_world, 'A', 'B', float(W.TIME), float(W.TIME + 50), 0.5, [])
+    W.exec_simulation(duration_t2=60)
+    assert W._cpp_world.vehicle_count > len(W._veh_by_index)
+    W.addVehicle('A', 'B', W.TIME + 10, name='registered')
+    W.exec_simulation()
+    assert len(W._veh_by_index) == W._cpp_world.vehicle_count
+    assert len(W.VEHICLES_LIVING) == 0 and len(W.VEHICLES_RUNNING) == 0

@@ -941,6 +941,7 @@ class CppWorld:
         self._skip_analyzer_setup = False
         self._cpp_veh_registered_count = 0
         self._veh_by_index = []  # CppVehicle objects in C++ vehicle index order
+        self._synced_states = np.zeros(0, dtype=np.int32)  # C++ vehicle states at the previous _sync_from_cpp
 
     def _ensure_cpp_world(self):
         if self._cpp_world_created:
@@ -1320,7 +1321,7 @@ class CppWorld:
         Log caches are never explicitly invalidated — they start as None and are built lazily on first access (e.g. when analyzer reads log_t)."""
         # Batch-update VEHICLES_LIVING / VEHICLES_RUNNING using C++ bulk query
         try:
-            states = self._cpp_world.get_all_vehicle_states()
+            states = self._cpp_world.get_vehicle_state_codes()
         except AttributeError:
             states = None
 
@@ -1329,9 +1330,15 @@ class CppWorld:
             living = self.VEHICLES_LIVING
             running = self.VEHICLES_RUNNING
             # states[i] corresponds to the i-th created vehicle (C++ index order)
-            for i, (_, st_int) in enumerate(states):
-                if i >= len(veh_by_index):
-                    continue
+            states = states[:len(veh_by_index)]
+            # A vehicle that keeps its state is already in the right dicts, so only the changed ones are visited, in index order.
+            # A vehicle registered after the previous call counts as home(0), as _register_new_cpp_vehicles put it in VEHICLES_LIVING.
+            # Vehicles that share a name write the same keys and VEHICLES is then shorter than the vehicle list, so all of them are visited.
+            synced = self._synced_states
+            if len(synced) < len(states):
+                synced = np.concatenate([synced, np.zeros(len(states) - len(synced), dtype=np.int32)])
+            changed = np.flatnonzero(states != synced) if len(self.VEHICLES) == len(states) else np.arange(len(states))
+            for i, st_int in zip(changed.tolist(), states[changed].tolist()):
                 veh = veh_by_index[i]
                 name = veh.name
                 if st_int >= 3:  # end(3) or abort(4)
@@ -1343,6 +1350,7 @@ class CppWorld:
                 else:  # home(0) or wait(1)
                     living[name] = veh
                     running.pop(name, None)
+            self._synced_states = states
         else:
             # Fallback: read state per-vehicle via property
             for name, veh in list(self.VEHICLES.items()):
