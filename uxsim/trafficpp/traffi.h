@@ -12,15 +12,14 @@
 #include <random>
 #include <map>
 #include <unordered_map>
-#include <unordered_set>
 #include <algorithm>
 #include <chrono>
-#include <queue>
+#include <memory>
 #include <set>
 
 #include "utils.h"
 
-using std::string, std::vector, std::deque, std::pair, std::map, std::unordered_map, std::priority_queue, std::greater, std::cout, std::endl;
+using std::string, std::vector, std::deque, std::pair, std::map, std::unordered_map, std::cout, std::endl;
 
 // Forward declarations
 struct World;
@@ -62,12 +61,6 @@ struct Node {
     // Vehicles waiting to be generated onto the outgoing link
     deque<Vehicle *> generation_queue;
 
-    // Per-node buffer recording vehicles that entered the RUN state via generate() this
-    // timestep (their World::vehicles_running insert). generate() runs in the per-node parallel
-    // stage, so the insert into the shared registry is deferred here and applied in id order in
-    // the serial post-region reconciliation (see main_loop).
-    vector<Vehicle *> running_gen_buf;
-
     double x;
     double y;
 
@@ -85,7 +78,6 @@ struct Node {
 
     // Reusable buffers for transfer() to avoid per-call allocation
     vector<Link *> _buf_outlinks_expanded;
-    std::unordered_set<Link *> _buf_seen_outlinks;
     vector<Vehicle *> _buf_merging_vehs;
     vector<double> _buf_merge_priorities;
 
@@ -110,38 +102,69 @@ struct Node {
 // MARK: class Link
 // -----------------------------------------------------------------------
 
+// FIFO of the vehicles on a link, stored contiguously from front to back.
+// pop_front only advances `first`, so slots read through begin() keep their values until the next push_back.
+class VehicleQueue {
+public:
+    bool empty() const { return first == last; }
+    size_t size() const { return last - first; }
+    Vehicle *front() const { return *first; }
+    Vehicle *back() const { return last[-1]; }
+    Vehicle *operator[](size_t i) const { return first[i]; }
+    Vehicle **begin() const { return first; }
+    Vehicle **end() const { return last; }
+    void pop_front() { first++; }
+    void push_back(Vehicle *veh) {
+        if (last == limit) make_room();
+        *last++ = veh;
+    }
+
+private:
+    Vehicle **first = nullptr;
+    Vehicle **last = nullptr;
+    Vehicle **limit = nullptr;
+    std::unique_ptr<Vehicle *[]> storage;
+
+    // Moves the queue to the start of storage, doubling storage unless the queue fills less than half of it.
+    // A move copies at most twice as many slots as were pushed since the previous one, so push_back is amortized O(1).
+    void make_room() {
+        size_t n = size();
+        size_t capacity = limit - storage.get();
+        if (n * 2 >= capacity) {
+            size_t grown = std::max(capacity * 2, (size_t)8);
+            auto bigger = std::make_unique<Vehicle *[]>(grown);
+            std::copy(first, last, bigger.get());
+            storage = std::move(bigger);
+            limit = storage.get() + grown;
+        } else {
+            std::copy(first, last, storage.get());
+        }
+        first = storage.get();
+        last = first + n;
+    }
+};
+
 struct Link {
+    // Read by the per-link and per-vehicle loops of every timestep.
     World *w;
+    double length;
+    double vmax;
+    double delta_per_lane;
+    int number_of_lanes;
+    VehicleQueue vehicles;
 
     int id;
-    string name;
-    double length;
     Node *start_node;
     Node *end_node;
 
-    int number_of_lanes;
-    double vmax;
-    double delta;
-    double delta_per_lane;
-    double tau;
-    double kappa;
-    double capacity;
-    double backward_wave_speed;
-    deque<Vehicle *> vehicles;
-
-    vector<double> traveltime_tt; // increments of time
-    vector<double> traveltime_t;
-
-    vector<double> arrival_curve;
-    vector<double> departure_curve;
-    // traveltime_real is lazily materialized: link-exit events are buffered as (start_idx, travel_time) pairs and replayed into the array on first read via ensure_traveltime_real().
-    // Members are mutable so that const read paths can trigger materialization.
-    mutable vector<double> traveltime_real;
-    mutable vector<pair<int, double>> traveltime_real_events;
-    mutable size_t traveltime_real_events_applied;
-    vector<double> traveltime_instant;
+    // Partial sums of the RUN-state samples on this link, reduced in link id order by World::ave_v_sum, World::ave_vratio_sum and World::stat_sample_count.
+    double ave_v_sum = 0.0;
+    double ave_vratio_sum = 0.0;
+    double stat_count = 0.0;
 
     double merge_priority;
+
+    // The fields below down to traveltime_instant are touched for every link in every timestep, even an empty one.
 
     // Per-link buffer collecting vehicles that reached this link's end this timestep and
     // will transfer to a next link. Filled by the RUN system pass (this link's exclusive
@@ -150,16 +173,30 @@ struct Link {
     // per-link stages can run independently once parallelized.
     vector<Vehicle *> arrived_vehicles;
 
-    // Per-link buffer recording vehicles that ended their trip on this link this timestep (their
-    // World::vehicles_living / vehicles_running erase). end_trip() runs in the per-link RUN pass
-    // (parallel) and in the serial transfer; both defer the shared-registry erase here, applied
-    // in id order in the serial post-region reconciliation (see main_loop).
-    vector<Vehicle *> ended_buf;
-
     double capacity_out;
     double capacity_out_remain;
     double capacity_in;
     double capacity_in_remain;
+
+    vector<double> arrival_curve;
+    vector<double> departure_curve;
+    vector<double> traveltime_instant;
+
+    string name;
+    double delta;
+    double tau;
+    double kappa;
+    double capacity;
+    double backward_wave_speed;
+
+    vector<double> traveltime_tt; // increments of time
+    vector<double> traveltime_t;
+
+    // traveltime_real is lazily materialized: link-exit events are buffered as (start_idx, travel_time) pairs and replayed into the array on first read via ensure_traveltime_real().
+    // Members are mutable so that const read paths can trigger materialization.
+    mutable vector<double> traveltime_real;
+    mutable vector<pair<int, double>> traveltime_real_events;
+    mutable size_t traveltime_real_events_applied;
 
     //signal
     vector<int> signal_group;
@@ -197,52 +234,51 @@ struct Link {
 // MARK: class Vehicle
 // -----------------------------------------------------------------------
 
-struct Vehicle {
-    World *w;
-    int id;
-    string name;
-
-    double departure_time;
-    Node *orig;
-    Node *dest;
+struct alignas(64) Vehicle {
+    // The alignment keeps this block on one cache line, touched for every vehicle on a link in every timestep.
     Link *link;
-
-    double arrival_time;
-    double travel_time;
-    double distance_traveled;
-
+    Vehicle *leader;
     double x;
     double x_next;
     double x_old;
     double v;
+    double distance_traveled;
+    int state; // VehicleState enum: 0=home, 1=wait, 2=run, 3=end, 4=abort
+    int id;
+
+    // Touched when the vehicle changes links.
+    World *w;
     double move_remain;
     int lane;
-
-    Vehicle *leader;
-    Vehicle *follower;
-
-    int state; // VehicleState enum: 0=home, 1=wait, 2=run, 3=end, 4=abort
     int flag_waiting_for_trip_end;
-    int flag_trip_aborted;
-    int trip_abort;
-
-    double arrival_time_link;
-
-    // Route logic
+    Vehicle *follower;
+    Node *dest;
     Link *route_next_link;
     int route_choice_flag_on_link;
+    int trip_abort;
+    double arrival_time_link;
+
+    string name;
+
+    double departure_time;
+    Node *orig;
+
+    double arrival_time;
+    double travel_time;
+
+    int flag_trip_aborted;
+
+    // Route logic
     double route_adaptive;
     double route_choice_uncertainty;
+    // The engine never reads route_preference, it only exists for Python.
+    // It stays empty until Python assigns it and reads as route_preference_size zeros until then.
     vector<double> route_preference;  // indexed by link->id
+    int route_preference_size;
     int route_choice_principle;
     vector<Link *> links_preferred;
     vector<Link *> links_avoid;
     vector<Link *> specified_route;
-
-    // Reusable buffers for route_next_link_choice() to avoid per-call allocation
-    vector<Link *> _buf_outlinks;
-    vector<Link *> _buf_filtered;
-    vector<double> _buf_outlink_pref;
 
     // Incremental tracking for no_cyclic_routing (O(1) lookup instead of log_link scan)
     vector<bool> _traveled_nodes;       // _traveled_nodes[node_id] = true if visited
@@ -273,16 +309,18 @@ struct Vehicle {
     void end_trip();
     // Newell car-following: computes x_next only (no state change), read as an independent pass
     // before the RUN update pass so leaders are read at their pre-move position (order-neutral).
-    void car_follow_newell();
+    // car_follow_newell, update and log_data take the World as a parameter because the member w lies outside the first cache line.
+    void car_follow_newell(const World *w);
     // update() drives the HOME/WAIT/RUN/END state machine (structural parity with Python's
     // Vehicle.update). snap_leader is the pre-pass queue-position leader supplied by the RUN
     // pass so log_data() can reproduce the id-ordered leader-spacing read; nullptr for the
     // WAIT/HOME passes and the end_trip tail entry.
-    void update(Vehicle *snap_leader = nullptr);
+    void update(World *w, Vehicle *snap_leader = nullptr);
     void route_next_link_choice(const vector<Link*>& linkset, std::mt19937 &rng);
     void enforce_route(vector<Link*> route);
     void record_travel_time(Link *link, double t);
-    void log_data(Vehicle *snap_leader = nullptr);
+    void log_data(World *w, Vehicle *snap_leader);
+    void log_append(Vehicle *snap_leader);
 
     // Reconstruct log_t / log_state entry i from the scalar counters above.
     double log_t_at(size_t i) const;
@@ -331,11 +369,9 @@ struct World {
 
     // Collections of objects
     vector<Vehicle *> vehicles;         //all state
-    // HOME departure schedule: departure_buckets[ts] holds the HOME vehicles (id ascending,
-    // since `vehicles` is in id order) whose first departing timestep is ts. Rebuilt per
-    // main_loop call; replaces the old id-ordered update_order full-scan for the HOME->WAIT
-    // transition. The RUN/WAIT stages find their vehicles via the per-link deques and the
-    // per-node generation_queues, so no global update order is needed.
+    // HOME departure schedule: departure_buckets[ts - start_ts] holds the HOME vehicles (id ascending, since `vehicles` is in id order) whose first departing timestep is ts.
+    // Rebuilt per main_loop call for the timesteps of that call.
+    // The RUN/WAIT stages find their vehicles via the per-link queues and the per-node generation_queues, so no global update order is needed.
     vector<vector<Vehicle *>> departure_buckets;
     vector<Link *> links;
     vector<Node *> nodes;
@@ -343,15 +379,13 @@ struct World {
     unordered_map<string, Link *> links_map;
     unordered_map<string, Vehicle *> vehicles_map;
 
-    // Live-vehicle registries, restored for structural parity with Python's VEHICLES_LIVING /
-    // VEHICLES_RUNNING (same membership semantics: living = home|wait|run, running = run).
-    // Populated at Vehicle construction (living) and Node::generate (running); entries removed
-    // in Vehicle::end_trip. Not exposed to bindings (read-out is zero); maintained so future
-    // feature ports keep line-by-line correspondence with uxsim.py. Mutations from the parallel
-    // generate/RUN stages are staged in Node::running_gen_buf / Link::ended_buf and applied in
-    // the serial post-region reconciliation, so the shared maps are never touched concurrently.
-    unordered_map<int, Vehicle *> vehicles_living;   // home, wait, run
-    unordered_map<int, Vehicle *> vehicles_running;  // run
+    // Live-vehicle registries, restored for structural parity with Python's VEHICLES_LIVING / VEHICLES_RUNNING (same membership semantics: living = home|wait|run, running = run).
+    // Populated at Vehicle construction (living) and Node::generate (running); entries removed in Vehicle::end_trip.
+    // Not exposed to bindings (read-out is zero); maintained so future feature ports keep line-by-line correspondence with uxsim.py.
+    // Both are indexed by vehicle id and hold nullptr for a vehicle that is not a member.
+    // A write in the parallel generate and RUN stages touches only the slot of a vehicle owned by that node or link.
+    vector<Vehicle *> vehicles_living;   // home, wait, run
+    vector<Vehicle *> vehicles_running;  // run
 
     size_t timestep;    //simulation timestep
     double time;    //simulation time in second
@@ -366,16 +400,19 @@ struct World {
     vector<vector<double>> adj_mat_time;
     vector<vector<int>> adj_mat_link_count;    // scratch for multi-link averaging in update_adj_time_matrix
     vector<vector<int>> route_next;
-    vector<vector<double>> route_dist;
-    map<int, vector<vector<double>>> route_dist_record;
+    map<int, vector<vector<double>>> route_dist_record;  // the newest entry is the Python attribute route_dist
 
-    // Scratch buffers reused across route_search_all() calls (avoid per-call V*V allocation).
+    // Scratch buffers of route_search_all().
     // Filled by route_search_all; callers read from these.
-    vector<vector<pair<int, double>>> rsa_adj_list;  // adjacency list (rebuilt each call)
+    // main_loop moves rsa_dist into route_dist_record and swaps rsa_next with route_next.
+    struct RouteArc {
+        double weight;
+        int to;
+    };
+    vector<size_t> rsa_arc_start;                    // arcs of node i: rsa_arcs[rsa_arc_start[i] .. rsa_arc_start[i+1])
+    vector<RouteArc> rsa_arcs;                       // flat adjacency, ascending target per node (rebuilt each call)
     vector<vector<double>> rsa_dist;                 // all-pairs distances
     vector<vector<int>> rsa_next;                    // all-pairs next-hop
-    // The per-source Dijkstra visited flags and priority queue are thread_local (see
-    // route_search_all): the source loop is parallelized, so this scratch cannot be shared.
 
     bool flag_initialized;
 
@@ -385,13 +422,10 @@ struct World {
     double trips_total;
     double trips_completed;
 
-    // Incremental stats accumulators as per-entity partial sums (parallel-safe). RUN-state
-    // samples accumulate on the vehicle's current link; WAIT-state samples on the origin
-    // node. Read back via the id-ordered reductions below so repeated reads are identical.
+    // Incremental stats accumulators as per-entity partial sums (parallel-safe).
+    // RUN-state samples accumulate on the vehicle's current link (Link::ave_v_sum, Link::ave_vratio_sum, Link::stat_count); WAIT-state samples on the origin node.
+    // Read back via the id-ordered reductions below so repeated reads are identical.
     // Indexed by link id (link_*) / node id (node_*), grown in the Link/Node constructors.
-    vector<double> link_ave_v_sum;
-    vector<double> link_ave_vratio_sum;
-    vector<double> link_stat_count;
     vector<double> link_trips_completed;
     vector<double> node_stat_count;
 
@@ -444,11 +478,12 @@ struct World {
     // affinity limits). Returns 1 when OpenMP is disabled at build time.
     int resolve_num_threads() const;
 
+    void duo_update_preference(double weight);
     void route_choice_duo();
     void route_choice_duo_gradual();
 
     // All-pairs shortest path (Dijkstra from each source).
-    // Results are written into rsa_dist / rsa_next (reused scratch buffers).
+    // Results are written into rsa_dist / rsa_next.
     void route_search_all(const vector<vector<double>> &adj, double infty);
 
     // Enumerate k random routes between all reachable node pairs
@@ -472,6 +507,10 @@ struct World {
 
     size_t vehicle_log_reserve_size;
     bool vehicle_log_mode;
+
+    // Set when Python writes Vehicle::state.
+    // Until then a vehicle is in a generation_queue if and only if its state is vsWAIT.
+    bool vehicle_state_overridden = false;
 
     // Helper: return vehicle states as a vector of (name, state_int) pairs
     // Useful for Python to update VEHICLES_LIVING/RUNNING without per-vehicle calls

@@ -15,6 +15,14 @@ using std::vector, std::cout, std::endl;
 // MARK: Utility
 // -----------------------------------------------------------------------
 
+// Hints the cache to load the line at ptr.
+// Compiles to nothing on compilers without the builtin.
+#if defined(__GNUC__) || defined(__clang__)
+#define UXSIM_PREFETCH(ptr) __builtin_prefetch(ptr)
+#else
+#define UXSIM_PREFETCH(ptr) ((void)0)
+#endif
+
 /**
  * remove_from_vector: remove a particular pointer from a vector.
  */
@@ -49,24 +57,25 @@ inline double random_range_float64(
 /**
  * @brief Selects a random item from a list of items based on given weights.
  * 
- * This function takes a vector of pointers to items and a corresponding vector of weights,
+ * This function takes a vector of pointers to items and a function giving the weight of each index,
  * and returns a randomly selected item based on the weights. If the weights sum to zero or
  * are invalid, it falls back to uniform random selection.
  * 
  * @tparam T The type of the items.
+ * @tparam WeightOf A callable returning the weight (double) of index i.
  * @param items A vector of pointers to items to choose from.
- * @param weights A vector of weights corresponding to each item.
+ * @param weight_of The weight of each index.
  * @param rng A random number generator.
- * @return T* A pointer to the randomly selected item, or nullptr if the input vectors are invalid.
+ * @return T* A pointer to the randomly selected item, or nullptr if items is empty.
  */
-template <typename T>
-inline T *random_choice(const vector<T *> &items, const vector<double> &weights, std::mt19937 &rng) {
-    if (items.empty() || items.size() != weights.size()){
+template <typename T, typename WeightOf>
+inline T *random_choice(const vector<T *> &items, WeightOf weight_of, std::mt19937 &rng) {
+    if (items.empty()){
         return nullptr;
     }
     double wsum = 0.0;
-    for (auto w : weights){
-        wsum += w;
+    for (size_t i = 0; i < items.size(); i++){
+        wsum += weight_of(i);
     }
     if (wsum <= 0.0){
         // Fallback: pick uniformly
@@ -77,7 +86,7 @@ inline T *random_choice(const vector<T *> &items, const vector<double> &weights,
     double r = dist(rng);
     double accum = 0.0;
     for (size_t i = 0; i < items.size(); i++){
-        accum += weights[i];
+        accum += weight_of(i);
         if (r <= accum){
             return items[i];
         }

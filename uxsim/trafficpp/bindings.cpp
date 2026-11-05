@@ -544,7 +544,9 @@ NB_MODULE(uxsim_cpp, m) {
         .def_rw("adjust_node_capacity", &World::adjust_node_capacity)
         .def_rw("instantaneous_TT_timestep_interval", &World::instantaneous_TT_timestep_interval)
         .def_rw("num_threads", &World::num_threads)
-        .def_ro("route_dist", &World::route_dist)
+        .def_prop_ro("route_dist", [](const World &w) {
+            return w.route_dist_record.empty() ? vector<vector<double>>() : w.route_dist_record.rbegin()->second;
+        })
         .def_ro("route_dist_record", &World::route_dist_record)
         .def_ro("route_next", &World::route_next)
         .def_rw("adj_mat_time", &World::adj_mat_time)
@@ -858,12 +860,20 @@ NB_MODULE(uxsim_cpp, m) {
         .def_ro("lane", &Vehicle::lane)
         .def_ro("leader", &Vehicle::leader)
         .def_ro("follower", &Vehicle::follower)
-        .def_rw("state", &Vehicle::state)
+        .def_prop_rw("state", [](const Vehicle &v) { return v.state; },
+                     [](Vehicle &v, int state) { v.state = state; v.w->vehicle_state_overridden = true; })
         .def_ro("arrival_time_link", &Vehicle::arrival_time_link)
         .def_rw("route_next_link", &Vehicle::route_next_link)
         .def_rw("route_choice_flag_on_link", &Vehicle::route_choice_flag_on_link)
         .def_rw("route_adaptive", &Vehicle::route_adaptive)
-        .def_rw("route_preference", &Vehicle::route_preference)
+        .def_prop_rw("route_preference",
+             [](const Vehicle &v) {
+                 return (int)v.route_preference.size() == v.route_preference_size ? v.route_preference : vector<double>(v.route_preference_size, 0.0);
+             },
+             [](Vehicle &v, vector<double> value) {
+                 v.route_preference_size = (int)value.size();
+                 v.route_preference = std::move(value);
+             })
         .def_rw("links_preferred", &Vehicle::links_preferred)
         .def_rw("links_avoid", &Vehicle::links_avoid)
         .def_rw("specified_route", &Vehicle::specified_route)
