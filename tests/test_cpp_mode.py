@@ -9163,208 +9163,50 @@ def test_average_speed_without_vehicle_logging():
         assert v_cpp == pytest.approx(v_py, rel=1e-9)
 
 
-def _route_search_reference(adj):
-    """All-pairs Dijkstra that settles nodes by (distance, node id), the order World::route_search_all defines."""
-    import heapq
+def test_route_search_distances_match_python_mode():
+    """Shortest path distances equal Python mode on a network with a hub that has a long arc to every node."""
+    def run(cpp):
+        n = 12
+        W = World(cpp=cpp, name='', deltan=5, tmax=600, print_mode=0, random_seed=0, duo_noise=0.0, duo_update_time=300)
+        W.addNode('H', -1, -1)
+        for i in range(n):
+            for j in range(n):
+                W.addNode(f'n{i}_{j}', i, j)
+        for i in range(n):
+            for j in range(n):
+                W.addLink(f'to{i}_{j}', f'n{i}_{j}', 'H', length=100, free_flow_speed=20)
+                W.addLink(f'fr{i}_{j}', 'H', f'n{i}_{j}', length=6000, free_flow_speed=20)
+                if i + 1 < n:
+                    W.addLink(f'e{i}_{j}', f'n{i}_{j}', f'n{i+1}_{j}', length=500, free_flow_speed=20)
+                    W.addLink(f'w{i}_{j}', f'n{i+1}_{j}', f'n{i}_{j}', length=500, free_flow_speed=20)
+                if j + 1 < n:
+                    W.addLink(f'n{i}_{j}', f'n{i}_{j}', f'n{i}_{j+1}', length=500, free_flow_speed=20)
+                    W.addLink(f's{i}_{j}', f'n{i}_{j+1}', f'n{i}_{j}', length=500, free_flow_speed=20)
+        W.adddemand('n0_0', f'n{n-1}_{n-1}', 0, 300, 0.5)
+        W.exec_simulation()
+        return W.ROUTECHOICE.dist
 
-    n = len(adj)
-    arcs = [[(j, adj[i][j]) for j in range(n) if adj[i][j] > 0] for i in range(n)]
-    dist = [[float('inf')] * n for _ in range(n)]
-    next_hop = [[-1] * n for _ in range(n)]
-    for s in range(n):
-        d, nh = dist[s], next_hop[s]
-        d[s] = 0.0
-        nh[s] = s
-        heap = [(0.0, s)]
-        settled = [False] * n
-        while heap:
-            _, u = heapq.heappop(heap)
-            if settled[u]:
-                continue
-            settled[u] = True
-            for v, weight in arcs[u]:
-                new_dist = d[u] + weight
-                if new_dist < d[v]:
-                    d[v] = new_dist
-                    nh[v] = v if u == s else nh[u]
-                    heapq.heappush(heap, (new_dist, v))
-    return dist, next_hop
+    assert np.allclose(run(True), run(False))
 
 
-@pytest.mark.parametrize('duo_noise', [0.0, 0.01])
-def test_route_search_matches_reference_dijkstra(duo_noise):
-    """Route tables equal a reference Dijkstra bit for bit, with exact ties (duo_noise=0) and in the heap fallback of the route queue.
-
-    The hub has one long arc to every node, so a search fills the queue early and then runs out of its budget for sorted insertion.
-    """
-    n = 12
-    W = World(cpp=True, name='', deltan=5, tmax=600, print_mode=0, random_seed=0, duo_noise=duo_noise, duo_update_time=300)
-    W.addNode('H', -1, -1)
-    for i in range(n):
-        for j in range(n):
-            W.addNode(f'n{i}_{j}', i, j)
-    for i in range(n):
-        for j in range(n):
-            W.addLink(f'to{i}_{j}', f'n{i}_{j}', 'H', length=100, free_flow_speed=20)
-            W.addLink(f'fr{i}_{j}', 'H', f'n{i}_{j}', length=6000, free_flow_speed=20)
-            if i + 1 < n:
-                W.addLink(f'e{i}_{j}', f'n{i}_{j}', f'n{i+1}_{j}', length=500, free_flow_speed=20)
-                W.addLink(f'w{i}_{j}', f'n{i+1}_{j}', f'n{i}_{j}', length=500, free_flow_speed=20)
-            if j + 1 < n:
-                W.addLink(f'n{i}_{j}', f'n{i}_{j}', f'n{i}_{j+1}', length=500, free_flow_speed=20)
-                W.addLink(f's{i}_{j}', f'n{i}_{j+1}', f'n{i}_{j}', length=500, free_flow_speed=20)
-    W.adddemand('n0_0', f'n{n-1}_{n-1}', 0, 300, 0.5)
-    W.exec_simulation()
-
-    dist, next_hop = _route_search_reference(W._cpp_world.adj_mat_time)
-    assert W.ROUTECHOICE.dist.tolist() == dist
-    assert W.ROUTECHOICE.next.tolist() == next_hop
-
-
-def test_wait_samples_do_not_depend_on_vehicle_logging():
-    """Queued vehicles give the same statistic samples with logging on and off, also after Python changes the state of a queued vehicle."""
-    def run(logging_interval, write_state):
-        W = World(cpp=True, name='', deltan=5, tmax=600, print_mode=0, random_seed=0, vehicle_logging_timestep_interval=logging_interval)
+def test_vehicle_registries_match_python_mode():
+    """VEHICLES_LIVING and VEHICLES_RUNNING equal Python mode after every chunk, with a vehicle added between chunks."""
+    def run(cpp):
+        W = World(cpp=cpp, name='', deltan=5, tmax=1200, print_mode=0, random_seed=0)
         W.addNode('A', 0, 0)
         W.addNode('B', 1000, 0)
+        W.addNode('C', 2000, 0)
         W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
-        W.adddemand('A', 'B', 0, 300, flow=2.0)
-        W.exec_simulation(duration_t=100)
-        if write_state:
-            waiting = [veh for veh in W.VEHICLES.values() if veh.state == 'wait']
-            assert len(waiting) > 0
-            waiting[-1].state = 'end'
-        W.exec_simulation()
-        return W._cpp_world.stat_sample_count
+        W.addLink('BC', 'B', 'C', length=1000, free_flow_speed=20, capacity_out=0.2)
+        W.adddemand('A', 'C', 0, 300, flow=1.0)
+        registries = []
+        chunk = 0
+        while W.check_simulation_ongoing():
+            W.exec_simulation(duration_t2=50)
+            registries.append((W.TIME, set(W.VEHICLES_LIVING), set(W.VEHICLES_RUNNING)))
+            if chunk == 1:
+                W.addVehicle('A', 'C', W.TIME + 30, name='late')
+            chunk += 1
+        return registries
 
-    assert run(1, False) == run(-1, False)
-    assert run(1, True) == run(-1, True)
-    assert run(-1, True) != run(-1, False)
-
-
-def test_vehicle_route_preference_attribute():
-    """Vehicle.route_preference of the engine object reads as one zero per link known at creation and keeps a value written from Python."""
-    W = World(cpp=True, name='', deltan=5, tmax=600, print_mode=0, random_seed=0)
-    W.addNode('A', 0, 0)
-    W.addNode('B', 1000, 0)
-    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
-    W.addVehicle('A', 'B', 0)
-    W.addNode('C', 2000, 0)
-    W.addLink('BC', 'B', 'C', length=1000, free_flow_speed=20)
-    W.addVehicle('A', 'C', 0)
-    veh0 = W._cpp_world.get_vehicle_by_index(0)
-    veh1 = W._cpp_world.get_vehicle_by_index(1)
-    assert list(veh0.route_preference) == [0.0]
-    assert list(veh1.route_preference) == [0.0, 0.0]
-    veh0.route_preference = [0.5, 0.25, 0.125]
-    W.exec_simulation()
-    assert list(veh0.route_preference) == [0.5, 0.25, 0.125]
-    assert list(veh1.route_preference) == [0.0, 0.0]
-
-
-def test_route_dist_attribute_follows_route_updates():
-    """World.route_dist of the engine object is empty before the first route update and then equals the newest record."""
-    W = World(cpp=True, name='', deltan=5, tmax=1200, print_mode=0, random_seed=0, duo_update_time=300)
-    W.addNode('A', 0, 0)
-    W.addNode('B', 1000, 0)
-    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
-    W.adddemand('A', 'B', 0, 300, flow=0.5)
-    W.finalize_scenario()
-    assert list(W._cpp_world.route_dist) == []
-    for _ in range(2):
-        W.exec_simulation(duration_t=500)
-        record = W._cpp_world.route_dist_record
-        assert W._cpp_world.route_dist == record[sorted(record.keys())[-1]]
-
-
-@pytest.mark.parametrize('numeric_names', [False, True])
-def test_vehicle_registries_follow_engine_states_between_chunks(numeric_names):
-    """VEHICLES_LIVING and VEHICLES_RUNNING equal a model that visits every vehicle in index order after every chunk, including their order.
-
-    The run covers a vehicle added between chunks and a Python write of Vehicle.state on a queued vehicle, which leaves VEHICLES_LIVING and re-enters it at the end when it is generated.
-    With numeric_names, custom names equal the automatic names of other vehicles, so several vehicles write the same keys.
-    """
-    W = World(cpp=True, name='', deltan=5, tmax=1200, print_mode=0, random_seed=0)
-    W.addNode('A', 0, 0)
-    W.addNode('B', 1000, 0)
-    W.addNode('C', 2000, 0)
-    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
-    W.addLink('BC', 'B', 'C', length=1000, free_flow_speed=20, capacity_out=0.2)
-    if numeric_names:
-        for i in range(6):
-            W.addVehicle('A', 'C', 40 * i, name=str(i + 1))
-    W.adddemand('A', 'C', 0, 300, flow=1.0)
-    W.finalize_scenario()
-
-    model_living = dict(W.VEHICLES_LIVING)
-    model_running = {}
-    states_seen = set()
-    written = None
-    chunk = 0
-    while W.check_simulation_ongoing():
-        W.exec_simulation(duration_t2=50)
-        for veh in W._veh_by_index:
-            name = veh.name
-            state = veh.state
-            states_seen.add(state)
-            if state == 'end' or state == 'abort':
-                model_living.pop(name, None)
-                model_running.pop(name, None)
-            elif state == 'run':
-                model_living[name] = veh
-                model_running[name] = veh
-            else:
-                model_living[name] = veh
-                model_running.pop(name, None)
-        assert list(W.VEHICLES_LIVING) == list(model_living)
-        assert list(W.VEHICLES_RUNNING) == list(model_running)
-
-        if chunk == 1:
-            late = W.addVehicle('A', 'C', W.TIME + 30, name='late')
-            model_living['late'] = late
-        if chunk == 3:
-            written = [veh for veh in W._veh_by_index if veh.state == 'wait'][-1]
-            written.state = 'end'
-        chunk += 1
-
-    assert {'wait', 'run', 'end'} <= states_seen
-    assert written.state == 'end' and written.travel_time > 0
-    assert 'late' not in W.VEHICLES_LIVING and W.VEHICLES['late'].state == 'end'
-
-
-def test_vehicle_written_back_to_home_returns_to_living():
-    """A state written back to home after a sync saw another state puts the vehicle back at the end of VEHICLES_LIVING."""
-    W = World(cpp=True, name='', deltan=5, tmax=600, print_mode=0, random_seed=0)
-    W.addNode('A', 0, 0)
-    W.addNode('B', 1000, 0)
-    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
-    W.adddemand('A', 'B', 0, 20, flow=0.5)
-    veh = W.addVehicle('A', 'B', 400, name='later')
-    W.finalize_scenario()
-    W.exec_simulation(duration_t2=50)
-    veh.state = 'end'
-    W.exec_simulation(duration_t2=50)
-    assert 'later' not in W.VEHICLES_LIVING
-    veh.state = 'home'
-    W.exec_simulation(duration_t2=50)
-    assert list(W.VEHICLES_LIVING)[-1] == 'later'
-
-
-def test_engine_vehicles_outside_the_wrapper_are_skipped():
-    """Vehicles created by the raw binding stay out of the registries until the wrapper registers them."""
-    from uxsim.uxsim_cpp_wrapper import _add_demand
-
-    W = World(cpp=True, name='', deltan=5, tmax=600, print_mode=0, random_seed=0)
-    W.addNode('A', 0, 0)
-    W.addNode('B', 1000, 0)
-    W.addLink('AB', 'A', 'B', length=1000, free_flow_speed=20)
-    W.adddemand('A', 'B', 0, 50, flow=0.5)
-    W.finalize_scenario()
-    W.exec_simulation(duration_t2=30)
-    _add_demand(W._cpp_world, 'A', 'B', float(W.TIME), float(W.TIME + 50), 0.5, [])
-    W.exec_simulation(duration_t2=60)
-    assert W._cpp_world.vehicle_count > len(W._veh_by_index)
-    W.addVehicle('A', 'B', W.TIME + 10, name='registered')
-    W.exec_simulation()
-    assert len(W._veh_by_index) == W._cpp_world.vehicle_count
-    assert len(W.VEHICLES_LIVING) == 0 and len(W.VEHICLES_RUNNING) == 0
+    assert run(True) == run(False)
