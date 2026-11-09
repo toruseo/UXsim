@@ -1694,15 +1694,22 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         return;
     }
 
-    // Rebuild HOME departure buckets: departure_buckets[ts - start_ts] holds the HOME vehicles (id ascending, since `vehicles` is in id order) whose first departing timestep is ts.
+    // Bring the HOME departure buckets up to date.
+    // Until Python writes Vehicle::state, only the HOME pass moves a vehicle out of HOME, so a call keeps the buckets and adds only the vehicles created since the previous call.
+    // After such a write, each call rebuilds the buckets from the states at its entry.
+    // The first call allocates the buckets, and a call rebuilds them when set_t_max has changed the horizon.
     // ts0 is the smallest timestep with (double)ts0*delta_t >= departure_time, then clamped to the chunk start (past-due vehicles depart on the first step of the chunk).
-    departure_buckets.assign(end_ts - start_ts, {});
-    for (auto veh : vehicles){
+    if (vehicle_state_overridden || departure_buckets.size() != total_timesteps){
+        departure_buckets.assign(total_timesteps, {});
+        departures_scanned = 0;
+    }
+    for (; departures_scanned < vehicles.size(); departures_scanned++){
+        Vehicle *veh = vehicles[departures_scanned];
         if (veh->state == vsHOME){
             int ts0 = (int)(veh->departure_time / delta_t);
             while ((double)ts0 * delta_t < veh->departure_time) ts0++;
             if (ts0 < start_ts) ts0 = start_ts;
-            if (ts0 < end_ts) departure_buckets[ts0 - start_ts].push_back(veh);
+            if (ts0 < total_timesteps) departure_buckets[ts0].push_back(veh);
         }
     }
 
@@ -1833,7 +1840,7 @@ void World::main_loop(double duration_t=-1, double until_t=-1){
         // -> log_data() (HOME entry) and the HOME branch transitions them to WAIT and appends
         // them to their origin generation_queue (id ascending, since `vehicles` is in id order).
         // Run after the WAIT pass so a vehicle departing this step is not logged twice.
-        for (auto veh : departure_buckets[timestep - start_ts]){
+        for (auto veh : departure_buckets[timestep]){
             veh->update(this);
         }
 
