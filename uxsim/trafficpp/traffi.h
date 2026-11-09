@@ -369,10 +369,11 @@ struct World {
 
     // Collections of objects
     vector<Vehicle *> vehicles;         //all state
-    // HOME departure schedule: departure_buckets[ts - start_ts] holds the HOME vehicles (id ascending, since `vehicles` is in id order) whose first departing timestep is ts.
-    // Rebuilt per main_loop call for the timesteps of that call.
+    // HOME departure schedule: departure_buckets[ts] holds the vehicles (id ascending, since `vehicles` is in id order) whose first departing timestep is ts.
+    // main_loop adds vehicles[departures_scanned ..] to it on entry, and a bucket keeps its vehicles after they have departed.
     // The RUN/WAIT stages find their vehicles via the per-link queues and the per-node generation_queues, so no global update order is needed.
     vector<vector<Vehicle *>> departure_buckets;
+    size_t departures_scanned = 0;
     vector<Link *> links;
     vector<Node *> nodes;
     unordered_map<string, Node *> nodes_map;

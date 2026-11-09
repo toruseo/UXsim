@@ -9190,7 +9190,7 @@ def test_route_search_distances_match_python_mode():
 
 
 def test_vehicle_registries_match_python_mode():
-    """VEHICLES_LIVING and VEHICLES_RUNNING equal Python mode after every chunk, with a vehicle added between chunks."""
+    """VEHICLES_LIVING and VEHICLES_RUNNING after every chunk and the final link entry times equal Python mode, with vehicles added between chunks that depart in the past, inside the next chunk, and after it."""
     def run(cpp):
         W = World(cpp=cpp, name='', deltan=5, tmax=1200, print_mode=0, random_seed=0)
         W.addNode('A', 0, 0)
@@ -9205,9 +9205,11 @@ def test_vehicle_registries_match_python_mode():
             W.exec_simulation(duration_t2=50)
             registries.append((W.TIME, set(W.VEHICLES_LIVING), set(W.VEHICLES_RUNNING)))
             if chunk == 1:
+                W.addVehicle('A', 'C', W.TIME - 30, name='past')
                 W.addVehicle('A', 'C', W.TIME + 30, name='late')
+                W.addVehicle('A', 'C', W.TIME + 120, name='later')
             chunk += 1
-        return registries
+        return registries, [veh.traveled_route()[1] for veh in W.VEHICLES.values()]
 
     assert run(True) == run(False)
 
