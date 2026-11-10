@@ -15,7 +15,8 @@ from collections import defaultdict as ddict
 from importlib.resources import files
 from pathlib import Path
 import io
-from scipy.sparse.csgraph import floyd_warshall
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import dijkstra
 
 from .utils import *
 
@@ -155,8 +156,6 @@ class Analyzer:
             else:
                 adj_mat_time[i,j] = np.inf
                 adj_mat_dist[i,j] = np.inf
-        dist_time = floyd_warshall(adj_mat_time)
-        dist_space = floyd_warshall(adj_mat_dist)
 
         for veh in s.W.VEHICLES.values():
             o = veh.orig
@@ -171,12 +170,19 @@ class Analyzer:
                 if veh.travel_time != -1:
                     s.od_trips_comp[o,d] += dn
                     s.od_tt[o,d].append(veh.travel_time)
+
+        #最短経路探索はODに現れる起点からのみ行う
+        orig_ids = sorted({o.id for o,d in s.od_tt.keys()})
+        orig_row = {i: row for row, i in enumerate(orig_ids)}
+        dist_time = dijkstra(csr_matrix(adj_mat_time), indices=orig_ids)
+        dist_space = dijkstra(csr_matrix(adj_mat_dist), indices=orig_ids)
+
         for o,d in s.od_tt.keys():
             s.od_tt_ave[o,d] = np.average(s.od_tt[o,d])
             s.od_tt_std[o,d] = np.std(s.od_tt[o,d])
-            s.od_tt_free[o,d] = dist_time[o.id, d.id]
+            s.od_tt_free[o,d] = dist_time[orig_row[o.id], d.id]
             s.od_dist_total[o,d] = np.sum(s.od_dist[o,d])
-            s.od_dist_min[o,d] = dist_space[o.id, d.id]
+            s.od_dist_min[o,d] = dist_space[orig_row[o.id], d.id]
             s.od_dist_ave[o,d] = np.average(s.od_dist[o,d])
             s.od_dist_std[o,d] = np.std(s.od_dist[o,d])
 
